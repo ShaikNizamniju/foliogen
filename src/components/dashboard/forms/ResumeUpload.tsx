@@ -24,7 +24,7 @@ export function ResumeUpload() {
       console.log("Starting PDF extraction...");
       const arrayBuffer = await file.arrayBuffer();
 
-      // Load PDF using the stable worker
+      // Load PDF (Stable Worker)
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdf = await loadingTask.promise;
 
@@ -36,20 +36,23 @@ export function ResumeUpload() {
         fullText += pageText + ' ';
       }
 
-      // Validation
       if (!fullText || fullText.length < 50) {
         throw new Error("PDF text is empty. It might be an image scan.");
       }
 
-      console.log("Extracted text length:", fullText.length);
       toast.info('Analyzing with AI...');
 
+      // Call Edge Function
       const { data, error } = await supabase.functions.invoke('parse-resume', {
         body: { resumeText: fullText }
       });
 
       if (error) throw new Error("Connection failed: " + error.message);
-      if (data.error) throw new Error("AI Error: " + data.error);
+
+      // Handle logic errors returned by the function
+      if (data.error) {
+        throw new Error(data.error);
+      }
 
       updateProfile({
         fullName: data.fullName,
