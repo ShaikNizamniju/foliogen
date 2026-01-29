@@ -6,61 +6,78 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // 1. Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
     const { resumeText } = await req.json()
-    const apiKey = Deno.env.get('GEMINI_API_KEY')
+    const apiKey = Deno.env.get('LOVABLE_API_KEY')
 
-    // 2. Validate API Key
     if (!apiKey) {
-      console.error("Missing GEMINI_API_KEY")
+      console.error("Missing LOVABLE_API_KEY")
       return new Response(JSON.stringify({ error: "Server configuration error: Missing API Key" }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200
       })
     }
 
-    // 3. Call Gemini API
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ 
-            parts: [{ text: `
-              You are a Resume Parser. Extract these fields into pure JSON:
-              - fullName, headline, bio, location, email, linkedinUrl
-              - skills (array of strings)
-              - workExperience (array: jobTitle, company, startDate, endDate, current, description)
-              - projects (array: title, description)
-              
-              Resume Text:
-              ${resumeText.substring(0, 30000)} 
-            ` }] 
-          }]
+    // Use Lovable AI Gateway with a stable model
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: "google/gemini-3-flash-preview",
+        messages: [
+          {
+            role: "system",
+            content: "You are a Resume Parser. Extract structured data from resumes and return ONLY raw JSON with no markdown formatting."
+          },
+          {
+            role: "user",
+            content: `Extract these fields into pure JSON:
+- fullName, headline, bio, location, email, linkedinUrl
+- skills (array of strings)
+- workExperience (array: jobTitle, company, startDate, endDate, current, description)
+- projects (array: title, description)
+
+Return ONLY raw JSON. No markdown, no backticks.
+
+Resume Text:
+${resumeText.substring(0, 30000)}`
+          }
+        ]
+      })
+    })
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200
         })
       }
-    )
-
-    const data = await response.json()
-
-    // 4. Handle Gemini API Errors
-    if (data.error) {
-      console.error("Gemini API Error:", data.error)
-      return new Response(JSON.stringify({ error: "Gemini Error: " + data.error.message }), {
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200
+        })
+      }
+      const errorText = await response.text()
+      console.error("AI Gateway Error:", response.status, errorText)
+      return new Response(JSON.stringify({ error: "AI service error" }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200
       })
     }
 
-    // 5. Parse Response safely
+    const data = await response.json()
+
     try {
-      let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}"
+      let rawText = data.choices?.[0]?.message?.content || "{}"
       rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim()
       const parsedProfile = JSON.parse(rawText)
       
