@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Upload, Loader2, FileText, AlertCircle } from 'lucide-react';
+import { Upload, Loader2, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfile } from '@/contexts/ProfileContext';
 import { toast } from 'sonner';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// FIX: Use specific CDN for the worker to avoid local file errors
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+// FIX: Use the specific CDNJS URL for version 3.11.174 (Matches the installed package)
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
 export function ResumeUpload() {
   const [isDragging, setIsDragging] = useState(false);
@@ -24,7 +24,7 @@ export function ResumeUpload() {
       console.log("Starting PDF extraction...");
       const arrayBuffer = await file.arrayBuffer();
 
-      // Load PDF
+      // Load PDF using the stable worker
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdf = await loadingTask.promise;
 
@@ -36,12 +36,14 @@ export function ResumeUpload() {
         fullText += pageText + ' ';
       }
 
-      // Validation: Ensure we actually got text
+      // Validation
       if (!fullText || fullText.length < 50) {
         throw new Error("PDF text is empty. It might be an image scan.");
       }
 
-      toast.info('Sending to AI...');
+      console.log("Extracted text length:", fullText.length);
+      toast.info('Analyzing with AI...');
+
       const { data, error } = await supabase.functions.invoke('parse-resume', {
         body: { resumeText: fullText }
       });
