@@ -11,9 +11,9 @@ export function TemplatePreview() {
   const { profile, updateProfile } = useProfile();
 
   return (
-    <div className="hidden lg:flex flex-col w-[500px] border-l border-border bg-muted/20">
+    <div className="hidden lg:flex flex-col w-[500px] border-l border-border bg-muted/20 h-full">
       {/* Preview Header */}
-      <div className="flex items-center justify-between p-4 border-b border-border bg-card">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <Eye className="h-4 w-4" />
           Live Preview
@@ -35,14 +35,16 @@ export function TemplatePreview() {
         </Select>
       </div>
 
-      {/* Preview Content */}
+      {/* Preview Content - Natural scrolling */}
       <div className="flex-1 overflow-auto p-4">
-        <div className="rounded-xl border border-border bg-card shadow-lg overflow-hidden transform scale-[0.6] origin-top-left w-[166%]">
-          {profile.selectedTemplate === 'minimalist' && <MinimalistTemplate profile={profile} />}
-          {profile.selectedTemplate === 'creative' && <CreativeTemplate profile={profile} />}
-          {profile.selectedTemplate === 'saas' && <SaasTemplate profile={profile} />}
-          {profile.selectedTemplate === 'dev' && <DevTemplate profile={profile} />}
-          {profile.selectedTemplate === 'brutalist' && <BrutalistTemplate profile={profile} />}
+        <div className="rounded-xl border border-border bg-card shadow-lg overflow-hidden transform scale-[0.55] origin-top-left w-[182%]">
+          <div className="min-h-0">
+            {profile.selectedTemplate === 'minimalist' && <MinimalistTemplate profile={profile} />}
+            {profile.selectedTemplate === 'creative' && <CreativeTemplate profile={profile} />}
+            {profile.selectedTemplate === 'saas' && <SaasTemplate profile={profile} />}
+            {profile.selectedTemplate === 'dev' && <DevTemplate profile={profile} />}
+            {profile.selectedTemplate === 'brutalist' && <BrutalistTemplate profile={profile} />}
+          </div>
         </div>
       </div>
     </div>
