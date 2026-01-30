@@ -19,6 +19,7 @@ export interface Project {
   link: string;
   imageUrl: string;
   description: string;
+  visualPrompt?: string;
 }
 
 export interface ProfileData {
