@@ -1,4 +1,4 @@
-import { ProfileData } from '@/contexts/ProfileContext';
+import { ProfileData, Project } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, ArrowUpRight } from 'lucide-react';
 
@@ -9,7 +9,7 @@ interface SaasTemplateProps {
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+  transition: { duration: 0.6, ease: "easeOut" as const }
 };
 
 const stagger = {
@@ -19,6 +19,13 @@ const stagger = {
     }
   }
 };
+
+// Get AI-generated image URL for projects
+function getProjectImageUrl(project: Project): string {
+  if (project.imageUrl) return project.imageUrl;
+  const prompt = project.visualPrompt || project.title || 'abstract tech';
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' high quality UI design clean minimal')}?width=800&height=600&nologo=true`;
+}
 
 export function SaasTemplate({ profile }: SaasTemplateProps) {
   return (
@@ -214,15 +221,13 @@ export function SaasTemplate({ profile }: SaasTemplateProps) {
                 transition={{ delay: 0.9 + index * 0.1 }}
                 className="group block p-6 rounded-2xl bg-white border border-black/10 hover:border-black/20 hover:shadow-lg transition-all"
               >
-                {project.imageUrl && (
-                  <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-black/5">
-                    <img 
-                      src={project.imageUrl} 
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                )}
+                <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-black/5">
+                  <img 
+                    src={getProjectImageUrl(project)} 
+                    alt={project.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h3 className="font-semibold mb-1 group-hover:text-violet-600 transition-colors">

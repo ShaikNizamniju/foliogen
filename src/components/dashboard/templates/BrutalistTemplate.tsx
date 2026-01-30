@@ -1,4 +1,4 @@
-import { ProfileData } from '@/contexts/ProfileContext';
+import { ProfileData, Project } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap } from 'lucide-react';
 
@@ -31,6 +31,13 @@ const pastelColors = [
   'bg-[#FFE5CC]', // Orange
   'bg-[#E5FFFF]', // Cyan
 ];
+
+// Get AI-generated image URL for projects
+function getProjectImageUrl(project: Project): string {
+  if (project.imageUrl) return project.imageUrl;
+  const prompt = project.visualPrompt || project.title || 'colorful design';
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' bright colorful bold graphic design')}?width=800&height=600&nologo=true`;
+}
 
 export function BrutalistTemplate({ profile }: BrutalistTemplateProps) {
   return (
@@ -242,17 +249,20 @@ export function BrutalistTemplate({ profile }: BrutalistTemplateProps) {
                     rotate: 1,
                     boxShadow: '12px 12px 0px 0px rgba(0,0,0,1)'
                   }}
-                  className={`${pastelColors[index % pastelColors.length]} border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 block transition-all`}
+                  whileTap={{ 
+                    scale: 0.98,
+                    boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)',
+                    y: 4
+                  }}
+                  className={`${pastelColors[index % pastelColors.length]} border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 block transition-all cursor-pointer`}
                 >
-                  {project.imageUrl && (
-                    <div className="aspect-video mb-4 border-2 border-black overflow-hidden">
-                      <img 
-                        src={project.imageUrl} 
-                        alt={project.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
+                  <div className="aspect-video mb-4 border-2 border-black overflow-hidden">
+                    <img 
+                      src={getProjectImageUrl(project)} 
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                   <h3 className="text-xl font-black mb-2 flex items-center gap-2">
                     {project.title}
                     <ArrowRight className="h-5 w-5" />
@@ -274,40 +284,48 @@ export function BrutalistTemplate({ profile }: BrutalistTemplateProps) {
           <h2 className="text-3xl font-black uppercase mb-6">LET'S WORK TOGETHER!</h2>
           <div className="flex flex-wrap gap-4">
             {profile.email && (
-              <a 
+              <motion.a 
                 href={`mailto:${profile.email}`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95, y: 2 }}
                 className="bg-white text-black px-6 py-3 font-bold flex items-center gap-2 border-2 border-white hover:bg-[#FFE962] transition-colors"
               >
                 <Mail className="h-5 w-5" />
                 EMAIL ME
-              </a>
+              </motion.a>
             )}
             {profile.linkedinUrl && (
-              <a 
+              <motion.a 
                 href={profile.linkedinUrl}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95, y: 2 }}
                 className="bg-transparent text-white px-6 py-3 font-bold flex items-center gap-2 border-2 border-white hover:bg-white hover:text-black transition-colors"
               >
                 <Linkedin className="h-5 w-5" />
                 LINKEDIN
-              </a>
+              </motion.a>
             )}
             {profile.githubUrl && (
-              <a 
+              <motion.a 
                 href={profile.githubUrl}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95, y: 2 }}
                 className="bg-transparent text-white px-6 py-3 font-bold flex items-center gap-2 border-2 border-white hover:bg-white hover:text-black transition-colors"
               >
                 <Github className="h-5 w-5" />
                 GITHUB
-              </a>
+              </motion.a>
             )}
             {profile.website && (
-              <a 
+              <motion.a 
                 href={profile.website}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95, y: 2 }}
                 className="bg-transparent text-white px-6 py-3 font-bold flex items-center gap-2 border-2 border-white hover:bg-white hover:text-black transition-colors"
               >
                 <Globe className="h-5 w-5" />
                 WEBSITE
-              </a>
+              </motion.a>
             )}
           </div>
         </motion.div>
