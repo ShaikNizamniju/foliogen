@@ -23,6 +23,7 @@ export type Database = {
           github_url: string | null
           headline: string | null
           id: string
+          key_highlights: string[] | null
           linkedin_url: string | null
           location: string | null
           photo_url: string | null
@@ -43,6 +44,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string
+          key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
           photo_url?: string | null
@@ -63,6 +65,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string
+          key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
           photo_url?: string | null

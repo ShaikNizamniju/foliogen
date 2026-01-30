@@ -1,5 +1,5 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink } from 'lucide-react';
+import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles } from 'lucide-react';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
@@ -82,6 +82,27 @@ export function CreativeTemplate({ profile }: CreativeTemplateProps) {
                 <p className="text-lg text-gray-600 leading-relaxed">
                   {profile.bio || 'Tell your story here...'}
                 </p>
+                
+                {/* Key Highlights */}
+                {profile.keyHighlights && profile.keyHighlights.length > 0 && (
+                  <div className="mt-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span className="text-xs font-semibold uppercase tracking-wider text-amber-600">Core Strengths</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {profile.keyHighlights.map((highlight, index) => (
+                        <span 
+                          key={index} 
+                          className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 text-amber-800 text-sm font-medium px-3 py-1.5 rounded-full"
+                        >
+                          <span className="text-amber-500">✓</span>
+                          {highlight}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
               {profile.location && (
