@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileProvider } from '@/contexts/ProfileContext';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardContent } from '@/components/dashboard/DashboardContent';
 import { TemplatePreview } from '@/components/dashboard/TemplatePreview';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -37,9 +38,12 @@ export default function Dashboard() {
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-muted/30">
           <DashboardSidebar />
-          <div className="flex-1 flex">
-            <DashboardContent />
-            <TemplatePreview />
+          <div className="flex-1 flex flex-col">
+            <DashboardHeader />
+            <div className="flex-1 flex overflow-hidden">
+              <DashboardContent />
+              <TemplatePreview />
+            </div>
           </div>
         </div>
       </SidebarProvider>
