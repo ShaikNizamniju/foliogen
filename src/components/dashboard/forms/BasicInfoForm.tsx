@@ -8,12 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { Upload, Loader2, User } from 'lucide-react';
+import { Upload, Loader2, User, Trash2 } from 'lucide-react';
+import { ImageCropDialog } from './ImageCropDialog';
 
 export function BasicInfoForm() {
   const { profile, updateProfile } = useProfile();
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,17 +43,33 @@ export function BasicInfoForm() {
       return;
     }
 
+    // Create object URL for cropping
+    const imageUrl = URL.createObjectURL(file);
+    setSelectedImage(imageUrl);
+    setCropDialogOpen(true);
+
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (!user) return;
+
     setUploading(true);
 
     try {
-      // Create a unique file path: userId/timestamp-filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      // Create a unique file path: userId/timestamp.jpg
+      const fileName = `${user.id}/${Date.now()}.jpg`;
 
-      // Upload to Supabase Storage
+      // Upload cropped image to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('profile_photos')
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, croppedBlob, { 
+          upsert: true,
+          contentType: 'image/jpeg'
+        });
 
       if (uploadError) {
         // Check if bucket doesn't exist
@@ -86,11 +105,37 @@ export function BasicInfoForm() {
       });
     } finally {
       setUploading(false);
-      // Reset input so same file can be selected again
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      // Clean up object URL
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage);
+        setSelectedImage(null);
       }
     }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!user || !profile.photoUrl) return;
+
+    try {
+      // Extract file path from URL if it's from our storage
+      const storageUrl = supabase.storage.from('profile_photos').getPublicUrl('').data.publicUrl;
+      if (profile.photoUrl.startsWith(storageUrl)) {
+        const filePath = profile.photoUrl.replace(storageUrl, '');
+        // Attempt to delete from storage (ignore errors as file might not exist)
+        await supabase.storage.from('profile_photos').remove([filePath]);
+      }
+    } catch (error) {
+      // Ignore storage deletion errors
+      console.log('Could not delete from storage:', error);
+    }
+
+    // Clear the photo URL from profile
+    updateProfile({ photoUrl: '' });
+    
+    toast({
+      title: "Photo removed",
+      description: "Your profile photo has been removed.",
+    });
   };
 
   return (
@@ -136,25 +181,39 @@ export function BasicInfoForm() {
               className="hidden"
               id="photo-upload"
             />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="gap-2"
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4" />
-                  Upload Photo
-                </>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="gap-2"
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4" />
+                    Upload Photo
+                  </>
+                )}
+              </Button>
+              {profile.photoUrl && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleRemovePhoto}
+                  disabled={uploading}
+                  className="gap-2 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Remove
+                </Button>
               )}
-            </Button>
+            </div>
             <p className="text-xs text-muted-foreground">
               JPG, PNG or WebP. Max 5MB.
             </p>
@@ -240,6 +299,22 @@ export function BasicInfoForm() {
           </div>
         </div>
       </div>
+
+      {/* Image Crop Dialog */}
+      {selectedImage && (
+        <ImageCropDialog
+          open={cropDialogOpen}
+          onOpenChange={(open) => {
+            setCropDialogOpen(open);
+            if (!open && selectedImage) {
+              URL.revokeObjectURL(selectedImage);
+              setSelectedImage(null);
+            }
+          }}
+          imageSrc={selectedImage}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </div>
   );
 }
