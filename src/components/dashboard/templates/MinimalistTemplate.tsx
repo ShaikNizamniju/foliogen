@@ -1,5 +1,5 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle } from 'lucide-react';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
@@ -89,13 +89,33 @@ export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
       <main className="flex-1 p-12 overflow-auto">
         {/* Bio Section */}
         {profile.bio && (
-          <section className="mb-16">
+          <section className="mb-10">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6">
               About
             </h2>
             <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
               {profile.bio}
             </p>
+          </section>
+        )}
+
+        {/* Key Highlights Section */}
+        {profile.keyHighlights && profile.keyHighlights.length > 0 && (
+          <section className="mb-16">
+            <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6 flex items-center gap-2">
+              <span>🚀</span> Top Achievements
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              {profile.keyHighlights.map((highlight, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center gap-2 bg-black/5 border border-black/10 px-4 py-2 rounded-full"
+                >
+                  <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="text-sm font-medium text-black/80">{highlight}</span>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
