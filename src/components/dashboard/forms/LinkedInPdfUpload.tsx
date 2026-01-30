@@ -136,19 +136,19 @@ export function LinkedInPdfUpload() {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
         />
         <div className="flex flex-col items-center gap-4">
-          <div className={`p-4 rounded-full ${isParsing ? 'bg-[#0A66C2]/10 animate-pulse' : 'bg-[#0A66C2]/5'}`}>
+          <div className={`p-5 rounded-full ${isParsing ? 'bg-[#0A66C2]/20 animate-pulse' : 'bg-[#0A66C2]/10'}`}>
             {isParsing ? (
-              <Loader2 className="w-8 h-8 text-[#0A66C2] animate-spin" />
+              <Loader2 className="w-10 h-10 text-[#0A66C2] animate-spin" />
             ) : (
-              <Linkedin className="w-8 h-8 text-[#0A66C2]" />
+              <Linkedin className="w-10 h-10 text-[#0A66C2]" />
             )}
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-foreground">
-              {isParsing ? 'Importing LinkedIn Data...' : 'Upload LinkedIn PDF'}
+            <h3 className="text-xl font-bold text-foreground">
+              {isParsing ? 'Importing LinkedIn Data...' : 'Import from LinkedIn PDF'}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {isParsing ? 'Extracting your profile details...' : 'Drag & drop your LinkedIn PDF here, or click to browse'}
+              {isParsing ? 'Extracting your profile details...' : 'No login required. Export your profile to PDF and drag it here.'}
             </p>
           </div>
         </div>

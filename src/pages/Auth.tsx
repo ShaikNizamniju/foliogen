@@ -63,14 +63,6 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Temporary: Supabase URL for configuration */}
-        <div className="mb-4 p-4 bg-red-100 border border-red-300 rounded-lg">
-          <p className="text-red-600 text-xs mb-1">Supabase Project URL (temporary):</p>
-          <p className="text-red-700 text-lg font-bold break-all select-all">
-            {import.meta.env.VITE_SUPABASE_URL}
-          </p>
-        </div>
-
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-glow">
