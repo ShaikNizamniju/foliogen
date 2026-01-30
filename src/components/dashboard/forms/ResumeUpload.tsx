@@ -100,8 +100,8 @@ export function ResumeUpload() {
             {isParsing ? <Loader2 className="w-8 h-8 text-primary animate-spin" /> : <Upload className="w-8 h-8 text-primary" />}
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">{isParsing ? 'Analyzing Resume...' : 'Upload your Resume'}</h3>
-            <p className="text-sm text-muted-foreground">{isParsing ? 'Extracting details...' : 'Drag & drop PDF'}</p>
+            <h3 className="text-lg font-semibold">{isParsing ? 'Analyzing Resume...' : 'Upload Resume or LinkedIn PDF'}</h3>
+            <p className="text-sm text-muted-foreground">{isParsing ? 'Extracting details...' : 'Drag & drop your PDF file here'}</p>
           </div>
         </div>
       </div>
