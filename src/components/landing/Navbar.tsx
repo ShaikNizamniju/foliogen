@@ -20,9 +20,6 @@ export function Navbar() {
           <Link to="#features" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             Features
           </Link>
-          <Link to="#pricing" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Pricing
-          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -36,7 +33,7 @@ export function Navbar() {
                 <Link to="/auth">Sign In</Link>
               </Button>
               <Button asChild>
-                <Link to="/auth">Get Started</Link>
+                <Link to="/dashboard">Get Started</Link>
               </Button>
             </>
           )}

@@ -63,13 +63,6 @@ export function TemplatesSection() {
         })}
       </div>
 
-      <div className="rounded-xl border border-border bg-muted/50 p-6">
-        <h3 className="font-semibold text-foreground mb-2">Pro Templates Coming Soon</h3>
-        <p className="text-sm text-muted-foreground">
-          We're working on more stunning templates including Corporate, Modern, and Developer themes.
-          Upgrade to Pro to get early access!
-        </p>
-      </div>
     </div>
   );
 }

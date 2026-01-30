@@ -48,18 +48,6 @@ export function SettingsSection() {
         </div>
       </div>
 
-      {/* Plan Info */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        <h2 className="font-semibold text-foreground mb-4">Current Plan</h2>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium text-foreground">Free Plan</p>
-            <p className="text-sm text-muted-foreground">1 portfolio, basic features</p>
-          </div>
-          <Button variant="outline">Upgrade to Pro</Button>
-        </div>
-      </div>
-
       {/* Danger Zone */}
       <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
         <h2 className="font-semibold text-foreground mb-4">Sign Out</h2>
