@@ -5,8 +5,9 @@ import { WorkExperienceForm } from '../forms/WorkExperienceForm';
 import { ProjectsForm } from '../forms/ProjectsForm';
 import { SkillsForm } from '../forms/SkillsForm';
 import { ResumeUpload } from '../forms/ResumeUpload';
+import { LinkedInPdfUpload } from '../forms/LinkedInPdfUpload';
 import { Button } from '@/components/ui/button';
-import { Save, User, Briefcase, FolderKanban, Sparkles, Upload } from 'lucide-react';
+import { Save, User, Briefcase, FolderKanban, Sparkles, Upload, Linkedin } from 'lucide-react';
 import { toast } from 'sonner';
 
 const tabs = [
@@ -15,6 +16,7 @@ const tabs = [
   { id: 'projects', label: 'Projects', icon: FolderKanban },
   { id: 'skills', label: 'Skills', icon: Sparkles },
   { id: 'resume', label: 'Resume Upload', icon: Upload },
+  { id: 'linkedin', label: 'Import LinkedIn PDF', icon: Linkedin },
 ];
 
 export function ProfileSection() {
@@ -42,6 +44,8 @@ export function ProfileSection() {
         return <SkillsForm />;
       case 'resume':
         return <ResumeUpload />;
+      case 'linkedin':
+        return <LinkedInPdfUpload />;
       default:
         return <BasicInfoForm />;
     }
