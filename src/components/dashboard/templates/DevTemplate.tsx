@@ -1,10 +1,17 @@
-import { ProfileData } from '@/contexts/ProfileContext';
+import { ProfileData, Project } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Code, Folder, FileCode } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface DevTemplateProps {
   profile: ProfileData;
+}
+
+// Get AI-generated image URL for projects
+function getProjectImageUrl(project: Project): string {
+  if (project.imageUrl) return project.imageUrl;
+  const prompt = project.visualPrompt || project.title || 'code terminal';
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' dark mode tech interface neon')}?width=800&height=600&nologo=true`;
 }
 
 // Typewriter effect component
@@ -261,15 +268,24 @@ export function DevTemplate({ profile }: DevTemplateProps) {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 5.7 + index * 0.15 }}
-                  className="block p-4 bg-[#161B22] rounded-lg border border-[#30363D] hover:border-green-500/50 transition-colors group"
+                  className="block bg-[#161B22] rounded-lg border border-[#30363D] hover:border-green-500/50 transition-colors group overflow-hidden"
                 >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Folder className="h-4 w-4 text-cyan-400" />
-                    <span className="text-white font-semibold group-hover:text-green-400 transition-colors">
-                      {project.title}
-                    </span>
+                  <div className="aspect-video overflow-hidden">
+                    <img 
+                      src={getProjectImageUrl(project)} 
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
                   </div>
-                  <p className="text-[#8B949E] text-sm">{project.description}</p>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Folder className="h-4 w-4 text-cyan-400" />
+                      <span className="text-white font-semibold group-hover:text-green-400 transition-colors">
+                        {project.title}
+                      </span>
+                    </div>
+                    <p className="text-[#8B949E] text-sm">{project.description}</p>
+                  </div>
                 </motion.a>
               ))}
             </div>
