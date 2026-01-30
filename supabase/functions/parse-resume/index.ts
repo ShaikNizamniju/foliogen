@@ -23,7 +23,7 @@ serve(async (req) => {
     }
 
     // Use Lovable AI Gateway with a stable model
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a Resume Parser. Extract structured data from resumes and return ONLY raw JSON with no markdown formatting."
+            content: "You are an expert Career Strategist. Analyze the provided text (Resume or LinkedIn PDF). Extract structured data and return ONLY raw JSON with no markdown formatting."
           },
           {
             role: "user",
@@ -43,6 +43,7 @@ serve(async (req) => {
 - skills (array of strings)
 - workExperience (array: jobTitle, company, startDate, endDate, current, description)
 - projects (array: title, description)
+- keyHighlights (array of 3-5 short, punchy strings, max 10 words each. These should be the candidate's strongest selling points, unique skills, or impressive metrics found in the text.)
 
 Return ONLY raw JSON. No markdown, no backticks.
 

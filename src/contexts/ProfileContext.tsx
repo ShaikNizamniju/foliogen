@@ -36,6 +36,7 @@ export interface ProfileData {
   workExperience: WorkExperience[];
   projects: Project[];
   skills: string[];
+  keyHighlights: string[];
   selectedTemplate: 'minimalist' | 'creative';
 }
 
@@ -61,6 +62,7 @@ const defaultProfile: ProfileData = {
   workExperience: [],
   projects: [],
   skills: [],
+  keyHighlights: [],
   selectedTemplate: 'minimalist',
 };
 
@@ -99,6 +101,10 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         ? (data.projects as unknown as Project[]) 
         : [];
       
+      const keyHighlights = Array.isArray((data as any).key_highlights) 
+        ? (data as any).key_highlights as string[]
+        : [];
+      
       setProfile({
         id: data.id,
         fullName: data.full_name || '',
@@ -114,6 +120,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         workExperience: workExp,
         projects: proj,
         skills: data.skills || [],
+        keyHighlights: keyHighlights,
         selectedTemplate: (data.selected_template as 'minimalist' | 'creative') || 'minimalist',
       });
     }
@@ -145,8 +152,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         work_experience: profile.workExperience as unknown as Json,
         projects: profile.projects as unknown as Json,
         skills: profile.skills,
+        key_highlights: profile.keyHighlights,
         selected_template: profile.selectedTemplate,
-      })
+      } as any)
       .eq('user_id', user.id);
 
     setSaving(false);
