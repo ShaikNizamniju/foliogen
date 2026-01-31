@@ -4,6 +4,9 @@ import { CreativeTemplate } from './templates/CreativeTemplate';
 import { SaasTemplate } from './templates/SaasTemplate';
 import { DevTemplate } from './templates/DevTemplate';
 import { BrutalistTemplate } from './templates/BrutalistTemplate';
+import { AcademicTemplate } from './templates/AcademicTemplate';
+import { StudioTemplate } from './templates/StudioTemplate';
+import { ExecutiveTemplate } from './templates/ExecutiveTemplate';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye } from 'lucide-react';
 
@@ -31,6 +34,9 @@ export function TemplatePreview() {
             <SelectItem value="saas">The Founder</SelectItem>
             <SelectItem value="dev">The Terminal</SelectItem>
             <SelectItem value="brutalist">The Creative</SelectItem>
+            <SelectItem value="academic">The Academic</SelectItem>
+            <SelectItem value="studio">The Studio</SelectItem>
+            <SelectItem value="executive">The Executive</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -44,6 +50,9 @@ export function TemplatePreview() {
             {profile.selectedTemplate === 'saas' && <SaasTemplate profile={profile} />}
             {profile.selectedTemplate === 'dev' && <DevTemplate profile={profile} />}
             {profile.selectedTemplate === 'brutalist' && <BrutalistTemplate profile={profile} />}
+            {profile.selectedTemplate === 'academic' && <AcademicTemplate profile={profile} />}
+            {profile.selectedTemplate === 'studio' && <StudioTemplate profile={profile} />}
+            {profile.selectedTemplate === 'executive' && <ExecutiveTemplate profile={profile} />}
           </div>
         </div>
       </div>

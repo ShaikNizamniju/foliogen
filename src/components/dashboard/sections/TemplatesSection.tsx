@@ -37,6 +37,27 @@ const templates = [
     preview: 'bg-[#FFE962] border-4 border-black',
     emoji: '⚡',
   },
+  {
+    id: 'academic',
+    name: 'The Academic',
+    description: 'Ivy League elegance with serif fonts, paper textures, and formal CV structure.',
+    preview: 'bg-[#fdfbf7] border-2 border-[#e5e2db]',
+    emoji: '📜',
+  },
+  {
+    id: 'studio',
+    name: 'The Studio',
+    description: 'Design agency style with massive project visuals and minimal text.',
+    preview: 'bg-[#1a1a1a] border border-white/10',
+    emoji: '📷',
+  },
+  {
+    id: 'executive',
+    name: 'The Executive',
+    description: 'Fortune 500 CEO style with navy blue, gold accents, and executive summary.',
+    preview: 'bg-[#0f172a] border border-amber-400/30',
+    emoji: '👔',
+  },
 ];
 
 export function TemplatesSection() {
