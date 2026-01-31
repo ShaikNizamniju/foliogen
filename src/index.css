@@ -206,63 +206,123 @@
 
 /* Print styles for PDF export */
 @media print {
-  /* Hide dashboard UI elements */
+  /* Hide all UI elements */
+  aside,
   [data-sidebar],
   nav,
+  header,
   .sidebar,
-  .no-print {
+  .no-print,
+  [aria-label="Edit"],
+  [aria-label="Toggle theme"],
+  button:has(.lucide-sun),
+  button:has(.lucide-moon),
+  button:has(.lucide-upload),
+  button:has(.lucide-pencil),
+  button:has(.lucide-x),
+  .mode-toggle,
+  [class*="sheet"],
+  [class*="dialog"],
+  [role="dialog"] {
     display: none !important;
+    visibility: hidden !important;
   }
 
-  /* Reset body for printing */
+  /* Layout reset */
+  html,
   body {
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: white !important;
     color: black !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    font-size: 12pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Make portfolio content full width */
-  main {
+  #root {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+
+  /* Main content area */
+  main,
+  [role="main"],
+  .portfolio-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 20px !important;
     transform: none !important;
     position: relative !important;
     left: 0 !important;
+    box-shadow: none !important;
   }
 
-  /* Ensure page breaks work well */
-  section {
-    page-break-inside: avoid;
-  }
-
-  h1, h2, h3, h4 {
-    page-break-after: avoid;
-  }
-
-  /* Keep images visible */
-  img {
-    max-width: 100% !important;
-    page-break-inside: avoid;
-  }
-
-  /* Remove animations */
+  /* Remove all animations and transitions */
   * {
     animation: none !important;
     transition: none !important;
+    transform: none !important;
   }
 
-  /* Links show URL in print */
-  a[href]:after {
+  /* Page break controls */
+  section,
+  .project-card,
+  .experience-item,
+  [class*="project"],
+  [class*="experience"],
+  article {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Images */
+  img {
+    max-width: 100% !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Links - show URL */
+  a[href^="http"]:after {
     content: " (" attr(href) ")";
     font-size: 0.8em;
     color: #666;
+    word-break: break-all;
   }
 
   a[href^="#"]:after,
-  a[href^="javascript"]:after {
+  a[href^="javascript"]:after,
+  a[href^="mailto"]:after {
     content: "";
+  }
+
+  /* Force backgrounds to print */
+  .bg-gradient-to-br,
+  .bg-gradient-to-r,
+  [class*="bg-"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Remove shadows for cleaner print */
+  [class*="shadow"] {
+    box-shadow: none !important;
+  }
+
+  /* Ensure text is readable */
+  p, li, span, div {
+    orphans: 3;
+    widows: 3;
   }
 }
