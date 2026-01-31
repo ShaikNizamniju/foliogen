@@ -33,6 +33,7 @@ export type Database = {
           twitter_url: string | null
           updated_at: string
           user_id: string
+          views: number | null
           website: string | null
           work_experience: Json | null
         }
@@ -54,6 +55,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           user_id: string
+          views?: number | null
           website?: string | null
           work_experience?: Json | null
         }
@@ -75,6 +77,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           user_id?: string
+          views?: number | null
           website?: string | null
           work_experience?: Json | null
         }
@@ -85,7 +88,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_views: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
