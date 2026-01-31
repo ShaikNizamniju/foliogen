@@ -1,6 +1,7 @@
-import { ProfileData, Project } from '@/contexts/ProfileContext';
+import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface SaasTemplateProps {
   profile: ProfileData;
@@ -19,13 +20,7 @@ const stagger = {
     }
   }
 };
-
-// Get AI-generated image URL for projects
-function getProjectImageUrl(project: Project): string {
-  if (project.imageUrl) return project.imageUrl;
-  const prompt = project.visualPrompt || project.title || 'abstract tech';
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' high quality UI design clean minimal')}?width=800&height=600&nologo=true`;
-}
+// Using shared getProjectImageUrl from portfolio-utils
 
 export function SaasTemplate({ profile }: SaasTemplateProps) {
   return (
@@ -223,7 +218,7 @@ export function SaasTemplate({ profile }: SaasTemplateProps) {
               >
                 <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-black/5">
                   <img 
-                    src={getProjectImageUrl(project)} 
+                    src={getProjectImageUrl(project, 'minimal')} 
                     alt={project.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
