@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfileData, WorkExperience, Project } from '@/contexts/ProfileContext';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
@@ -19,10 +20,23 @@ export default function PublicPortfolio() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const viewCounted = useRef(false);
 
   useEffect(() => {
     if (id) {
       fetchProfile(id);
+    }
+  }, [id]);
+
+  // Increment view count - strict dependency to prevent double counting
+  useEffect(() => {
+    if (id && !viewCounted.current) {
+      viewCounted.current = true;
+      supabase.rpc('increment_views', { p_user_id: id }).then(({ error }) => {
+        if (error) {
+          console.error('Failed to increment views:', error);
+        }
+      });
     }
   }, [id]);
 
@@ -74,6 +88,7 @@ export default function PublicPortfolio() {
       projects: proj,
       skills: data.skills || [],
       keyHighlights: keyHighlights,
+      views: data.views || 0,
       selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
     });
     setLoading(false);
@@ -100,6 +115,14 @@ export default function PublicPortfolio() {
       </div>
     );
   }
+
+  // Generate SEO metadata
+  const pageTitle = profile.fullName 
+    ? `${profile.fullName}${profile.headline ? ` - ${profile.headline}` : ''}`
+    : 'Portfolio';
+  const pageDescription = profile.bio || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
+  const pageImage = profile.photoUrl || '';
+  const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   // Render the selected template directly - no editing controls
   const renderTemplate = () => {
@@ -132,8 +155,28 @@ export default function PublicPortfolio() {
   };
 
   return (
-    <div className="min-h-screen">
-      {renderTemplate()}
-    </div>
+    <>
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        {pageImage && <meta property="og:image" content={pageImage} />}
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        {pageImage && <meta name="twitter:image" content={pageImage} />}
+      </Helmet>
+      <div className="min-h-screen">
+        {renderTemplate()}
+      </div>
+    </>
   );
 }

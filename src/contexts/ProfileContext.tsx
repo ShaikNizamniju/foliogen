@@ -38,6 +38,7 @@ export interface ProfileData {
   projects: Project[];
   skills: string[];
   keyHighlights: string[];
+  views: number;
   selectedTemplate: 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist' | 'academic' | 'studio' | 'executive' | 'influencer' | 'swiss' | 'noir';
 }
 
@@ -64,6 +65,7 @@ const defaultProfile: ProfileData = {
   projects: [],
   skills: [],
   keyHighlights: [],
+  views: 0,
   selectedTemplate: 'minimalist',
 };
 
@@ -122,6 +124,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         projects: proj,
         skills: data.skills || [],
         keyHighlights: keyHighlights,
+        views: data.views || 0,
         selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
       });
     }
