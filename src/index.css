@@ -206,12 +206,9 @@
 /* Print styles for PDF export */
 @media print {
   /* Hide dashboard UI elements */
-  .print\\:hidden,
   [data-sidebar],
-  header,
   nav,
   .sidebar,
-  button,
   .no-print {
     display: none !important;
   }
@@ -225,9 +222,7 @@
   }
 
   /* Make portfolio content full width */
-  .printing-portfolio main,
-  .printing-portfolio .template-preview,
-  .printing-portfolio [class*="TemplatePreview"] {
+  main {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
@@ -237,12 +232,6 @@
     left: 0 !important;
   }
 
-  /* Reset the flex container */
-  .printing-portfolio .flex-1 {
-    flex: none !important;
-    width: 100% !important;
-  }
-
   /* Ensure page breaks work well */
   section {
     page-break-inside: avoid;
@@ -250,18 +239,6 @@
 
   h1, h2, h3, h4 {
     page-break-after: avoid;
-  }
-
-  /* Force light backgrounds for ink saving (except dark templates) */
-  .printing-portfolio:not(.dark-template) * {
-    background-color: transparent !important;
-  }
-
-  .printing-portfolio:not(.dark-template) .bg-black,
-  .printing-portfolio:not(.dark-template) .bg-gray-900,
-  .printing-portfolio:not(.dark-template) .bg-slate-900 {
-    background-color: white !important;
-    color: black !important;
   }
 
   /* Keep images visible */
