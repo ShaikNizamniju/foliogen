@@ -1,5 +1,5 @@
-import { Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import logo from '@/assets/logo.png';
 
 export function Footer() {
   return (
@@ -7,12 +7,9 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-lg font-bold text-white">FolioGen</span>
-          </div>
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="FolioGen" className="h-10 w-auto" />
+          </Link>
 
           {/* Navigation */}
           <nav className="flex items-center gap-8">
@@ -29,7 +26,7 @@ export function Footer() {
               Sign Up
             </Link>
             <Link 
-              to="#" 
+              to="/privacy" 
               className="text-sm font-medium text-slate-400 transition-colors hover:text-white"
             >
               Privacy
