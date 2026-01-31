@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 // Animation variants
@@ -37,7 +38,7 @@ const sidebarVariants = {
   },
 };
 
-export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
+export function MinimalistTemplate({ profile, onContactClick }: MinimalistTemplateProps) {
   return (
     <div className="min-h-screen bg-white text-black font-sans flex relative">
       {/* Dot Pattern Background */}
@@ -87,9 +88,15 @@ export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
           {profile.email && (
             <motion.div variants={itemVariants} className="flex items-start gap-3">
               <Mail className="h-4 w-4 mt-0.5 text-white/40" />
-              <a href={`mailto:${profile.email}`} className="text-white/80 hover:text-white transition-colors break-all">
-                {profile.email}
-              </a>
+              {onContactClick ? (
+                <button onClick={onContactClick} className="text-white/80 hover:text-white transition-colors text-left">
+                  Send Message
+                </button>
+              ) : (
+                <a href={`mailto:${profile.email}`} className="text-white/80 hover:text-white transition-colors break-all">
+                  {profile.email}
+                </a>
+              )}
             </motion.div>
           )}
           {profile.website && (

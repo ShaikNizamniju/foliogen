@@ -1,11 +1,12 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Code, Folder, FileCode } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Code, Folder, FileCode, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { useEffect, useState } from 'react';
 
 interface DevTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 // Using shared getProjectImageUrl from portfolio-utils
@@ -51,7 +52,7 @@ const syntaxColors = [
   'text-orange-400',
 ];
 
-export function DevTemplate({ profile }: DevTemplateProps) {
+export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
   return (
     <div className="min-h-[800px] bg-[#0D1117] text-[#C9D1D9] font-mono">
       {/* Terminal Header */}
@@ -302,10 +303,17 @@ export function DevTemplate({ profile }: DevTemplateProps) {
           </div>
           <div className="pl-6 flex flex-wrap gap-4">
             {profile.email && (
-              <a href={`mailto:${profile.email}`} className="flex items-center gap-2 text-[#8B949E] hover:text-green-400 transition-colors">
-                <Mail className="h-4 w-4" />
-                <span className="text-sm">{profile.email}</span>
-              </a>
+              onContactClick ? (
+                <button onClick={onContactClick} className="flex items-center gap-2 text-[#8B949E] hover:text-green-400 transition-colors">
+                  <MessageSquare className="h-4 w-4" />
+                  <span className="text-sm">hire_me()</span>
+                </button>
+              ) : (
+                <a href={`mailto:${profile.email}`} className="flex items-center gap-2 text-[#8B949E] hover:text-green-400 transition-colors">
+                  <Mail className="h-4 w-4" />
+                  <span className="text-sm">{profile.email}</span>
+                </a>
+              )
             )}
             {profile.website && (
               <a href={profile.website} className="flex items-center gap-2 text-[#8B949E] hover:text-cyan-400 transition-colors">

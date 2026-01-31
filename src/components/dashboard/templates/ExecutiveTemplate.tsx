@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, TrendingUp, Target, Award } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, TrendingUp, Target, Award, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface ExecutiveTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 const staggerContainer = {
@@ -27,7 +28,7 @@ const fadeInUp = {
   },
 };
 
-export function ExecutiveTemplate({ profile }: ExecutiveTemplateProps) {
+export function ExecutiveTemplate({ profile, onContactClick }: ExecutiveTemplateProps) {
   return (
     <div className="min-h-screen bg-[#0f172a] text-white font-sans">
       {/* Executive Header Bar */}

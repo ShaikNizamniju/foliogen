@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, ArrowUpRight, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface SaasTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 const fadeInUp = {
@@ -22,7 +23,7 @@ const stagger = {
 };
 // Using shared getProjectImageUrl from portfolio-utils
 
-export function SaasTemplate({ profile }: SaasTemplateProps) {
+export function SaasTemplate({ profile, onContactClick }: SaasTemplateProps) {
   return (
     <div className="min-h-[800px] bg-[#FAFAFA] text-[#0A0A0A] font-sans">
       {/* Navigation */}
@@ -51,12 +52,22 @@ export function SaasTemplate({ profile }: SaasTemplateProps) {
               </a>
             )}
             {profile.email && (
-              <a 
-                href={`mailto:${profile.email}`}
-                className="text-sm font-medium bg-black text-white px-4 py-2 rounded-full hover:bg-black/80 transition-colors"
-              >
-                Get in touch
-              </a>
+              onContactClick ? (
+                <button 
+                  onClick={onContactClick}
+                  className="text-sm font-medium bg-black text-white px-4 py-2 rounded-full hover:bg-black/80 transition-colors flex items-center gap-2"
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Hire Me
+                </button>
+              ) : (
+                <a 
+                  href={`mailto:${profile.email}`}
+                  className="text-sm font-medium bg-black text-white px-4 py-2 rounded-full hover:bg-black/80 transition-colors"
+                >
+                  Get in touch
+                </a>
+              )
             )}
           </div>
         </div>

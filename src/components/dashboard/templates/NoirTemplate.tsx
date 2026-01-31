@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface NoirTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 // Custom getProjectImageUrl for Noir - append "black and white"
@@ -29,7 +30,7 @@ const slideUp = {
   transition: { duration: 1, ease: "easeOut" as const }
 };
 
-export function NoirTemplate({ profile }: NoirTemplateProps) {
+export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
   return (
     <div 
       className="min-h-screen bg-black text-white relative"

@@ -1,11 +1,12 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles } from 'lucide-react';
+import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 // Skill colors for colorful badges
@@ -137,7 +138,7 @@ function TiltCard({ children, className = '' }: TiltCardProps) {
 
 // Using shared getProjectImageUrl from portfolio-utils
 
-export function CreativeTemplate({ profile }: CreativeTemplateProps) {
+export function CreativeTemplate({ profile, onContactClick }: CreativeTemplateProps) {
   return (
     <div className="min-h-screen bg-slate-950 font-sans relative overflow-hidden">
       {/* Aurora Background */}
@@ -189,9 +190,15 @@ export function CreativeTemplate({ profile }: CreativeTemplateProps) {
                 </a>
               )}
               {profile.email && (
-                <a href={`mailto:${profile.email}`} className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
-                  <Mail className="h-4 w-4 text-white" />
-                </a>
+                onContactClick ? (
+                  <button onClick={onContactClick} className="p-2.5 bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 rounded-full transition-all hover:scale-110 border border-white/10">
+                    <MessageSquare className="h-4 w-4 text-white" />
+                  </button>
+                ) : (
+                  <a href={`mailto:${profile.email}`} className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
+                    <Mail className="h-4 w-4 text-white" />
+                  </a>
+                )
               )}
             </div>
           </div>

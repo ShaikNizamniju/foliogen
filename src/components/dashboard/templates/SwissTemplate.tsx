@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, ArrowUpRight, MapPin } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, ArrowUpRight, MapPin, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface SwissTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 const staggerContainer = {
@@ -36,7 +37,7 @@ const fadeUp = {
   },
 };
 
-export function SwissTemplate({ profile }: SwissTemplateProps) {
+export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
   return (
     <div 
       className="min-h-screen bg-white text-black"

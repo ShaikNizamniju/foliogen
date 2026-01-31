@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface BrutalistTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 const bounceIn = {
@@ -35,7 +36,7 @@ const pastelColors = [
 
 // Using shared getProjectImageUrl from portfolio-utils
 
-export function BrutalistTemplate({ profile }: BrutalistTemplateProps) {
+export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplateProps) {
   return (
     <div className="min-h-[800px] bg-[#FFFEF0] text-black font-sans">
       {/* Header Banner */}

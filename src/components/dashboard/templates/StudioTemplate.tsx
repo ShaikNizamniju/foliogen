@@ -1,11 +1,12 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { useRef } from 'react';
 
 interface StudioTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 // Parallax Image Component
@@ -29,7 +30,7 @@ function ParallaxImage({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-export function StudioTemplate({ profile }: StudioTemplateProps) {
+export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps) {
   return (
     <div className="min-h-screen bg-[#1a1a1a] text-white font-sans">
       {/* Minimal Header */}
