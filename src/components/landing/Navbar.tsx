@@ -1,11 +1,19 @@
-import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
+import logo from '@/assets/logo.png';
 
 export function Navbar() {
   const { user } = useAuth();
+
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <motion.header
@@ -15,32 +23,32 @@ export function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent">
-            <Sparkles className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-lg font-bold text-white">FolioGen</span>
+        <Link to="/" className="flex items-center">
+          <img src={logo} alt="FolioGen" className="h-10 w-auto" />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          <Link 
-            to="#features" 
-            className="text-sm font-medium text-slate-400 transition-colors hover:text-white"
+          <a 
+            href="#features"
+            onClick={(e) => scrollToSection(e, 'features')}
+            className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
           >
             Features
-          </Link>
-          <Link 
-            to="#" 
-            className="text-sm font-medium text-slate-400 transition-colors hover:text-white"
+          </a>
+          <a 
+            href="#templates"
+            onClick={(e) => scrollToSection(e, 'templates')}
+            className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
           >
             Templates
-          </Link>
-          <Link 
-            to="#" 
-            className="text-sm font-medium text-slate-400 transition-colors hover:text-white"
+          </a>
+          <a 
+            href="#pricing"
+            onClick={(e) => scrollToSection(e, 'pricing')}
+            className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
           >
             Pricing
-          </Link>
+          </a>
         </nav>
 
         <div className="flex items-center gap-3">
