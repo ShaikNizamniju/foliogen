@@ -1,66 +1,236 @@
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+
+function TypewriterText({ text, className }: { text: string; className?: string }) {
+  const [displayedText, setDisplayedText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 80);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, text]);
+
+  return (
+    <span className={className}>
+      {displayedText}
+      <motion.span
+        animate={{ opacity: [1, 0] }}
+        transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+        className="inline-block w-1 h-[1em] bg-primary ml-1 align-middle"
+      />
+    </span>
+  );
+}
+
+function Document3DAnimation() {
+  return (
+    <div className="relative w-full max-w-lg mx-auto mt-16">
+      {/* Document transforming into website */}
+      <motion.div
+        className="relative"
+        initial={{ rotateY: 0 }}
+        animate={{ rotateY: [0, -15, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
+      >
+        {/* Resume/Document */}
+        <motion.div
+          className="absolute left-0 top-0 w-32 h-44 sm:w-40 sm:h-52 bg-card border border-border rounded-lg shadow-xl p-3 sm:p-4"
+          initial={{ x: 0, opacity: 1 }}
+          animate={{ x: [-20, 0, -20], opacity: [0.8, 1, 0.8] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <div className="space-y-2">
+            <div className="h-2 w-12 bg-muted-foreground/30 rounded" />
+            <div className="h-1.5 w-full bg-muted-foreground/20 rounded" />
+            <div className="h-1.5 w-3/4 bg-muted-foreground/20 rounded" />
+            <div className="h-1.5 w-5/6 bg-muted-foreground/20 rounded" />
+            <div className="mt-3 h-1.5 w-1/2 bg-muted-foreground/20 rounded" />
+            <div className="h-1.5 w-full bg-muted-foreground/20 rounded" />
+            <div className="h-1.5 w-2/3 bg-muted-foreground/20 rounded" />
+          </div>
+          <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+            <span className="text-xs text-primary-foreground font-bold">📄</span>
+          </div>
+        </motion.div>
+
+        {/* Arrow animation */}
+        <motion.div
+          className="absolute left-36 sm:left-44 top-20 sm:top-24"
+          animate={{ x: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <div className="flex items-center gap-1">
+            <div className="w-12 sm:w-16 h-0.5 bg-gradient-to-r from-primary to-accent" />
+            <ArrowRight className="w-5 h-5 text-accent" />
+          </div>
+        </motion.div>
+
+        {/* Website/Portfolio */}
+        <motion.div
+          className="absolute right-0 top-0 w-40 h-44 sm:w-52 sm:h-56 bg-gradient-to-br from-card to-muted border border-border rounded-xl shadow-2xl overflow-hidden"
+          initial={{ x: 0, scale: 1 }}
+          animate={{ x: [20, 0, 20], scale: [0.95, 1, 0.95] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {/* Browser bar */}
+          <div className="h-6 bg-muted flex items-center px-2 gap-1.5">
+            <div className="w-2 h-2 rounded-full bg-destructive/60" />
+            <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
+            <div className="w-2 h-2 rounded-full bg-green-500/60" />
+            <div className="ml-2 flex-1 h-3 bg-background/50 rounded text-[6px] flex items-center px-1.5 text-muted-foreground">
+              foliogen.app/you
+            </div>
+          </div>
+          {/* Website content */}
+          <div className="p-3">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent" />
+              <div className="space-y-1">
+                <div className="h-2 w-16 bg-foreground/20 rounded" />
+                <div className="h-1.5 w-12 bg-muted-foreground/20 rounded" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-12 bg-primary/10 rounded-lg" />
+              <div className="h-12 bg-accent/20 rounded-lg" />
+            </div>
+            <div className="mt-2 space-y-1">
+              <div className="h-1.5 w-full bg-muted-foreground/20 rounded" />
+              <div className="h-1.5 w-2/3 bg-muted-foreground/20 rounded" />
+            </div>
+          </div>
+          <div className="absolute -top-2 -right-2 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+            <span className="text-xs font-bold">🌐</span>
+          </div>
+        </motion.div>
+      </motion.div>
+
+      {/* Glow effects */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10" />
+      <div className="absolute top-1/2 right-0 w-32 h-32 bg-accent/20 rounded-full blur-2xl -z-10" />
+    </div>
+  );
+}
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-hero py-24 sm:py-32">
-      {/* Background decoration */}
+    <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 sm:py-32">
+      {/* Animated gradient background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
+        <motion.div
+          className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px]"
+          animate={{
+            x: [0, 50, 0],
+            y: [0, 30, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/15 rounded-full blur-[128px]"
+          animate={{
+            x: [0, -50, 0],
+            y: [0, -30, 0],
+            scale: [1.1, 1, 1.1],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px]"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        />
+        
+        {/* Grid overlay */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}
+        />
       </div>
 
       <div className="container relative mx-auto px-4">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-5xl text-center">
           {/* Badge */}
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-medium text-primary animate-fade-in">
-            <Sparkles className="h-4 w-4" />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-5 py-2.5 text-sm font-medium text-primary backdrop-blur-sm"
+          >
+            <motion.span
+              animate={{ rotate: [0, 15, -15, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              ✨
+            </motion.span>
             AI-Powered Portfolio Builder
-          </div>
+          </motion.div>
 
-          {/* Headline */}
-          <h1 className="mb-6 text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl animate-fade-in-up">
-            Create Your Perfect
-            <span className="block text-gradient-primary">Portfolio in Minutes</span>
-          </h1>
+          {/* Headline with typewriter */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-6 text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl"
+          >
+            <TypewriterText text="Your Career. Accelerated." />
+          </motion.h1>
 
           {/* Subheadline */}
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground sm:text-xl animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            FolioGen uses AI to transform your experience into a stunning portfolio. 
-            Import from LinkedIn, choose from pro templates, and publish instantly.
-          </p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mx-auto mb-12 max-w-2xl text-lg text-slate-300 sm:text-xl"
+          >
+            Transform your Resume into a World-Class Portfolio in seconds using AI.
+          </motion.p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <Button asChild size="lg" className="h-14 px-8 text-lg font-semibold shadow-glow transition-all hover:shadow-glow-lg">
+          {/* Glowing CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <Button
+              asChild
+              size="lg"
+              className="relative h-16 px-12 text-lg font-bold shadow-[0_0_40px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_0_60px_12px_rgba(59,130,246,0.4)] transition-all duration-300 bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
+            >
               <Link to="/auth">
-                Generate Your Portfolio
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <motion.span
+                  className="flex items-center gap-3"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Build My Portfolio
+                  <ArrowRight className="h-5 w-5" />
+                </motion.span>
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg font-semibold">
-              <Link to="#features">
-                See How It Works
-              </Link>
-            </Button>
-          </div>
+          </motion.div>
 
-          {/* Social proof */}
-          <div className="mt-16 flex flex-col items-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="h-10 w-10 rounded-full border-2 border-background bg-gradient-primary"
-                  style={{ opacity: 1 - (i - 1) * 0.15 }}
-                />
-              ))}
-            </div>
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">2,000+</span> portfolios created this month
-            </p>
-          </div>
+          {/* 3D Document Animation */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="mt-8 h-64 sm:h-72"
+          >
+            <Document3DAnimation />
+          </motion.div>
         </div>
       </div>
     </section>
