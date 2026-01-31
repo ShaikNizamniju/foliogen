@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
+import { ModeToggle } from '@/components/ModeToggle';
 import logo from '@/assets/logo.png';
 
 export function Navbar() {
@@ -52,6 +53,7 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <ModeToggle />
           {user ? (
             <Button asChild className="bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0">
               <Link to="/dashboard">Dashboard</Link>
