@@ -7,6 +7,9 @@ import { BrutalistTemplate } from './templates/BrutalistTemplate';
 import { AcademicTemplate } from './templates/AcademicTemplate';
 import { StudioTemplate } from './templates/StudioTemplate';
 import { ExecutiveTemplate } from './templates/ExecutiveTemplate';
+import { InfluencerTemplate } from './templates/InfluencerTemplate';
+import { SwissTemplate } from './templates/SwissTemplate';
+import { NoirTemplate } from './templates/NoirTemplate';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye } from 'lucide-react';
 
@@ -37,6 +40,9 @@ export function TemplatePreview() {
             <SelectItem value="academic">The Academic</SelectItem>
             <SelectItem value="studio">The Studio</SelectItem>
             <SelectItem value="executive">The Executive</SelectItem>
+            <SelectItem value="influencer">The Influencer</SelectItem>
+            <SelectItem value="swiss">The Swiss</SelectItem>
+            <SelectItem value="noir">The Noir</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -53,6 +59,9 @@ export function TemplatePreview() {
             {profile.selectedTemplate === 'academic' && <AcademicTemplate profile={profile} />}
             {profile.selectedTemplate === 'studio' && <StudioTemplate profile={profile} />}
             {profile.selectedTemplate === 'executive' && <ExecutiveTemplate profile={profile} />}
+            {profile.selectedTemplate === 'influencer' && <InfluencerTemplate profile={profile} />}
+            {profile.selectedTemplate === 'swiss' && <SwissTemplate profile={profile} />}
+            {profile.selectedTemplate === 'noir' && <NoirTemplate profile={profile} />}
           </div>
         </div>
       </div>
