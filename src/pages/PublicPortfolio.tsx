@@ -7,6 +7,9 @@ import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTempl
 import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
 import { DevTemplate } from '@/components/dashboard/templates/DevTemplate';
 import { BrutalistTemplate } from '@/components/dashboard/templates/BrutalistTemplate';
+import { AcademicTemplate } from '@/components/dashboard/templates/AcademicTemplate';
+import { StudioTemplate } from '@/components/dashboard/templates/StudioTemplate';
+import { ExecutiveTemplate } from '@/components/dashboard/templates/ExecutiveTemplate';
 
 export default function PublicPortfolio() {
   const { id } = useParams<{ id: string }>();
@@ -108,6 +111,12 @@ export default function PublicPortfolio() {
         return <DevTemplate profile={profile} />;
       case 'brutalist':
         return <BrutalistTemplate profile={profile} />;
+      case 'academic':
+        return <AcademicTemplate profile={profile} />;
+      case 'studio':
+        return <StudioTemplate profile={profile} />;
+      case 'executive':
+        return <ExecutiveTemplate profile={profile} />;
       default:
         return <MinimalistTemplate profile={profile} />;
     }

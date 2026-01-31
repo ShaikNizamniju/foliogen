@@ -38,7 +38,7 @@ export interface ProfileData {
   projects: Project[];
   skills: string[];
   keyHighlights: string[];
-  selectedTemplate: 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist';
+  selectedTemplate: 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist' | 'academic' | 'studio' | 'executive';
 }
 
 interface ProfileContextType {
@@ -122,7 +122,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         projects: proj,
         skills: data.skills || [],
         keyHighlights: keyHighlights,
-        selectedTemplate: (data.selected_template as 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist') || 'minimalist',
+        selectedTemplate: (data.selected_template as 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist' | 'academic' | 'studio' | 'executive') || 'minimalist',
       });
     }
     setLoading(false);
