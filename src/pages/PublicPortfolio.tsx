@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfileData, WorkExperience, Project } from '@/contexts/ProfileContext';
+import { ContactDialog } from '@/components/ContactDialog';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
 import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
@@ -20,6 +21,7 @@ export default function PublicPortfolio() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [contactOpen, setContactOpen] = useState(false);
   const viewCounted = useRef(false);
 
   useEffect(() => {
@@ -126,31 +128,33 @@ export default function PublicPortfolio() {
 
   // Render the selected template directly - no editing controls
   const renderTemplate = () => {
+    const templateProps = { profile, onContactClick: () => setContactOpen(true) };
+    
     switch (profile.selectedTemplate) {
       case 'minimalist':
-        return <MinimalistTemplate profile={profile} />;
+        return <MinimalistTemplate {...templateProps} />;
       case 'creative':
-        return <CreativeTemplate profile={profile} />;
+        return <CreativeTemplate {...templateProps} />;
       case 'saas':
-        return <SaasTemplate profile={profile} />;
+        return <SaasTemplate {...templateProps} />;
       case 'dev':
-        return <DevTemplate profile={profile} />;
+        return <DevTemplate {...templateProps} />;
       case 'brutalist':
-        return <BrutalistTemplate profile={profile} />;
+        return <BrutalistTemplate {...templateProps} />;
       case 'academic':
-        return <AcademicTemplate profile={profile} />;
+        return <AcademicTemplate {...templateProps} />;
       case 'studio':
-        return <StudioTemplate profile={profile} />;
+        return <StudioTemplate {...templateProps} />;
       case 'executive':
-        return <ExecutiveTemplate profile={profile} />;
+        return <ExecutiveTemplate {...templateProps} />;
       case 'influencer':
-        return <InfluencerTemplate profile={profile} />;
+        return <InfluencerTemplate {...templateProps} />;
       case 'swiss':
-        return <SwissTemplate profile={profile} />;
+        return <SwissTemplate {...templateProps} />;
       case 'noir':
-        return <NoirTemplate profile={profile} />;
+        return <NoirTemplate {...templateProps} />;
       default:
-        return <MinimalistTemplate profile={profile} />;
+        return <MinimalistTemplate {...templateProps} />;
     }
   };
 
@@ -177,6 +181,12 @@ export default function PublicPortfolio() {
       <div className="min-h-screen">
         {renderTemplate()}
       </div>
+      <ContactDialog
+        open={contactOpen}
+        onOpenChange={setContactOpen}
+        recipientEmail={profile.email}
+        recipientName={profile.fullName}
+      />
     </>
   );
 }

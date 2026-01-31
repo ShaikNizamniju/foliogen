@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, Instagram, Youtube, Heart } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, Instagram, Youtube, Heart, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface InfluencerTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 const containerVariants = {
@@ -28,7 +29,7 @@ const itemVariants = {
   },
 };
 
-export function InfluencerTemplate({ profile }: InfluencerTemplateProps) {
+export function InfluencerTemplate({ profile, onContactClick }: InfluencerTemplateProps) {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Mesh Gradient Background */}

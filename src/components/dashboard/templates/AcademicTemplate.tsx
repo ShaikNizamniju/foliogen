@@ -1,10 +1,11 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface AcademicTemplateProps {
   profile: ProfileData;
+  onContactClick?: () => void;
 }
 
 const fadeIn = {
@@ -19,7 +20,7 @@ const slowFadeUp = {
   transition: { duration: 1, ease: "easeOut" as const }
 };
 
-export function AcademicTemplate({ profile }: AcademicTemplateProps) {
+export function AcademicTemplate({ profile, onContactClick }: AcademicTemplateProps) {
   return (
     <div className="min-h-screen bg-[#fdfbf7] text-[#2d2d2d]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
       {/* Subtle Paper Texture Overlay */}
