@@ -1,53 +1,114 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
 }
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" as const },
+  },
+};
+
+const sidebarVariants = {
+  hidden: { opacity: 0, x: -30 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.6, ease: "easeOut" as const },
+  },
+};
+
 export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
   return (
-    <div className="min-h-[800px] bg-white text-black font-sans flex">
+    <div className="min-h-screen bg-white text-black font-sans flex relative">
+      {/* Dot Pattern Background */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
+
       {/* Left Sidebar - Sticky */}
-      <aside className="w-[280px] min-h-full bg-black text-white p-8 flex flex-col sticky top-0 self-start">
+      <motion.aside 
+        className="w-[280px] min-h-full bg-black text-white p-8 flex flex-col sticky top-0 self-start z-10"
+        variants={sidebarVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Name */}
-        <div className="mb-12">
+        <motion.div 
+          className="mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
           <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
             {profile.fullName || 'Your Name'}
           </h1>
           <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
             {profile.headline || 'Professional'}
           </p>
-        </div>
+        </motion.div>
 
         {/* Contact Info */}
-        <div className="space-y-4 text-sm">
+        <motion.div 
+          className="space-y-4 text-sm"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {profile.location && (
-            <div className="flex items-start gap-3">
+            <motion.div variants={itemVariants} className="flex items-start gap-3">
               <MapPin className="h-4 w-4 mt-0.5 text-white/40" />
               <span className="text-white/80">{profile.location}</span>
-            </div>
+            </motion.div>
           )}
           {profile.email && (
-            <div className="flex items-start gap-3">
+            <motion.div variants={itemVariants} className="flex items-start gap-3">
               <Mail className="h-4 w-4 mt-0.5 text-white/40" />
               <a href={`mailto:${profile.email}`} className="text-white/80 hover:text-white transition-colors break-all">
                 {profile.email}
               </a>
-            </div>
+            </motion.div>
           )}
           {profile.website && (
-            <div className="flex items-start gap-3">
+            <motion.div variants={itemVariants} className="flex items-start gap-3">
               <Globe className="h-4 w-4 mt-0.5 text-white/40" />
               <a href={profile.website} className="text-white/80 hover:text-white transition-colors">
                 Website
               </a>
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
         {/* Social Links */}
-        <div className="flex gap-3 mt-8">
+        <motion.div 
+          className="flex gap-3 mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.5 }}
+        >
           {profile.linkedinUrl && (
             <a href={profile.linkedinUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Linkedin className="h-4 w-4" />
@@ -63,65 +124,81 @@ export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
               <Twitter className="h-4 w-4" />
             </a>
           )}
-        </div>
+        </motion.div>
 
         {/* Skills - Sidebar bottom */}
         {profile.skills.length > 0 && (
-          <div className="mt-auto pt-12">
+          <motion.div 
+            className="mt-auto pt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+          >
             <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40 mb-4">
               Expertise
             </h2>
             <div className="flex flex-wrap gap-1.5">
               {profile.skills.map((skill, index) => (
-                <span 
+                <motion.span 
                   key={index} 
-                  className="text-[11px] px-2 py-1 border border-white/20 text-white/70 uppercase tracking-wider"
+                  className="text-[11px] px-2 py-1 border border-white/20 text-white/70 uppercase tracking-wider hover:bg-white/10 transition-colors"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.9 + index * 0.05 }}
                 >
                   {skill}
-                </span>
+                </motion.span>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
-      </aside>
+      </motion.aside>
 
       {/* Right Content - Scrollable */}
-      <main className="flex-1 p-12 overflow-auto">
+      <motion.main 
+        className="flex-1 p-12 overflow-auto relative z-10"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {/* Bio Section */}
         {profile.bio && (
-          <section className="mb-10">
+          <motion.section variants={itemVariants} className="mb-10">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6">
               About
             </h2>
             <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
               {profile.bio}
             </p>
-          </section>
+          </motion.section>
         )}
 
         {/* Key Highlights Section */}
         {profile.keyHighlights && profile.keyHighlights.length > 0 && (
-          <section className="mb-16">
+          <motion.section variants={itemVariants} className="mb-16">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6 flex items-center gap-2">
               <span>🚀</span> Top Achievements
             </h2>
             <div className="flex flex-wrap gap-3">
               {profile.keyHighlights.map((highlight, index) => (
-                <div 
+                <motion.div 
                   key={index} 
-                  className="flex items-center gap-2 bg-black/5 border border-black/10 px-4 py-2 rounded-full"
+                  className="flex items-center gap-2 bg-black/5 border border-black/10 px-4 py-2 rounded-full hover:bg-black/10 transition-colors"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
                 >
                   <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span className="text-sm font-medium text-black/80">{highlight}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </section>
+          </motion.section>
         )}
 
         {/* Experience Timeline */}
         {profile.workExperience.length > 0 && (
-          <section className="mb-16">
+          <motion.section variants={itemVariants} className="mb-16">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Experience
             </h2>
@@ -131,7 +208,13 @@ export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
               
               <div className="space-y-10 pl-8">
                 {profile.workExperience.map((exp, index) => (
-                  <div key={exp.id} className="relative">
+                  <motion.div 
+                    key={exp.id} 
+                    className="relative"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.15 }}
+                  >
                     {/* Timeline Dot */}
                     <div className="absolute -left-8 top-2 w-4 h-4 bg-black rounded-full flex items-center justify-center">
                       <div className="w-2 h-2 bg-white rounded-full" />
@@ -154,31 +237,35 @@ export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
                     <p className="text-black/70 leading-relaxed max-w-xl">
                       {exp.description}
                     </p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
-          </section>
+          </motion.section>
         )}
 
         {/* Projects Grid */}
         {profile.projects.length > 0 && (
-          <section>
+          <motion.section variants={itemVariants}>
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Selected Work
             </h2>
             <div className="grid grid-cols-2 gap-6">
-              {profile.projects.map((project) => (
-                <div key={project.id} className="group border border-black/10 hover:border-black transition-colors">
-                  {project.imageUrl && (
-                    <div className="aspect-video overflow-hidden bg-black/5">
-                      <img 
-                        src={project.imageUrl} 
-                        alt={project.title}
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
-                      />
-                    </div>
-                  )}
+              {profile.projects.map((project, index) => (
+                <motion.div 
+                  key={project.id} 
+                  className="group border border-black/10 hover:border-black/30 transition-all hover:shadow-lg hover:-translate-y-1 duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                >
+                  <div className="aspect-video overflow-hidden bg-black/5">
+                    <img 
+                      src={getProjectImageUrl(project, 'minimal')} 
+                      alt={project.title}
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+                    />
+                  </div>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-bold uppercase tracking-wide text-sm">{project.title}</h3>
@@ -190,12 +277,12 @@ export function MinimalistTemplate({ profile }: MinimalistTemplateProps) {
                     </div>
                     <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </section>
+          </motion.section>
         )}
-      </main>
+      </motion.main>
     </div>
   );
 }

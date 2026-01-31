@@ -1,6 +1,7 @@
-import { ProfileData, Project } from '@/contexts/ProfileContext';
+import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap } from 'lucide-react';
+import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface BrutalistTemplateProps {
   profile: ProfileData;
@@ -32,12 +33,7 @@ const pastelColors = [
   'bg-[#E5FFFF]', // Cyan
 ];
 
-// Get AI-generated image URL for projects
-function getProjectImageUrl(project: Project): string {
-  if (project.imageUrl) return project.imageUrl;
-  const prompt = project.visualPrompt || project.title || 'colorful design';
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' bright colorful bold graphic design')}?width=800&height=600&nologo=true`;
-}
+// Using shared getProjectImageUrl from portfolio-utils
 
 export function BrutalistTemplate({ profile }: BrutalistTemplateProps) {
   return (
@@ -258,7 +254,7 @@ export function BrutalistTemplate({ profile }: BrutalistTemplateProps) {
                 >
                   <div className="aspect-video mb-4 border-2 border-black overflow-hidden">
                     <img 
-                      src={getProjectImageUrl(project)} 
+                      src={getProjectImageUrl(project, 'bold')} 
                       alt={project.title}
                       className="w-full h-full object-cover"
                     />

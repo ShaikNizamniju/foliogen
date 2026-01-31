@@ -1,7 +1,8 @@
-import { ProfileData, Project } from '@/contexts/ProfileContext';
+import { ProfileData } from '@/contexts/ProfileContext';
 import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
+import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
@@ -134,12 +135,7 @@ function TiltCard({ children, className = '' }: TiltCardProps) {
   );
 }
 
-// Get AI-generated image URL for projects
-function getProjectImageUrl(project: Project): string {
-  if (project.imageUrl) return project.imageUrl;
-  const prompt = project.visualPrompt || project.title || 'abstract tech';
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' high quality UI design abstract gradient')}?width=800&height=600&nologo=true`;
-}
+// Using shared getProjectImageUrl from portfolio-utils
 
 export function CreativeTemplate({ profile }: CreativeTemplateProps) {
   return (
@@ -370,7 +366,7 @@ export function CreativeTemplate({ profile }: CreativeTemplateProps) {
                       <TiltCard className={`group relative overflow-hidden rounded-3xl ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}>
                         <div className="relative overflow-hidden rounded-3xl border border-white/10">
                           <img 
-                            src={getProjectImageUrl(project)} 
+                            src={getProjectImageUrl(project, 'creative')} 
                             alt={project.title}
                             className={`w-full object-cover transition-transform duration-500 group-hover:scale-110 ${index === 0 ? 'h-80' : 'h-56'}`}
                           />
