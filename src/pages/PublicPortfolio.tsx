@@ -10,6 +10,9 @@ import { BrutalistTemplate } from '@/components/dashboard/templates/BrutalistTem
 import { AcademicTemplate } from '@/components/dashboard/templates/AcademicTemplate';
 import { StudioTemplate } from '@/components/dashboard/templates/StudioTemplate';
 import { ExecutiveTemplate } from '@/components/dashboard/templates/ExecutiveTemplate';
+import { InfluencerTemplate } from '@/components/dashboard/templates/InfluencerTemplate';
+import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
+import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
 
 export default function PublicPortfolio() {
   const { id } = useParams<{ id: string }>();
@@ -117,6 +120,12 @@ export default function PublicPortfolio() {
         return <StudioTemplate profile={profile} />;
       case 'executive':
         return <ExecutiveTemplate profile={profile} />;
+      case 'influencer':
+        return <InfluencerTemplate profile={profile} />;
+      case 'swiss':
+        return <SwissTemplate profile={profile} />;
+      case 'noir':
+        return <NoirTemplate profile={profile} />;
       default:
         return <MinimalistTemplate profile={profile} />;
     }

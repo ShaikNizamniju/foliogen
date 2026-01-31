@@ -58,6 +58,27 @@ const templates = [
     preview: 'bg-[#0f172a] border border-amber-400/30',
     emoji: '👔',
   },
+  {
+    id: 'influencer',
+    name: 'The Influencer',
+    description: 'Premium link-in-bio style with mesh gradients and glassmorphism cards.',
+    preview: 'bg-gradient-to-br from-pink-200 via-purple-200 to-cyan-200',
+    emoji: '🔗',
+  },
+  {
+    id: 'swiss',
+    name: 'The Swiss',
+    description: 'International Typographic Style with strict grids, massive headers, and red accents.',
+    preview: 'bg-white border-4 border-black',
+    emoji: '🇨🇭',
+  },
+  {
+    id: 'noir',
+    name: 'The Noir',
+    description: 'Cinematic black & white with film grain overlay and elegant serif typography.',
+    preview: 'bg-black border border-white/20',
+    emoji: '🎬',
+  },
 ];
 
 export function TemplatesSection() {
