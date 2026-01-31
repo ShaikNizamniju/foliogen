@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Rocket, FileDown } from 'lucide-react';
 import { PublishDialog } from './PublishDialog';
+import { ModeToggle } from '@/components/ModeToggle';
 import { toast } from '@/hooks/use-toast';
 
 export function DashboardHeader() {
@@ -28,9 +29,10 @@ export function DashboardHeader() {
     <>
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6 shrink-0 print:hidden">
         <div className="flex items-center gap-2">
-          <h1 className="text-lg font-semibold">Dashboard</h1>
+          <h1 className="text-lg font-semibold text-foreground">Dashboard</h1>
         </div>
         <div className="flex items-center gap-2">
+          <ModeToggle />
           <Button onClick={handleDownloadPdf} variant="outline" size="sm">
             <FileDown className="h-4 w-4 mr-2" />
             Download PDF
