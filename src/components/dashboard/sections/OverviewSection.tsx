@@ -1,12 +1,17 @@
 import { useProfile } from '@/contexts/ProfileContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function OverviewSection() {
   const { profile, loading } = useProfile();
+  const { user } = useAuth();
 
   const completionScore = calculateCompletionScore(profile);
+  
+  // Check if profile is "live" (has minimum required data)
+  const isLive = !!(profile.fullName && profile.headline && profile.bio);
 
   const stats = [
     {
@@ -57,6 +62,75 @@ export function OverviewSection() {
         <p className="text-muted-foreground">
           Here's an overview of your portfolio progress.
         </p>
+      </div>
+
+      {/* Hero Stats Row - Glass/Bento Style */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Total Views Card */}
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 p-6">
+          {/* Noise texture overlay */}
+          <div 
+            className="absolute inset-0 opacity-30 pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            }}
+          />
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl bg-primary/20 backdrop-blur-sm">
+                <Eye className="h-5 w-5 text-primary" />
+              </div>
+              <span className="text-sm font-medium text-slate-400">Total Views</span>
+            </div>
+            <p className="text-4xl font-bold text-white mb-1">
+              {profile.views?.toLocaleString() || 0}
+            </p>
+            <p className="text-xs text-slate-500">
+              Unique visitors to your portfolio
+            </p>
+          </div>
+        </div>
+
+        {/* Profile Status Card */}
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 p-6">
+          {/* Noise texture overlay */}
+          <div 
+            className="absolute inset-0 opacity-30 pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            }}
+          />
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl bg-emerald-500/20 backdrop-blur-sm">
+                <Globe className="h-5 w-5 text-emerald-400" />
+              </div>
+              <span className="text-sm font-medium text-slate-400">Profile Status</span>
+            </div>
+            <div className="flex items-center gap-2 mb-1">
+              <Circle 
+                className={`h-3 w-3 ${isLive ? 'text-emerald-400 fill-emerald-400' : 'text-slate-500 fill-slate-500'}`} 
+              />
+              <p className="text-4xl font-bold text-white">
+                {isLive ? 'Live' : 'Draft'}
+              </p>
+            </div>
+            <p className="text-xs text-slate-500">
+              {isLive ? (
+                <a 
+                  href={`/p/${user?.id}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  View your public portfolio →
+                </a>
+              ) : (
+                'Complete your profile to go live'
+              )}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Stats Grid */}
