@@ -23,12 +23,13 @@ export function DashboardHeader() {
   };
 
   const handleDownloadPdf = async () => {
-    const element = document.getElementById('portfolio-export-container');
+    // Target the ATS-friendly printable resume container
+    const element = document.getElementById('printable-resume-container');
     
     if (!element) {
       toast({
         title: "Export Error",
-        description: "Could not find portfolio content to export.",
+        description: "Could not find resume content to export.",
         variant: "destructive",
       });
       return;
@@ -37,28 +38,29 @@ export function DashboardHeader() {
     setIsExporting(true);
     toast({
       title: "Generating PDF...",
-      description: "Please wait while we create your portfolio PDF.",
+      description: "Please wait while we create your ATS-friendly resume.",
     });
 
     const options = {
       margin: 0,
-      filename: `${profile.fullName || 'portfolio'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
+      filename: `${profile.fullName || 'resume'}-resume.pdf`,
+      image: { type: 'jpeg', quality: 1 },
       html2canvas: { 
-        scale: 2, 
+        scale: 4, // Ultra-sharp text
         useCORS: true,
         letterRendering: true,
         scrollY: 0,
+        backgroundColor: '#ffffff',
       },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     try {
       await html2pdf().set(options).from(element).save();
       toast({
-        title: "PDF Downloaded!",
-        description: "Your portfolio has been saved successfully.",
+        title: "Resume Downloaded!",
+        description: "Your ATS-friendly resume has been saved.",
       });
     } catch (error) {
       console.error('PDF export error:', error);

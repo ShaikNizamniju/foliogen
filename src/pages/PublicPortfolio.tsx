@@ -16,6 +16,7 @@ import { ExecutiveTemplate } from '@/components/dashboard/templates/ExecutiveTem
 import { InfluencerTemplate } from '@/components/dashboard/templates/InfluencerTemplate';
 import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
 import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
+import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 
 export default function PublicPortfolio() {
   const { id } = useParams<{ id: string }>();
@@ -183,6 +184,15 @@ export default function PublicPortfolio() {
         <div id="portfolio-export-container" className="print:w-full">
           {renderTemplate()}
         </div>
+      </div>
+      
+      {/* Off-screen ATS-friendly resume for PDF export */}
+      <div 
+        id="printable-resume-container" 
+        className="fixed -left-[9999px] top-0 bg-white"
+        style={{ width: '210mm' }}
+      >
+        <PrintableResume profile={profile} />
       </div>
       <ContactDialog
         open={contactOpen}
