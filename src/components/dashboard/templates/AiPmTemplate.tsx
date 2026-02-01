@@ -273,13 +273,17 @@ export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
                   </div>
                 )}
 
-                {/* Floating badges */}
-                <FloatingBadge className="-top-2 right-8">
-                  🚀 PM Ready
-                </FloatingBadge>
-                <FloatingBadge className="bottom-8 -left-4">
-                  🤖 AI Enthusiast
-                </FloatingBadge>
+                {/* Floating badges - dynamic based on profile */}
+                {profile.skills && profile.skills.length > 0 && (
+                  <FloatingBadge className="-top-2 right-8">
+                    ✨ {profile.skills[0]}
+                  </FloatingBadge>
+                )}
+                {profile.headline && (
+                  <FloatingBadge className="bottom-8 -left-4">
+                    🎯 Available for work
+                  </FloatingBadge>
+                )}
               </div>
             </motion.div>
           </div>
@@ -507,7 +511,7 @@ export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
             transition={{ delay: 0.1 }}
             className="text-neutral-400 text-lg mb-8 max-w-2xl mx-auto"
           >
-            I'm always excited to work on innovative projects and collaborate with amazing teams.
+            {profile.bio ? `${profile.bio.substring(0, 100)}...` : "I'm always excited to work on innovative projects and collaborate with amazing teams."}
           </motion.p>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
