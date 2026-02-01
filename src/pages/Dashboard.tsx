@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
@@ -9,6 +9,8 @@ import { TemplatePreview } from '@/components/dashboard/TemplatePreview';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
+import { QuickStartModal } from '@/components/dashboard/QuickStartModal';
+
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -42,7 +44,17 @@ export default function Dashboard() {
 }
 
 function DashboardInner() {
-  const { profile } = useProfile();
+  const { profile, loading } = useProfile();
+  const [showQuickStart, setShowQuickStart] = useState(false);
+  
+  // Show quick start modal for new users (no name set yet)
+  useEffect(() => {
+    if (!loading && !profile.fullName) {
+      // Small delay for better UX
+      const timer = setTimeout(() => setShowQuickStart(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, profile.fullName]);
   
   return (
     <SidebarProvider>
@@ -65,6 +77,12 @@ function DashboardInner() {
       >
         <PrintableResume profile={profile} />
       </div>
+      
+      {/* Quick Start Modal for new users */}
+      <QuickStartModal 
+        open={showQuickStart} 
+        onClose={() => setShowQuickStart(false)} 
+      />
       
       {/* Onboarding Tour */}
       <OnboardingTour />
