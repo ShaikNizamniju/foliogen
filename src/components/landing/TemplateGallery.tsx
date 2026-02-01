@@ -64,7 +64,7 @@ const itemVariants = {
 
 export function TemplateGallery() {
   return (
-    <section id="templates" className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+    <section id="templates" className="relative py-24 sm:py-32 bg-muted/30 overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/3 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px]" />
@@ -79,13 +79,13 @@ export function TemplateGallery() {
           viewport={{ once: true }}
           className="mx-auto max-w-2xl text-center mb-16"
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
             11 Premium{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               Templates
             </span>
           </h2>
-          <p className="text-lg text-slate-400">
+          <p className="text-lg text-muted-foreground">
             From minimalist to creative, find the perfect design for your industry.
           </p>
         </motion.div>
@@ -101,22 +101,22 @@ export function TemplateGallery() {
             <motion.div
               key={template.name}
               variants={itemVariants}
-              className="group relative rounded-2xl border border-white/10 bg-slate-900/50 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1"
+              className="group relative rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-1"
             >
               {/* Icon with gradient */}
               <div className={`mb-4 h-12 w-12 flex items-center justify-center rounded-xl bg-gradient-to-br ${template.gradient}`}>
                 <template.icon className="h-6 w-6 text-white" />
               </div>
               
-              <h3 className="mb-2 text-lg font-semibold text-white">
+              <h3 className="mb-2 text-lg font-semibold text-foreground">
                 {template.name}
               </h3>
-              <p className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+              <p className="text-sm text-muted-foreground group-hover:text-foreground/80 transition-colors">
                 {template.description}
               </p>
 
               {/* Hover glow */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </motion.div>
           ))}
         </motion.div>
@@ -126,7 +126,7 @@ export function TemplateGallery() {
           whileInView={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center text-slate-500 mt-8"
+          className="text-center text-muted-foreground mt-8"
         >
           + 5 more templates available in your dashboard
         </motion.p>

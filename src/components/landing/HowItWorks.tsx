@@ -28,7 +28,7 @@ export function HowItWorks() {
   const isInView = useInView(containerRef, { once: true, margin: '-100px' });
 
   return (
-    <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-900 to-slate-950 overflow-hidden">
+    <section className="relative py-24 sm:py-32 bg-muted/30 overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />
@@ -43,13 +43,13 @@ export function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-2xl text-center mb-16"
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-5xl text-balance">
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl text-balance">
             From Resume to Portfolio{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               in 3 Steps
             </span>
           </h2>
-          <p className="text-lg text-slate-400 text-balance">
+          <p className="text-lg text-muted-foreground text-balance">
             Our AI-powered pipeline transforms your career data into a compelling story.
           </p>
         </motion.div>
@@ -84,8 +84,8 @@ export function HowItWorks() {
                   animate={isInView ? { scale: 1 } : { scale: 0.8 }}
                   transition={{ duration: 0.4, delay: 0.5 + index * 0.2, type: 'spring' }}
                 >
-                  <div className="w-full h-full rounded-2xl bg-slate-900 flex items-center justify-center">
-                    <step.icon className="w-8 h-8 text-white" />
+                  <div className="w-full h-full rounded-2xl bg-background flex items-center justify-center">
+                    <step.icon className="w-8 h-8 text-foreground" />
                   </div>
                   
                   {/* Pulsing ring */}
@@ -102,13 +102,13 @@ export function HowItWorks() {
                 </motion.div>
 
                 {/* Step number badge */}
-                <div className="absolute top-0 right-1/2 translate-x-12 -translate-y-1 w-6 h-6 rounded-full bg-slate-800 border-2 border-primary flex items-center justify-center">
+                <div className="absolute top-0 right-1/2 translate-x-12 -translate-y-1 w-6 h-6 rounded-full bg-muted border-2 border-primary flex items-center justify-center">
                   <span className="text-xs font-bold text-primary">{index + 1}</span>
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold text-white mb-2">{step.title}</h3>
-                <p className="text-slate-400 text-sm max-w-[200px]">{step.description}</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">{step.title}</h3>
+                <p className="text-muted-foreground text-sm max-w-[200px]">{step.description}</p>
               </motion.div>
             ))}
           </div>

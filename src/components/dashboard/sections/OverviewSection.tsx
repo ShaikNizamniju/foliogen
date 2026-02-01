@@ -67,7 +67,7 @@ export function OverviewSection() {
       {/* Hero Stats Row - Glass/Bento Style */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Total Views Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 p-6">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-6">
           {/* Noise texture overlay */}
           <div 
             className="absolute inset-0 opacity-30 pointer-events-none"
@@ -80,19 +80,19 @@ export function OverviewSection() {
               <div className="p-2.5 rounded-xl bg-primary/20 backdrop-blur-sm">
                 <Eye className="h-5 w-5 text-primary" />
               </div>
-              <span className="text-sm font-medium text-slate-400">Total Views</span>
+              <span className="text-sm font-medium text-muted-foreground">Total Views</span>
             </div>
-            <p className="text-4xl font-bold text-white mb-1">
+            <p className="text-4xl font-bold text-foreground mb-1">
               {profile.views?.toLocaleString() || 0}
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Unique visitors to your portfolio
             </p>
           </div>
         </div>
 
         {/* Profile Status Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 p-6">
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-emerald-500/5 p-6">
           {/* Noise texture overlay */}
           <div 
             className="absolute inset-0 opacity-30 pointer-events-none"
@@ -103,19 +103,19 @@ export function OverviewSection() {
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2.5 rounded-xl bg-emerald-500/20 backdrop-blur-sm">
-                <Globe className="h-5 w-5 text-emerald-400" />
+                <Globe className="h-5 w-5 text-emerald-500" />
               </div>
-              <span className="text-sm font-medium text-slate-400">Profile Status</span>
+              <span className="text-sm font-medium text-muted-foreground">Profile Status</span>
             </div>
             <div className="flex items-center gap-2 mb-1">
               <Circle 
-                className={`h-3 w-3 ${isLive ? 'text-emerald-400 fill-emerald-400' : 'text-slate-500 fill-slate-500'}`} 
+                className={`h-3 w-3 ${isLive ? 'text-emerald-500 fill-emerald-500' : 'text-muted-foreground fill-muted-foreground'}`} 
               />
-              <p className="text-4xl font-bold text-white">
+              <p className="text-4xl font-bold text-foreground">
                 {isLive ? 'Live' : 'Draft'}
               </p>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               {isLive ? (
                 <a 
                   href={`/p/${user?.id}`} 
