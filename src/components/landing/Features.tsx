@@ -76,7 +76,7 @@ const itemVariants = {
 
 export function Features() {
   return (
-    <section id="features" className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden">
+    <section id="features" className="relative pt-10 pb-24 sm:py-32 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary/10 rounded-full blur-[100px]" />
