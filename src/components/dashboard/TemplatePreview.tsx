@@ -1,7 +1,7 @@
 import { useProfile } from '@/contexts/ProfileContext';
 import { MinimalistTemplate } from './templates/MinimalistTemplate';
 import { CreativeTemplate } from './templates/CreativeTemplate';
-import { SaasTemplate } from './templates/SaasTemplate';
+import { AiPmTemplate } from './templates/AiPmTemplate';
 import { DevTemplate } from './templates/DevTemplate';
 import { BrutalistTemplate } from './templates/BrutalistTemplate';
 import { AcademicTemplate } from './templates/AcademicTemplate';
@@ -34,7 +34,7 @@ export function TemplatePreview() {
           <SelectContent>
             <SelectItem value="minimalist">Minimalist</SelectItem>
             <SelectItem value="creative">Creative</SelectItem>
-            <SelectItem value="saas">The Founder</SelectItem>
+            <SelectItem value="aipm">The AI PM</SelectItem>
             <SelectItem value="dev">The Terminal</SelectItem>
             <SelectItem value="brutalist">The Creative</SelectItem>
             <SelectItem value="academic">The Academic</SelectItem>
@@ -53,7 +53,7 @@ export function TemplatePreview() {
           <div id="portfolio-export-container" className="min-h-0 print:w-full">
             {profile.selectedTemplate === 'minimalist' && <MinimalistTemplate profile={profile} />}
             {profile.selectedTemplate === 'creative' && <CreativeTemplate profile={profile} />}
-            {profile.selectedTemplate === 'saas' && <SaasTemplate profile={profile} />}
+            {profile.selectedTemplate === 'aipm' && <AiPmTemplate profile={profile} />}
             {profile.selectedTemplate === 'dev' && <DevTemplate profile={profile} />}
             {profile.selectedTemplate === 'brutalist' && <BrutalistTemplate profile={profile} />}
             {profile.selectedTemplate === 'academic' && <AcademicTemplate profile={profile} />}

@@ -7,7 +7,7 @@ import { ContactDialog } from '@/components/ContactDialog';
 import { ProfileChatBot } from '@/components/public/ProfileChatBot';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
-import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
+import { AiPmTemplate } from '@/components/dashboard/templates/AiPmTemplate';
 import { DevTemplate } from '@/components/dashboard/templates/DevTemplate';
 import { BrutalistTemplate } from '@/components/dashboard/templates/BrutalistTemplate';
 import { AcademicTemplate } from '@/components/dashboard/templates/AcademicTemplate';
@@ -155,8 +155,8 @@ export default function PublicPortfolio() {
         return <MinimalistTemplate {...templateProps} />;
       case 'creative':
         return <CreativeTemplate {...templateProps} />;
-      case 'saas':
-        return <SaasTemplate {...templateProps} />;
+      case 'aipm':
+        return <AiPmTemplate {...templateProps} />;
       case 'dev':
         return <DevTemplate {...templateProps} />;
       case 'brutalist':
