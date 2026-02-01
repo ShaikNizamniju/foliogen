@@ -103,17 +103,16 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
           {/* Left Column - Name */}
           <motion.div variants={slideIn} className="col-span-12 lg:col-span-8">
             <h1 
-              className="text-[8vw] lg:text-[120px] font-black uppercase leading-[0.85] tracking-tight"
-              style={{ fontWeight: 900 }}
+              className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight leading-[1.1] uppercase break-words"
             >
               {profile.fullName || 'Your Name'}
             </h1>
           </motion.div>
           
           {/* Right Column - Meta */}
-          <motion.div variants={fadeUp} className="col-span-12 lg:col-span-4 flex flex-col justify-end">
+          <motion.div variants={fadeUp} className="col-span-12 lg:col-span-4 flex flex-col justify-end mt-4 lg:mt-0">
             <div className="space-y-4">
-              <p className="text-xl font-medium">
+              <p className="text-lg sm:text-xl font-medium">
                 {profile.headline || 'Professional'}
               </p>
               {profile.location && (
