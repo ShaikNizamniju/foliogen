@@ -35,7 +35,7 @@ const companies = [
   { 
     name: 'Apple', 
     logo: (
-      <svg viewBox="0 0 24 24" className="h-6 w-6 fill-slate-300">
+      <svg viewBox="0 0 24 24" className="h-6 w-6 fill-muted-foreground">
         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
       </svg>
     )
@@ -86,7 +86,7 @@ const companies = [
   { 
     name: 'Uber', 
     logo: (
-      <svg viewBox="0 0 24 24" className="h-6 w-6 fill-slate-300">
+      <svg viewBox="0 0 24 24" className="h-6 w-6 fill-muted-foreground">
         <path d="M0 8.5v4.17c0 .79.29 1.47.86 2.03.58.57 1.27.85 2.07.85.79 0 1.48-.28 2.05-.83.59-.57.88-1.25.88-2.05V8.5H4.4v4.17c0 .4-.14.74-.42 1.03-.27.27-.6.41-.99.41-.4 0-.74-.14-1.01-.41-.27-.28-.41-.63-.41-1.03V8.5H0z"/>
         <path d="M8.84 8.5v.63h-.02c-.27-.5-.85-.75-1.6-.75-.63 0-1.16.24-1.6.71-.44.48-.66 1.08-.66 1.8 0 .74.21 1.34.64 1.81.43.47.97.7 1.62.7.34 0 .64-.06.9-.18.25-.12.46-.29.61-.5h.02v.56h1.46V8.5H8.84zm-1.27 3.6c-.36 0-.66-.12-.9-.37-.24-.25-.36-.57-.36-.97 0-.39.12-.72.37-.97.24-.26.54-.38.89-.38.36 0 .66.13.9.38.24.25.36.58.36.97 0 .4-.12.72-.37.97-.24.25-.54.37-.89.37z"/>
         <path d="M13.66 8.38c-.65 0-1.17.23-1.56.68V6h-1.47v8.28h1.47v-.56h.02c.38.47.9.7 1.54.7.64 0 1.17-.24 1.6-.71.42-.48.63-1.08.63-1.82 0-.72-.21-1.31-.63-1.78-.43-.48-.96-.73-1.6-.73zm-.51 3.72c-.35 0-.65-.12-.89-.37-.24-.25-.36-.57-.36-.97 0-.39.12-.72.36-.97.24-.26.54-.38.89-.38.36 0 .66.12.9.38.24.25.36.58.36.97 0 .4-.12.72-.36.97-.24.25-.54.37-.9.37z"/>
@@ -119,10 +119,10 @@ function MarqueeRow({ direction = 'left' }: { direction?: 'left' | 'right' }) {
         {duplicatedCompanies.map((company, index) => (
           <div
             key={`${company.name}-${index}`}
-            className="flex items-center gap-3 px-6 py-3 bg-white/5 backdrop-blur-sm rounded-full border border-white/10 whitespace-nowrap"
+            className="flex items-center gap-3 px-6 py-3 bg-muted/50 backdrop-blur-sm rounded-full border border-border whitespace-nowrap"
           >
             {company.logo}
-            <span className="text-lg font-medium text-slate-300">{company.name}</span>
+            <span className="text-lg font-medium text-muted-foreground">{company.name}</span>
           </div>
         ))}
       </motion.div>
@@ -132,10 +132,10 @@ function MarqueeRow({ direction = 'left' }: { direction?: 'left' | 'right' }) {
 
 export function CompanyMarquee() {
   return (
-    <section className="relative py-20 bg-slate-950 overflow-hidden">
+    <section className="relative py-20 bg-background overflow-hidden">
       {/* Gradient overlays for fade effect */}
-      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-slate-950 to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-slate-950 to-transparent z-10" />
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10" />
       
       <div className="container mx-auto px-4 mb-12">
         <motion.div
@@ -145,10 +145,10 @@ export function CompanyMarquee() {
           viewport={{ once: true }}
           className="text-center"
         >
-          <p className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-2">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">
             Trusted by professionals at
           </p>
-          <h3 className="text-2xl font-bold text-white sm:text-3xl">
+          <h3 className="text-2xl font-bold text-foreground sm:text-3xl">
             World-Class Companies
           </h3>
         </motion.div>

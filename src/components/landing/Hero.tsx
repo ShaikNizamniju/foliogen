@@ -123,7 +123,7 @@ function Document3DAnimation() {
 
 export function Hero() {
   return (
-    <section className="relative min-h-fit overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-6 md:py-32">
+    <section className="relative min-h-fit overflow-hidden bg-background pt-24 pb-6 md:py-32">
       {/* Animated gradient background */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -154,7 +154,7 @@ export function Hero() {
         <div 
           className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(hsl(var(--foreground) / 0.1) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground) / 0.1) 1px, transparent 1px)`,
             backgroundSize: '50px 50px'
           }}
         />
@@ -183,7 +183,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-6 text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl"
+            className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
           >
             <TypewriterText text="Your Career. Accelerated." />
           </motion.h1>
@@ -193,7 +193,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mx-auto mb-12 max-w-2xl text-lg text-slate-300 sm:text-xl"
+            className="mx-auto mb-12 max-w-2xl text-lg text-muted-foreground sm:text-xl"
           >
             Transform your Resume into a World-Class Portfolio in seconds using AI.
           </motion.p>

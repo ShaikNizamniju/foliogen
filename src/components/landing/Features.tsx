@@ -28,19 +28,19 @@ const itemVariants = {
 // Mock chat messages for RAG Chat card
 function MockChatWindow() {
   return (
-    <div className="mt-4 rounded-xl bg-slate-900/80 border border-white/10 p-3 space-y-3">
+    <div className="mt-4 rounded-xl bg-muted/80 border border-border p-3 space-y-3">
       {/* Recruiter message */}
       <div className="flex gap-2 items-start">
         <div className="w-6 h-6 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">
           R
         </div>
-        <div className="bg-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 max-w-[180px]">
+        <div className="bg-secondary rounded-lg px-3 py-2 text-xs text-secondary-foreground max-w-[180px]">
           "What's your experience with React?"
         </div>
       </div>
       {/* AI response */}
       <div className="flex gap-2 items-start justify-end">
-        <div className="bg-primary/20 border border-primary/30 rounded-lg px-3 py-2 text-xs text-slate-200 max-w-[180px]">
+        <div className="bg-primary/20 border border-primary/30 rounded-lg px-3 py-2 text-xs text-foreground max-w-[180px]">
           "Built 12+ production apps with React, including..."
         </div>
         <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex-shrink-0 flex items-center justify-center">
@@ -56,12 +56,12 @@ function GhostResumeVisual() {
   return (
     <div className="mt-4 flex items-center justify-center gap-4">
       {/* Document */}
-      <div className="relative w-12 h-16 bg-white rounded shadow-lg">
+      <div className="relative w-12 h-16 bg-card rounded shadow-lg border border-border">
         <div className="absolute inset-2 space-y-1">
-          <div className="h-1 w-6 bg-slate-300 rounded" />
-          <div className="h-0.5 w-full bg-slate-200 rounded" />
-          <div className="h-0.5 w-4/5 bg-slate-200 rounded" />
-          <div className="h-0.5 w-full bg-slate-200 rounded" />
+          <div className="h-1 w-6 bg-muted-foreground/30 rounded" />
+          <div className="h-0.5 w-full bg-muted-foreground/20 rounded" />
+          <div className="h-0.5 w-4/5 bg-muted-foreground/20 rounded" />
+          <div className="h-0.5 w-full bg-muted-foreground/20 rounded" />
         </div>
       </div>
       {/* Arrow */}
@@ -73,7 +73,7 @@ function GhostResumeVisual() {
         →
       </motion.div>
       {/* 3D Web Icon */}
-      <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-white/10 flex items-center justify-center">
+      <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-border flex items-center justify-center">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
           <span className="text-white text-lg">🌐</span>
         </div>
@@ -91,7 +91,7 @@ function MultimediaLogos() {
           key={i}
           initial={{ scale: 0.8, opacity: 0.5 }}
           whileHover={{ scale: 1.1 }}
-          className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl"
+          className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-xl"
         >
           {emoji}
         </motion.div>
@@ -105,7 +105,7 @@ export function Features() {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section id="features" className="relative pt-10 pb-24 sm:py-32 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden">
+    <section id="features" className="relative pt-10 pb-24 sm:py-32 bg-background overflow-hidden">
       {/* Noise texture overlay */}
       <div 
         className="absolute inset-0 opacity-[0.015] pointer-events-none"
@@ -127,13 +127,13 @@ export function Features() {
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-2xl text-center mb-16"
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-5xl text-balance">
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl text-balance">
             Everything you need to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               stand out
             </span>
           </h2>
-          <p className="text-lg text-slate-400 text-balance">
+          <p className="text-lg text-muted-foreground text-balance">
             Build a portfolio that showcases your best work and lands you opportunities.
           </p>
         </motion.div>
@@ -148,18 +148,18 @@ export function Features() {
           {/* Card 1: Context-Aware RAG Chat (Large - spans 2 cols) */}
           <motion.div
             variants={itemVariants}
-            className="group relative md:col-span-2 rounded-2xl border border-white/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-primary/10"
+            className="group relative md:col-span-2 rounded-2xl border border-border bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10"
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
                 <span className="text-3xl">💬</span>
-                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-muted/80">
                   <MessageSquare className="h-5 w-5" />
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-white">Context-Aware RAG Chat</h3>
-              <p className="text-slate-400 group-hover:text-slate-300 transition-colors">
+              <h3 className="mb-2 text-xl font-semibold text-foreground">Context-Aware RAG Chat</h3>
+              <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors">
                 Recruiters can ask questions about your experience. Our AI answers accurately using your portfolio data.
               </p>
               <MockChatWindow />
@@ -169,18 +169,18 @@ export function Features() {
           {/* Card 2: Ghost Resume (Small - top right) */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-emerald-500/10"
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10"
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
                 <span className="text-3xl">👻</span>
-                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-muted/80">
                   <FileDown className="h-5 w-5" />
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-white">Ghost Resume</h3>
-              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+              <h3 className="mb-2 text-xl font-semibold text-foreground">Ghost Resume</h3>
+              <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
                 Hidden ATS-optimized PDF that passes automated screens.
               </p>
               <GhostResumeVisual />
@@ -190,18 +190,18 @@ export function Features() {
           {/* Card 3: 11 Premium Templates */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-accent/20 to-accent/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-accent/10"
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-accent/20 to-accent/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-accent/30 hover:shadow-2xl hover:shadow-accent/10"
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
                 <span className="text-3xl">🎨</span>
-                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-muted/80">
                   <Palette className="h-5 w-5" />
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-white">11 Premium Templates</h3>
-              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+              <h3 className="mb-2 text-xl font-semibold text-foreground">11 Premium Templates</h3>
+              <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
                 From minimalist to creative, stunning designs for every industry.
               </p>
             </div>
@@ -210,18 +210,18 @@ export function Features() {
           {/* Card 4: Multimedia Embeds */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/20 to-violet-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-violet-500/10"
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-violet-500/20 to-violet-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-500/10"
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
                 <span className="text-3xl">🎥</span>
-                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-muted/80">
                   <Video className="h-5 w-5" />
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-white">Multimedia Embeds</h3>
-              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+              <h3 className="mb-2 text-xl font-semibold text-foreground">Multimedia Embeds</h3>
+              <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
                 Embed Loom, YouTube, and Figma demos directly in your portfolio.
               </p>
               <MultimediaLogos />
@@ -231,18 +231,18 @@ export function Features() {
           {/* Card 5: Instant Publishing */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-amber-500/20 to-amber-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-amber-500/10"
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-amber-500/20 to-amber-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10"
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
                 <span className="text-3xl">⚡</span>
-                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-muted/80">
                   <Zap className="h-5 w-5" />
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-white">Instant Publishing</h3>
-              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+              <h3 className="mb-2 text-xl font-semibold text-foreground">Instant Publishing</h3>
+              <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
                 Go live in seconds with your custom subdomain.
               </p>
             </div>

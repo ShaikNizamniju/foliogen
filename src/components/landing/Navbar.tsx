@@ -30,7 +30,7 @@ export function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center">
@@ -44,7 +44,7 @@ export function Navbar() {
               key={link.id}
               href={`#${link.id}`}
               onClick={(e) => scrollToSection(e, link.id)}
-              className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground cursor-pointer"
             >
               {link.label}
             </a>
@@ -61,7 +61,7 @@ export function Navbar() {
               <Button 
                 asChild 
                 variant="ghost" 
-                className="hidden sm:inline-flex text-slate-300 hover:text-white hover:bg-white/10"
+                className="hidden sm:inline-flex text-muted-foreground hover:text-foreground hover:bg-muted"
               >
                 <Link to="/auth">Sign In</Link>
               </Button>
@@ -77,7 +77,7 @@ export function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-slate-300 hover:text-white transition-colors"
+            className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Toggle menu"
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -93,7 +93,7 @@ export function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur-xl"
+            className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl"
           >
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
               {navLinks.map((link) => (
@@ -101,14 +101,14 @@ export function Navbar() {
                   key={link.id}
                   href={`#${link.id}`}
                   onClick={(e) => scrollToSection(e, link.id)}
-                  className="text-base font-medium text-slate-300 hover:text-white transition-colors py-2"
+                  className="text-base font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
                 >
                   {link.label}
                 </a>
               ))}
               {!user && (
-                <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
-                  <Button asChild variant="ghost" className="justify-start text-slate-300 hover:text-white hover:bg-white/10">
+                <div className="flex flex-col gap-2 pt-2 border-t border-border">
+                  <Button asChild variant="ghost" className="justify-start text-muted-foreground hover:text-foreground hover:bg-muted">
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
                   </Button>
                   <Button asChild className="bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0">
