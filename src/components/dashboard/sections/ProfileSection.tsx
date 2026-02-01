@@ -67,11 +67,12 @@ export function ProfileSection() {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-2 overflow-x-auto pb-2" data-tour="profile">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
+            data-tour={tab.id === 'projects' ? 'projects' : undefined}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-primary text-primary-foreground'

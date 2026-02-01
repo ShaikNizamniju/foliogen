@@ -8,7 +8,7 @@ import { DashboardContent } from '@/components/dashboard/DashboardContent';
 import { TemplatePreview } from '@/components/dashboard/TemplatePreview';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
-
+import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -65,6 +65,9 @@ function DashboardInner() {
       >
         <PrintableResume profile={profile} />
       </div>
+      
+      {/* Onboarding Tour */}
+      <OnboardingTour />
     </SidebarProvider>
   );
 }
