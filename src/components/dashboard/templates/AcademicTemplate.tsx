@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, Award, Briefcase, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface AcademicTemplateProps {
@@ -21,6 +21,12 @@ const slowFadeUp = {
 };
 
 export function AcademicTemplate({ profile, onContactClick }: AcademicTemplateProps) {
+  // Calculate dynamic stats
+  const projectCount = profile.projects?.length || 0;
+  const experienceYears = profile.workExperience?.length > 0 
+    ? Math.max(1, new Date().getFullYear() - parseInt(profile.workExperience[profile.workExperience.length - 1]?.startDate || new Date().getFullYear().toString()))
+    : 0;
+
   return (
     <div className="min-h-screen bg-[#fdfbf7] text-[#2d2d2d]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
       {/* Subtle Paper Texture Overlay */}
@@ -30,99 +36,158 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
         }} 
       />
 
+      {/* Sticky Navigation */}
+      <motion.nav 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="sticky top-0 z-50 bg-[#fdfbf7]/90 backdrop-blur-sm border-b border-[#e5e2db]"
+      >
+        <div className="max-w-4xl mx-auto px-8 py-4 flex items-center justify-between">
+          <span className="text-lg font-medium" style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
+            {profile.fullName?.split(' ')[0] || 'Portfolio'}
+          </span>
+          <div className="hidden md:flex items-center gap-8 text-sm text-[#666]">
+            <a href="#about" className="hover:text-[#2d2d2d] transition-colors">About</a>
+            <a href="#work" className="hover:text-[#2d2d2d] transition-colors">Work</a>
+            <a href="#projects" className="hover:text-[#2d2d2d] transition-colors">Projects</a>
+          </div>
+          <div className="flex items-center gap-3">
+            {profile.linkedinUrl && (
+              <a href={profile.linkedinUrl} className="text-[#888] hover:text-[#2d2d2d] transition-colors">
+                <Linkedin className="h-4 w-4" />
+              </a>
+            )}
+            {profile.githubUrl && (
+              <a href={profile.githubUrl} className="text-[#888] hover:text-[#2d2d2d] transition-colors">
+                <Github className="h-4 w-4" />
+              </a>
+            )}
+            {profile.email && (
+              onContactClick ? (
+                <button onClick={onContactClick} className="text-xs font-medium bg-[#2d2d2d] text-white px-4 py-2 hover:bg-[#444] transition-colors flex items-center gap-2">
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  Contact
+                </button>
+              ) : (
+                <a href={`mailto:${profile.email}`} className="text-xs font-medium bg-[#2d2d2d] text-white px-4 py-2 hover:bg-[#444] transition-colors flex items-center gap-2">
+                  <Mail className="h-3.5 w-3.5" />
+                  Contact
+                </a>
+              )
+            )}
+          </div>
+        </div>
+      </motion.nav>
+
       <div className="relative max-w-4xl mx-auto px-8 py-16">
-        {/* Header - Resembles journal article header */}
+        {/* Hero Section */}
         <motion.header 
-          className="text-center border-b-2 border-[#2d2d2d] pb-12 mb-12"
+          id="about"
+          className="py-16 mb-12"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.2 }}
         >
-          <motion.p 
-            className="text-sm tracking-[0.3em] uppercase text-[#666] mb-6"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
-            Curriculum Vitae
-          </motion.p>
-          
-          <motion.h1 
-            className="text-5xl md:text-6xl font-normal mb-6 tracking-wide"
-            style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 1 }}
-          >
-            {profile.fullName || 'Your Name'}
-          </motion.h1>
-          
-          <motion.p 
-            className="text-xl italic text-[#555] mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.8 }}
-          >
-            {profile.headline || 'Professional Title'}
-          </motion.p>
+          <div className="grid md:grid-cols-[1fr_auto] gap-12 items-center">
+            <div>
+              <motion.p 
+                className="text-sm tracking-[0.3em] uppercase text-[#8b7355] mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              >
+                {profile.headline || 'Professional'}
+              </motion.p>
+              
+              <motion.h1 
+                className="text-5xl md:text-6xl font-normal mb-6 tracking-wide"
+                style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 1 }}
+              >
+                {profile.fullName || 'Your Name'}
+              </motion.h1>
+              
+              {profile.bio && (
+                <motion.p 
+                  className="text-lg leading-relaxed text-[#555] max-w-xl mb-6"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7, duration: 0.8 }}
+                >
+                  {profile.bio}
+                </motion.p>
+              )}
 
-          {/* Contact Info - Horizontal */}
-          <motion.div 
-            className="flex flex-wrap justify-center gap-6 text-sm text-[#666]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-          >
-            {profile.location && (
-              <span className="flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5" />
-                {profile.location}
-              </span>
+              {/* Quick Stats */}
+              <motion.div 
+                className="flex gap-8 pt-6 border-t border-[#e5e2db]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.9, duration: 0.8 }}
+              >
+                {projectCount > 0 && (
+                  <div className="text-center">
+                    <span className="text-2xl font-bold text-[#8b7355]">{projectCount}+</span>
+                    <p className="text-xs text-[#888] uppercase tracking-wider">Projects</p>
+                  </div>
+                )}
+                {experienceYears > 0 && (
+                  <div className="text-center">
+                    <span className="text-2xl font-bold text-[#8b7355]">{experienceYears}+</span>
+                    <p className="text-xs text-[#888] uppercase tracking-wider">Years</p>
+                  </div>
+                )}
+                {profile.skills?.length > 0 && (
+                  <div className="text-center">
+                    <span className="text-2xl font-bold text-[#8b7355]">{profile.skills.length}+</span>
+                    <p className="text-xs text-[#888] uppercase tracking-wider">Skills</p>
+                  </div>
+                )}
+              </motion.div>
+
+              {/* Contact Info */}
+              <motion.div 
+                className="flex flex-wrap gap-4 mt-6 text-sm text-[#666]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1, duration: 0.8 }}
+              >
+                {profile.location && (
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {profile.location}
+                  </span>
+                )}
+                {profile.website && (
+                  <a href={profile.website} className="flex items-center gap-1.5 hover:text-[#2d2d2d] transition-colors">
+                    <Globe className="h-3.5 w-3.5" />
+                    Website
+                  </a>
+                )}
+              </motion.div>
+            </div>
+
+            {/* Profile Photo */}
+            {profile.photoUrl && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+                className="hidden md:block"
+              >
+                <img 
+                  src={profile.photoUrl}
+                  alt={profile.fullName}
+                  className="w-48 h-48 object-cover grayscale hover:grayscale-0 transition-all duration-500 border-4 border-[#e5e2db]"
+                />
+              </motion.div>
             )}
-            {profile.email && (
-              <a href={`mailto:${profile.email}`} className="flex items-center gap-1.5 hover:text-[#2d2d2d] transition-colors">
-                <Mail className="h-3.5 w-3.5" />
-                {profile.email}
-              </a>
-            )}
-            {profile.website && (
-              <a href={profile.website} className="flex items-center gap-1.5 hover:text-[#2d2d2d] transition-colors">
-                <Globe className="h-3.5 w-3.5" />
-                Website
-              </a>
-            )}
-            {profile.linkedinUrl && (
-              <a href={profile.linkedinUrl} className="flex items-center gap-1.5 hover:text-[#2d2d2d] transition-colors">
-                <Linkedin className="h-3.5 w-3.5" />
-                LinkedIn
-              </a>
-            )}
-            {profile.githubUrl && (
-              <a href={profile.githubUrl} className="flex items-center gap-1.5 hover:text-[#2d2d2d] transition-colors">
-                <Github className="h-3.5 w-3.5" />
-                GitHub
-              </a>
-            )}
-          </motion.div>
+          </div>
         </motion.header>
 
-        {/* Abstract / Bio */}
-        {profile.bio && (
-          <motion.section 
-            className="mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1, duration: 1 }}
-          >
-            <h2 className="text-xs tracking-[0.25em] uppercase text-[#888] mb-6 flex items-center gap-3">
-              <BookOpen className="h-4 w-4" />
-              Abstract
-            </h2>
-            <p className="text-lg leading-relaxed text-[#444] italic border-l-2 border-[#ddd] pl-6">
-              {profile.bio}
-            </p>
-          </motion.section>
-        )}
 
         {/* Key Highlights - As Distinguished Honors */}
         {profile.keyHighlights && profile.keyHighlights.length > 0 && (
