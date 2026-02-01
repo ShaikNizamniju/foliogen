@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { ProfileProvider } from '@/contexts/ProfileContext';
+import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardContent } from '@/components/dashboard/DashboardContent';
 import { TemplatePreview } from '@/components/dashboard/TemplatePreview';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -35,18 +36,35 @@ export default function Dashboard() {
 
   return (
     <ProfileProvider>
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-muted/30">
-          <DashboardSidebar />
-          <div className="flex-1 flex flex-col">
-            <DashboardHeader />
-            <div className="flex-1 flex overflow-hidden">
-              <DashboardContent />
-              <TemplatePreview />
-            </div>
+      <DashboardInner />
+    </ProfileProvider>
+  );
+}
+
+function DashboardInner() {
+  const { profile } = useProfile();
+  
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-muted/30">
+        <DashboardSidebar />
+        <div className="flex-1 flex flex-col">
+          <DashboardHeader />
+          <div className="flex-1 flex overflow-hidden">
+            <DashboardContent />
+            <TemplatePreview />
           </div>
         </div>
-      </SidebarProvider>
-    </ProfileProvider>
+      </div>
+      
+      {/* Off-screen ATS-friendly resume for PDF export */}
+      <div 
+        id="printable-resume-container" 
+        className="fixed -left-[9999px] top-0 bg-white"
+        style={{ width: '210mm' }}
+      >
+        <PrintableResume profile={profile} />
+      </div>
+    </SidebarProvider>
   );
 }
