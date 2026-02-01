@@ -4,7 +4,7 @@ import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSq
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 
-interface SaasTemplateProps {
+interface AiPmTemplateProps {
   profile: ProfileData;
   onContactClick?: () => void;
 }
@@ -24,7 +24,7 @@ const stagger = {
 };
 // Using shared getProjectImageUrl from portfolio-utils
 
-export function SaasTemplate({ profile, onContactClick }: SaasTemplateProps) {
+export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
   return (
     <div className="min-h-[800px] bg-[#FAFAFA] text-[#0A0A0A] font-sans">
       {/* Navigation */}
