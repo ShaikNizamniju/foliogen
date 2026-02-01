@@ -180,7 +180,9 @@ export default function PublicPortfolio() {
         {pageImage && <meta name="twitter:image" content={pageImage} />}
       </Helmet>
       <div className="min-h-screen">
-        {renderTemplate()}
+        <div id="portfolio-export-container" className="print:w-full">
+          {renderTemplate()}
+        </div>
       </div>
       <ContactDialog
         open={contactOpen}

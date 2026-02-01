@@ -48,9 +48,9 @@ export function TemplatePreview() {
       </div>
 
       {/* Preview Content - Natural scrolling */}
-      <div className="flex-1 overflow-auto p-4">
-        <div className="rounded-xl border border-border bg-card shadow-lg overflow-hidden transform scale-[0.55] origin-top-left w-[182%]">
-          <div className="min-h-0">
+      <div className="flex-1 overflow-auto p-4 print:p-0 print:overflow-visible">
+        <div className="rounded-xl border border-border bg-card shadow-lg overflow-hidden transform scale-[0.55] origin-top-left w-[182%] print:transform-none print:w-full print:border-0 print:shadow-none print:rounded-none">
+          <div id="portfolio-export-container" className="min-h-0 print:w-full">
             {profile.selectedTemplate === 'minimalist' && <MinimalistTemplate profile={profile} />}
             {profile.selectedTemplate === 'creative' && <CreativeTemplate profile={profile} />}
             {profile.selectedTemplate === 'saas' && <SaasTemplate profile={profile} />}
