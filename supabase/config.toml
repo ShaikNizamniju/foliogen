@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.enhance-project]
 verify_jwt = false
+
+[functions.analyze-job-match]
+verify_jwt = false

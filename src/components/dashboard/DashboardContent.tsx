@@ -3,6 +3,7 @@ import { OverviewSection } from './sections/OverviewSection';
 import { ProfileSection } from './sections/ProfileSection';
 import { TemplatesSection } from './sections/TemplatesSection';
 import { SettingsSection } from './sections/SettingsSection';
+import { JobMatchSection } from './sections/JobMatchSection';
 
 export function DashboardContent() {
   const location = useLocation();
@@ -14,6 +15,8 @@ export function DashboardContent() {
         return <OverviewSection />;
       case 'profile':
         return <ProfileSection />;
+      case 'job-match':
+        return <JobMatchSection />;
       case 'templates':
         return <TemplatesSection />;
       case 'settings':
