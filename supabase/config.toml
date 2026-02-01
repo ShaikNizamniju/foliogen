@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.send-contact-email]
 verify_jwt = false
+
+[functions.chat-with-profile]
+verify_jwt = false
+
+[functions.enhance-project]
+verify_jwt = false

@@ -1,7 +1,8 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { getEmbedUrl } from '@/lib/video-utils';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
@@ -267,11 +268,21 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                   transition={{ delay: 0.5 + index * 0.1 }}
                 >
                   <div className="aspect-video overflow-hidden bg-black/5">
-                    <img 
-                      src={getProjectImageUrl(project, 'minimal')} 
-                      alt={project.title}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
-                    />
+                    {getEmbedUrl(project.link) ? (
+                      <iframe
+                        src={getEmbedUrl(project.link)!}
+                        title={project.title}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <img 
+                        src={getProjectImageUrl(project, 'minimal')} 
+                        alt={project.title}
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+                      />
+                    )}
                   </div>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-2">
