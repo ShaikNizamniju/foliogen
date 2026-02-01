@@ -219,7 +219,7 @@ export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps)
               <div className="mb-6 md:mb-8">
                 <RevealText
                   text={profile.bio || 'Crafting visual experiences that leave lasting impressions.'}
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extralight leading-[1.2] tracking-tight"
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-extralight leading-[1.3] tracking-tight"
                   delay={0.5}
                 />
               </div>
