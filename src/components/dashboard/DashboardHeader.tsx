@@ -7,10 +7,12 @@ import { ModeToggle } from '@/components/ModeToggle';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
+import html2pdf from 'html2pdf.js';
 
 export function DashboardHeader() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const { profile } = useProfile();
   const { user } = useAuth();
 
@@ -20,21 +22,54 @@ export function DashboardHeader() {
     return user ? `${baseUrl}/p/${user.id}` : '';
   };
 
-  const handleDownloadPdf = () => {
-    // Add a class to body to help with print styling
-    document.body.classList.add('printing-portfolio');
+  const handleDownloadPdf = async () => {
+    const element = document.getElementById('portfolio-export-container');
     
+    if (!element) {
+      toast({
+        title: "Export Error",
+        description: "Could not find portfolio content to export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExporting(true);
     toast({
-      title: "Preparing PDF...",
-      description: "Your portfolio will open in the print dialog.",
+      title: "Generating PDF...",
+      description: "Please wait while we create your portfolio PDF.",
     });
 
-    // Small delay to ensure toast shows before print dialog
-    setTimeout(() => {
-      window.print();
-      // Remove class after print dialog closes
-      document.body.classList.remove('printing-portfolio');
-    }, 100);
+    const options = {
+      margin: 0,
+      filename: `${profile.fullName || 'portfolio'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true,
+        letterRendering: true,
+        scrollY: 0,
+      },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    try {
+      await html2pdf().set(options).from(element).save();
+      toast({
+        title: "PDF Downloaded!",
+        description: "Your portfolio has been saved successfully.",
+      });
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "There was an error creating your PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -55,9 +90,9 @@ export function DashboardHeader() {
             <Share2 className="h-4 w-4 mr-2" />
             Share
           </Button>
-          <Button onClick={handleDownloadPdf} variant="outline" size="sm">
+          <Button onClick={handleDownloadPdf} variant="outline" size="sm" disabled={isExporting}>
             <FileDown className="h-4 w-4 mr-2" />
-            Download PDF
+            {isExporting ? 'Exporting...' : 'Download PDF'}
           </Button>
           <Button onClick={() => setPublishOpen(true)} size="sm">
             <Rocket className="h-4 w-4 mr-2" />
