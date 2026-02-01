@@ -3,6 +3,7 @@ import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles,
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { getEmbedUrl } from '@/lib/video-utils';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
@@ -372,11 +373,21 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                     >
                       <TiltCard className={`group relative overflow-hidden rounded-3xl ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}>
                         <div className="relative overflow-hidden rounded-3xl border border-white/10">
-                          <img 
-                            src={getProjectImageUrl(project, 'creative')} 
-                            alt={project.title}
-                            className={`w-full object-cover transition-transform duration-500 group-hover:scale-110 ${index === 0 ? 'h-80' : 'h-56'}`}
-                          />
+                          {getEmbedUrl(project.link) ? (
+                            <iframe
+                              src={getEmbedUrl(project.link)!}
+                              title={project.title}
+                              className={`w-full ${index === 0 ? 'h-80' : 'h-56'}`}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          ) : (
+                            <img 
+                              src={getProjectImageUrl(project, 'creative')} 
+                              alt={project.title}
+                              className={`w-full object-cover transition-transform duration-500 group-hover:scale-110 ${index === 0 ? 'h-80' : 'h-56'}`}
+                            />
+                          )}
                           
                           {/* Overlay */}
                           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">

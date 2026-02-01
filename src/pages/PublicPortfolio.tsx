@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfileData, WorkExperience, Project } from '@/contexts/ProfileContext';
 import { ContactDialog } from '@/components/ContactDialog';
+import { ProfileChatBot } from '@/components/public/ProfileChatBot';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
 import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
@@ -187,6 +188,12 @@ export default function PublicPortfolio() {
         recipientEmail={profile.email}
         recipientName={profile.fullName}
       />
+      {id && (
+        <ProfileChatBot
+          profileId={id}
+          profileName={profile.fullName}
+        />
+      )}
     </>
   );
 }

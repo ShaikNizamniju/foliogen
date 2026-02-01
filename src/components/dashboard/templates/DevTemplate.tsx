@@ -1,7 +1,8 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Code, Folder, FileCode, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Folder, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { getEmbedUrl } from '@/lib/video-utils';
 import { useEffect, useState } from 'react';
 
 interface DevTemplateProps {
@@ -268,11 +269,21 @@ export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
                   className="block bg-[#161B22] rounded-lg border border-[#30363D] hover:border-green-500/50 transition-colors group overflow-hidden"
                 >
                   <div className="aspect-video overflow-hidden">
-                    <img 
-                      src={getProjectImageUrl(project, 'terminal')} 
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {getEmbedUrl(project.link) ? (
+                      <iframe
+                        src={getEmbedUrl(project.link)!}
+                        title={project.title}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <img 
+                        src={getProjectImageUrl(project, 'terminal')} 
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    )}
                   </div>
                   <div className="p-4">
                     <div className="flex items-center gap-2 mb-2">

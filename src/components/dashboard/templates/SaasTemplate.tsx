@@ -1,7 +1,8 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, ArrowUpRight, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { getEmbedUrl } from '@/lib/video-utils';
 
 interface SaasTemplateProps {
   profile: ProfileData;
@@ -228,11 +229,21 @@ export function SaasTemplate({ profile, onContactClick }: SaasTemplateProps) {
                 className="group block p-6 rounded-2xl bg-white border border-black/10 hover:border-black/20 hover:shadow-lg transition-all"
               >
                 <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-black/5">
-                  <img 
-                    src={getProjectImageUrl(project, 'minimal')} 
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                  {getEmbedUrl(project.link) ? (
+                    <iframe
+                      src={getEmbedUrl(project.link)!}
+                      title={project.title}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <img 
+                      src={getProjectImageUrl(project, 'minimal')} 
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  )}
                 </div>
                 <div className="flex items-start justify-between gap-4">
                   <div>
