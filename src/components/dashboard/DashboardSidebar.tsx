@@ -7,7 +7,8 @@ import {
   Settings, 
   LogOut,
   Sparkles,
-  ChevronLeft
+  ChevronLeft,
+  Briefcase
 } from 'lucide-react';
 import {
   Sidebar,
@@ -28,6 +29,7 @@ import { Link } from 'react-router-dom';
 const menuItems = [
   { title: 'Overview', icon: LayoutDashboard, path: '/dashboard', section: 'overview' },
   { title: 'Profile Data', icon: User, path: '/dashboard', section: 'profile' },
+  { title: 'Job Match', icon: Briefcase, path: '/dashboard', section: 'job-match' },
   { title: 'Templates', icon: Palette, path: '/dashboard', section: 'templates' },
   { title: 'Settings', icon: Settings, path: '/dashboard', section: 'settings' },
 ];
