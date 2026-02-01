@@ -17,9 +17,11 @@ import { InfluencerTemplate } from '@/components/dashboard/templates/InfluencerT
 import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
 import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function PublicPortfolio() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,17 +34,33 @@ export default function PublicPortfolio() {
     }
   }, [id]);
 
-  // Increment view count - strict dependency to prevent double counting
+  // Increment view count - only for non-owners, with localStorage spam prevention
   useEffect(() => {
-    if (id && !viewCounted.current) {
-      viewCounted.current = true;
-      supabase.rpc('increment_views', { p_user_id: id }).then(({ error }) => {
-        if (error) {
-          console.error('Failed to increment views:', error);
-        }
-      });
+    if (!id || viewCounted.current) return;
+    
+    // Don't count if the visitor is the profile owner
+    if (user?.id === id) return;
+    
+    // Check localStorage to prevent spam refreshes
+    const visitKey = `foliogen_visited_${id}`;
+    const lastVisit = localStorage.getItem(visitKey);
+    const now = Date.now();
+    const ONE_HOUR = 60 * 60 * 1000;
+    
+    // Only count if no visit in the last hour
+    if (lastVisit && now - parseInt(lastVisit, 10) < ONE_HOUR) {
+      return;
     }
-  }, [id]);
+    
+    viewCounted.current = true;
+    localStorage.setItem(visitKey, now.toString());
+    
+    supabase.rpc('increment_views', { p_user_id: id }).then(({ error }) => {
+      if (error) {
+        console.error('Failed to increment views:', error);
+      }
+    });
+  }, [id, user]);
 
   const fetchProfile = async (userId: string) => {
     setLoading(true);
