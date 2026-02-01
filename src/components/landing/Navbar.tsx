@@ -1,11 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X } from 'lucide-react';
+import { useState } from 'react';
 import logo from '@/assets/logo.png';
 
 export function Navbar() {
   const { user } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
@@ -13,7 +16,14 @@ export function Navbar() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+    setIsMenuOpen(false);
   };
+
+  const navLinks = [
+    { id: 'features', label: 'Features' },
+    { id: 'templates', label: 'Templates' },
+    { id: 'pricing', label: 'Pricing' },
+  ];
 
   return (
     <motion.header
@@ -27,28 +37,18 @@ export function Navbar() {
           <img src={logo} alt="FolioGen" className="h-10 w-auto" />
         </Link>
 
+        {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
-          <a 
-            href="#features"
-            onClick={(e) => scrollToSection(e, 'features')}
-            className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
-          >
-            Features
-          </a>
-          <a 
-            href="#templates"
-            onClick={(e) => scrollToSection(e, 'templates')}
-            className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
-          >
-            Templates
-          </a>
-          <a 
-            href="#pricing"
-            onClick={(e) => scrollToSection(e, 'pricing')}
-            className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
-          >
-            Pricing
-          </a>
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => scrollToSection(e, link.id)}
+              className="text-sm font-medium text-slate-400 transition-colors hover:text-white cursor-pointer"
+            >
+              {link.label}
+            </a>
+          ))}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -67,14 +67,59 @@ export function Navbar() {
               </Button>
               <Button 
                 asChild 
-                className="bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
+                className="hidden sm:inline-flex bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
               >
                 <Link to="/auth">Get Started</Link>
               </Button>
             </>
           )}
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 text-slate-300 hover:text-white transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur-xl"
+          >
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => scrollToSection(e, link.id)}
+                  className="text-base font-medium text-slate-300 hover:text-white transition-colors py-2"
+                >
+                  {link.label}
+                </a>
+              ))}
+              {!user && (
+                <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
+                  <Button asChild variant="ghost" className="justify-start text-slate-300 hover:text-white hover:bg-white/10">
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
+                  </Button>
+                  <Button asChild className="bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0">
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
+                  </Button>
+                </div>
+              )}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }

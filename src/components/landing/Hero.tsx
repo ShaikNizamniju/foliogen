@@ -123,7 +123,7 @@ function Document3DAnimation() {
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 py-20 sm:py-32">
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pt-24 pb-12 md:py-32">
       {/* Animated gradient background */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
