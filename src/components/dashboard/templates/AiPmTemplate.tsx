@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare, Sparkles } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 
@@ -9,134 +9,187 @@ interface AiPmTemplateProps {
   onContactClick?: () => void;
 }
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
+// Minimalist fade with subtle spring
+const fadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
+};
+
+const slideUp = {
+  initial: { opacity: 0, y: 40 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: "easeOut" as const }
+  transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }
 };
 
 const stagger = {
   animate: {
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.08,
+      delayChildren: 0.1
     }
   }
 };
-// Using shared getProjectImageUrl from portfolio-utils
+
+const letterAnimation = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 }
+};
+
+// Word-by-word animation component
+function AnimatedText({ text, className }: { text: string; className?: string }) {
+  const words = text.split(' ');
+  return (
+    <motion.span className={className}>
+      {words.map((word, i) => (
+        <motion.span
+          key={i}
+          variants={letterAnimation}
+          className="inline-block mr-[0.25em]"
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          {word}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+}
 
 export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
   return (
-    <div className="min-h-[800px] bg-[#FAFAFA] text-[#0A0A0A] font-sans">
-      {/* Navigation */}
+    <div className="min-h-[800px] bg-white text-neutral-900 font-sans antialiased">
+      {/* Minimal Navigation */}
       <motion.nav 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-black/5"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 border-b border-neutral-100"
       >
-        <div className="max-w-5xl mx-auto px-8 py-4 flex items-center justify-between">
-          <span className="font-semibold text-lg">{profile.fullName?.split(' ')[0] || 'Portfolio'}</span>
-          <div className="flex items-center gap-6">
-            {profile.linkedinUrl && (
-              <a href={profile.linkedinUrl} className="text-black/50 hover:text-black transition-colors">
-                <Linkedin className="h-4 w-4" />
-              </a>
-            )}
-            {profile.githubUrl && (
-              <a href={profile.githubUrl} className="text-black/50 hover:text-black transition-colors">
-                <Github className="h-4 w-4" />
-              </a>
-            )}
-            {profile.twitterUrl && (
-              <a href={profile.twitterUrl} className="text-black/50 hover:text-black transition-colors">
-                <Twitter className="h-4 w-4" />
-              </a>
-            )}
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <motion.div 
+            className="flex items-center gap-2"
+            whileHover={{ scale: 1.02 }}
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-neutral-900 to-neutral-700 flex items-center justify-center">
+              <span className="text-white text-xs font-medium">
+                {profile.fullName?.charAt(0) || 'P'}
+              </span>
+            </div>
+            <span className="font-medium text-sm tracking-tight">{profile.fullName?.split(' ')[0] || 'Portfolio'}</span>
+          </motion.div>
+          
+          <div className="flex items-center gap-5">
+            {[
+              { url: profile.linkedinUrl, Icon: Linkedin },
+              { url: profile.githubUrl, Icon: Github },
+              { url: profile.twitterUrl, Icon: Twitter }
+            ].filter(item => item.url).map(({ url, Icon }, i) => (
+              <motion.a 
+                key={i}
+                href={url!}
+                whileHover={{ y: -2 }}
+                className="text-neutral-400 hover:text-neutral-900 transition-colors duration-300"
+              >
+                <Icon className="h-4 w-4" />
+              </motion.a>
+            ))}
             {profile.email && (
               onContactClick ? (
-                <button 
+                <motion.button 
                   onClick={onContactClick}
-                  className="text-sm font-medium bg-black text-white px-4 py-2 rounded-full hover:bg-black/80 transition-colors flex items-center gap-2"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="text-xs font-medium bg-neutral-900 text-white px-4 py-2 rounded-full hover:bg-neutral-800 transition-colors flex items-center gap-1.5"
                 >
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  Hire Me
-                </button>
+                  <MessageSquare className="h-3 w-3" />
+                  Connect
+                </motion.button>
               ) : (
-                <a 
+                <motion.a 
                   href={`mailto:${profile.email}`}
-                  className="text-sm font-medium bg-black text-white px-4 py-2 rounded-full hover:bg-black/80 transition-colors"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="text-xs font-medium bg-neutral-900 text-white px-4 py-2 rounded-full hover:bg-neutral-800 transition-colors"
                 >
-                  Get in touch
-                </a>
+                  Say Hello
+                </motion.a>
               )
             )}
           </div>
         </div>
       </motion.nav>
 
-      {/* Hero Section */}
+      {/* Hero Section - Minimalist with creative typography */}
       <motion.section 
         variants={stagger}
         initial="initial"
         animate="animate"
-        className="max-w-5xl mx-auto px-8 pt-24 pb-16"
+        className="max-w-4xl mx-auto px-6 pt-32 pb-20"
       >
-        <motion.div variants={fadeInUp} className="mb-4">
-          {profile.location && (
-            <span className="inline-flex items-center gap-1.5 text-sm text-black/50">
-              <MapPin className="h-3.5 w-3.5" />
+        {profile.location && (
+          <motion.div variants={fadeIn} className="mb-6">
+            <span className="inline-flex items-center gap-1.5 text-xs text-neutral-400 uppercase tracking-widest">
+              <MapPin className="h-3 w-3" />
               {profile.location}
             </span>
-          )}
+          </motion.div>
+        )}
+        
+        <motion.div variants={stagger} className="overflow-hidden mb-8">
+          <motion.h1 
+            className="text-5xl md:text-6xl font-semibold tracking-tight leading-[1.1]"
+            variants={stagger}
+          >
+            <AnimatedText text={profile.fullName || 'Your Name'} />
+          </motion.h1>
         </motion.div>
         
-        <motion.h1 
-          variants={fadeInUp}
-          className="text-6xl font-bold tracking-tight mb-6 bg-gradient-to-r from-black via-black/90 to-black/70 bg-clip-text"
+        <motion.div 
+          variants={slideUp}
+          className="flex items-center gap-3 mb-8"
         >
-          {profile.fullName || 'Your Name'}
-        </motion.h1>
-        
-        <motion.p 
-          variants={fadeInUp}
-          className="text-xl text-black/60 max-w-2xl leading-relaxed mb-8"
-        >
-          {profile.headline || 'Your professional headline goes here'}
-        </motion.p>
+          <div className="h-px flex-1 max-w-[60px] bg-neutral-200" />
+          <span className="text-sm text-neutral-500 font-medium">
+            {profile.headline || 'Product Manager'}
+          </span>
+        </motion.div>
 
         <motion.p 
-          variants={fadeInUp}
-          className="text-lg text-black/70 max-w-3xl leading-relaxed"
+          variants={slideUp}
+          className="text-lg text-neutral-600 max-w-2xl leading-relaxed"
         >
           {profile.bio || 'Tell your story here...'}
         </motion.p>
       </motion.section>
 
-      {/* Metrics Section - Key Highlights */}
+      {/* Key Highlights - Minimal numbered list */}
       {profile.keyHighlights && profile.keyHighlights.length > 0 && (
         <motion.section 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="border-y border-black/10 bg-white"
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="border-y border-neutral-100"
         >
-          <div className="max-w-5xl mx-auto px-8 py-16">
+          <div className="max-w-4xl mx-auto px-6 py-16">
             <motion.div 
               variants={stagger}
               initial="initial"
               animate="animate"
-              className="grid grid-cols-2 md:grid-cols-4 gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               {profile.keyHighlights.slice(0, 4).map((highlight, index) => (
                 <motion.div 
                   key={index}
-                  variants={fadeInUp}
-                  className="text-center"
+                  variants={slideUp}
+                  whileHover={{ x: 4 }}
+                  className="flex items-start gap-4 group cursor-default"
                 >
-                  <div className="text-5xl font-bold mb-2 bg-gradient-to-br from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+                  <span className="text-xs font-mono text-neutral-300 mt-1">
                     {String(index + 1).padStart(2, '0')}
-                  </div>
-                  <p className="text-sm text-black/60 font-medium">{highlight}</p>
+                  </span>
+                  <p className="text-sm text-neutral-600 group-hover:text-neutral-900 transition-colors">
+                    {highlight}
+                  </p>
                 </motion.div>
               ))}
             </motion.div>
@@ -144,25 +197,29 @@ export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
         </motion.section>
       )}
 
-      {/* Skills Section */}
+      {/* Skills - Minimal inline tags */}
       {profile.skills.length > 0 && (
         <motion.section 
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="max-w-5xl mx-auto px-8 py-16"
+          transition={{ delay: 0.6, duration: 0.7 }}
+          className="max-w-4xl mx-auto px-6 py-16"
         >
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-black/40 mb-6">
-            Expertise
-          </h2>
+          <div className="flex items-center gap-3 mb-8">
+            <Sparkles className="h-4 w-4 text-neutral-300" />
+            <span className="text-xs font-medium uppercase tracking-widest text-neutral-400">
+              Skills & Expertise
+            </span>
+          </div>
           <div className="flex flex-wrap gap-2">
             {profile.skills.map((skill, index) => (
               <motion.span 
                 key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + index * 0.05 }}
-                className="px-4 py-2 bg-black/5 rounded-full text-sm font-medium hover:bg-black/10 transition-colors cursor-default"
+                transition={{ delay: 0.7 + index * 0.03 }}
+                whileHover={{ scale: 1.05, backgroundColor: 'rgb(245 245 245)' }}
+                className="px-3 py-1.5 border border-neutral-200 rounded-full text-xs font-medium text-neutral-600 cursor-default transition-all"
               >
                 {skill}
               </motion.span>
@@ -171,35 +228,40 @@ export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
         </motion.section>
       )}
 
-      {/* Experience Section */}
+      {/* Experience - Clean timeline */}
       {profile.workExperience.length > 0 && (
         <motion.section 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-          className="max-w-5xl mx-auto px-8 py-16"
+          transition={{ delay: 0.7, duration: 0.7 }}
+          className="max-w-4xl mx-auto px-6 py-16"
         >
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-black/40 mb-8">
+          <span className="text-xs font-medium uppercase tracking-widest text-neutral-400 mb-10 block">
             Experience
-          </h2>
-          <div className="space-y-12">
+          </span>
+          <div className="space-y-10">
             {profile.workExperience.map((exp, index) => (
               <motion.div 
                 key={exp.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + index * 0.1 }}
-                className="grid grid-cols-4 gap-8"
+                transition={{ delay: 0.8 + index * 0.1 }}
+                className="group"
               >
-                <div className="col-span-1">
-                  <span className="text-sm text-black/40">
-                    {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
-                  </span>
-                </div>
-                <div className="col-span-3">
-                  <h3 className="text-xl font-semibold mb-1">{exp.jobTitle}</h3>
-                  <p className="text-black/50 mb-3">{exp.company}</p>
-                  <p className="text-black/70 leading-relaxed">{exp.description}</p>
+                <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-8">
+                  <div className="md:w-32 shrink-0">
+                    <span className="text-xs font-mono text-neutral-400">
+                      {exp.startDate} — {exp.current ? 'Now' : exp.endDate}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-medium text-neutral-900">{exp.jobTitle}</h3>
+                      <span className="text-neutral-300">·</span>
+                      <span className="text-sm text-neutral-500">{exp.company}</span>
+                    </div>
+                    <p className="text-sm text-neutral-500 leading-relaxed">{exp.description}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -207,28 +269,29 @@ export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
         </motion.section>
       )}
 
-      {/* Projects Section */}
+      {/* Projects - Card grid with hover effects */}
       {profile.projects.length > 0 && (
         <motion.section 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="max-w-5xl mx-auto px-8 py-16"
+          transition={{ delay: 0.9, duration: 0.7 }}
+          className="max-w-4xl mx-auto px-6 py-16"
         >
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-black/40 mb-8">
-            Selected Work
-          </h2>
-          <div className="grid grid-cols-2 gap-6">
+          <span className="text-xs font-medium uppercase tracking-widest text-neutral-400 mb-10 block">
+            Selected Projects
+          </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {profile.projects.map((project, index) => (
               <motion.a
                 key={project.id}
                 href={project.link || '#'}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 + index * 0.1 }}
-                className="group block p-6 rounded-2xl bg-white border border-black/10 hover:border-black/20 hover:shadow-lg transition-all"
+                transition={{ delay: 1 + index * 0.08 }}
+                whileHover={{ y: -4 }}
+                className="group block p-5 rounded-xl border border-neutral-100 hover:border-neutral-200 hover:shadow-sm transition-all duration-300 bg-white"
               >
-                <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-black/5">
+                <div className="aspect-[16/10] rounded-lg overflow-hidden mb-4 bg-neutral-50">
                   {getEmbedUrl(project.link) ? (
                     <iframe
                       src={getEmbedUrl(project.link)!}
@@ -238,21 +301,29 @@ export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
                       allowFullScreen
                     />
                   ) : (
-                    <img 
+                    <motion.img 
                       src={getProjectImageUrl(project, 'minimal')} 
                       alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.4 }}
                     />
                   )}
                 </div>
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-semibold mb-1 group-hover:text-violet-600 transition-colors">
+                    <h3 className="font-medium text-sm mb-1 group-hover:text-neutral-600 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-sm text-black/50">{project.description}</p>
+                    <p className="text-xs text-neutral-400 line-clamp-2">{project.description}</p>
                   </div>
-                  <ArrowUpRight className="h-4 w-4 text-black/30 group-hover:text-violet-600 transition-colors shrink-0" />
+                  <motion.div
+                    initial={{ rotate: 0 }}
+                    whileHover={{ rotate: 45 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ArrowUpRight className="h-4 w-4 text-neutral-300 group-hover:text-neutral-900 transition-colors shrink-0" />
+                  </motion.div>
                 </div>
               </motion.a>
             ))}
@@ -260,25 +331,25 @@ export function AiPmTemplate({ profile, onContactClick }: AiPmTemplateProps) {
         </motion.section>
       )}
 
-      {/* Footer */}
+      {/* Footer - Ultra minimal */}
       <motion.footer 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.6 }}
-        className="max-w-5xl mx-auto px-8 py-12 border-t border-black/10"
+        transition={{ delay: 1.1, duration: 0.6 }}
+        className="max-w-4xl mx-auto px-6 py-10 border-t border-neutral-100"
       >
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-black/40">© {new Date().getFullYear()} {profile.fullName}</span>
+        <div className="flex items-center justify-between text-xs text-neutral-400">
+          <span>© {new Date().getFullYear()}</span>
           <div className="flex items-center gap-4">
             {profile.website && (
-              <a href={profile.website} className="text-sm text-black/50 hover:text-black transition-colors flex items-center gap-1">
-                <Globe className="h-3.5 w-3.5" />
-                Website
+              <a href={profile.website} className="hover:text-neutral-900 transition-colors flex items-center gap-1">
+                <Globe className="h-3 w-3" />
+                Web
               </a>
             )}
             {profile.email && (
-              <a href={`mailto:${profile.email}`} className="text-sm text-black/50 hover:text-black transition-colors flex items-center gap-1">
-                <Mail className="h-3.5 w-3.5" />
+              <a href={`mailto:${profile.email}`} className="hover:text-neutral-900 transition-colors flex items-center gap-1">
+                <Mail className="h-3 w-3" />
                 Email
               </a>
             )}
