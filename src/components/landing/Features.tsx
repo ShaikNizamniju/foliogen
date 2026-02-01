@@ -1,56 +1,6 @@
-import { Bot, Palette, FileDown, Zap, Shield, Globe } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-const features = [
-  {
-    icon: Bot,
-    emoji: "🤖",
-    title: 'AI-Powered Writing',
-    description: 'Our AI transforms your experience into compelling, professional copy that impresses recruiters.',
-    className: 'md:col-span-2 md:row-span-1',
-    gradient: 'from-primary/20 to-primary/5',
-  },
-  {
-    icon: Palette,
-    emoji: "🎨",
-    title: '11 Premium Templates',
-    description: 'From minimalist to creative, choose stunning designs crafted for every industry.',
-    className: 'md:col-span-1 md:row-span-2',
-    gradient: 'from-accent/20 to-accent/5',
-  },
-  {
-    icon: FileDown,
-    emoji: "📄",
-    title: 'One-Click PDF Export',
-    description: 'Download your portfolio as a beautifully formatted PDF resume instantly.',
-    className: 'md:col-span-1 md:row-span-1',
-    gradient: 'from-emerald-500/20 to-emerald-500/5',
-  },
-  {
-    icon: Zap,
-    emoji: "⚡",
-    title: 'Instant Publishing',
-    description: 'Go live in seconds with your custom subdomain.',
-    className: 'md:col-span-1 md:row-span-1',
-    gradient: 'from-amber-500/20 to-amber-500/5',
-  },
-  {
-    icon: Shield,
-    emoji: "🔒",
-    title: 'Privacy First',
-    description: 'Your data stays secure. Control what you share.',
-    className: 'md:col-span-1 md:row-span-1',
-    gradient: 'from-rose-500/20 to-rose-500/5',
-  },
-  {
-    icon: Globe,
-    emoji: "🌍",
-    title: 'Custom Domains',
-    description: 'Connect your own domain for a professional presence.',
-    className: 'md:col-span-1 md:row-span-1',
-    gradient: 'from-violet-500/20 to-violet-500/5',
-  },
-];
+import { Bot, Palette, FileDown, MessageSquare, Video, Zap } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -63,10 +13,11 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 40, scale: 0.95 },
   visible: {
     opacity: 1,
     y: 0,
+    scale: 1,
     transition: {
       duration: 0.6,
       ease: [0.25, 0.1, 0.25, 1] as const,
@@ -74,67 +25,228 @@ const itemVariants = {
   },
 };
 
+// Mock chat messages for RAG Chat card
+function MockChatWindow() {
+  return (
+    <div className="mt-4 rounded-xl bg-slate-900/80 border border-white/10 p-3 space-y-3">
+      {/* Recruiter message */}
+      <div className="flex gap-2 items-start">
+        <div className="w-6 h-6 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">
+          R
+        </div>
+        <div className="bg-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 max-w-[180px]">
+          "What's your experience with React?"
+        </div>
+      </div>
+      {/* AI response */}
+      <div className="flex gap-2 items-start justify-end">
+        <div className="bg-primary/20 border border-primary/30 rounded-lg px-3 py-2 text-xs text-slate-200 max-w-[180px]">
+          "Built 12+ production apps with React, including..."
+        </div>
+        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex-shrink-0 flex items-center justify-center">
+          <Bot className="w-3 h-3 text-white" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Ghost Resume visual
+function GhostResumeVisual() {
+  return (
+    <div className="mt-4 flex items-center justify-center gap-4">
+      {/* Document */}
+      <div className="relative w-12 h-16 bg-white rounded shadow-lg">
+        <div className="absolute inset-2 space-y-1">
+          <div className="h-1 w-6 bg-slate-300 rounded" />
+          <div className="h-0.5 w-full bg-slate-200 rounded" />
+          <div className="h-0.5 w-4/5 bg-slate-200 rounded" />
+          <div className="h-0.5 w-full bg-slate-200 rounded" />
+        </div>
+      </div>
+      {/* Arrow */}
+      <motion.div
+        animate={{ x: [0, 4, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+        className="text-primary"
+      >
+        →
+      </motion.div>
+      {/* 3D Web Icon */}
+      <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-white/10 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <span className="text-white text-lg">🌐</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Multimedia logos
+function MultimediaLogos() {
+  return (
+    <div className="mt-4 flex items-center justify-center gap-3">
+      {['🎬', '📺', '🎨'].map((emoji, i) => (
+        <motion.div
+          key={i}
+          initial={{ scale: 0.8, opacity: 0.5 }}
+          whileHover={{ scale: 1.1 }}
+          className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center text-xl"
+        >
+          {emoji}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export function Features() {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+
   return (
     <section id="features" className="relative pt-10 pb-24 sm:py-32 bg-gradient-to-b from-slate-950 to-slate-900 overflow-hidden">
+      {/* Noise texture overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.015] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-0 w-72 h-72 bg-primary/10 rounded-full blur-[100px]" />
         <div className="absolute bottom-1/4 right-0 w-72 h-72 bg-accent/10 rounded-full blur-[100px]" />
       </div>
 
-      <div className="container relative mx-auto px-4">
+      <div className="container relative mx-auto px-4" ref={ref}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
           className="mx-auto max-w-2xl text-center mb-16"
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-5xl text-balance">
             Everything you need to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               stand out
             </span>
           </h2>
-          <p className="text-lg text-slate-400">
+          <p className="text-lg text-slate-400 text-balance">
             Build a portfolio that showcases your best work and lands you opportunities.
           </p>
         </motion.div>
 
-        {/* Bento Grid */}
+        {/* Premium Bento Grid */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          animate={isInView ? 'visible' : 'hidden'}
           className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-4"
         >
-          {features.map((feature) => (
-            <motion.div
-              key={feature.title}
-              variants={itemVariants}
-              className={`group relative rounded-2xl border border-white/10 bg-gradient-to-br ${feature.gradient} backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-primary/10 ${feature.className}`}
-            >
-              {/* Hover glow effect */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              
-              <div className="relative">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="text-3xl">{feature.emoji}</span>
-                  <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
-                    <feature.icon className="h-5 w-5" />
-                  </div>
+          {/* Card 1: Context-Aware RAG Chat (Large - spans 2 cols) */}
+          <motion.div
+            variants={itemVariants}
+            className="group relative md:col-span-2 rounded-2xl border border-white/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-primary/10"
+          >
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">💬</span>
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                  <MessageSquare className="h-5 w-5" />
                 </div>
-                <h3 className="mb-2 text-xl font-semibold text-white">
-                  {feature.title}
-                </h3>
-                <p className="text-slate-400 group-hover:text-slate-300 transition-colors">
-                  {feature.description}
-                </p>
               </div>
-            </motion.div>
-          ))}
+              <h3 className="mb-2 text-xl font-semibold text-white">Context-Aware RAG Chat</h3>
+              <p className="text-slate-400 group-hover:text-slate-300 transition-colors">
+                Recruiters can ask questions about your experience. Our AI answers accurately using your portfolio data.
+              </p>
+              <MockChatWindow />
+            </div>
+          </motion.div>
+
+          {/* Card 2: Ghost Resume (Small - top right) */}
+          <motion.div
+            variants={itemVariants}
+            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-emerald-500/10"
+          >
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">👻</span>
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                  <FileDown className="h-5 w-5" />
+                </div>
+              </div>
+              <h3 className="mb-2 text-xl font-semibold text-white">Ghost Resume</h3>
+              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+                Hidden ATS-optimized PDF that passes automated screens.
+              </p>
+              <GhostResumeVisual />
+            </div>
+          </motion.div>
+
+          {/* Card 3: 11 Premium Templates */}
+          <motion.div
+            variants={itemVariants}
+            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-accent/20 to-accent/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-accent/10"
+          >
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">🎨</span>
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                  <Palette className="h-5 w-5" />
+                </div>
+              </div>
+              <h3 className="mb-2 text-xl font-semibold text-white">11 Premium Templates</h3>
+              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+                From minimalist to creative, stunning designs for every industry.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Card 4: Multimedia Embeds */}
+          <motion.div
+            variants={itemVariants}
+            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/20 to-violet-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-violet-500/10"
+          >
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">🎥</span>
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                  <Video className="h-5 w-5" />
+                </div>
+              </div>
+              <h3 className="mb-2 text-xl font-semibold text-white">Multimedia Embeds</h3>
+              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+                Embed Loom, YouTube, and Figma demos directly in your portfolio.
+              </p>
+              <MultimediaLogos />
+            </div>
+          </motion.div>
+
+          {/* Card 5: Instant Publishing */}
+          <motion.div
+            variants={itemVariants}
+            className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-amber-500/20 to-amber-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-amber-500/10"
+          >
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">⚡</span>
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/10 text-white transition-colors group-hover:bg-white/20">
+                  <Zap className="h-5 w-5" />
+                </div>
+              </div>
+              <h3 className="mb-2 text-xl font-semibold text-white">Instant Publishing</h3>
+              <p className="text-slate-400 group-hover:text-slate-300 transition-colors text-sm">
+                Go live in seconds with your custom subdomain.
+              </p>
+            </div>
+          </motion.div>
         </motion.div>
       </div>
     </section>

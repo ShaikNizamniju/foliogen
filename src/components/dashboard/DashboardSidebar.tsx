@@ -70,7 +70,10 @@ export function DashboardSidebar() {
                       isActive={isActive}
                       tooltip={item.title}
                     >
-                      <Link to={`${item.path}?section=${item.section}`}>
+                      <Link 
+                        to={`${item.path}?section=${item.section}`}
+                        data-tour={item.section === 'profile' ? 'profile' : undefined}
+                      >
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
                       </Link>

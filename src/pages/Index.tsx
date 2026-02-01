@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/landing/Navbar';
 import { Hero } from '@/components/landing/Hero';
+import { HowItWorks } from '@/components/landing/HowItWorks';
 import { Features } from '@/components/landing/Features';
 import { TemplateGallery } from '@/components/landing/TemplateGallery';
 import { Pricing } from '@/components/landing/Pricing';
@@ -11,6 +12,7 @@ const Index = () => {
     <div className="min-h-screen bg-slate-950">
       <Navbar />
       <Hero />
+      <HowItWorks />
       <Features />
       <TemplateGallery />
       <Pricing />

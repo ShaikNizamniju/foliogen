@@ -88,11 +88,11 @@ export function DashboardHeader() {
         </div>
         <div className="flex items-center gap-2">
           <ModeToggle />
-          <Button onClick={() => setShareOpen(true)} variant="outline" size="sm">
+          <Button onClick={() => setShareOpen(true)} variant="outline" size="sm" data-tour="chat">
             <Share2 className="h-4 w-4 mr-2" />
             Share
           </Button>
-          <Button onClick={handleDownloadPdf} variant="outline" size="sm" disabled={isExporting}>
+          <Button onClick={handleDownloadPdf} variant="outline" size="sm" disabled={isExporting} data-tour="pdf">
             <FileDown className="h-4 w-4 mr-2" />
             {isExporting ? 'Exporting...' : 'Download PDF'}
           </Button>
