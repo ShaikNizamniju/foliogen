@@ -17,18 +17,24 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client with service role for rate limiting
+    // Initialize Supabase clients
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    // Service role client for rate limiting (needs to bypass RLS for rate_limits table)
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+    
+    // Anon key client for profile queries (uses RLS via profiles_public view)
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, anonKey);
 
     // Get client IP for rate limiting
     const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                      req.headers.get('cf-connecting-ip') || 
                      'unknown';
     
-    // Check rate limit using database function
-    const { data: rateLimitAllowed, error: rateLimitError } = await supabase.rpc(
+    // Check rate limit using database function (requires service role to bypass RLS on rate_limits table)
+    const { data: rateLimitAllowed, error: rateLimitError } = await supabaseAdmin.rpc(
       'check_rate_limit',
       {
         p_key: clientIP,
@@ -98,9 +104,10 @@ serve(async (req) => {
 
     console.log('Chat request for profile:', profileId, 'Query length:', userQuery.length, 'IP:', clientIP);
 
-    // Fetch the full profile data (this is for public portfolio chatbot, no auth needed)
+    // Fetch the profile data using profiles_public view (excludes email for privacy)
+    // Uses anon key + RLS for defense-in-depth security
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
+      .from('profiles_public')
       .select('full_name, headline, bio, location, website, skills, key_highlights, work_experience, projects')
       .eq('user_id', profileId)
       .maybeSingle();
