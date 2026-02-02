@@ -2,13 +2,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, 
-  User, 
   Palette, 
   Settings, 
   LogOut,
   Sparkles,
-  ChevronLeft,
-  Briefcase
+  Briefcase,
+  Share2
 } from 'lucide-react';
 import {
   Sidebar,
@@ -27,8 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const menuItems = [
-  { title: 'Overview', icon: LayoutDashboard, path: '/dashboard', section: 'overview' },
-  { title: 'Profile Data', icon: User, path: '/dashboard', section: 'profile' },
+  { title: 'Portfolio Builder', icon: LayoutDashboard, path: '/dashboard', section: null },
   { title: 'Job Match', icon: Briefcase, path: '/dashboard', section: 'job-match' },
   { title: 'Templates', icon: Palette, path: '/dashboard', section: 'templates' },
   { title: 'Settings', icon: Settings, path: '/dashboard', section: 'settings' },
@@ -41,7 +39,7 @@ export function DashboardSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
 
-  const currentSection = new URLSearchParams(location.search).get('section') || 'overview';
+  const currentSection = new URLSearchParams(location.search).get('section');
 
   const handleSignOut = async () => {
     await signOut();
@@ -64,7 +62,9 @@ export function DashboardSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => {
-                const isActive = currentSection === item.section;
+                const isActive = item.section === null 
+                  ? !currentSection 
+                  : currentSection === item.section;
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton 
@@ -73,8 +73,7 @@ export function DashboardSidebar() {
                       tooltip={item.title}
                     >
                       <Link 
-                        to={`${item.path}?section=${item.section}`}
-                        data-tour={item.section === 'profile' ? 'profile' : undefined}
+                        to={item.section ? `${item.path}?section=${item.section}` : item.path}
                       >
                         <item.icon className="h-4 w-4" />
                         <span>{item.title}</span>
