@@ -5,8 +5,8 @@ import { useProfile } from '@/contexts/ProfileContext';
 import { toast } from 'sonner';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// FIX: Use the specific CDNJS URL for version 3.11.174 (Matches the installed package)
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+// Dynamically use the installed pdfjs-dist version to prevent API/Worker mismatch
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
 
 export function ResumeUpload() {
   const [isDragging, setIsDragging] = useState(false);
