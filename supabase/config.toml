@@ -1,16 +1,18 @@
 project_id = "abcrgpmwoqsfwtmliqwo"
 
+# Authenticated endpoints - require valid JWT
 [functions.parse-resume]
-verify_jwt = false
-
-[functions.send-contact-email]
-verify_jwt = false
-
-[functions.chat-with-profile]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enhance-project]
-verify_jwt = false
+verify_jwt = true
 
 [functions.analyze-job-match]
-verify_jwt = false
+verify_jwt = true
+
+# Public endpoints - intentionally open for public use
+[functions.send-contact-email]
+verify_jwt = false  # Public contact form
+
+[functions.chat-with-profile]
+verify_jwt = false  # Public portfolio chatbot
