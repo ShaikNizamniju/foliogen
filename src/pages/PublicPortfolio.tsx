@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfileData, WorkExperience, Project } from '@/contexts/ProfileContext';
 import { ContactDialog } from '@/components/ContactDialog';
 import { ProfileChatBot } from '@/components/public/ProfileChatBot';
+import { SeoHead } from '@/components/common/SeoHead';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
 import { AiPmTemplate } from '@/components/dashboard/templates/AiPmTemplate';
@@ -172,10 +172,12 @@ export default function PublicPortfolio() {
 
   // Generate SEO metadata
   const pageTitle = profile.fullName 
-    ? `${profile.fullName}${profile.headline ? ` - ${profile.headline}` : ''}`
-    : 'Portfolio';
-  const pageDescription = profile.bio || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
-  const pageImage = profile.photoUrl || '';
+    ? `${profile.fullName} - ${profile.headline || 'Portfolio'} | FolioGen`
+    : 'Portfolio | FolioGen';
+  const pageDescription = profile.headline 
+    ? `${profile.headline} | Built with FolioGen`
+    : profile.bio || `Professional portfolio of ${profile.fullName || 'a talented professional'} | Built with FolioGen`;
+  const pageImage = profile.photoUrl || undefined; // Falls back to /og-image.png in SeoHead
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   // Render the selected template directly - no editing controls
@@ -212,24 +214,13 @@ export default function PublicPortfolio() {
 
   return (
     <>
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={pageUrl} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        {pageImage && <meta property="og:image" content={pageImage} />}
-        
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={pageUrl} />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        {pageImage && <meta name="twitter:image" content={pageImage} />}
-      </Helmet>
+      <SeoHead
+        title={pageTitle}
+        description={pageDescription}
+        image={pageImage}
+        url={pageUrl}
+        type="profile"
+      />
       <div className="min-h-screen">
         <div id="portfolio-export-container" className="print:w-full">
           {renderTemplate()}
