@@ -42,6 +42,18 @@ function DashboardInner() {
     }
   }, [loading, profile.fullName]);
   
+  // Show loading spinner while setting up workspace
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4">
+          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-muted-foreground">Setting up your workspace...</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-muted/30">

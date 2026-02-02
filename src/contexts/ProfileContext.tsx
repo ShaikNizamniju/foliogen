@@ -86,59 +86,109 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
+      fetchOrCreateProfile();
     } else {
       setProfile(defaultProfile);
       setLoading(false);
     }
   }, [user]);
 
-  const fetchProfile = async () => {
+  const fetchOrCreateProfile = async () => {
     if (!user) return;
     
     setLoading(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
+    
+    try {
+      // First, try to fetch existing profile
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-    if (data && !error) {
-      const workExp = Array.isArray(data.work_experience) 
-        ? (data.work_experience as unknown as WorkExperience[]) 
-        : [];
-      const proj = Array.isArray(data.projects) 
-        ? (data.projects as unknown as Project[]) 
-        : [];
-      
-      const keyHighlights = Array.isArray((data as any).key_highlights) 
-        ? (data as any).key_highlights as string[]
-        : [];
-      
-      setProfile({
-        id: data.id,
-        fullName: data.full_name || '',
-        photoUrl: data.photo_url || '',
-        bio: data.bio || '',
-        headline: data.headline || '',
-        location: data.location || '',
-        email: data.email || '',
-        website: data.website || '',
-        linkedinUrl: data.linkedin_url || '',
-        githubUrl: data.github_url || '',
-        twitterUrl: data.twitter_url || '',
-        workExperience: workExp,
-        projects: proj,
-        skills: data.skills || [],
-        keyHighlights: keyHighlights,
-        views: data.views || 0,
-        selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
-        metaTitle: (data as any).meta_title || '',
-        metaDescription: (data as any).meta_description || '',
-        metaKeywords: (data as any).meta_keywords || [],
-      });
+      if (error) {
+        console.error('Error fetching profile:', error);
+        setLoading(false);
+        return;
+      }
+
+      // If no profile exists, auto-create one for the new user
+      if (!data) {
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            email: user.email || '',
+            full_name: user.user_metadata?.full_name || '',
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          // Profile might already exist due to trigger - try fetching again
+          if (insertError.code === '23505') {
+            const { data: retryData } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('user_id', user.id)
+              .maybeSingle();
+            
+            if (retryData) {
+              mapProfileData(retryData);
+            }
+          } else {
+            console.error('Error creating profile:', insertError);
+          }
+        } else if (newProfile) {
+          mapProfileData(newProfile);
+        }
+        
+        setLoading(false);
+        return;
+      }
+
+      mapProfileData(data);
+    } catch (err) {
+      console.error('Profile fetch/create error:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const mapProfileData = (data: any) => {
+    const workExp = Array.isArray(data.work_experience) 
+      ? (data.work_experience as unknown as WorkExperience[]) 
+      : [];
+    const proj = Array.isArray(data.projects) 
+      ? (data.projects as unknown as Project[]) 
+      : [];
+    
+    const keyHighlights = Array.isArray(data.key_highlights) 
+      ? data.key_highlights as string[]
+      : [];
+    
+    setProfile({
+      id: data.id,
+      fullName: data.full_name || '',
+      photoUrl: data.photo_url || '',
+      bio: data.bio || '',
+      headline: data.headline || '',
+      location: data.location || '',
+      email: data.email || '',
+      website: data.website || '',
+      linkedinUrl: data.linkedin_url || '',
+      githubUrl: data.github_url || '',
+      twitterUrl: data.twitter_url || '',
+      workExperience: workExp,
+      projects: proj,
+      skills: data.skills || [],
+      keyHighlights: keyHighlights,
+      views: data.views || 0,
+      selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
+      metaTitle: data.meta_title || '',
+      metaDescription: data.meta_description || '',
+      metaKeywords: data.meta_keywords || [],
+    });
   };
 
   const updateProfile = (updates: Partial<ProfileData>) => {
