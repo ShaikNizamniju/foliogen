@@ -8,6 +8,8 @@ const corsHeaders = {
 
 const MAX_QUERY_SIZE = 1000; // 1KB limit for user queries
 const MAX_CONVERSATION_HISTORY = 20; // Maximum messages in history
+const RATE_LIMIT_MAX_REQUESTS = 20; // 20 requests per hour per IP
+const RATE_LIMIT_WINDOW_MINUTES = 60;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -15,6 +17,38 @@ serve(async (req) => {
   }
 
   try {
+    // Initialize Supabase client with service role for rate limiting
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                     req.headers.get('cf-connecting-ip') || 
+                     'unknown';
+    
+    // Check rate limit using database function
+    const { data: rateLimitAllowed, error: rateLimitError } = await supabase.rpc(
+      'check_rate_limit',
+      {
+        p_key: clientIP,
+        p_endpoint: 'chat-with-profile',
+        p_max_requests: RATE_LIMIT_MAX_REQUESTS,
+        p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
+      }
+    );
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError.message);
+      // Continue without rate limiting if there's an error
+    } else if (!rateLimitAllowed) {
+      console.log('Rate limit exceeded for IP:', clientIP);
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { userQuery, profileId, conversationHistory = [] } = await req.json();
 
     // Input validation
@@ -62,12 +96,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Chat request for profile:', profileId, 'Query length:', userQuery.length);
-
-    // Initialize Supabase client with service role for fetching public profile data
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    console.log('Chat request for profile:', profileId, 'Query length:', userQuery.length, 'IP:', clientIP);
 
     // Fetch the full profile data (this is for public portfolio chatbot, no auth needed)
     const { data: profile, error: profileError } = await supabase
@@ -184,7 +213,7 @@ CRITICAL RULES:
   } catch (error) {
     console.error('Chat error:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: 'Something went wrong. Please try again later.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

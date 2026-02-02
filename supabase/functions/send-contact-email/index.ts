@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,8 @@ interface ContactRequest {
 const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_MESSAGE_LENGTH = 5000;
+const RATE_LIMIT_MAX_REQUESTS = 5; // 5 emails per hour per IP
+const RATE_LIMIT_WINDOW_MINUTES = 60;
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -25,6 +28,38 @@ serve(async (req) => {
   }
 
   try {
+    // Initialize Supabase client for rate limiting
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                     req.headers.get('cf-connecting-ip') || 
+                     'unknown';
+    
+    // Check rate limit using database function
+    const { data: rateLimitAllowed, error: rateLimitError } = await supabase.rpc(
+      'check_rate_limit',
+      {
+        p_key: clientIP,
+        p_endpoint: 'send-contact-email',
+        p_max_requests: RATE_LIMIT_MAX_REQUESTS,
+        p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
+      }
+    );
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError.message);
+      // Continue without rate limiting if there's an error
+    } else if (!rateLimitAllowed) {
+      console.log('Rate limit exceeded for IP:', clientIP);
+      return new Response(
+        JSON.stringify({ success: false, error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const EMAILJS_SERVICE_ID = Deno.env.get("EMAILJS_SERVICE_ID");
     const EMAILJS_TEMPLATE_ID = Deno.env.get("EMAILJS_TEMPLATE_ID");
     const EMAILJS_PUBLIC_KEY = Deno.env.get("EMAILJS_PUBLIC_KEY");
@@ -108,7 +143,7 @@ serve(async (req) => {
     const sanitizedMessage = message.trim().replace(/[<>]/g, '');
     const sanitizedToName = (toName || "Portfolio Owner").trim().replace(/[<>]/g, '');
 
-    console.log(`Sending contact email from ${sanitizedName} to portfolio owner`);
+    console.log(`Sending contact email from ${sanitizedName}, IP: ${clientIP}`);
 
     // Send via EmailJS API
     const emailJsResponse = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
@@ -131,9 +166,8 @@ serve(async (req) => {
     });
 
     if (!emailJsResponse.ok) {
-      const errorText = await emailJsResponse.text();
-      console.error("EmailJS API error:", emailJsResponse.status);
-      throw new Error(`EmailJS API error: ${emailJsResponse.status}`);
+      console.error("Email delivery failed:", emailJsResponse.status);
+      throw new Error("Email delivery failed");
     }
 
     console.log("Email sent successfully");
