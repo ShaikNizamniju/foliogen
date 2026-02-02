@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ProjectImageCard } from '../ProjectImageCard';
+import { supabase } from '@/integrations/supabase/client';
 
 const ENHANCE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/enhance-project`;
 
@@ -45,6 +46,13 @@ export function ProjectsForm() {
       return;
     }
 
+    // Get user session token for authenticated API call
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      toast.error('Please sign in to use AI features');
+      return;
+    }
+
     setEnhancingIds((prev) => new Set(prev).add(project.id));
 
     try {
@@ -52,7 +60,7 @@ export function ProjectsForm() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           description: project.description,
