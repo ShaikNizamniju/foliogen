@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardContent } from '@/components/dashboard/DashboardContent';
@@ -25,6 +26,7 @@ export default function Dashboard() {
 
 function DashboardInner() {
   const { profile, loading, initializeProfile, initializing } = useProfile();
+  const { user } = useAuth();
   const location = useLocation();
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -44,6 +46,20 @@ function DashboardInner() {
       return () => clearTimeout(timer);
     }
   }, [loading, isProfileEmpty, profile.fullName]);
+  
+  // Prevent white screen on auth failure - show visible error
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4 p-10">
+          <p className="text-lg text-muted-foreground">No user found. Authentication may have failed.</p>
+          <Link to="/auth" className="text-primary underline hover:text-primary/80">
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
   
   // Show loading spinner while setting up workspace
   if (loading) {
