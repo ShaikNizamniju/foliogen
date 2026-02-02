@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ProjectImageCard } from '../ProjectImageCard';
 
 const ENHANCE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/enhance-project`;
 
@@ -164,6 +165,12 @@ export function ProjectsForm() {
                 </Button>
               </div>
 
+              {/* Project Image Card with Unsplash */}
+              <ProjectImageCard 
+                project={project}
+                onImageChange={(imageUrl) => updateProject(project.id, { imageUrl })}
+              />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Project Title</Label>
@@ -185,15 +192,6 @@ export function ProjectsForm() {
                     YouTube and Loom links will auto-embed as videos
                   </p>
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Image URL (optional)</Label>
-                <Input
-                  placeholder="https://example.com/project-screenshot.jpg"
-                  value={project.imageUrl}
-                  onChange={(e) => updateProject(project.id, { imageUrl: e.target.value })}
-                />
               </div>
 
               <div className="space-y-2">

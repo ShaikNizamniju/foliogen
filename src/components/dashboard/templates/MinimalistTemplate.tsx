@@ -3,10 +3,13 @@ import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCirc
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
+import { InlineEdit } from '@/components/ui/inline-edit';
+import { useProfile } from '@/contexts/ProfileContext';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
   onContactClick?: () => void;
+  editMode?: boolean;
 }
 
 // Animation variants
@@ -39,7 +42,35 @@ const sidebarVariants = {
   },
 };
 
-export function MinimalistTemplate({ profile, onContactClick }: MinimalistTemplateProps) {
+export function MinimalistTemplate({ profile, onContactClick, editMode = false }: MinimalistTemplateProps) {
+  const { updateProfile } = useProfile();
+
+  const handleFieldUpdate = (field: keyof ProfileData, value: string) => {
+    if (editMode) {
+      updateProfile({ [field]: value });
+    }
+  };
+
+  const handleExperienceUpdate = (expId: string, field: string, value: string) => {
+    if (editMode) {
+      updateProfile({
+        workExperience: profile.workExperience.map(exp => 
+          exp.id === expId ? { ...exp, [field]: value } : exp
+        )
+      });
+    }
+  };
+
+  const handleProjectUpdate = (projectId: string, field: string, value: string) => {
+    if (editMode) {
+      updateProfile({
+        projects: profile.projects.map(proj => 
+          proj.id === projectId ? { ...proj, [field]: value } : proj
+        )
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-black font-sans flex relative">
       {/* Dot Pattern Background */}
@@ -65,12 +96,34 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
-            {profile.fullName || 'Your Name'}
-          </h1>
-          <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
-            {profile.headline || 'Professional'}
-          </p>
+          {editMode ? (
+            <InlineEdit
+              value={profile.fullName || ''}
+              onSave={(v) => handleFieldUpdate('fullName', v)}
+              placeholder="Your Name"
+              className="text-3xl font-black tracking-tight leading-tight uppercase text-white"
+              inputClassName="text-3xl font-black tracking-tight leading-tight uppercase text-white bg-transparent"
+              as="h1"
+            />
+          ) : (
+            <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
+              {profile.fullName || 'Your Name'}
+            </h1>
+          )}
+          {editMode ? (
+            <InlineEdit
+              value={profile.headline || ''}
+              onSave={(v) => handleFieldUpdate('headline', v)}
+              placeholder="Professional"
+              className="text-sm text-white/60 mt-2 uppercase tracking-widest"
+              inputClassName="text-sm text-white/60 uppercase tracking-widest bg-transparent"
+              as="p"
+            />
+          ) : (
+            <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
+              {profile.headline || 'Professional'}
+            </p>
+          )}
         </motion.div>
 
         {/* Contact Info */}
@@ -83,7 +136,17 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
           {profile.location && (
             <motion.div variants={itemVariants} className="flex items-start gap-3">
               <MapPin className="h-4 w-4 mt-0.5 text-white/40" />
-              <span className="text-white/80">{profile.location}</span>
+              {editMode ? (
+                <InlineEdit
+                  value={profile.location}
+                  onSave={(v) => handleFieldUpdate('location', v)}
+                  placeholder="Location"
+                  className="text-white/80"
+                  inputClassName="text-white/80 bg-transparent"
+                />
+              ) : (
+                <span className="text-white/80">{profile.location}</span>
+              )}
             </motion.div>
           )}
           {profile.email && (
@@ -170,14 +233,26 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
         animate="visible"
       >
         {/* Bio Section */}
-        {profile.bio && (
+        {(profile.bio || editMode) && (
           <motion.section variants={itemVariants} className="mb-10">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6">
               About
             </h2>
-            <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
-              {profile.bio}
-            </p>
+            {editMode ? (
+              <InlineEdit
+                value={profile.bio || ''}
+                onSave={(v) => handleFieldUpdate('bio', v)}
+                placeholder="Tell your story..."
+                className="text-xl leading-relaxed text-black/80 max-w-2xl font-light"
+                inputClassName="text-xl leading-relaxed text-black/80 font-light"
+                multiline
+                as="p"
+              />
+            ) : (
+              <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
+                {profile.bio}
+              </p>
+            )}
           </motion.section>
         )}
 
@@ -236,15 +311,49 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                     </div>
                     
                     {/* Content */}
-                    <h3 className="text-2xl font-bold tracking-tight mb-1">
-                      {exp.jobTitle}
-                    </h3>
-                    <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
-                      {exp.company}
-                    </p>
-                    <p className="text-black/70 leading-relaxed max-w-xl">
-                      {exp.description}
-                    </p>
+                    {editMode ? (
+                      <InlineEdit
+                        value={exp.jobTitle}
+                        onSave={(v) => handleExperienceUpdate(exp.id, 'jobTitle', v)}
+                        placeholder="Job Title"
+                        className="text-2xl font-bold tracking-tight mb-1"
+                        inputClassName="text-2xl font-bold tracking-tight"
+                        as="h3"
+                      />
+                    ) : (
+                      <h3 className="text-2xl font-bold tracking-tight mb-1">
+                        {exp.jobTitle}
+                      </h3>
+                    )}
+                    {editMode ? (
+                      <InlineEdit
+                        value={exp.company}
+                        onSave={(v) => handleExperienceUpdate(exp.id, 'company', v)}
+                        placeholder="Company"
+                        className="text-sm uppercase tracking-widest text-black/50 mb-4"
+                        inputClassName="text-sm uppercase tracking-widest text-black/50"
+                        as="p"
+                      />
+                    ) : (
+                      <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
+                        {exp.company}
+                      </p>
+                    )}
+                    {editMode ? (
+                      <InlineEdit
+                        value={exp.description}
+                        onSave={(v) => handleExperienceUpdate(exp.id, 'description', v)}
+                        placeholder="Describe your role..."
+                        className="text-black/70 leading-relaxed max-w-xl"
+                        inputClassName="text-black/70 leading-relaxed"
+                        multiline
+                        as="p"
+                      />
+                    ) : (
+                      <p className="text-black/70 leading-relaxed max-w-xl">
+                        {exp.description}
+                      </p>
+                    )}
                   </motion.div>
                 ))}
               </div>
@@ -286,14 +395,37 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                   </div>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-bold uppercase tracking-wide text-sm">{project.title}</h3>
+                      {editMode ? (
+                        <InlineEdit
+                          value={project.title}
+                          onSave={(v) => handleProjectUpdate(project.id, 'title', v)}
+                          placeholder="Project Title"
+                          className="font-bold uppercase tracking-wide text-sm"
+                          inputClassName="font-bold uppercase tracking-wide text-sm"
+                          as="h3"
+                        />
+                      ) : (
+                        <h3 className="font-bold uppercase tracking-wide text-sm">{project.title}</h3>
+                      )}
                       {project.link && (
                         <a href={project.link} className="text-black/30 hover:text-black transition-colors">
                           <ExternalLink className="h-4 w-4" />
                         </a>
                       )}
                     </div>
-                    <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
+                    {editMode ? (
+                      <InlineEdit
+                        value={project.description}
+                        onSave={(v) => handleProjectUpdate(project.id, 'description', v)}
+                        placeholder="Project description..."
+                        className="text-sm text-black/60 leading-relaxed"
+                        inputClassName="text-sm text-black/60 leading-relaxed"
+                        multiline
+                        as="p"
+                      />
+                    ) : (
+                      <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
+                    )}
                   </div>
                 </motion.div>
               ))}
