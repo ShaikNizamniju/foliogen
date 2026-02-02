@@ -170,12 +170,47 @@ export function OnboardingTour() {
     }
   };
 
+  // Elevate the target element above the overlay
+  useEffect(() => {
+    const step = tourSteps[currentStep];
+    if (!step.target || !isVisible) return;
+
+    const element = document.querySelector(step.target) as HTMLElement;
+    if (element) {
+      // Store original styles
+      const originalZIndex = element.style.zIndex;
+      const originalPosition = element.style.position;
+      const originalPointerEvents = element.style.pointerEvents;
+
+      // Elevate element above overlay
+      element.style.zIndex = '9999';
+      element.style.position = 'relative';
+      element.style.pointerEvents = 'auto';
+
+      return () => {
+        // Restore original styles
+        element.style.zIndex = originalZIndex;
+        element.style.position = originalPosition;
+        element.style.pointerEvents = originalPointerEvents;
+      };
+    }
+  }, [currentStep, isVisible]);
+
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Spotlight overlay with cutout - no blur, uses box-shadow for dimming */}
-          {targetRect && step.position !== 'center' ? (
+          {/* Dark overlay that covers everything */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9997] bg-black/80 pointer-events-auto"
+            onClick={handleSkip}
+          />
+
+          {/* Spotlight cutout - transparent window around target */}
+          {targetRect && step.position !== 'center' && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -187,43 +222,23 @@ export function OnboardingTour() {
                 width: targetRect.width + 16,
                 height: targetRect.height + 16,
                 borderRadius: '12px',
-                boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.75)',
+                boxShadow: '0 0 0 4px hsl(var(--primary) / 0.5), 0 0 20px 4px hsl(var(--primary) / 0.3)',
+                backgroundColor: 'transparent',
               }}
-              onClick={handleSkip}
             >
-              {/* Click-through area for the rest of the screen */}
-              <div 
-                className="fixed inset-0 -z-10 pointer-events-auto" 
-                style={{ 
-                  top: -(targetRect.top - 8), 
-                  left: -(targetRect.left - 8),
-                  width: '100vw',
-                  height: '100vh',
-                }}
-                onClick={handleSkip}
-              />
               {/* Pulsing beacon ring around the visible element */}
               <motion.div
                 className="absolute inset-0 rounded-xl border-2 border-primary pointer-events-none"
                 animate={{
                   boxShadow: [
-                    '0 0 0 0 hsl(var(--primary) / 0.5)',
-                    '0 0 0 8px hsl(var(--primary) / 0)',
-                    '0 0 0 0 hsl(var(--primary) / 0.5)',
+                    '0 0 0 0 hsl(var(--primary) / 0.6)',
+                    '0 0 0 12px hsl(var(--primary) / 0)',
+                    '0 0 0 0 hsl(var(--primary) / 0.6)',
                   ],
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                transition={{ duration: 1.5, repeat: Infinity }}
               />
             </motion.div>
-          ) : (
-            /* Center overlay for welcome step - simple dim, no blur */
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9998] bg-black/75"
-              onClick={handleSkip}
-            />
           )}
 
           {/* Tooltip Card */}

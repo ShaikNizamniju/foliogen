@@ -49,7 +49,7 @@ export function SourceDataPanel() {
       {/* Tabs for Import vs Manual */}
       <Tabs value={activeSourceTab} onValueChange={(v) => setActiveSourceTab(v as any)} className="flex-1 flex flex-col overflow-hidden">
         <TabsList className="grid w-full grid-cols-2 mx-4 mt-4" style={{ width: 'calc(100% - 2rem)' }}>
-          <TabsTrigger value="import" className="gap-1.5">
+          <TabsTrigger value="import" className="gap-1.5" data-tour="profile">
             <FileText className="h-3.5 w-3.5" />
             Import
           </TabsTrigger>
@@ -60,46 +60,68 @@ export function SourceDataPanel() {
         </TabsList>
 
         <ScrollArea className="flex-1">
-          <TabsContent value="import" className="p-4 space-y-6 mt-0">
-            {/* LinkedIn URL Input */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Linkedin className="h-4 w-4 text-[#0A66C2]" />
-                LinkedIn Profile URL
-              </Label>
-              <div className="flex gap-2">
-                <Input
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  value={profile.linkedinUrl}
-                  onChange={(e) => updateProfile({ linkedinUrl: e.target.value })}
-                  className="flex-1"
-                />
-                <Button variant="outline" size="icon" disabled>
-                  <Link className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Add your LinkedIn URL to display on your portfolio
-              </p>
-            </div>
+          <TabsContent value="import" className="p-4 space-y-4 mt-0">
+            {/* Nested tabs for Resume vs LinkedIn */}
+            <Tabs defaultValue="resume" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="resume" className="gap-1.5 text-xs">
+                  <FileText className="h-3.5 w-3.5" />
+                  Upload Resume
+                </TabsTrigger>
+                <TabsTrigger value="linkedin" className="gap-1.5 text-xs">
+                  <Linkedin className="h-3.5 w-3.5 text-[#0A66C2]" />
+                  LinkedIn PDF
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Resume Upload */}
-            <div className="space-y-3">
-              <Label className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Upload Resume
-              </Label>
-              <ResumeUpload />
-            </div>
+              <TabsContent value="resume" className="mt-0 space-y-4">
+                <div className="rounded-lg border border-dashed border-border p-4 bg-muted/30">
+                  <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    Upload Your Resume
+                  </h4>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Upload a PDF resume and our AI will extract your experience, skills, and projects automatically.
+                  </p>
+                  <ResumeUpload />
+                </div>
+              </TabsContent>
 
-            {/* LinkedIn PDF Upload */}
-            <div className="space-y-3">
-              <Label className="flex items-center gap-2">
-                <Linkedin className="h-4 w-4 text-[#0A66C2]" />
-                Import LinkedIn PDF
-              </Label>
-              <LinkedInPdfUpload />
-            </div>
+              <TabsContent value="linkedin" className="mt-0 space-y-4">
+                <div className="rounded-lg border border-dashed border-border p-4 bg-muted/30">
+                  <h4 className="font-medium text-sm mb-2 flex items-center gap-2">
+                    <Linkedin className="h-4 w-4 text-[#0A66C2]" />
+                    Import LinkedIn Profile
+                  </h4>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Export your LinkedIn profile as a PDF and upload it here. 
+                    <span className="block mt-1 text-muted-foreground/80">
+                      Go to LinkedIn → Your Profile → More → Save to PDF
+                    </span>
+                  </p>
+                  <LinkedInPdfUpload />
+                </div>
+
+                {/* LinkedIn URL Input */}
+                <div className="space-y-2 pt-4 border-t border-border">
+                  <Label className="flex items-center gap-2 text-sm">
+                    <Link className="h-4 w-4 text-muted-foreground" />
+                    LinkedIn Profile URL (for display)
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="https://linkedin.com/in/yourprofile"
+                      value={profile.linkedinUrl}
+                      onChange={(e) => updateProfile({ linkedinUrl: e.target.value })}
+                      className="flex-1 text-sm"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    This URL will be displayed on your public portfolio
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="manual" className="p-4 mt-0">
