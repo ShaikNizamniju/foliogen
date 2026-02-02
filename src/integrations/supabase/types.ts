@@ -127,7 +127,72 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          bio: string | null
+          created_at: string | null
+          full_name: string | null
+          github_url: string | null
+          headline: string | null
+          id: string | null
+          key_highlights: string[] | null
+          linkedin_url: string | null
+          location: string | null
+          photo_url: string | null
+          projects: Json | null
+          selected_template: string | null
+          skills: string[] | null
+          twitter_url: string | null
+          updated_at: string | null
+          user_id: string | null
+          views: number | null
+          website: string | null
+          work_experience: Json | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          github_url?: string | null
+          headline?: string | null
+          id?: string | null
+          key_highlights?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          photo_url?: string | null
+          projects?: Json | null
+          selected_template?: string | null
+          skills?: string[] | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          views?: number | null
+          website?: string | null
+          work_experience?: Json | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          github_url?: string | null
+          headline?: string | null
+          id?: string | null
+          key_highlights?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          photo_url?: string | null
+          projects?: Json | null
+          selected_template?: string | null
+          skills?: string[] | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          views?: number | null
+          website?: string | null
+          work_experience?: Json | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       increment_views: { Args: { p_user_id: string }; Returns: undefined }

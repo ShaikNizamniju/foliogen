@@ -6,6 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+const MAX_QUERY_SIZE = 1000; // 1KB limit for user queries
+const MAX_CONVERSATION_HISTORY = 20; // Maximum messages in history
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -14,24 +17,62 @@ serve(async (req) => {
   try {
     const { userQuery, profileId, conversationHistory = [] } = await req.json();
 
-    if (!userQuery || !profileId) {
+    // Input validation
+    if (!userQuery || typeof userQuery !== 'string') {
       return new Response(
-        JSON.stringify({ error: 'userQuery and profileId are required' }),
+        JSON.stringify({ error: 'userQuery is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Chat request for profile:', profileId, 'Query:', userQuery);
+    if (userQuery.length > MAX_QUERY_SIZE) {
+      return new Response(
+        JSON.stringify({ error: `Query too long. Maximum ${MAX_QUERY_SIZE} characters allowed.` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Initialize Supabase client
+    if (!profileId || typeof profileId !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'profileId is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid profileId format' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!Array.isArray(conversationHistory)) {
+      return new Response(
+        JSON.stringify({ error: 'conversationHistory must be an array' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (conversationHistory.length > MAX_CONVERSATION_HISTORY) {
+      return new Response(
+        JSON.stringify({ error: `Conversation too long. Maximum ${MAX_CONVERSATION_HISTORY} messages allowed.` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Chat request for profile:', profileId, 'Query length:', userQuery.length);
+
+    // Initialize Supabase client with service role for fetching public profile data
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch the full profile data
+    // Fetch the full profile data (this is for public portfolio chatbot, no auth needed)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('*')
+      .select('full_name, headline, bio, location, website, skills, key_highlights, work_experience, projects')
       .eq('user_id', profileId)
       .maybeSingle();
 
@@ -50,13 +91,12 @@ serve(async (req) => {
       );
     }
 
-    // Construct profile data for the AI
+    // Construct profile data for the AI (excluding email for privacy)
     const profileData = {
       name: profile.full_name || 'Unknown',
       headline: profile.headline || '',
       bio: profile.bio || '',
       location: profile.location || '',
-      email: profile.email || '',
       website: profile.website || '',
       skills: profile.skills || [],
       keyHighlights: profile.key_highlights || [],
@@ -78,10 +118,24 @@ CRITICAL RULES:
 5. If asked about something not in the data, simply say "I don't see that in their experience" and move on.
 6. Highlight specific achievements and metrics when relevant—these make candidates memorable.`;
 
+    // Sanitize and limit conversation history
+    const sanitizedHistory = conversationHistory
+      .slice(-MAX_CONVERSATION_HISTORY)
+      .filter((msg: { role?: string; content?: string }) => 
+        msg && typeof msg === 'object' && 
+        (msg.role === 'user' || msg.role === 'assistant') && 
+        typeof msg.content === 'string' &&
+        msg.content.length <= MAX_QUERY_SIZE
+      )
+      .map((msg: { role: string; content: string }) => ({
+        role: msg.role,
+        content: msg.content.substring(0, MAX_QUERY_SIZE)
+      }));
+
     // Build messages array
     const messages = [
       { role: 'system', content: systemPrompt },
-      ...conversationHistory,
+      ...sanitizedHistory,
       { role: 'user', content: userQuery }
     ];
 

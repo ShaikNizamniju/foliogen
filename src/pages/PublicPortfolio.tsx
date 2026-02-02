@@ -66,8 +66,9 @@ export default function PublicPortfolio() {
     setLoading(true);
     setError(null);
 
+    // Use profiles_public view to exclude email from public access
     const { data, error: fetchError } = await supabase
-      .from('profiles')
+      .from('profiles_public')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
@@ -101,7 +102,7 @@ export default function PublicPortfolio() {
       bio: data.bio || '',
       headline: data.headline || '',
       location: data.location || '',
-      email: data.email || '',
+      email: '', // Email not available in public view for privacy
       website: data.website || '',
       linkedinUrl: data.linkedin_url || '',
       githubUrl: data.github_url || '',
