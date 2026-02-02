@@ -12,6 +12,9 @@ import { PrintableResume } from '@/components/dashboard/templates/PrintableResum
 import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
 import { QuickStartModal } from '@/components/dashboard/QuickStartModal';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Pencil, Eye } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Dashboard() {
   // Note: Route protection is handled by ProtectedRoute wrapper in App.tsx
@@ -30,6 +33,8 @@ function DashboardInner() {
   const location = useLocation();
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [mobileTab, setMobileTab] = useState<'edit' | 'preview'>('edit');
+  const isMobile = useIsMobile();
   
   // Check if we're on a section page
   const section = new URLSearchParams(location.search).get('section');
@@ -118,18 +123,44 @@ function DashboardInner() {
           {isMainDashboard ? (
             /* Split View: Source Data (40%) | Live Preview (60%) */
             <div className="flex-1 overflow-hidden">
-              <ResizablePanelGroup direction="horizontal" className="h-full">
-                <ResizablePanel defaultSize={40} minSize={30} maxSize={50}>
-                  <SourceDataPanel />
-                </ResizablePanel>
-                <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={60} minSize={40}>
-                  <LivePreviewPanel 
-                    editMode={editMode} 
-                    onToggleEditMode={() => setEditMode(!editMode)} 
-                  />
-                </ResizablePanel>
-              </ResizablePanelGroup>
+              {isMobile ? (
+                /* Mobile: Stacked tabs for Edit vs Preview */
+                <Tabs value={mobileTab} onValueChange={(v) => setMobileTab(v as 'edit' | 'preview')} className="h-full flex flex-col">
+                  <TabsList className="grid w-full grid-cols-2 shrink-0 rounded-none border-b">
+                    <TabsTrigger value="edit" className="gap-1.5 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">
+                      <Pencil className="h-4 w-4" />
+                      Edit
+                    </TabsTrigger>
+                    <TabsTrigger value="preview" className="gap-1.5 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary">
+                      <Eye className="h-4 w-4" />
+                      Preview
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="edit" className="flex-1 overflow-hidden mt-0">
+                    <SourceDataPanel />
+                  </TabsContent>
+                  <TabsContent value="preview" className="flex-1 overflow-hidden mt-0">
+                    <LivePreviewPanel 
+                      editMode={editMode} 
+                      onToggleEditMode={() => setEditMode(!editMode)} 
+                    />
+                  </TabsContent>
+                </Tabs>
+              ) : (
+                /* Desktop: Side-by-side resizable panels */
+                <ResizablePanelGroup direction="horizontal" className="h-full">
+                  <ResizablePanel defaultSize={40} minSize={30} maxSize={50}>
+                    <SourceDataPanel />
+                  </ResizablePanel>
+                  <ResizableHandle withHandle />
+                  <ResizablePanel defaultSize={60} minSize={40}>
+                    <LivePreviewPanel 
+                      editMode={editMode} 
+                      onToggleEditMode={() => setEditMode(!editMode)} 
+                    />
+                  </ResizablePanel>
+                </ResizablePanelGroup>
+              )}
             </div>
           ) : (
             /* Section Content for Templates, Settings, Job Match */
