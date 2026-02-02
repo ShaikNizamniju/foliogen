@@ -34,7 +34,7 @@ export default function PublicPortfolio() {
     }
   }, [id]);
 
-  // Increment view count - only for non-owners, with localStorage spam prevention
+  // Increment view count and track analytics - only for non-owners, with localStorage spam prevention
   useEffect(() => {
     if (!id || viewCounted.current) return;
     
@@ -55,6 +55,36 @@ export default function PublicPortfolio() {
     viewCounted.current = true;
     localStorage.setItem(visitKey, now.toString());
     
+    // Get device and browser info
+    const userAgent = navigator.userAgent;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
+    const isTablet = /iPad|Android(?!.*Mobile)/i.test(userAgent);
+    const deviceType = isMobile ? (isTablet ? 'Tablet' : 'Mobile') : 'Desktop';
+    
+    let browser = 'Other';
+    if (userAgent.includes('Firefox')) browser = 'Firefox';
+    else if (userAgent.includes('Chrome')) browser = 'Chrome';
+    else if (userAgent.includes('Safari')) browser = 'Safari';
+    else if (userAgent.includes('Edge')) browser = 'Edge';
+
+    // Track detailed analytics event
+    supabase
+      .from('analytics_events')
+      .insert({
+        profile_user_id: id,
+        event_type: 'page_view',
+        referrer: document.referrer || null,
+        device_type: deviceType,
+        browser: browser,
+        page_path: window.location.pathname
+      })
+      .then(({ error }) => {
+        if (error) {
+          console.error('Failed to track analytics:', error);
+        }
+      });
+    
+    // Also increment the simple view counter
     supabase.rpc('increment_views', { p_user_id: id }).then(({ error }) => {
       if (error) {
         console.error('Failed to increment views:', error);
@@ -113,6 +143,7 @@ export default function PublicPortfolio() {
       keyHighlights: keyHighlights,
       views: data.views || 0,
       selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
+      // Note: SEO fields are not in the public view, will fetch separately if needed
     });
     setLoading(false);
   };

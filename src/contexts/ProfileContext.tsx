@@ -40,6 +40,10 @@ export interface ProfileData {
   keyHighlights: string[];
   views: number;
   selectedTemplate: 'minimalist' | 'creative' | 'aipm' | 'dev' | 'brutalist' | 'academic' | 'studio' | 'executive' | 'influencer' | 'swiss' | 'noir';
+  // SEO fields
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string[];
 }
 
 interface ProfileContextType {
@@ -67,6 +71,9 @@ const defaultProfile: ProfileData = {
   keyHighlights: [],
   views: 0,
   selectedTemplate: 'minimalist',
+  metaTitle: '',
+  metaDescription: '',
+  metaKeywords: [],
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -126,6 +133,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         keyHighlights: keyHighlights,
         views: data.views || 0,
         selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
+        metaTitle: (data as any).meta_title || '',
+        metaDescription: (data as any).meta_description || '',
+        metaKeywords: (data as any).meta_keywords || [],
       });
     }
     setLoading(false);

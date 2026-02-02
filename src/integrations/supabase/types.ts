@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          event_type: string
+          id: string
+          page_path: string | null
+          profile_user_id: string
+          referrer: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          profile_user_id: string
+          referrer?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          profile_user_id?: string
+          referrer?: string | null
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          content: string
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          published: boolean
+          published_at: string | null
+          slug: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string
@@ -68,6 +149,9 @@ export type Database = {
           key_highlights: string[] | null
           linkedin_url: string | null
           location: string | null
+          meta_description: string | null
+          meta_keywords: string[] | null
+          meta_title: string | null
           photo_url: string | null
           projects: Json | null
           selected_template: string | null
@@ -90,6 +174,9 @@ export type Database = {
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_title?: string | null
           photo_url?: string | null
           projects?: Json | null
           selected_template?: string | null
@@ -112,6 +199,9 @@ export type Database = {
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_title?: string | null
           photo_url?: string | null
           projects?: Json | null
           selected_template?: string | null
