@@ -86,20 +86,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      fetchOrCreateProfile();
+      fetchProfileWithRetry();
     } else {
       setProfile(defaultProfile);
       setLoading(false);
     }
   }, [user]);
 
-  const fetchOrCreateProfile = async () => {
+  const fetchProfileWithRetry = async (attempt = 1, maxAttempts = 3) => {
     if (!user) return;
     
     setLoading(true);
     
     try {
-      // First, try to fetch existing profile
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -112,44 +111,21 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // If no profile exists, auto-create one for the new user
+      // If no profile yet (trigger may still be running), retry with delay
       if (!data) {
-        const { data: newProfile, error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: user.id,
-            email: user.email || '',
-            full_name: user.user_metadata?.full_name || '',
-          })
-          .select()
-          .single();
-
-        if (insertError) {
-          // Profile might already exist due to trigger - try fetching again
-          if (insertError.code === '23505') {
-            const { data: retryData } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('user_id', user.id)
-              .maybeSingle();
-            
-            if (retryData) {
-              mapProfileData(retryData);
-            }
-          } else {
-            console.error('Error creating profile:', insertError);
-          }
-        } else if (newProfile) {
-          mapProfileData(newProfile);
+        if (attempt < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return fetchProfileWithRetry(attempt + 1, maxAttempts);
         }
-        
+        // After max attempts, profile still doesn't exist - show empty state
+        console.warn('Profile not found after retries');
         setLoading(false);
         return;
       }
 
       mapProfileData(data);
     } catch (err) {
-      console.error('Profile fetch/create error:', err);
+      console.error('Profile fetch error:', err);
     } finally {
       setLoading(false);
     }
