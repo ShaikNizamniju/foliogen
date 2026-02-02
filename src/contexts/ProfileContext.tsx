@@ -52,6 +52,8 @@ interface ProfileContextType {
   saveProfile: () => Promise<{ error: Error | null }>;
   loading: boolean;
   saving: boolean;
+  initializeProfile: () => Promise<void>;
+  initializing: boolean;
 }
 
 const defaultProfile: ProfileData = {
@@ -83,6 +85,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [initializing, setInitializing] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -171,6 +174,40 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setProfile(prev => ({ ...prev, ...updates }));
   };
 
+  const initializeProfile = async () => {
+    if (!user) return;
+    
+    setInitializing(true);
+    
+    try {
+      // Try to create a new profile for the user
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert({
+          user_id: user.id,
+          email: user.email || '',
+          full_name: '',
+        })
+        .select()
+        .single();
+      
+      if (error) {
+        // If profile already exists, try fetching it
+        if (error.code === '23505') {
+          await fetchProfileWithRetry();
+        } else {
+          console.error('Error creating profile:', error);
+        }
+      } else if (data) {
+        mapProfileData(data);
+      }
+    } catch (err) {
+      console.error('Profile initialization error:', err);
+    } finally {
+      setInitializing(false);
+    }
+  };
+
   const saveProfile = async () => {
     if (!user) return { error: new Error('Not authenticated') };
     
@@ -202,7 +239,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ProfileContext.Provider value={{ profile, updateProfile, saveProfile, loading, saving }}>
+    <ProfileContext.Provider value={{ profile, updateProfile, saveProfile, loading, saving, initializeProfile, initializing }}>
       {children}
     </ProfileContext.Provider>
   );
