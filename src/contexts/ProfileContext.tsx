@@ -1,7 +1,9 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
 import { Json } from '@/integrations/supabase/types';
+
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export interface WorkExperience {
   id: string;
@@ -52,6 +54,7 @@ interface ProfileContextType {
   saveProfile: () => Promise<{ error: Error | null }>;
   loading: boolean;
   saving: boolean;
+  saveStatus: SaveStatus;
   initializeProfile: () => Promise<void>;
   initializing: boolean;
 }
@@ -85,7 +88,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [initializing, setInitializing] = useState(false);
+  const [hasLoadedInitial, setHasLoadedInitial] = useState(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -93,8 +100,45 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     } else {
       setProfile(defaultProfile);
       setLoading(false);
+      setHasLoadedInitial(false);
     }
   }, [user]);
+
+  // Debounced auto-save effect
+  useEffect(() => {
+    // Don't auto-save if profile hasn't loaded yet or there's no profile ID
+    if (!hasLoadedInitial || !profile.id || loading) return;
+
+    // Clear any existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set a new timer for 1 second debounce
+    debounceTimerRef.current = setTimeout(async () => {
+      setSaveStatus('saving');
+      const { error } = await saveProfile();
+      
+      if (error) {
+        setSaveStatus('error');
+      } else {
+        setSaveStatus('saved');
+        // Reset to idle after 2 seconds
+        if (saveStatusTimerRef.current) {
+          clearTimeout(saveStatusTimerRef.current);
+        }
+        saveStatusTimerRef.current = setTimeout(() => {
+          setSaveStatus('idle');
+        }, 2000);
+      }
+    }, 1000);
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [profile, hasLoadedInitial, loading]);
 
   const fetchProfileWithRetry = async (attempt = 1, maxAttempts = 3) => {
     if (!user) return;
@@ -129,6 +173,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       // Get auth name from user metadata to auto-fill if profile name is empty
       const authName = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
       mapProfileData(data, authName);
+      setHasLoadedInitial(true);
     } catch (err) {
       console.error('Profile fetch error:', err);
     } finally {
@@ -244,7 +289,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ProfileContext.Provider value={{ profile, updateProfile, saveProfile, loading, saving, initializeProfile, initializing }}>
+    <ProfileContext.Provider value={{ profile, updateProfile, saveProfile, loading, saving, saveStatus, initializeProfile, initializing }}>
       {children}
     </ProfileContext.Provider>
   );

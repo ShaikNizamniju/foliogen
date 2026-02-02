@@ -174,7 +174,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
           {profile.website && (
             <motion.div variants={itemVariants} className="flex items-start gap-3">
               <Globe className="h-4 w-4 mt-0.5 text-white/40" />
-              <a href={profile.website} className="text-white/80 hover:text-white transition-colors">
+              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-white transition-colors">
                 Website
               </a>
             </motion.div>
@@ -189,17 +189,17 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           {profile.linkedinUrl && (
-            <a href={profile.linkedinUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Linkedin className="h-4 w-4" />
             </a>
           )}
           {profile.githubUrl && (
-            <a href={profile.githubUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Github className="h-4 w-4" />
             </a>
           )}
           {profile.twitterUrl && (
-            <a href={profile.twitterUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.twitterUrl} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Twitter className="h-4 w-4" />
             </a>
           )}

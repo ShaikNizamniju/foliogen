@@ -7,30 +7,19 @@ import { BasicInfoForm } from './forms/BasicInfoForm';
 import { WorkExperienceForm } from './forms/WorkExperienceForm';
 import { ProjectsForm } from './forms/ProjectsForm';
 import { SkillsForm } from './forms/SkillsForm';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, FileText, Linkedin, User, Briefcase, FolderKanban, Sparkles, Link } from 'lucide-react';
-import { toast } from 'sonner';
+import { FileText, Linkedin, User, Briefcase, FolderKanban, Sparkles, Link } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function SourceDataPanel() {
-  const { profile, updateProfile, saveProfile, saving } = useProfile();
+  const { profile, updateProfile } = useProfile();
   const [activeSourceTab, setActiveSourceTab] = useState<'import' | 'manual'>('import');
   const [activeManualTab, setActiveManualTab] = useState('basic');
   const [syncSource, setSyncSource] = useState<'resume' | 'linkedin' | null>(
     profile.fullName ? 'resume' : null
   );
-
-  const handleSave = async () => {
-    const { error } = await saveProfile();
-    if (error) {
-      toast.error('Failed to save profile');
-    } else {
-      toast.success('Profile saved successfully');
-    }
-  };
 
   return (
     <div className="h-full flex flex-col bg-card border-r border-border">
@@ -38,10 +27,7 @@ export function SourceDataPanel() {
       <div className="p-4 border-b border-border shrink-0">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold">Source Data</h2>
-          <Button onClick={handleSave} disabled={saving} size="sm" className="gap-1.5">
-            <Save className="h-3.5 w-3.5" />
-            {saving ? 'Saving...' : 'Save'}
-          </Button>
+          {/* Auto-save indicator is now in the main header */}
         </div>
         <SyncStatusBadge source={syncSource} />
       </div>
