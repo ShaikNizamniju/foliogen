@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Rocket, FileDown, Share2, Eye } from 'lucide-react';
+import { Rocket, FileDown, Share2, Eye, Check, Loader2, AlertCircle } from 'lucide-react';
 import { PublishDialog } from './PublishDialog';
 import { ShareDialog } from './ShareDialog';
 import { ModeToggle } from '@/components/ModeToggle';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { cn } from '@/lib/utils';
 
 export function DashboardHeader() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const { profile } = useProfile();
+  const { profile, saveStatus } = useProfile();
   const { user } = useAuth();
 
   // Get the base URL for portfolio
@@ -52,6 +53,35 @@ export function DashboardHeader() {
     }, 100);
   };
 
+  // Save status indicator
+  const renderSaveStatus = () => {
+    switch (saveStatus) {
+      case 'saving':
+        return (
+          <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <span>Saving...</span>
+          </div>
+        );
+      case 'saved':
+        return (
+          <div className="flex items-center gap-1.5 text-emerald-600 text-sm">
+            <Check className="h-3.5 w-3.5" />
+            <span>Saved</span>
+          </div>
+        );
+      case 'error':
+        return (
+          <div className="flex items-center gap-1.5 text-destructive text-sm">
+            <AlertCircle className="h-3.5 w-3.5" />
+            <span>Error saving</span>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <header className="h-14 border-b border-border bg-card flex items-center justify-between px-6 shrink-0 print:hidden">
@@ -64,7 +94,11 @@ export function DashboardHeader() {
             <span className="text-xs text-muted-foreground">views</span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          {/* Auto-save Status */}
+          {renderSaveStatus()}
+          
+          <div className="flex items-center gap-2">
           <ModeToggle />
           <Button onClick={() => setShareOpen(true)} variant="outline" size="sm" data-tour="chat">
             <Share2 className="h-4 w-4 mr-2" />
@@ -78,6 +112,7 @@ export function DashboardHeader() {
             <Rocket className="h-4 w-4 mr-2" />
             Publish Portfolio
           </Button>
+          </div>
         </div>
       </header>
       <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />

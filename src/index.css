@@ -228,11 +228,10 @@
 
 /* Print styles for PDF export */
 @media print {
-  /* Hide all UI elements */
+  /* Hide all dashboard UI elements */
   aside,
   [data-sidebar],
   nav,
-  header,
   .sidebar,
   .no-print,
   [aria-label="Edit"],
@@ -245,9 +244,28 @@
   .mode-toggle,
   [class*="sheet"],
   [class*="dialog"],
-  [role="dialog"] {
+  [role="dialog"],
+  .print\\:hidden,
+  header.print\\:hidden {
     display: none !important;
     visibility: hidden !important;
+  }
+
+  /* Show the printable resume container */
+  #printable-resume-container {
+    display: block !important;
+    position: static !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    margin: 0 auto !important;
+    background: white !important;
+  }
+
+  /* Hide the main dashboard content during print */
+  .min-h-screen.flex.w-full,
+  #portfolio-export-container {
+    display: none !important;
   }
 
   /* Layout reset */
