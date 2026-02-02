@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import DOMPurify from 'dompurify';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -131,6 +132,21 @@ export function BlogSection() {
     }));
   };
 
+  // Sanitize HTML content to prevent XSS attacks
+  const sanitizeContent = (content: string): string => {
+    return DOMPurify.sanitize(content, {
+      ALLOWED_TAGS: [
+        'p', 'br', 'b', 'i', 'em', 'strong', 'a', 'ul', 'ol', 'li', 
+        'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'hr', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td'
+      ],
+      ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'title', 'class'],
+      ALLOW_DATA_ATTR: false,
+      FORBID_TAGS: ['script', 'style', 'iframe', 'form', 'input', 'button', 'object', 'embed'],
+      FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
+    });
+  };
+
   const handleSave = async () => {
     if (!user) return;
     if (!formData.title.trim() || !formData.content.trim()) {
@@ -140,11 +156,15 @@ export function BlogSection() {
 
     setSaving(true);
 
+    // Sanitize content before storing to prevent XSS
+    const sanitizedContent = sanitizeContent(formData.content);
+    const sanitizedExcerpt = formData.excerpt ? sanitizeContent(formData.excerpt) : null;
+
     const postData = {
-      title: formData.title,
+      title: DOMPurify.sanitize(formData.title, { ALLOWED_TAGS: [] }), // Plain text only
       slug: formData.slug || generateSlug(formData.title),
-      excerpt: formData.excerpt || null,
-      content: formData.content,
+      excerpt: sanitizedExcerpt,
+      content: sanitizedContent,
       cover_image_url: formData.coverImageUrl || null,
       published: formData.published,
       published_at: formData.published ? new Date().toISOString() : null,
