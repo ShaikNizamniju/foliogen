@@ -24,7 +24,7 @@ export default function Dashboard() {
 }
 
 function DashboardInner() {
-  const { profile, loading } = useProfile();
+  const { profile, loading, initializeProfile, initializing } = useProfile();
   const location = useLocation();
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -33,14 +33,17 @@ function DashboardInner() {
   const section = new URLSearchParams(location.search).get('section');
   const isMainDashboard = !section;
   
+  // Check if profile is empty (no id means profile wasn't found/created)
+  const isProfileEmpty = !profile.id;
+  
   // Show quick start modal for new users (no name set yet)
   useEffect(() => {
-    if (!loading && !profile.fullName) {
+    if (!loading && !isProfileEmpty && !profile.fullName) {
       // Small delay for better UX
       const timer = setTimeout(() => setShowQuickStart(true), 500);
       return () => clearTimeout(timer);
     }
-  }, [loading, profile.fullName]);
+  }, [loading, isProfileEmpty, profile.fullName]);
   
   // Show loading spinner while setting up workspace
   if (loading) {
@@ -49,6 +52,41 @@ function DashboardInner() {
         <div className="text-center space-y-4">
           <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-muted-foreground">Setting up your workspace...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Failsafe: If profile is empty after loading, show initialize button
+  if (isProfileEmpty) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="text-center space-y-6 p-8 max-w-md">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Welcome to FolioGen!</h2>
+            <p className="text-muted-foreground">
+              Let's set up your profile to get started with your portfolio.
+            </p>
+          </div>
+          <button
+            onClick={initializeProfile}
+            disabled={initializing}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+          >
+            {initializing ? (
+              <>
+                <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                Initializing...
+              </>
+            ) : (
+              'Initialize Profile'
+            )}
+          </button>
         </div>
       </div>
     );
