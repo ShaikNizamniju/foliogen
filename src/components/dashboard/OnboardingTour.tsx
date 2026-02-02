@@ -174,45 +174,56 @@ export function OnboardingTour() {
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Overlay */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9998] bg-background/80 backdrop-blur-sm"
-            onClick={handleSkip}
-          />
-
-          {/* Spotlight effect on target */}
-          {targetRect && step.position !== 'center' && (
+          {/* Spotlight overlay with cutout - no blur, uses box-shadow for dimming */}
+          {targetRect && step.position !== 'center' ? (
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="fixed z-[9999] pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed z-[9998] pointer-events-none"
               style={{
                 top: targetRect.top - 8,
                 left: targetRect.left - 8,
                 width: targetRect.width + 16,
                 height: targetRect.height + 16,
                 borderRadius: '12px',
+                boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.75)',
               }}
+              onClick={handleSkip}
             >
-              {/* Pulsing beacon ring */}
+              {/* Click-through area for the rest of the screen */}
+              <div 
+                className="fixed inset-0 -z-10 pointer-events-auto" 
+                style={{ 
+                  top: -(targetRect.top - 8), 
+                  left: -(targetRect.left - 8),
+                  width: '100vw',
+                  height: '100vh',
+                }}
+                onClick={handleSkip}
+              />
+              {/* Pulsing beacon ring around the visible element */}
               <motion.div
-                className="absolute inset-0 rounded-xl border-2 border-primary"
+                className="absolute inset-0 rounded-xl border-2 border-primary pointer-events-none"
                 animate={{
                   boxShadow: [
-                    '0 0 0 0 hsl(var(--primary) / 0.4)',
-                    '0 0 0 12px hsl(var(--primary) / 0)',
-                    '0 0 0 0 hsl(var(--primary) / 0.4)',
+                    '0 0 0 0 hsl(var(--primary) / 0.5)',
+                    '0 0 0 8px hsl(var(--primary) / 0)',
+                    '0 0 0 0 hsl(var(--primary) / 0.5)',
                   ],
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
-              {/* Inner glow */}
-              <div className="absolute inset-0 rounded-xl bg-primary/10" />
             </motion.div>
+          ) : (
+            /* Center overlay for welcome step - simple dim, no blur */
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9998] bg-black/75"
+              onClick={handleSkip}
+            />
           )}
 
           {/* Tooltip Card */}
