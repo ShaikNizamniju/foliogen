@@ -5,6 +5,7 @@ import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { InlineEdit } from '@/components/ui/inline-edit';
 import { useProfile } from '@/contexts/ProfileContext';
+import { EmptyState } from './EmptyState';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
@@ -70,6 +71,13 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
       });
     }
   };
+
+  // Check if profile has content
+  const hasExperience = profile.workExperience.length > 0;
+  const hasProjects = profile.projects.length > 0;
+  const hasSkills = profile.skills.length > 0;
+  const hasBio = !!profile.bio;
+  const isEmpty = !hasExperience && !hasProjects && !hasSkills && !hasBio;
 
   return (
     <div className="min-h-screen bg-white text-black font-sans flex relative">
@@ -198,7 +206,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
         </motion.div>
 
         {/* Skills - Sidebar bottom */}
-        {profile.skills.length > 0 && (
+        {hasSkills ? (
           <motion.div 
             className="mt-auto pt-12"
             initial={{ opacity: 0 }}
@@ -220,6 +228,18 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
                   {skill}
                 </motion.span>
               ))}
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div 
+            className="mt-auto pt-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            <div className="border border-dashed border-white/20 rounded-lg p-4 text-center">
+              <p className="text-[10px] uppercase tracking-widest text-white/40 mb-1">Skills</p>
+              <p className="text-xs text-white/30">Upload resume to extract</p>
             </div>
           </motion.div>
         )}
@@ -280,7 +300,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
         )}
 
         {/* Experience Timeline */}
-        {profile.workExperience.length > 0 && (
+        {hasExperience ? (
           <motion.section variants={itemVariants} className="mb-16">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Experience
@@ -359,10 +379,14 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
               </div>
             </div>
           </motion.section>
+        ) : (
+          <motion.section variants={itemVariants} className="mb-16">
+            <EmptyState type="experience" variant="light" />
+          </motion.section>
         )}
 
         {/* Projects Grid */}
-        {profile.projects.length > 0 && (
+        {hasProjects ? (
           <motion.section variants={itemVariants}>
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Selected Work
@@ -430,6 +454,10 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
                 </motion.div>
               ))}
             </div>
+          </motion.section>
+        ) : (
+          <motion.section variants={itemVariants}>
+            <EmptyState type="projects" variant="light" />
           </motion.section>
         )}
       </motion.main>
