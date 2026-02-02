@@ -7,7 +7,6 @@ import { ModeToggle } from '@/components/ModeToggle';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
-import html2pdf from 'html2pdf.js';
 
 export function DashboardHeader() {
   const [publishOpen, setPublishOpen] = useState(false);
@@ -22,7 +21,7 @@ export function DashboardHeader() {
     return user ? `${baseUrl}/p/${user.id}` : '';
   };
 
-  const handleDownloadPdf = async () => {
+  const handleDownloadPdf = () => {
     // Target the ATS-friendly printable resume container
     const element = document.getElementById('printable-resume-container');
     
@@ -37,41 +36,20 @@ export function DashboardHeader() {
 
     setIsExporting(true);
     toast({
-      title: "Generating PDF...",
-      description: "Please wait while we create your ATS-friendly resume.",
+      title: "Preparing PDF...",
+      description: "Opening print dialog for your ATS-friendly resume.",
     });
 
-    const options = {
-      margin: 0,
-      filename: `${profile.fullName || 'resume'}-resume.pdf`,
-      image: { type: 'jpeg', quality: 1 },
-      html2canvas: { 
-        scale: 4, // Ultra-sharp text
-        useCORS: true,
-        letterRendering: true,
-        scrollY: 0,
-        backgroundColor: '#ffffff',
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-
-    try {
-      await html2pdf().set(options).from(element).save();
-      toast({
-        title: "Resume Downloaded!",
-        description: "Your ATS-friendly resume has been saved.",
-      });
-    } catch (error) {
-      console.error('PDF export error:', error);
-      toast({
-        title: "Export Failed",
-        description: "There was an error creating your PDF. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+    // Use browser's native print functionality - secure and no vulnerable dependencies
+    // The @media print CSS in index.css handles the styling
+    setTimeout(() => {
+      window.print();
       setIsExporting(false);
-    }
+      toast({
+        title: "Print Dialog Opened",
+        description: "Select 'Save as PDF' in your print dialog to download.",
+      });
+    }, 100);
   };
 
   return (
@@ -94,7 +72,7 @@ export function DashboardHeader() {
           </Button>
           <Button onClick={handleDownloadPdf} variant="outline" size="sm" disabled={isExporting} data-tour="pdf">
             <FileDown className="h-4 w-4 mr-2" />
-            {isExporting ? 'Exporting...' : 'Download PDF'}
+            {isExporting ? 'Preparing...' : 'Download PDF'}
           </Button>
           <Button onClick={() => setPublishOpen(true)} size="sm">
             <Rocket className="h-4 w-4 mr-2" />
