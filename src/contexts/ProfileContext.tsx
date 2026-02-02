@@ -126,7 +126,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      mapProfileData(data);
+      // Get auth name from user metadata to auto-fill if profile name is empty
+      const authName = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
+      mapProfileData(data, authName);
     } catch (err) {
       console.error('Profile fetch error:', err);
     } finally {
@@ -134,7 +136,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const mapProfileData = (data: any) => {
+  const mapProfileData = (data: any, authName?: string) => {
     const workExp = Array.isArray(data.work_experience) 
       ? (data.work_experience as unknown as WorkExperience[]) 
       : [];
@@ -146,9 +148,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       ? data.key_highlights as string[]
       : [];
     
+    // Auto-fill name from auth if profile name is empty
+    const fullName = data.full_name || authName || '';
+    
     setProfile({
       id: data.id,
-      fullName: data.full_name || '',
+      fullName,
       photoUrl: data.photo_url || '',
       bio: data.bio || '',
       headline: data.headline || '',
