@@ -1,18 +1,19 @@
 project_id = "abcrgpmwoqsfwtmliqwo"
 
-# Authenticated endpoints - require valid JWT
+# All functions use verify_jwt = false and validate JWTs in code using getClaims()
+# This is required for signing-keys compatibility
+
 [functions.parse-resume]
-verify_jwt = true
+verify_jwt = false
 
 [functions.enhance-project]
-verify_jwt = true
+verify_jwt = false
 
 [functions.analyze-job-match]
-verify_jwt = true
+verify_jwt = false
 
-# Public endpoints - intentionally open for public use
 [functions.send-contact-email]
-verify_jwt = false  # Public contact form
+verify_jwt = false
 
 [functions.chat-with-profile]
-verify_jwt = false  # Public portfolio chatbot
+verify_jwt = false
