@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/tooltip';
 
 // Dynamically use the installed pdfjs-dist version to prevent API/Worker mismatch
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.mjs`;
 
 export function LinkedInPdfUpload() {
   const [isDragging, setIsDragging] = useState(false);
