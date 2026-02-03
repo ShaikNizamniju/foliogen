@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 import { DashboardContent } from '@/components/dashboard/DashboardContent';
@@ -13,8 +14,9 @@ import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
 import { QuickStartModal } from '@/components/dashboard/QuickStartModal';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Pencil, Eye } from 'lucide-react';
+import { Pencil, Eye, RotateCcw } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { toast } from 'sonner';
 
 export default function Dashboard() {
   // Note: Route protection is handled by ProtectedRoute wrapper in App.tsx
@@ -34,7 +36,51 @@ function DashboardInner() {
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [mobileTab, setMobileTab] = useState<'edit' | 'preview'>('edit');
+  const [resetting, setResetting] = useState(false);
   const isMobile = useIsMobile();
+
+  const handleEmergencyReset = async () => {
+    if (!user?.id) {
+      toast.error('No user found');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      '🚨 EMERGENCY RESET 🚨\n\nThis will PERMANENTLY DELETE all your profile data:\n- Name, Headline, Bio\n- All Work Experience\n- All Projects\n- All Skills\n\nThis cannot be undone. Continue?'
+    );
+
+    if (!confirmed) return;
+
+    setResetting(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: '',
+          headline: '',
+          bio: '',
+          location: '',
+          website: '',
+          linkedin_url: '',
+          github_url: '',
+          twitter_url: '',
+          work_experience: [],
+          projects: [],
+          skills: [],
+          key_highlights: [],
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Profile wiped! Reloading...');
+      setTimeout(() => window.location.reload(), 500);
+    } catch (err) {
+      console.error('Reset failed:', err);
+      toast.error('Failed to reset profile');
+      setResetting(false);
+    }
+  };
   
   // Check if we're on a section page
   const section = new URLSearchParams(location.search).get('section');
@@ -115,6 +161,22 @@ function DashboardInner() {
   
   return (
     <SidebarProvider>
+      {/* EMERGENCY RESET BUTTON - Fixed position, always visible */}
+      <button
+        onClick={handleEmergencyReset}
+        disabled={resetting}
+        style={{
+          position: 'fixed',
+          top: '10px',
+          right: '10px',
+          zIndex: 9999,
+        }}
+        className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 disabled:opacity-50"
+      >
+        <RotateCcw className={`h-5 w-5 ${resetting ? 'animate-spin' : ''}`} />
+        {resetting ? 'RESETTING...' : 'EMERGENCY RESET'}
+      </button>
+      
       <div className="min-h-screen flex w-full bg-muted/30">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
