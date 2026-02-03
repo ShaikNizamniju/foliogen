@@ -1,5 +1,5 @@
 import { Project } from '@/contexts/ProfileContext';
-import { getUnsplashProjectImage } from './image-utils';
+import { getUnsplashProjectImage, DEFAULT_PROJECT_THUMBNAIL } from './image-utils';
 
 /**
  * Generate project image URL - uses Unsplash for professional images
@@ -8,6 +8,11 @@ export function getProjectImageUrl(project: Project, style: 'minimal' | 'creativ
   // If user has provided a custom image, use it
   if (project.imageUrl) return project.imageUrl;
   
-  // Otherwise, get a professional Unsplash image based on title
-  return getUnsplashProjectImage(project.title || 'technology');
+  // If project has a title, get a relevant image
+  if (project.title) {
+    return getUnsplashProjectImage(project.title);
+  }
+  
+  // Otherwise, return the default professional gradient
+  return DEFAULT_PROJECT_THUMBNAIL;
 }
