@@ -1,5 +1,7 @@
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { MinimalistTemplate } from './templates/MinimalistTemplate';
 import { CreativeTemplate } from './templates/CreativeTemplate';
 import { AiPmTemplate } from './templates/AiPmTemplate';
@@ -12,13 +14,24 @@ import { InfluencerTemplate } from './templates/InfluencerTemplate';
 import { SwissTemplate } from './templates/SwissTemplate';
 import { NoirTemplate } from './templates/NoirTemplate';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, ExternalLink, Pencil, Monitor, Tablet, Smartphone, RotateCcw } from 'lucide-react';
+import { Eye, ExternalLink, Pencil, Monitor, Tablet, Smartphone, RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 interface LivePreviewPanelProps {
   editMode?: boolean;
@@ -38,6 +51,7 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
   const { user } = useAuth();
   const [deviceSize, setDeviceSize] = useState<DeviceSize>('desktop');
   const [refreshKey, setRefreshKey] = useState(0);
+  const [resetting, setResetting] = useState(false);
 
   const handleRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
@@ -48,6 +62,44 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
       window.open(`/p/${user.id}`, '_blank');
     }
   }, [user?.id]);
+
+  const handleFactoryReset = async () => {
+    if (!user?.id) {
+      toast.error('You must be logged in to reset your profile');
+      return;
+    }
+
+    setResetting(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: '',
+          headline: '',
+          bio: '',
+          location: '',
+          website: '',
+          linkedin_url: '',
+          github_url: '',
+          twitter_url: '',
+          photo_url: '',
+          work_experience: [],
+          projects: [],
+          skills: [],
+          key_highlights: [],
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast.success('Profile data cleared. Reloading...');
+      setTimeout(() => window.location.reload(), 500);
+    } catch (err) {
+      console.error('Reset failed:', err);
+      toast.error('Failed to reset profile data');
+      setResetting(false);
+    }
+  };
 
   const renderTemplate = () => {
     const props = { profile, editMode };
@@ -196,6 +248,52 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
               <TooltipContent>Open live site</TooltipContent>
             </Tooltip>
           </TooltipProvider>
+
+          {/* Reset Button with Confirmation Dialog */}
+          <AlertDialog>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      disabled={resetting}
+                    >
+                      <Trash2 className={cn("h-4 w-4", resetting && "animate-spin")} />
+                    </Button>
+                  </AlertDialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Reset all data</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-destructive">Reset All Profile Data?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete all your profile data including:
+                  <ul className="list-disc list-inside mt-2 space-y-1">
+                    <li>Name, Headline, Bio</li>
+                    <li>All Work Experience</li>
+                    <li>All Projects</li>
+                    <li>All Skills</li>
+                    <li>Profile Photo</li>
+                  </ul>
+                  <p className="mt-3 font-medium text-destructive">This action cannot be undone.</p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleFactoryReset}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {resetting ? 'Resetting...' : 'Yes, Wipe Everything'}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 

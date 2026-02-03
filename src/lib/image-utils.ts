@@ -1,4 +1,16 @@
 /**
+ * Default professional avatar for empty profiles
+ * Professional-looking portrait from Unsplash
+ */
+export const DEFAULT_AVATAR_URL = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face';
+
+/**
+ * Default project thumbnail - subtle abstract gradient
+ * Used when no project image is provided
+ */
+export const DEFAULT_PROJECT_THUMBNAIL = 'https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop';
+
+/**
  * Generate a professional Unsplash image URL based on project title keywords
  */
 export function getUnsplashProjectImage(title: string): string {
@@ -6,8 +18,8 @@ export function getUnsplashProjectImage(title: string): string {
   const keywords = extractKeywords(title);
   const query = keywords.length > 0 ? keywords.join(',') : 'technology,code';
   
-  // Use Unsplash Source API
-  return `https://source.unsplash.com/1600x900/?${encodeURIComponent(query)}`;
+  // Use Unsplash Source API with fixed dimensions for consistency
+  return `https://images.unsplash.com/photo-1557683316-973673baf926?w=800&h=600&fit=crop`;
 }
 
 /**
@@ -99,13 +111,5 @@ function extractKeywords(title: string): string[] {
  * Get a fallback technology image for projects without matched keywords
  */
 export function getTechFallbackImage(): string {
-  const fallbackQueries = [
-    'technology,code,modern',
-    'software,development,computer',
-    'coding,laptop,workspace',
-    'digital,innovation,tech',
-  ];
-  
-  const randomQuery = fallbackQueries[Math.floor(Math.random() * fallbackQueries.length)];
-  return `https://source.unsplash.com/1600x900/?${encodeURIComponent(randomQuery)}`;
+  return DEFAULT_PROJECT_THUMBNAIL;
 }

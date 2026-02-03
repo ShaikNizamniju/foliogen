@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { SyncStatusBadge } from './SyncStatusBadge';
 import { ResumeUpload } from './forms/ResumeUpload';
 import { LinkedInPdfUpload } from './forms/LinkedInPdfUpload';
@@ -11,64 +9,17 @@ import { ProjectsForm } from './forms/ProjectsForm';
 import { SkillsForm } from './forms/SkillsForm';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { FileText, Linkedin, User, Briefcase, FolderKanban, Sparkles, Link, RotateCcw } from 'lucide-react';
+import { FileText, Linkedin, User, Briefcase, FolderKanban, Sparkles, Link } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from 'sonner';
 
 export function SourceDataPanel() {
   const { profile, updateProfile } = useProfile();
-  const { user } = useAuth();
-  const [resetting, setResetting] = useState(false);
   const [activeSourceTab, setActiveSourceTab] = useState<'import' | 'manual'>('import');
   const [activeManualTab, setActiveManualTab] = useState('basic');
-  const [syncSource, setSyncSource] = useState<'resume' | 'linkedin' | null>(
+  const [syncSource] = useState<'resume' | 'linkedin' | null>(
     profile.fullName ? 'resume' : null
   );
-
-  const handleFactoryReset = async () => {
-    if (!user?.id) {
-      toast.error('You must be logged in to reset your profile');
-      return;
-    }
-
-    const confirmed = window.confirm(
-      'This will wipe ALL your profile data (name, bio, experience, projects, skills). This action cannot be undone. Are you sure?'
-    );
-
-    if (!confirmed) return;
-
-    setResetting(true);
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: '',
-          headline: '',
-          bio: '',
-          location: '',
-          website: '',
-          linkedin_url: '',
-          github_url: '',
-          twitter_url: '',
-          work_experience: [],
-          projects: [],
-          skills: [],
-          key_highlights: [],
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      toast.success('Profile data cleared. Reloading...');
-      setTimeout(() => window.location.reload(), 500);
-    } catch (err) {
-      console.error('Reset failed:', err);
-      toast.error('Failed to reset profile data');
-      setResetting(false);
-    }
-  };
 
   return (
     <div className="h-full flex flex-col bg-card border-r border-border">
@@ -76,7 +27,6 @@ export function SourceDataPanel() {
       <div className="p-4 border-b border-border shrink-0">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold">Source Data</h2>
-          {/* Auto-save indicator is now in the main header */}
         </div>
         <SyncStatusBadge source={syncSource} />
       </div>
@@ -185,33 +135,7 @@ export function SourceDataPanel() {
 
             {/* Form Content */}
             <div className="space-y-4">
-              {activeManualTab === 'basic' && (
-                <>
-                  <BasicInfoForm />
-                  {/* Factory Reset Button */}
-                  <div className="pt-6 mt-6 border-t border-border">
-                    <div className="rounded-lg bg-destructive/10 p-4">
-                      <h4 className="text-sm font-medium text-destructive mb-2 flex items-center gap-2">
-                        <RotateCcw className="h-4 w-4" />
-                        Danger Zone
-                      </h4>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        This will permanently delete all your profile data and cannot be undone.
-                      </p>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleFactoryReset}
-                        disabled={resetting}
-                        className="w-full"
-                      >
-                        <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-                        {resetting ? 'Resetting...' : 'Reset Profile Data'}
-                      </Button>
-                    </div>
-                  </div>
-                </>
-              )}
+              {activeManualTab === 'basic' && <BasicInfoForm />}
               {activeManualTab === 'experience' && <WorkExperienceForm />}
               {activeManualTab === 'projects' && <ProjectsForm />}
               {activeManualTab === 'skills' && <SkillsForm />}
