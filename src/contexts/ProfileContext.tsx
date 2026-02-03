@@ -158,14 +158,37 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // If no profile yet (trigger may still be running), retry with delay
+      // If no profile exists, auto-create one (handles truncated DB case)
       if (!data) {
         if (attempt < maxAttempts) {
+          // First few attempts: wait for trigger (in case of new signup)
           await new Promise(resolve => setTimeout(resolve, 1000));
           return fetchProfileWithRetry(attempt + 1, maxAttempts);
         }
-        // After max attempts, profile still doesn't exist - show empty state
-        console.warn('Profile not found after retries');
+        
+        // After retries, create profile manually
+        console.log('No profile found. Creating new one...');
+        const authName = user?.user_metadata?.full_name || user?.user_metadata?.name || '';
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert([{ 
+            user_id: user.id, 
+            email: user.email || '',
+            full_name: authName 
+          }])
+          .select()
+          .single();
+        
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          setLoading(false);
+          return;
+        }
+        
+        if (newProfile) {
+          mapProfileData(newProfile, authName);
+          setHasLoadedInitial(true);
+        }
         setLoading(false);
         return;
       }
