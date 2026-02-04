@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +13,7 @@ import { ExecutiveTemplate } from './templates/ExecutiveTemplate';
 import { InfluencerTemplate } from './templates/InfluencerTemplate';
 import { SwissTemplate } from './templates/SwissTemplate';
 import { NoirTemplate } from './templates/NoirTemplate';
+import { TemplateErrorBoundary } from './TemplateErrorBoundary';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye, ExternalLink, Pencil, Monitor, Tablet, Smartphone, RotateCcw, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -40,11 +41,33 @@ interface LivePreviewPanelProps {
 
 type DeviceSize = 'desktop' | 'tablet' | 'mobile';
 
-const deviceSizes: Record<DeviceSize, { width: string; scale: string; containerWidth: string }> = {
-  desktop: { width: '100%', scale: 'scale-[0.55]', containerWidth: 'w-[182%]' },
-  tablet: { width: '768px', scale: 'scale-[0.65]', containerWidth: 'w-[153%]' },
-  mobile: { width: '375px', scale: 'scale-[0.8]', containerWidth: 'w-[125%]' },
+// Device configurations with proper responsive container sizing
+const deviceConfigs: Record<DeviceSize, { 
+  width: number; 
+  scale: number;
+  label: string;
+}> = {
+  desktop: { width: 1280, scale: 0.5, label: 'Desktop' },
+  tablet: { width: 768, scale: 0.6, label: 'Tablet' },
+  mobile: { width: 375, scale: 0.75, label: 'Mobile' },
 };
+
+// Template registry for safe rendering
+const templateRegistry = {
+  minimalist: MinimalistTemplate,
+  creative: CreativeTemplate,
+  aipm: AiPmTemplate,
+  dev: DevTemplate,
+  brutalist: BrutalistTemplate,
+  academic: AcademicTemplate,
+  studio: StudioTemplate,
+  executive: ExecutiveTemplate,
+  influencer: InfluencerTemplate,
+  swiss: SwissTemplate,
+  noir: NoirTemplate,
+} as const;
+
+type TemplateKey = keyof typeof templateRegistry;
 
 export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePreviewPanelProps) {
   const { profile, updateProfile } = useProfile();
@@ -101,46 +124,49 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
     }
   };
 
-  const renderTemplate = () => {
-    const props = { profile, editMode };
+  // Safely get the template component with fallback
+  const getTemplateComponent = useCallback(() => {
+    const templateKey = profile.selectedTemplate as TemplateKey;
     
-    switch (profile.selectedTemplate) {
-      case 'minimalist':
-        return <MinimalistTemplate key={refreshKey} {...props} />;
-      case 'creative':
-        return <CreativeTemplate key={refreshKey} {...props} />;
-      case 'aipm':
-        return <AiPmTemplate key={refreshKey} {...props} />;
-      case 'dev':
-        return <DevTemplate key={refreshKey} {...props} />;
-      case 'brutalist':
-        return <BrutalistTemplate key={refreshKey} {...props} />;
-      case 'academic':
-        return <AcademicTemplate key={refreshKey} {...props} />;
-      case 'studio':
-        return <StudioTemplate key={refreshKey} {...props} />;
-      case 'executive':
-        return <ExecutiveTemplate key={refreshKey} {...props} />;
-      case 'influencer':
-        return <InfluencerTemplate key={refreshKey} {...props} />;
-      case 'swiss':
-        return <SwissTemplate key={refreshKey} {...props} />;
-      case 'noir':
-        return <NoirTemplate key={refreshKey} {...props} />;
-      default:
-        return <MinimalistTemplate key={refreshKey} {...props} />;
+    // Check if template exists in registry
+    if (templateKey && templateRegistry[templateKey]) {
+      return templateRegistry[templateKey];
     }
+    
+    // Fallback to minimalist if template doesn't exist
+    console.warn(`Template "${templateKey}" not found, falling back to minimalist`);
+    return MinimalistTemplate;
+  }, [profile.selectedTemplate]);
+
+  // Memoize template props to prevent unnecessary re-renders
+  const templateProps = useMemo(() => ({
+    profile,
+    editMode,
+  }), [profile, editMode]);
+
+  const renderTemplate = () => {
+    const TemplateComponent = getTemplateComponent();
+    const templateName = profile.selectedTemplate || 'minimalist';
+    
+    return (
+      <TemplateErrorBoundary
+        templateName={templateName}
+        fallbackTemplate={<MinimalistTemplate key={refreshKey} {...templateProps} />}
+      >
+        <TemplateComponent key={refreshKey} {...templateProps} />
+      </TemplateErrorBoundary>
+    );
   };
 
-  const currentDevice = deviceSizes[deviceSize];
+  const currentDevice = deviceConfigs[deviceSize];
 
   return (
     <div className="h-full flex flex-col bg-muted/30">
       {/* Header with Controls */}
-      <div className="flex items-center justify-between p-3 border-b border-border bg-card shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Eye className="h-4 w-4" />
+      <div className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-3 border-b border-border bg-card shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-muted-foreground">
+            <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Live Preview</span>
           </div>
           
@@ -154,24 +180,24 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
             >
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <ToggleGroupItem value="desktop" size="sm" className="h-7 w-7 p-0 data-[state=on]:bg-background">
-                    <Monitor className="h-3.5 w-3.5" />
+                  <ToggleGroupItem value="desktop" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0 data-[state=on]:bg-background">
+                    <Monitor className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   </ToggleGroupItem>
                 </TooltipTrigger>
                 <TooltipContent>Desktop</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <ToggleGroupItem value="tablet" size="sm" className="h-7 w-7 p-0 data-[state=on]:bg-background">
-                    <Tablet className="h-3.5 w-3.5" />
+                  <ToggleGroupItem value="tablet" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0 data-[state=on]:bg-background">
+                    <Tablet className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   </ToggleGroupItem>
                 </TooltipTrigger>
                 <TooltipContent>Tablet</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <ToggleGroupItem value="mobile" size="sm" className="h-7 w-7 p-0 data-[state=on]:bg-background">
-                    <Smartphone className="h-3.5 w-3.5" />
+                  <ToggleGroupItem value="mobile" size="sm" className="h-6 w-6 sm:h-7 sm:w-7 p-0 data-[state=on]:bg-background">
+                    <Smartphone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   </ToggleGroupItem>
                 </TooltipTrigger>
                 <TooltipContent>Mobile</TooltipContent>
@@ -180,24 +206,27 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
           </TooltipProvider>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Edit Mode Toggle */}
           <Button
             variant={editMode ? 'default' : 'outline'}
             size="sm"
             onClick={onToggleEditMode}
-            className="gap-1.5 h-8"
+            className={cn(
+              "gap-1 sm:gap-1.5 h-7 sm:h-8 text-xs sm:text-sm px-2 sm:px-3",
+              editMode && "shadow-glow"
+            )}
           >
-            <Pencil className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{editMode ? 'Editing' : 'Click to Edit'}</span>
+            <Pencil className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+            <span className="hidden xs:inline sm:inline">{editMode ? 'Editing' : 'Edit'}</span>
           </Button>
 
           {/* Template Selector */}
           <Select 
-            value={profile.selectedTemplate} 
+            value={profile.selectedTemplate || 'minimalist'} 
             onValueChange={(value) => updateProfile({ selectedTemplate: value as any })}
           >
-            <SelectTrigger className="w-[120px] h-8 text-xs">
+            <SelectTrigger className="w-[100px] sm:w-[120px] h-7 sm:h-8 text-xs">
               <SelectValue placeholder="Template" />
             </SelectTrigger>
             <SelectContent>
@@ -222,10 +251,10 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="h-8 w-8" 
+                  className="h-7 w-7 sm:h-8 sm:w-8" 
                   onClick={handleRefresh}
                 >
-                  <RotateCcw className="h-4 w-4" />
+                  <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Refresh animations</TooltipContent>
@@ -239,10 +268,10 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="h-8 w-8" 
+                  className="h-7 w-7 sm:h-8 sm:w-8" 
                   onClick={handleOpenLiveSite}
                 >
-                  <ExternalLink className="h-4 w-4" />
+                  <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Open live site</TooltipContent>
@@ -258,22 +287,22 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="h-7 w-7 sm:h-8 sm:w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       disabled={resetting}
                     >
-                      <Trash2 className={cn("h-4 w-4", resetting && "animate-spin")} />
+                      <Trash2 className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", resetting && "animate-spin")} />
                     </Button>
                   </AlertDialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent>Reset all data</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <AlertDialogContent>
+            <AlertDialogContent className="max-w-md">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-destructive">Reset All Profile Data?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This will permanently delete all your profile data including:
-                  <ul className="list-disc list-inside mt-2 space-y-1">
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
                     <li>Name, Headline, Bio</li>
                     <li>All Work Experience</li>
                     <li>All Projects</li>
@@ -297,23 +326,29 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
         </div>
       </div>
 
-      {/* Preview Content with Device Frame */}
+      {/* Preview Content with Responsive Device Frame */}
       <ScrollArea className="flex-1">
-        <div className="p-4 flex justify-center">
+        <div className="p-4 flex justify-center min-h-full">
+          {/* Device Frame Container */}
           <div 
             className={cn(
-              'rounded-xl border border-border bg-card shadow-lg overflow-hidden transition-all duration-300',
-              currentDevice.scale,
-              'origin-top',
-              currentDevice.containerWidth,
-              editMode && 'ring-2 ring-primary ring-offset-2',
-              deviceSize !== 'desktop' && 'mx-auto'
+              "relative bg-card rounded-xl border border-border shadow-lg overflow-hidden transition-all duration-300",
+              editMode && "ring-2 ring-primary ring-offset-2 ring-offset-muted/30"
             )}
             style={{ 
-              maxWidth: deviceSize !== 'desktop' ? currentDevice.width : undefined,
+              width: `${currentDevice.width}px`,
+              maxWidth: '100%',
+              transform: `scale(${currentDevice.scale})`,
+              transformOrigin: 'top center',
             }}
           >
-            <div id="portfolio-export-container" className="min-h-0">
+            {/* Device label */}
+            <div className="absolute top-2 right-2 z-20 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded-full">
+              {currentDevice.label} • {currentDevice.width}px
+            </div>
+            
+            {/* Template Content */}
+            <div id="portfolio-export-container" className="min-h-screen">
               {renderTemplate()}
             </div>
           </div>
