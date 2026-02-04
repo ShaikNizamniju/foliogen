@@ -29,7 +29,7 @@ export default function Dashboard() {
 
 function DashboardInner() {
   const { profile, loading, initializeProfile, initializing } = useProfile();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const location = useLocation();
   const [showQuickStart, setShowQuickStart] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -51,6 +51,18 @@ function DashboardInner() {
       return () => clearTimeout(timer);
     }
   }, [loading, isProfileEmpty, profile.fullName]);
+  
+  // Show loading while auth is still checking
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4">
+          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-muted-foreground">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
   
   // Prevent white screen on auth failure - show visible error
   if (!user) {
