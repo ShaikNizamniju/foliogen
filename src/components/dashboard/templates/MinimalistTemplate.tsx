@@ -80,7 +80,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
   const isEmpty = !hasExperience && !hasProjects && !hasSkills && !hasBio;
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans flex relative">
+    <div className="min-h-screen bg-white text-black font-sans flex flex-col md:flex-row relative">
       {/* Dot Pattern Background */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -90,9 +90,9 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
         }}
       />
 
-      {/* Left Sidebar - Sticky */}
+      {/* Left Sidebar - Responsive: Full width on mobile, fixed width on desktop */}
       <motion.aside 
-        className="w-[280px] min-h-full bg-black text-white p-8 flex flex-col sticky top-0 self-start z-10"
+        className="w-full md:w-[280px] md:min-h-full bg-black text-white p-6 md:p-8 flex flex-col md:sticky md:top-0 md:self-start z-10"
         variants={sidebarVariants}
         initial="hidden"
         animate="visible"
@@ -245,9 +245,9 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
         )}
       </motion.aside>
 
-      {/* Right Content - Scrollable */}
+      {/* Right Content - Scrollable and Responsive */}
       <motion.main 
-        className="flex-1 p-12 overflow-auto relative z-10"
+        className="flex-1 p-6 sm:p-8 md:p-12 overflow-auto relative z-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -391,7 +391,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Selected Work
             </h2>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {profile.projects.map((project, index) => (
                 <motion.div 
                   key={project.id} 
