@@ -23,12 +23,14 @@ export function ProjectsForm() {
       imageUrl: '',
       description: '',
     };
-    updateProfile({ projects: [...profile.projects, newProject] });
+    // SAFETY: Use optional chaining with fallback to empty array
+    updateProfile({ projects: [...(profile.projects ?? []), newProject] });
   };
 
   const updateProject = (id: string, updates: Partial<Project>) => {
     updateProfile({
-      projects: profile.projects.map((proj) =>
+      // SAFETY: Use optional chaining with fallback
+      projects: (profile.projects ?? []).map((proj) =>
         proj.id === id ? { ...proj, ...updates } : proj
       ),
     });
@@ -36,7 +38,8 @@ export function ProjectsForm() {
 
   const removeProject = (id: string) => {
     updateProfile({
-      projects: profile.projects.filter((proj) => proj.id !== id),
+      // SAFETY: Use optional chaining with fallback
+      projects: (profile.projects ?? []).filter((proj) => proj.id !== id),
     });
   };
 
@@ -145,9 +148,12 @@ export function ProjectsForm() {
     }
   };
 
+  // SAFETY: Use optional chaining for safe array access
+  const projects = profile.projects ?? [];
+
   return (
     <div className="space-y-6">
-      {profile.projects.length === 0 ? (
+      {projects.length === 0 ? (
         <div className="text-center py-8 border-2 border-dashed border-border rounded-xl">
           <p className="text-muted-foreground mb-4">No projects added yet</p>
           <Button onClick={addProject} variant="outline">
@@ -157,7 +163,7 @@ export function ProjectsForm() {
         </div>
       ) : (
         <>
-          {profile.projects.map((project, index) => (
+          {projects.map((project, index) => (
             <div key={project.id} className="p-4 border border-border rounded-xl space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-muted-foreground">
