@@ -1,21 +1,21 @@
-import React, { useState, useMemo } from 'react';
-import { useAuth } from '@/contexts/AuthContext'; 
-// FIX 1: Change 'hooks/useProfile' to 'contexts/ProfileContext'
-import { useProfile } from '@/contexts/ProfileContext'; 
+import React, { useState, useCallback } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/contexts/ProfileContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { 
-  Smartphone, 
-  Tablet, 
-  Monitor, 
-  Edit2, 
-  RotateCcw, 
-  ExternalLink, 
-  RefreshCw 
+import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Smartphone,
+  Tablet,
+  Monitor,
+  Pencil,
+  RotateCcw,
+  ExternalLink,
+  Trash2,
+  Eye
 } from 'lucide-react';
-
-// FIX 2: Change the path to use '..' to go up one folder
-import { MinimalistTemplate } from '../templates/MinimalistTemplate';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -26,7 +26,23 @@ import { MinimalistTemplate } from '../templates/MinimalistTemplate';
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+// Template imports
+import { MinimalistTemplate } from './templates/MinimalistTemplate';
+import { CreativeTemplate } from './templates/CreativeTemplate';
+import { AiPmTemplate } from './templates/AiPmTemplate';
+import { DevTemplate } from './templates/DevTemplate';
+import { BrutalistTemplate } from './templates/BrutalistTemplate';
+import { AcademicTemplate } from './templates/AcademicTemplate';
+import { StudioTemplate } from './templates/StudioTemplate';
+import { ExecutiveTemplate } from './templates/ExecutiveTemplate';
+import { InfluencerTemplate } from './templates/InfluencerTemplate';
+import { SwissTemplate } from './templates/SwissTemplate';
+import { NoirTemplate } from './templates/NoirTemplate';
 
 interface LivePreviewPanelProps {
   editMode?: boolean;
