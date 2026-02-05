@@ -13,9 +13,10 @@ import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
 import { QuickStartModal } from '@/components/dashboard/QuickStartModal';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Pencil, Eye } from 'lucide-react';
+import { Pencil, Eye, UserPlus } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 export default function Dashboard() {
   // Note: Route protection is handled by ProtectedRoute wrapper in App.tsx
   // This component will only render when user is authenticated
@@ -40,25 +41,33 @@ function DashboardInner() {
   const section = new URLSearchParams(location.search).get('section');
   const isMainDashboard = !section;
   
-  // Check if profile is empty (no id means profile wasn't found/created)
-  const isProfileEmpty = !profile.id;
+  // SAFETY CHECK: Defensively check if profile exists and has an id
+  // This prevents crashes when profile is null/undefined or not yet loaded
+  const isProfileEmpty = !profile || !profile.id;
   
   // Show quick start modal for new users (no name set yet)
+  // SAFETY: Use optional chaining when accessing profile properties
   useEffect(() => {
-    if (!loading && !isProfileEmpty && !profile.fullName) {
+    if (!loading && !isProfileEmpty && !profile?.fullName) {
       // Small delay for better UX
       const timer = setTimeout(() => setShowQuickStart(true), 500);
       return () => clearTimeout(timer);
     }
-  }, [loading, isProfileEmpty, profile.fullName]);
+  }, [loading, isProfileEmpty, profile?.fullName]);
   
-  // Show loading while auth is still checking
+  // SAFETY CHECK #1: Show loading skeleton while auth is checking
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <div className="text-center space-y-4">
-          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground">Checking authentication...</p>
+        <div className="w-full max-w-md p-8 space-y-6">
+          <div className="flex items-center justify-center">
+            <div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+          <div className="space-y-3">
+            <Skeleton className="h-4 w-3/4 mx-auto" />
+            <Skeleton className="h-4 w-1/2 mx-auto" />
+          </div>
+          <p className="text-muted-foreground text-center text-sm">Checking authentication...</p>
         </div>
       </div>
     );
@@ -78,48 +87,68 @@ function DashboardInner() {
     );
   }
   
-  // Show loading spinner while setting up workspace
+  // SAFETY CHECK #2: Show loading skeleton while profile data loads
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <div className="text-center space-y-4">
-          <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground">Setting up your workspace...</p>
+        <div className="w-full max-w-md p-8 space-y-6">
+          <div className="flex items-center justify-center">
+            <div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+          <div className="space-y-3">
+            <Skeleton className="h-6 w-2/3 mx-auto" />
+            <Skeleton className="h-4 w-1/2 mx-auto" />
+            <Skeleton className="h-4 w-3/4 mx-auto" />
+          </div>
+          <p className="text-muted-foreground text-center text-sm">Setting up your workspace...</p>
         </div>
       </div>
     );
   }
   
-  // Failsafe: If profile is empty after loading, show initialize button
+  // SAFETY CHECK #3: Empty Data Handling - Show welcome state if profile is null/empty
+  // This prevents crashes from trying to access properties on undefined profile
   if (isProfileEmpty) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30">
-        <div className="text-center space-y-6 p-8 max-w-md">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+        <div className="text-center space-y-8 p-8 max-w-lg">
+          {/* Welcome Icon */}
+          <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl flex items-center justify-center mx-auto shadow-lg">
+            <UserPlus className="w-10 h-10 text-primary" />
           </div>
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Welcome to FolioGen!</h2>
-            <p className="text-muted-foreground">
-              Let's set up your profile to get started with your portfolio.
+          
+          {/* Welcome Message */}
+          <div className="space-y-3">
+            <h1 className="text-2xl font-bold tracking-tight">Welcome to FolioGen!</h1>
+            <p className="text-muted-foreground max-w-sm mx-auto">
+              Create your professional portfolio in minutes. Let's set up your profile to get started.
             </p>
           </div>
-          <button
+          
+          {/* Create Profile Button */}
+          <Button
             onClick={initializeProfile}
             disabled={initializing}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+            size="lg"
+            className="gap-2 px-8 py-6 text-lg font-semibold"
           >
             {initializing ? (
               <>
-                <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                Initializing...
+                <div className="h-5 w-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                Creating Profile...
               </>
             ) : (
-              'Initialize Profile'
+              <>
+                <UserPlus className="h-5 w-5" />
+                Create Your Profile
+              </>
             )}
-          </button>
+          </Button>
+          
+          {/* Help text */}
+          <p className="text-xs text-muted-foreground">
+            This will only take a moment
+          </p>
         </div>
       </div>
     );
