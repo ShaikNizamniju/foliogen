@@ -6,6 +6,7 @@ import { getEmbedUrl } from '@/lib/video-utils';
 import { InlineEdit } from '@/components/ui/inline-edit';
 import { useProfile } from '@/contexts/ProfileContext';
 import { EmptyState } from './EmptyState';
+import { EditableHero, EditableExperience, EditableProject } from '../EditableSection';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
@@ -98,41 +99,43 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
         animate="visible"
       >
         {/* Name */}
-        <motion.div 
-          className="mb-12"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          {editMode ? (
-            <InlineEdit
-              value={profile.fullName || ''}
-              onSave={(v) => handleFieldUpdate('fullName', v)}
-              placeholder="Your Name"
-              className="text-3xl font-black tracking-tight leading-tight uppercase text-white"
-              inputClassName="text-3xl font-black tracking-tight leading-tight uppercase text-white bg-transparent"
-              as="h1"
-            />
-          ) : (
-            <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
-              {profile.fullName || 'Your Name'}
-            </h1>
-          )}
-          {editMode ? (
-            <InlineEdit
-              value={profile.headline || ''}
-              onSave={(v) => handleFieldUpdate('headline', v)}
-              placeholder="Professional"
-              className="text-sm text-white/60 mt-2 uppercase tracking-widest"
-              inputClassName="text-sm text-white/60 uppercase tracking-widest bg-transparent"
-              as="p"
-            />
-          ) : (
-            <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
-              {profile.headline || 'Professional'}
-            </p>
-          )}
-        </motion.div>
+        <EditableHero profile={profile} editMode={editMode}>
+          <motion.div 
+            className="mb-12"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            {editMode ? (
+              <InlineEdit
+                value={profile.fullName || ''}
+                onSave={(v) => handleFieldUpdate('fullName', v)}
+                placeholder="Your Name"
+                className="text-3xl font-black tracking-tight leading-tight uppercase text-white"
+                inputClassName="text-3xl font-black tracking-tight leading-tight uppercase text-white bg-transparent"
+                as="h1"
+              />
+            ) : (
+              <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
+                {profile.fullName || 'Your Name'}
+              </h1>
+            )}
+            {editMode ? (
+              <InlineEdit
+                value={profile.headline || ''}
+                onSave={(v) => handleFieldUpdate('headline', v)}
+                placeholder="Professional"
+                className="text-sm text-white/60 mt-2 uppercase tracking-widest"
+                inputClassName="text-sm text-white/60 uppercase tracking-widest bg-transparent"
+                as="p"
+              />
+            ) : (
+              <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
+                {profile.headline || 'Professional'}
+              </p>
+            )}
+          </motion.div>
+        </EditableHero>
 
         {/* Contact Info */}
         <motion.div 
@@ -311,70 +314,71 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
               
               <div className="space-y-10 pl-8">
                 {profile.workExperience.map((exp, index) => (
-                  <motion.div 
-                    key={exp.id} 
-                    className="relative"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.4 + index * 0.15 }}
-                  >
-                    {/* Timeline Dot */}
-                    <div className="absolute -left-8 top-2 w-4 h-4 bg-black rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full" />
-                    </div>
-                    
-                    {/* Date Badge */}
-                    <div className="inline-block mb-3">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-black/40 bg-black/5 px-3 py-1">
-                        {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
-                      </span>
-                    </div>
-                    
-                    {/* Content */}
-                    {editMode ? (
-                      <InlineEdit
-                        value={exp.jobTitle}
-                        onSave={(v) => handleExperienceUpdate(exp.id, 'jobTitle', v)}
-                        placeholder="Job Title"
-                        className="text-2xl font-bold tracking-tight mb-1"
-                        inputClassName="text-2xl font-bold tracking-tight"
-                        as="h3"
-                      />
-                    ) : (
-                      <h3 className="text-2xl font-bold tracking-tight mb-1">
-                        {exp.jobTitle}
-                      </h3>
-                    )}
-                    {editMode ? (
-                      <InlineEdit
-                        value={exp.company}
-                        onSave={(v) => handleExperienceUpdate(exp.id, 'company', v)}
-                        placeholder="Company"
-                        className="text-sm uppercase tracking-widest text-black/50 mb-4"
-                        inputClassName="text-sm uppercase tracking-widest text-black/50"
-                        as="p"
-                      />
-                    ) : (
-                      <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
-                        {exp.company}
-                      </p>
-                    )}
-                    {editMode ? (
-                      <InlineEdit
-                        value={exp.description}
-                        onSave={(v) => handleExperienceUpdate(exp.id, 'description', v)}
-                        placeholder="Describe your role..."
-                        className="text-black/70 leading-relaxed max-w-xl"
-                        inputClassName="text-black/70 leading-relaxed"
-                        multiline
-                        as="p"
-                      />
-                    ) : (
-                      <p className="text-black/70 leading-relaxed max-w-xl">
-                        {exp.description}
-                      </p>
-                    )}
-                  </motion.div>
+                  <EditableExperience key={exp.id} experience={exp} editMode={editMode}>
+                    <motion.div 
+                      className="relative"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 + index * 0.15 }}
+                    >
+                      {/* Timeline Dot */}
+                      <div className="absolute -left-8 top-2 w-4 h-4 bg-black rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white rounded-full" />
+                      </div>
+                      
+                      {/* Date Badge */}
+                      <div className="inline-block mb-3">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-black/40 bg-black/5 px-3 py-1">
+                          {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
+                        </span>
+                      </div>
+                      
+                      {/* Content */}
+                      {editMode ? (
+                        <InlineEdit
+                          value={exp.jobTitle}
+                          onSave={(v) => handleExperienceUpdate(exp.id, 'jobTitle', v)}
+                          placeholder="Job Title"
+                          className="text-2xl font-bold tracking-tight mb-1"
+                          inputClassName="text-2xl font-bold tracking-tight"
+                          as="h3"
+                        />
+                      ) : (
+                        <h3 className="text-2xl font-bold tracking-tight mb-1">
+                          {exp.jobTitle}
+                        </h3>
+                      )}
+                      {editMode ? (
+                        <InlineEdit
+                          value={exp.company}
+                          onSave={(v) => handleExperienceUpdate(exp.id, 'company', v)}
+                          placeholder="Company"
+                          className="text-sm uppercase tracking-widest text-black/50 mb-4"
+                          inputClassName="text-sm uppercase tracking-widest text-black/50"
+                          as="p"
+                        />
+                      ) : (
+                        <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
+                          {exp.company}
+                        </p>
+                      )}
+                      {editMode ? (
+                        <InlineEdit
+                          value={exp.description}
+                          onSave={(v) => handleExperienceUpdate(exp.id, 'description', v)}
+                          placeholder="Describe your role..."
+                          className="text-black/70 leading-relaxed max-w-xl"
+                          inputClassName="text-black/70 leading-relaxed"
+                          multiline
+                          as="p"
+                        />
+                      ) : (
+                        <p className="text-black/70 leading-relaxed max-w-xl">
+                          {exp.description}
+                        </p>
+                      )}
+                    </motion.div>
+                  </EditableExperience>
                 ))}
               </div>
             </div>
