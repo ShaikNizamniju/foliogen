@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,11 @@ import {
   RotateCcw,
   ExternalLink,
   Trash2,
-  Eye
+  Eye,
+  ZoomIn,
+  ZoomOut,
+  Upload,
+  ImagePlus,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -30,8 +34,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Input } from '@/components/ui/input';
 
-// Template imports
+// Template imports with error handling
 import { MinimalistTemplate } from './templates/MinimalistTemplate';
 import { CreativeTemplate } from './templates/CreativeTemplate';
 import { AiPmTemplate } from './templates/AiPmTemplate';
@@ -57,15 +62,24 @@ const deviceSizes: Record<DeviceSize, { width: string; scale: string; containerW
   mobile: { width: '375px', scale: 'scale-[0.8]', containerWidth: 'w-[125%]' },
 };
 
+// Zoom levels
+const ZOOM_MIN = 0.3;
+const ZOOM_MAX = 1.5;
+const ZOOM_STEP = 0.1;
+
 export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePreviewPanelProps) {
   const { profile, updateProfile } = useProfile();
   const { user } = useAuth();
   const [deviceSize, setDeviceSize] = useState<DeviceSize>('desktop');
   const [refreshKey, setRefreshKey] = useState(0);
   const [resetting, setResetting] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(0.55);
+  const [templateError, setTemplateError] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleRefresh = useCallback(() => {
     setRefreshKey(prev => prev + 1);
+    setTemplateError(false);
   }, []);
 
   const handleOpenLiveSite = useCallback(() => {
@@ -73,6 +87,48 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
       window.open(`/p/${user.id}`, '_blank');
     }
   }, [user?.id]);
+
+  const handleZoomIn = useCallback(() => {
+    setZoomLevel(prev => Math.min(prev + ZOOM_STEP, ZOOM_MAX));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setZoomLevel(prev => Math.max(prev - ZOOM_STEP, ZOOM_MIN));
+  }, []);
+
+  const handlePhotoUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user?.id) return;
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}/profile.${fileExt}`;
+
+      // Upload to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from('profile_photos')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile_photos')
+        .getPublicUrl(filePath);
+
+      // Update profile
+      updateProfile({ photoUrl: publicUrl });
+      toast.success('Profile photo updated!');
+    } catch (err) {
+      console.error('Photo upload failed:', err);
+      toast.error('Failed to upload photo');
+    }
+
+    // Clear the input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [user?.id, updateProfile]);
 
   const handleFactoryReset = async () => {
     if (!user?.id) {
@@ -113,37 +169,50 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
   };
 
   const renderTemplate = () => {
+    // If there was a template error, fallback to Minimalist
+    if (templateError) {
+      return <MinimalistTemplate key={refreshKey} profile={profile} editMode={editMode} />;
+    }
+
     const props = { profile, editMode };
     
-    switch (profile.selectedTemplate) {
-      case 'minimalist':
-        return <MinimalistTemplate key={refreshKey} {...props} />;
-      case 'creative':
-        return <CreativeTemplate key={refreshKey} {...props} />;
-      case 'aipm':
-        return <AiPmTemplate key={refreshKey} {...props} />;
-      case 'dev':
-        return <DevTemplate key={refreshKey} {...props} />;
-      case 'brutalist':
-        return <BrutalistTemplate key={refreshKey} {...props} />;
-      case 'academic':
-        return <AcademicTemplate key={refreshKey} {...props} />;
-      case 'studio':
-        return <StudioTemplate key={refreshKey} {...props} />;
-      case 'executive':
-        return <ExecutiveTemplate key={refreshKey} {...props} />;
-      case 'influencer':
-        return <InfluencerTemplate key={refreshKey} {...props} />;
-      case 'swiss':
-        return <SwissTemplate key={refreshKey} {...props} />;
-      case 'noir':
-        return <NoirTemplate key={refreshKey} {...props} />;
-      default:
-        return <MinimalistTemplate key={refreshKey} {...props} />;
+    try {
+      switch (profile.selectedTemplate) {
+        case 'minimalist':
+          return <MinimalistTemplate key={refreshKey} {...props} />;
+        case 'creative':
+          return <CreativeTemplate key={refreshKey} profile={profile} />;
+        case 'aipm':
+          return <AiPmTemplate key={refreshKey} {...props} />;
+        case 'dev':
+          return <DevTemplate key={refreshKey} {...props} />;
+        case 'brutalist':
+          return <BrutalistTemplate key={refreshKey} {...props} />;
+        case 'academic':
+          return <AcademicTemplate key={refreshKey} {...props} />;
+        case 'studio':
+          return <StudioTemplate key={refreshKey} profile={profile} />;
+        case 'executive':
+          return <ExecutiveTemplate key={refreshKey} {...props} />;
+        case 'influencer':
+          return <InfluencerTemplate key={refreshKey} {...props} />;
+        case 'swiss':
+          return <SwissTemplate key={refreshKey} {...props} />;
+        case 'noir':
+          return <NoirTemplate key={refreshKey} {...props} />;
+        default:
+          return <MinimalistTemplate key={refreshKey} {...props} />;
+      }
+    } catch (error) {
+      console.error('Template render error:', error);
+      setTemplateError(true);
+      toast.error('Template crashed, falling back to Minimalist');
+      return <MinimalistTemplate key={refreshKey} {...props} />;
     }
   };
 
   const currentDevice = deviceSizes[deviceSize];
+  const zoomPercent = Math.round(zoomLevel * 100);
 
   return (
     <div className="h-full flex flex-col bg-muted/30">
@@ -192,6 +261,68 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Zoom Controls */}
+          <TooltipProvider>
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-0.5">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={handleZoomOut}
+                    disabled={zoomLevel <= ZOOM_MIN}
+                  >
+                    <ZoomOut className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Zoom out</TooltipContent>
+              </Tooltip>
+              <span className="text-xs font-medium text-muted-foreground w-10 text-center">
+                {zoomPercent}%
+              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={handleZoomIn}
+                    disabled={zoomLevel >= ZOOM_MAX}
+                  >
+                    <ZoomIn className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Zoom in</TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
+
+          {/* Photo Upload */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 h-8"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImagePlus className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Photo</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Upload profile photo</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handlePhotoUpload}
+          />
+
           {/* Edit Mode Toggle */}
           <Button
             variant={editMode ? 'default' : 'outline'}
@@ -206,7 +337,10 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
           {/* Template Selector */}
           <Select 
             value={profile.selectedTemplate} 
-            onValueChange={(value) => updateProfile({ selectedTemplate: value as any })}
+            onValueChange={(value) => {
+              setTemplateError(false);
+              updateProfile({ selectedTemplate: value as any });
+            }}
           >
             <SelectTrigger className="w-[120px] h-8 text-xs">
               <SelectValue placeholder="Template" />
@@ -314,14 +448,14 @@ export function LivePreviewPanel({ editMode = false, onToggleEditMode }: LivePre
           <div 
             className={cn(
               'rounded-xl border border-border bg-card shadow-lg overflow-hidden transition-all duration-300',
-              currentDevice.scale,
               'origin-top',
-              currentDevice.containerWidth,
               editMode && 'ring-2 ring-primary ring-offset-2',
               deviceSize !== 'desktop' && 'mx-auto'
             )}
             style={{ 
+              transform: `scale(${zoomLevel})`,
               maxWidth: deviceSize !== 'desktop' ? currentDevice.width : undefined,
+              width: deviceSize === 'desktop' ? '182%' : undefined,
             }}
           >
             <div id="portfolio-export-container" className="min-h-0">
