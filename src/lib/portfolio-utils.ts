@@ -1,9 +1,37 @@
 import { Project } from '@/contexts/ProfileContext';
+import { getSmartCover, getSmartCoverWithSize } from '@/utils/smartCovers';
 
 /**
- * Generate AI-powered image URL for projects using Pollinations API
+ * Generate professional project cover image
+ * Uses curated Unsplash images matched to project keywords
+ * Falls back to smart cover system if no custom image is provided
  */
-export function getProjectImageUrl(project: Project, style: 'minimal' | 'creative' | 'terminal' | 'bold' = 'minimal'): string {
+export function getProjectImageUrl(
+  project: Project, 
+  style: 'minimal' | 'creative' | 'terminal' | 'bold' = 'minimal'
+): string {
+  // If project has a custom image URL, use that
+  if (project.imageUrl) return project.imageUrl;
+  
+  // Collect tags from techStack and targetKeywords if available
+  const tags: string[] = [
+    ...((project as any).techStack || []),
+    ...((project as any).targetKeywords || []),
+  ];
+  
+  // Use smart cover system with curated Unsplash images
+  const size = style === 'bold' ? 'large' : style === 'creative' ? 'medium' : 'medium';
+  return getSmartCoverWithSize(project.title || 'project', tags, size);
+}
+
+/**
+ * Legacy function for backward compatibility
+ * @deprecated Use getProjectImageUrl instead
+ */
+export function getProjectImageUrlLegacy(
+  project: Project, 
+  style: 'minimal' | 'creative' | 'terminal' | 'bold' = 'minimal'
+): string {
   if (project.imageUrl) return project.imageUrl;
   
   const prompt = project.visualPrompt || project.title || 'abstract tech';
