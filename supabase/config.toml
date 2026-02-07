@@ -1,19 +1,16 @@
 project_id = "abcrgpmwoqsfwtmliqwo"
 
-# All functions use verify_jwt = false and validate JWTs in code using getClaims()
-# This is required for signing-keys compatibility
-
 [functions.parse-resume]
-verify_jwt = false
-
-[functions.enhance-project]
-verify_jwt = false
-
-[functions.analyze-job-match]
 verify_jwt = false
 
 [functions.send-contact-email]
 verify_jwt = false
 
 [functions.chat-with-profile]
+verify_jwt = false
+
+[functions.enhance-project]
+verify_jwt = false
+
+[functions.analyze-job-match]
 verify_jwt = false

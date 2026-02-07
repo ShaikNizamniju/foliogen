@@ -25,18 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        
-        // Force redirect to dashboard on SIGNED_IN (handles OAuth callback)
-        if (event === 'SIGNED_IN' && session) {
-          // Use setTimeout to avoid blocking the auth state update
-          setTimeout(() => {
-            const currentPath = window.location.pathname;
-            // Only redirect if not already on dashboard or its sections
-            if (!currentPath.startsWith('/dashboard')) {
-              window.location.href = '/dashboard';
-            }
-          }, 0);
-        }
       }
     );
 

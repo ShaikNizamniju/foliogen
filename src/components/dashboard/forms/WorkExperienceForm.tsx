@@ -19,14 +19,12 @@ export function WorkExperienceForm() {
       current: false,
       description: '',
     };
-    // SAFETY: Use optional chaining with fallback to empty array
-    updateProfile({ workExperience: [...(profile.workExperience ?? []), newExp] });
+    updateProfile({ workExperience: [...profile.workExperience, newExp] });
   };
 
   const updateExperience = (id: string, updates: Partial<WorkExperience>) => {
     updateProfile({
-      // SAFETY: Use optional chaining with fallback
-      workExperience: (profile.workExperience ?? []).map((exp) =>
+      workExperience: profile.workExperience.map((exp) =>
         exp.id === id ? { ...exp, ...updates } : exp
       ),
     });
@@ -34,17 +32,13 @@ export function WorkExperienceForm() {
 
   const removeExperience = (id: string) => {
     updateProfile({
-      // SAFETY: Use optional chaining with fallback
-      workExperience: (profile.workExperience ?? []).filter((exp) => exp.id !== id),
+      workExperience: profile.workExperience.filter((exp) => exp.id !== id),
     });
   };
 
-  // SAFETY: Use optional chaining for safe array access
-  const workExperiences = profile.workExperience ?? [];
-
   return (
     <div className="space-y-6">
-      {workExperiences.length === 0 ? (
+      {profile.workExperience.length === 0 ? (
         <div className="text-center py-8 border-2 border-dashed border-border rounded-xl">
           <p className="text-muted-foreground mb-4">No work experience added yet</p>
           <Button onClick={addExperience} variant="outline">
@@ -54,7 +48,7 @@ export function WorkExperienceForm() {
         </div>
       ) : (
         <>
-          {workExperiences.map((exp, index) => (
+          {profile.workExperience.map((exp, index) => (
             <div key={exp.id} className="p-4 border border-border rounded-xl space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-muted-foreground">

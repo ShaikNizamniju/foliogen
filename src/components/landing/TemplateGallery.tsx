@@ -27,8 +27,8 @@ const templates = [
     gradient: 'from-amber-500 to-orange-600',
   },
   {
-    name: 'AI PM',
-    description: 'Product manager showcase style',
+    name: 'SaaS',
+    description: 'Modern tech startup aesthetic',
     icon: Zap,
     gradient: 'from-blue-500 to-cyan-500',
   },

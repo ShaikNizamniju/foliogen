@@ -170,74 +170,48 @@ export function OnboardingTour() {
     }
   };
 
-  // Elevate the target element above the overlay
-  useEffect(() => {
-    const step = tourSteps[currentStep];
-    if (!step.target || !isVisible) return;
-
-    const element = document.querySelector(step.target) as HTMLElement;
-    if (element) {
-      // Store original styles
-      const originalZIndex = element.style.zIndex;
-      const originalPosition = element.style.position;
-      const originalPointerEvents = element.style.pointerEvents;
-
-      // Elevate element above overlay
-      element.style.zIndex = '9999';
-      element.style.position = 'relative';
-      element.style.pointerEvents = 'auto';
-
-      return () => {
-        // Restore original styles
-        element.style.zIndex = originalZIndex;
-        element.style.position = originalPosition;
-        element.style.pointerEvents = originalPointerEvents;
-      };
-    }
-  }, [currentStep, isVisible]);
-
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Dark overlay that covers everything */}
+          {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9997] bg-black/80 pointer-events-auto"
+            className="fixed inset-0 z-[9998] bg-background/80 backdrop-blur-sm"
             onClick={handleSkip}
           />
 
-          {/* Spotlight cutout - transparent window around target */}
+          {/* Spotlight effect on target */}
           {targetRect && step.position !== 'center' && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed z-[9998] pointer-events-none"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="fixed z-[9999] pointer-events-none"
               style={{
                 top: targetRect.top - 8,
                 left: targetRect.left - 8,
                 width: targetRect.width + 16,
                 height: targetRect.height + 16,
                 borderRadius: '12px',
-                boxShadow: '0 0 0 4px hsl(var(--primary) / 0.5), 0 0 20px 4px hsl(var(--primary) / 0.3)',
-                backgroundColor: 'transparent',
               }}
             >
-              {/* Pulsing beacon ring around the visible element */}
+              {/* Pulsing beacon ring */}
               <motion.div
-                className="absolute inset-0 rounded-xl border-2 border-primary pointer-events-none"
+                className="absolute inset-0 rounded-xl border-2 border-primary"
                 animate={{
                   boxShadow: [
-                    '0 0 0 0 hsl(var(--primary) / 0.6)',
+                    '0 0 0 0 hsl(var(--primary) / 0.4)',
                     '0 0 0 12px hsl(var(--primary) / 0)',
-                    '0 0 0 0 hsl(var(--primary) / 0.6)',
+                    '0 0 0 0 hsl(var(--primary) / 0.4)',
                   ],
                 }}
-                transition={{ duration: 1.5, repeat: Infinity }}
+                transition={{ duration: 2, repeat: Infinity }}
               />
+              {/* Inner glow */}
+              <div className="absolute inset-0 rounded-xl bg-primary/10" />
             </motion.div>
           )}
 

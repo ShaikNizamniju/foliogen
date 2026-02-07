@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { ProfileData, WorkExperience, Project } from '@/contexts/ProfileContext';
 import { ContactDialog } from '@/components/ContactDialog';
 import { ProfileChatBot } from '@/components/public/ProfileChatBot';
-import { SeoHead } from '@/components/common/SeoHead';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
-import { AiPmTemplate } from '@/components/dashboard/templates/AiPmTemplate';
+import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
 import { DevTemplate } from '@/components/dashboard/templates/DevTemplate';
 import { BrutalistTemplate } from '@/components/dashboard/templates/BrutalistTemplate';
 import { AcademicTemplate } from '@/components/dashboard/templates/AcademicTemplate';
@@ -34,7 +34,7 @@ export default function PublicPortfolio() {
     }
   }, [id]);
 
-  // Increment view count and track analytics - only for non-owners, with localStorage spam prevention
+  // Increment view count - only for non-owners, with localStorage spam prevention
   useEffect(() => {
     if (!id || viewCounted.current) return;
     
@@ -55,36 +55,6 @@ export default function PublicPortfolio() {
     viewCounted.current = true;
     localStorage.setItem(visitKey, now.toString());
     
-    // Get device and browser info
-    const userAgent = navigator.userAgent;
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(userAgent);
-    const isTablet = /iPad|Android(?!.*Mobile)/i.test(userAgent);
-    const deviceType = isMobile ? (isTablet ? 'Tablet' : 'Mobile') : 'Desktop';
-    
-    let browser = 'Other';
-    if (userAgent.includes('Firefox')) browser = 'Firefox';
-    else if (userAgent.includes('Chrome')) browser = 'Chrome';
-    else if (userAgent.includes('Safari')) browser = 'Safari';
-    else if (userAgent.includes('Edge')) browser = 'Edge';
-
-    // Track detailed analytics event
-    supabase
-      .from('analytics_events')
-      .insert({
-        profile_user_id: id,
-        event_type: 'page_view',
-        referrer: document.referrer || null,
-        device_type: deviceType,
-        browser: browser,
-        page_path: window.location.pathname
-      })
-      .then(({ error }) => {
-        if (error) {
-          console.error('Failed to track analytics:', error);
-        }
-      });
-    
-    // Also increment the simple view counter
     supabase.rpc('increment_views', { p_user_id: id }).then(({ error }) => {
       if (error) {
         console.error('Failed to increment views:', error);
@@ -96,9 +66,8 @@ export default function PublicPortfolio() {
     setLoading(true);
     setError(null);
 
-    // Use profiles_public view to exclude email from public access
     const { data, error: fetchError } = await supabase
-      .from('profiles_public')
+      .from('profiles')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
@@ -132,7 +101,7 @@ export default function PublicPortfolio() {
       bio: data.bio || '',
       headline: data.headline || '',
       location: data.location || '',
-      email: '', // Email not available in public view for privacy
+      email: data.email || '',
       website: data.website || '',
       linkedinUrl: data.linkedin_url || '',
       githubUrl: data.github_url || '',
@@ -143,7 +112,6 @@ export default function PublicPortfolio() {
       keyHighlights: keyHighlights,
       views: data.views || 0,
       selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
-      // Note: SEO fields are not in the public view, will fetch separately if needed
     });
     setLoading(false);
   };
@@ -172,12 +140,10 @@ export default function PublicPortfolio() {
 
   // Generate SEO metadata
   const pageTitle = profile.fullName 
-    ? `${profile.fullName} - ${profile.headline || 'Portfolio'} | FolioGen`
-    : 'Portfolio | FolioGen';
-  const pageDescription = profile.headline 
-    ? `${profile.headline} | Built with FolioGen`
-    : profile.bio || `Professional portfolio of ${profile.fullName || 'a talented professional'} | Built with FolioGen`;
-  const pageImage = profile.photoUrl || undefined; // Falls back to /og-image.png in SeoHead
+    ? `${profile.fullName}${profile.headline ? ` - ${profile.headline}` : ''}`
+    : 'Portfolio';
+  const pageDescription = profile.bio || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
+  const pageImage = profile.photoUrl || '';
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   // Render the selected template directly - no editing controls
@@ -189,8 +155,8 @@ export default function PublicPortfolio() {
         return <MinimalistTemplate {...templateProps} />;
       case 'creative':
         return <CreativeTemplate {...templateProps} />;
-      case 'aipm':
-        return <AiPmTemplate {...templateProps} />;
+      case 'saas':
+        return <SaasTemplate {...templateProps} />;
       case 'dev':
         return <DevTemplate {...templateProps} />;
       case 'brutalist':
@@ -214,13 +180,24 @@ export default function PublicPortfolio() {
 
   return (
     <>
-      <SeoHead
-        title={pageTitle}
-        description={pageDescription}
-        image={pageImage}
-        url={pageUrl}
-        type="profile"
-      />
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        {pageImage && <meta property="og:image" content={pageImage} />}
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={pageUrl} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        {pageImage && <meta name="twitter:image" content={pageImage} />}
+      </Helmet>
       <div className="min-h-screen">
         <div id="portfolio-export-container" className="print:w-full">
           {renderTemplate()}

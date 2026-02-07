@@ -6,8 +6,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { ProjectImageCard } from '../ProjectImageCard';
-import { supabase } from '@/integrations/supabase/client';
 
 const ENHANCE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/enhance-project`;
 
@@ -23,14 +21,12 @@ export function ProjectsForm() {
       imageUrl: '',
       description: '',
     };
-    // SAFETY: Use optional chaining with fallback to empty array
-    updateProfile({ projects: [...(profile.projects ?? []), newProject] });
+    updateProfile({ projects: [...profile.projects, newProject] });
   };
 
   const updateProject = (id: string, updates: Partial<Project>) => {
     updateProfile({
-      // SAFETY: Use optional chaining with fallback
-      projects: (profile.projects ?? []).map((proj) =>
+      projects: profile.projects.map((proj) =>
         proj.id === id ? { ...proj, ...updates } : proj
       ),
     });
@@ -38,21 +34,13 @@ export function ProjectsForm() {
 
   const removeProject = (id: string) => {
     updateProfile({
-      // SAFETY: Use optional chaining with fallback
-      projects: (profile.projects ?? []).filter((proj) => proj.id !== id),
+      projects: profile.projects.filter((proj) => proj.id !== id),
     });
   };
 
   const enhanceWithAI = async (project: Project) => {
     if (!project.description?.trim()) {
       toast.error('Please add some description or bullet points first');
-      return;
-    }
-
-    // Get user session token for authenticated API call
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) {
-      toast.error('Please sign in to use AI features');
       return;
     }
 
@@ -63,7 +51,7 @@ export function ProjectsForm() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({
           description: project.description,
@@ -148,12 +136,9 @@ export function ProjectsForm() {
     }
   };
 
-  // SAFETY: Use optional chaining for safe array access
-  const projects = profile.projects ?? [];
-
   return (
     <div className="space-y-6">
-      {projects.length === 0 ? (
+      {profile.projects.length === 0 ? (
         <div className="text-center py-8 border-2 border-dashed border-border rounded-xl">
           <p className="text-muted-foreground mb-4">No projects added yet</p>
           <Button onClick={addProject} variant="outline">
@@ -163,7 +148,7 @@ export function ProjectsForm() {
         </div>
       ) : (
         <>
-          {projects.map((project, index) => (
+          {profile.projects.map((project, index) => (
             <div key={project.id} className="p-4 border border-border rounded-xl space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-muted-foreground">
@@ -178,12 +163,6 @@ export function ProjectsForm() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-
-              {/* Project Image Card with Unsplash */}
-              <ProjectImageCard 
-                project={project}
-                onImageChange={(imageUrl) => updateProject(project.id, { imageUrl })}
-              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -206,6 +185,15 @@ export function ProjectsForm() {
                     YouTube and Loom links will auto-embed as videos
                   </p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Image URL (optional)</Label>
+                <Input
+                  placeholder="https://example.com/project-screenshot.jpg"
+                  value={project.imageUrl}
+                  onChange={(e) => updateProject(project.id, { imageUrl: e.target.value })}
+                />
               </div>
 
               <div className="space-y-2">

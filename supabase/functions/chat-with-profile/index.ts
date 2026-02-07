@@ -6,109 +6,32 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-const MAX_QUERY_SIZE = 1000; // 1KB limit for user queries
-const MAX_CONVERSATION_HISTORY = 20; // Maximum messages in history
-const RATE_LIMIT_MAX_REQUESTS = 20; // 20 requests per hour per IP
-const RATE_LIMIT_WINDOW_MINUTES = 60;
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Initialize Supabase clients
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    
-    // Service role client for rate limiting (needs to bypass RLS for rate_limits table)
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
-    
-    // Anon key client for profile queries (uses RLS via profiles_public view)
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, anonKey);
-
-    // Get client IP for rate limiting
-    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-                     req.headers.get('cf-connecting-ip') || 
-                     'unknown';
-    
-    // Check rate limit using database function (requires service role to bypass RLS on rate_limits table)
-    const { data: rateLimitAllowed, error: rateLimitError } = await supabaseAdmin.rpc(
-      'check_rate_limit',
-      {
-        p_key: clientIP,
-        p_endpoint: 'chat-with-profile',
-        p_max_requests: RATE_LIMIT_MAX_REQUESTS,
-        p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
-      }
-    );
-
-    if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError.message);
-      // Continue without rate limiting if there's an error
-    } else if (!rateLimitAllowed) {
-      console.log('Rate limit exceeded for IP:', clientIP);
-      return new Response(
-        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const { userQuery, profileId, conversationHistory = [] } = await req.json();
 
-    // Input validation
-    if (!userQuery || typeof userQuery !== 'string') {
+    if (!userQuery || !profileId) {
       return new Response(
-        JSON.stringify({ error: 'userQuery is required' }),
+        JSON.stringify({ error: 'userQuery and profileId are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    if (userQuery.length > MAX_QUERY_SIZE) {
-      return new Response(
-        JSON.stringify({ error: `Query too long. Maximum ${MAX_QUERY_SIZE} characters allowed.` }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    console.log('Chat request for profile:', profileId, 'Query:', userQuery);
 
-    if (!profileId || typeof profileId !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'profileId is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(profileId)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid profileId format' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (!Array.isArray(conversationHistory)) {
-      return new Response(
-        JSON.stringify({ error: 'conversationHistory must be an array' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (conversationHistory.length > MAX_CONVERSATION_HISTORY) {
-      return new Response(
-        JSON.stringify({ error: `Conversation too long. Maximum ${MAX_CONVERSATION_HISTORY} messages allowed.` }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('Chat request for profile:', profileId, 'Query length:', userQuery.length, 'IP:', clientIP);
-
-    // Fetch the profile data using profiles_public view (excludes email for privacy)
-    // Uses anon key + RLS for defense-in-depth security
+    // Fetch the full profile data
     const { data: profile, error: profileError } = await supabase
-      .from('profiles_public')
-      .select('full_name, headline, bio, location, website, skills, key_highlights, work_experience, projects')
+      .from('profiles')
+      .select('*')
       .eq('user_id', profileId)
       .maybeSingle();
 
@@ -127,12 +50,13 @@ serve(async (req) => {
       );
     }
 
-    // Construct profile data for the AI (excluding email for privacy)
+    // Construct profile data for the AI
     const profileData = {
       name: profile.full_name || 'Unknown',
       headline: profile.headline || '',
       bio: profile.bio || '',
       location: profile.location || '',
+      email: profile.email || '',
       website: profile.website || '',
       skills: profile.skills || [],
       keyHighlights: profile.key_highlights || [],
@@ -154,24 +78,10 @@ CRITICAL RULES:
 5. If asked about something not in the data, simply say "I don't see that in their experience" and move on.
 6. Highlight specific achievements and metrics when relevant—these make candidates memorable.`;
 
-    // Sanitize and limit conversation history
-    const sanitizedHistory = conversationHistory
-      .slice(-MAX_CONVERSATION_HISTORY)
-      .filter((msg: { role?: string; content?: string }) => 
-        msg && typeof msg === 'object' && 
-        (msg.role === 'user' || msg.role === 'assistant') && 
-        typeof msg.content === 'string' &&
-        msg.content.length <= MAX_QUERY_SIZE
-      )
-      .map((msg: { role: string; content: string }) => ({
-        role: msg.role,
-        content: msg.content.substring(0, MAX_QUERY_SIZE)
-      }));
-
     // Build messages array
     const messages = [
       { role: 'system', content: systemPrompt },
-      ...sanitizedHistory,
+      ...conversationHistory,
       { role: 'user', content: userQuery }
     ];
 
@@ -220,7 +130,7 @@ CRITICAL RULES:
   } catch (error) {
     console.error('Chat error:', error);
     return new Response(
-      JSON.stringify({ error: 'Something went wrong. Please try again later.' }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

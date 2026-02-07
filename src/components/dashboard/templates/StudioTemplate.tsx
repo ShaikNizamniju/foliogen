@@ -1,14 +1,12 @@
-import { ProfileData, useProfile } from '@/contexts/ProfileContext';
+import { ProfileData } from '@/contexts/ProfileContext';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { useRef } from 'react';
-import { EditableHero, EditableExperience, EditableProject } from '../EditableSection';
 
 interface StudioTemplateProps {
   profile: ProfileData;
   onContactClick?: () => void;
-  editMode?: boolean;
 }
 
 // Animated text that reveals word by word
@@ -154,7 +152,7 @@ function MagneticButton({ children, onClick, className }: { children: React.Reac
   );
 }
 
-export function StudioTemplate({ profile, onContactClick, editMode = false }: StudioTemplateProps) {
+export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef });
   const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0.9]);

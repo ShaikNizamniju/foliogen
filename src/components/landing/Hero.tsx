@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
 
 function TypewriterText({ text, className }: { text: string; className?: string }) {
   const [displayedText, setDisplayedText] = useState('');
@@ -123,7 +122,6 @@ function Document3DAnimation() {
 }
 
 export function Hero() {
-  const { user } = useAuth();
   return (
     <section className="relative min-h-fit overflow-hidden bg-background pt-24 pb-6 md:py-32">
       {/* Animated gradient background */}
@@ -187,7 +185,7 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
           >
-            <TypewriterText text="Building the Future with AI Agents" />
+            <TypewriterText text="Your Career. Accelerated." />
           </motion.h1>
 
           {/* Subheadline */}
@@ -209,9 +207,9 @@ export function Hero() {
             <Button
               asChild
               size="lg"
-              className="relative h-16 px-12 text-lg font-bold shadow-[0_0_40px_8px_rgba(147,51,234,0.5)] hover:shadow-[0_0_60px_12px_rgba(147,51,234,0.6)] transition-all duration-300 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border-0"
+              className="relative h-16 px-12 text-lg font-bold shadow-[0_0_40px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_0_60px_12px_rgba(59,130,246,0.4)] transition-all duration-300 bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
             >
-              <Link to={user ? "/dashboard" : "/auth"}>
+              <Link to="/auth">
                 <motion.span
                   className="flex items-center gap-3"
                   whileHover={{ scale: 1.02 }}

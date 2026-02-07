@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,12 +14,6 @@ interface ContactRequest {
   toName: string;
 }
 
-const MAX_NAME_LENGTH = 100;
-const MAX_EMAIL_LENGTH = 254;
-const MAX_MESSAGE_LENGTH = 5000;
-const RATE_LIMIT_MAX_REQUESTS = 5; // 5 emails per hour per IP
-const RATE_LIMIT_WINDOW_MINUTES = 60;
-
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -28,38 +21,6 @@ serve(async (req) => {
   }
 
   try {
-    // Initialize Supabase client for rate limiting
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get client IP for rate limiting
-    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-                     req.headers.get('cf-connecting-ip') || 
-                     'unknown';
-    
-    // Check rate limit using database function
-    const { data: rateLimitAllowed, error: rateLimitError } = await supabase.rpc(
-      'check_rate_limit',
-      {
-        p_key: clientIP,
-        p_endpoint: 'send-contact-email',
-        p_max_requests: RATE_LIMIT_MAX_REQUESTS,
-        p_window_minutes: RATE_LIMIT_WINDOW_MINUTES
-      }
-    );
-
-    if (rateLimitError) {
-      console.error('Rate limit check error:', rateLimitError.message);
-      // Continue without rate limiting if there's an error
-    } else if (!rateLimitAllowed) {
-      console.log('Rate limit exceeded for IP:', clientIP);
-      return new Response(
-        JSON.stringify({ success: false, error: "Too many requests. Please try again later." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
     const EMAILJS_SERVICE_ID = Deno.env.get("EMAILJS_SERVICE_ID");
     const EMAILJS_TEMPLATE_ID = Deno.env.get("EMAILJS_TEMPLATE_ID");
     const EMAILJS_PUBLIC_KEY = Deno.env.get("EMAILJS_PUBLIC_KEY");
@@ -74,55 +35,18 @@ serve(async (req) => {
       throw new Error("EMAILJS_PUBLIC_KEY is not configured");
     }
 
-    const body = await req.json();
-    const { name, email, message, toEmail, toName }: ContactRequest = body;
+    const { name, email, message, toEmail, toName }: ContactRequest = await req.json();
 
-    // Validate required fields with strict type checking
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
+    // Validate required fields
+    if (!name || !email || !message) {
       return new Response(
-        JSON.stringify({ success: false, error: "Name is required" }),
+        JSON.stringify({ success: false, error: "Missing required fields" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    if (!email || typeof email !== 'string' || email.trim().length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Email is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    if (!message || typeof message !== 'string' || message.trim().length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Message is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Validate lengths
-    if (name.length > MAX_NAME_LENGTH) {
-      return new Response(
-        JSON.stringify({ success: false, error: `Name too long. Maximum ${MAX_NAME_LENGTH} characters.` }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    if (email.length > MAX_EMAIL_LENGTH) {
-      return new Response(
-        JSON.stringify({ success: false, error: `Email too long. Maximum ${MAX_EMAIL_LENGTH} characters.` }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    if (message.length > MAX_MESSAGE_LENGTH) {
-      return new Response(
-        JSON.stringify({ success: false, error: `Message too long. Maximum ${MAX_MESSAGE_LENGTH} characters.` }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Validate email format with stricter regex
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return new Response(
         JSON.stringify({ success: false, error: "Invalid email format" }),
@@ -130,20 +54,15 @@ serve(async (req) => {
       );
     }
 
-    // Validate toEmail if provided
-    if (toEmail && (typeof toEmail !== 'string' || !emailRegex.test(toEmail))) {
+    // Validate message length
+    if (message.length > 5000) {
       return new Response(
-        JSON.stringify({ success: false, error: "Invalid recipient email format" }),
+        JSON.stringify({ success: false, error: "Message is too long (max 5000 characters)" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Sanitize inputs - remove potentially dangerous characters
-    const sanitizedName = name.trim().replace(/[<>]/g, '');
-    const sanitizedMessage = message.trim().replace(/[<>]/g, '');
-    const sanitizedToName = (toName || "Portfolio Owner").trim().replace(/[<>]/g, '');
-
-    console.log(`Sending contact email from ${sanitizedName}, IP: ${clientIP}`);
+    console.log(`Sending contact email from ${name} (${email}) to ${toEmail}`);
 
     // Send via EmailJS API
     const emailJsResponse = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
@@ -156,18 +75,19 @@ serve(async (req) => {
         template_id: EMAILJS_TEMPLATE_ID,
         user_id: EMAILJS_PUBLIC_KEY,
         template_params: {
-          from_name: sanitizedName,
+          from_name: name,
           from_email: email,
-          message: sanitizedMessage,
+          message: message,
           to_email: toEmail,
-          to_name: sanitizedToName,
+          to_name: toName || "Portfolio Owner",
         },
       }),
     });
 
     if (!emailJsResponse.ok) {
-      console.error("Email delivery failed:", emailJsResponse.status);
-      throw new Error("Email delivery failed");
+      const errorText = await emailJsResponse.text();
+      console.error("EmailJS API error:", errorText);
+      throw new Error(`EmailJS API error: ${emailJsResponse.status}`);
     }
 
     console.log("Email sent successfully");
@@ -178,9 +98,9 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error sending contact email:", error);
-    // Don't expose internal error details
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ success: false, error: "Failed to send email. Please try again later." }),
+      JSON.stringify({ success: false, error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

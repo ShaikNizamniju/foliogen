@@ -1,18 +1,21 @@
 import { Project } from '@/contexts/ProfileContext';
-import { getUnsplashProjectImage, DEFAULT_PROJECT_THUMBNAIL } from './image-utils';
 
 /**
- * Generate project image URL - uses Unsplash for professional images
+ * Generate AI-powered image URL for projects using Pollinations API
  */
 export function getProjectImageUrl(project: Project, style: 'minimal' | 'creative' | 'terminal' | 'bold' = 'minimal'): string {
-  // If user has provided a custom image, use it
   if (project.imageUrl) return project.imageUrl;
   
-  // If project has a title, get a relevant image
-  if (project.title) {
-    return getUnsplashProjectImage(project.title);
-  }
+  const prompt = project.visualPrompt || project.title || 'abstract tech';
   
-  // Otherwise, return the default professional gradient
-  return DEFAULT_PROJECT_THUMBNAIL;
+  const styleModifiers: Record<string, string> = {
+    minimal: 'high quality UI design clean minimal modern',
+    creative: 'high quality UI design abstract gradient',
+    terminal: 'dark mode tech interface neon',
+    bold: 'bright colorful bold graphic design',
+  };
+  
+  const modifier = styleModifiers[style] || styleModifiers.minimal;
+  
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt + ' ' + modifier)}?width=800&height=600&nologo=true`;
 }

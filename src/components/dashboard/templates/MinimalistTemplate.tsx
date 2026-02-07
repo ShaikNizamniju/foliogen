@@ -3,15 +3,10 @@ import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCirc
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { InlineEdit } from '@/components/ui/inline-edit';
-import { useProfile } from '@/contexts/ProfileContext';
-import { EmptyState } from './EmptyState';
-import { EditableHero, EditableExperience, EditableProject } from '../EditableSection';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
   onContactClick?: () => void;
-  editMode?: boolean;
 }
 
 // Animation variants
@@ -44,44 +39,9 @@ const sidebarVariants = {
   },
 };
 
-export function MinimalistTemplate({ profile, onContactClick, editMode = false }: MinimalistTemplateProps) {
-  const { updateProfile } = useProfile();
-
-  const handleFieldUpdate = (field: keyof ProfileData, value: string) => {
-    if (editMode) {
-      updateProfile({ [field]: value });
-    }
-  };
-
-  const handleExperienceUpdate = (expId: string, field: string, value: string) => {
-    if (editMode) {
-      updateProfile({
-        workExperience: profile.workExperience.map(exp => 
-          exp.id === expId ? { ...exp, [field]: value } : exp
-        )
-      });
-    }
-  };
-
-  const handleProjectUpdate = (projectId: string, field: string, value: string) => {
-    if (editMode) {
-      updateProfile({
-        projects: profile.projects.map(proj => 
-          proj.id === projectId ? { ...proj, [field]: value } : proj
-        )
-      });
-    }
-  };
-
-  // Check if profile has content
-  const hasExperience = profile.workExperience.length > 0;
-  const hasProjects = profile.projects.length > 0;
-  const hasSkills = profile.skills.length > 0;
-  const hasBio = !!profile.bio;
-  const isEmpty = !hasExperience && !hasProjects && !hasSkills && !hasBio;
-
+export function MinimalistTemplate({ profile, onContactClick }: MinimalistTemplateProps) {
   return (
-    <div className="min-h-screen bg-white text-black font-sans flex flex-col md:flex-row relative">
+    <div className="min-h-screen bg-white text-black font-sans flex relative">
       {/* Dot Pattern Background */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -91,51 +51,27 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
         }}
       />
 
-      {/* Left Sidebar - Responsive: Full width on mobile, fixed width on desktop */}
+      {/* Left Sidebar - Sticky */}
       <motion.aside 
-        className="w-full md:w-[280px] md:min-h-full bg-black text-white p-6 md:p-8 flex flex-col md:sticky md:top-0 md:self-start z-10"
+        className="w-[280px] min-h-full bg-black text-white p-8 flex flex-col sticky top-0 self-start z-10"
         variants={sidebarVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Name */}
-        <EditableHero profile={profile} editMode={editMode}>
-          <motion.div 
-            className="mb-12"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
-            {editMode ? (
-              <InlineEdit
-                value={profile.fullName || ''}
-                onSave={(v) => handleFieldUpdate('fullName', v)}
-                placeholder="Your Name"
-                className="text-3xl font-black tracking-tight leading-tight uppercase text-white"
-                inputClassName="text-3xl font-black tracking-tight leading-tight uppercase text-white bg-transparent"
-                as="h1"
-              />
-            ) : (
-              <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
-                {profile.fullName || 'Your Name'}
-              </h1>
-            )}
-            {editMode ? (
-              <InlineEdit
-                value={profile.headline || ''}
-                onSave={(v) => handleFieldUpdate('headline', v)}
-                placeholder="Professional"
-                className="text-sm text-white/60 mt-2 uppercase tracking-widest"
-                inputClassName="text-sm text-white/60 uppercase tracking-widest bg-transparent"
-                as="p"
-              />
-            ) : (
-              <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
-                {profile.headline || 'Professional'}
-              </p>
-            )}
-          </motion.div>
-        </EditableHero>
+        <motion.div 
+          className="mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
+            {profile.fullName || 'Your Name'}
+          </h1>
+          <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
+            {profile.headline || 'Professional'}
+          </p>
+        </motion.div>
 
         {/* Contact Info */}
         <motion.div 
@@ -147,17 +83,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
           {profile.location && (
             <motion.div variants={itemVariants} className="flex items-start gap-3">
               <MapPin className="h-4 w-4 mt-0.5 text-white/40" />
-              {editMode ? (
-                <InlineEdit
-                  value={profile.location}
-                  onSave={(v) => handleFieldUpdate('location', v)}
-                  placeholder="Location"
-                  className="text-white/80"
-                  inputClassName="text-white/80 bg-transparent"
-                />
-              ) : (
-                <span className="text-white/80">{profile.location}</span>
-              )}
+              <span className="text-white/80">{profile.location}</span>
             </motion.div>
           )}
           {profile.email && (
@@ -177,7 +103,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
           {profile.website && (
             <motion.div variants={itemVariants} className="flex items-start gap-3">
               <Globe className="h-4 w-4 mt-0.5 text-white/40" />
-              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-white/80 hover:text-white transition-colors">
+              <a href={profile.website} className="text-white/80 hover:text-white transition-colors">
                 Website
               </a>
             </motion.div>
@@ -192,24 +118,24 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           {profile.linkedinUrl && (
-            <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.linkedinUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Linkedin className="h-4 w-4" />
             </a>
           )}
           {profile.githubUrl && (
-            <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.githubUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Github className="h-4 w-4" />
             </a>
           )}
           {profile.twitterUrl && (
-            <a href={profile.twitterUrl} target="_blank" rel="noopener noreferrer" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.twitterUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Twitter className="h-4 w-4" />
             </a>
           )}
         </motion.div>
 
         {/* Skills - Sidebar bottom */}
-        {hasSkills ? (
+        {profile.skills.length > 0 && (
           <motion.div 
             className="mt-auto pt-12"
             initial={{ opacity: 0 }}
@@ -233,49 +159,25 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
               ))}
             </div>
           </motion.div>
-        ) : (
-          <motion.div 
-            className="mt-auto pt-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            <div className="border border-dashed border-white/20 rounded-lg p-4 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-white/40 mb-1">Skills</p>
-              <p className="text-xs text-white/30">Upload resume to extract</p>
-            </div>
-          </motion.div>
         )}
       </motion.aside>
 
-      {/* Right Content - Scrollable and Responsive */}
+      {/* Right Content - Scrollable */}
       <motion.main 
-        className="flex-1 p-6 sm:p-8 md:p-12 overflow-auto relative z-10"
+        className="flex-1 p-12 overflow-auto relative z-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Bio Section */}
-        {(profile.bio || editMode) && (
+        {profile.bio && (
           <motion.section variants={itemVariants} className="mb-10">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6">
               About
             </h2>
-            {editMode ? (
-              <InlineEdit
-                value={profile.bio || ''}
-                onSave={(v) => handleFieldUpdate('bio', v)}
-                placeholder="Tell your story..."
-                className="text-xl leading-relaxed text-black/80 max-w-2xl font-light"
-                inputClassName="text-xl leading-relaxed text-black/80 font-light"
-                multiline
-                as="p"
-              />
-            ) : (
-              <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
-                {profile.bio}
-              </p>
-            )}
+            <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
+              {profile.bio}
+            </p>
           </motion.section>
         )}
 
@@ -303,7 +205,7 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
         )}
 
         {/* Experience Timeline */}
-        {hasExperience ? (
+        {profile.workExperience.length > 0 && (
           <motion.section variants={itemVariants} className="mb-16">
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Experience
@@ -314,88 +216,49 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
               
               <div className="space-y-10 pl-8">
                 {profile.workExperience.map((exp, index) => (
-                  <EditableExperience key={exp.id} experience={exp} editMode={editMode}>
-                    <motion.div 
-                      className="relative"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4 + index * 0.15 }}
-                    >
-                      {/* Timeline Dot */}
-                      <div className="absolute -left-8 top-2 w-4 h-4 bg-black rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-white rounded-full" />
-                      </div>
-                      
-                      {/* Date Badge */}
-                      <div className="inline-block mb-3">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-black/40 bg-black/5 px-3 py-1">
-                          {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
-                        </span>
-                      </div>
-                      
-                      {/* Content */}
-                      {editMode ? (
-                        <InlineEdit
-                          value={exp.jobTitle}
-                          onSave={(v) => handleExperienceUpdate(exp.id, 'jobTitle', v)}
-                          placeholder="Job Title"
-                          className="text-2xl font-bold tracking-tight mb-1"
-                          inputClassName="text-2xl font-bold tracking-tight"
-                          as="h3"
-                        />
-                      ) : (
-                        <h3 className="text-2xl font-bold tracking-tight mb-1">
-                          {exp.jobTitle}
-                        </h3>
-                      )}
-                      {editMode ? (
-                        <InlineEdit
-                          value={exp.company}
-                          onSave={(v) => handleExperienceUpdate(exp.id, 'company', v)}
-                          placeholder="Company"
-                          className="text-sm uppercase tracking-widest text-black/50 mb-4"
-                          inputClassName="text-sm uppercase tracking-widest text-black/50"
-                          as="p"
-                        />
-                      ) : (
-                        <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
-                          {exp.company}
-                        </p>
-                      )}
-                      {editMode ? (
-                        <InlineEdit
-                          value={exp.description}
-                          onSave={(v) => handleExperienceUpdate(exp.id, 'description', v)}
-                          placeholder="Describe your role..."
-                          className="text-black/70 leading-relaxed max-w-xl"
-                          inputClassName="text-black/70 leading-relaxed"
-                          multiline
-                          as="p"
-                        />
-                      ) : (
-                        <p className="text-black/70 leading-relaxed max-w-xl">
-                          {exp.description}
-                        </p>
-                      )}
-                    </motion.div>
-                  </EditableExperience>
+                  <motion.div 
+                    key={exp.id} 
+                    className="relative"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 + index * 0.15 }}
+                  >
+                    {/* Timeline Dot */}
+                    <div className="absolute -left-8 top-2 w-4 h-4 bg-black rounded-full flex items-center justify-center">
+                      <div className="w-2 h-2 bg-white rounded-full" />
+                    </div>
+                    
+                    {/* Date Badge */}
+                    <div className="inline-block mb-3">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-black/40 bg-black/5 px-3 py-1">
+                        {exp.startDate} — {exp.current ? 'Present' : exp.endDate}
+                      </span>
+                    </div>
+                    
+                    {/* Content */}
+                    <h3 className="text-2xl font-bold tracking-tight mb-1">
+                      {exp.jobTitle}
+                    </h3>
+                    <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
+                      {exp.company}
+                    </p>
+                    <p className="text-black/70 leading-relaxed max-w-xl">
+                      {exp.description}
+                    </p>
+                  </motion.div>
                 ))}
               </div>
             </div>
           </motion.section>
-        ) : (
-          <motion.section variants={itemVariants} className="mb-16">
-            <EmptyState type="experience" variant="light" />
-          </motion.section>
         )}
 
         {/* Projects Grid */}
-        {hasProjects ? (
+        {profile.projects.length > 0 && (
           <motion.section variants={itemVariants}>
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Selected Work
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 gap-6">
               {profile.projects.map((project, index) => (
                 <motion.div 
                   key={project.id} 
@@ -423,45 +286,18 @@ export function MinimalistTemplate({ profile, onContactClick, editMode = false }
                   </div>
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-2">
-                      {editMode ? (
-                        <InlineEdit
-                          value={project.title}
-                          onSave={(v) => handleProjectUpdate(project.id, 'title', v)}
-                          placeholder="Project Title"
-                          className="font-bold uppercase tracking-wide text-sm"
-                          inputClassName="font-bold uppercase tracking-wide text-sm"
-                          as="h3"
-                        />
-                      ) : (
-                        <h3 className="font-bold uppercase tracking-wide text-sm">{project.title}</h3>
-                      )}
+                      <h3 className="font-bold uppercase tracking-wide text-sm">{project.title}</h3>
                       {project.link && (
                         <a href={project.link} className="text-black/30 hover:text-black transition-colors">
                           <ExternalLink className="h-4 w-4" />
                         </a>
                       )}
                     </div>
-                    {editMode ? (
-                      <InlineEdit
-                        value={project.description}
-                        onSave={(v) => handleProjectUpdate(project.id, 'description', v)}
-                        placeholder="Project description..."
-                        className="text-sm text-black/60 leading-relaxed"
-                        inputClassName="text-sm text-black/60 leading-relaxed"
-                        multiline
-                        as="p"
-                      />
-                    ) : (
-                      <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
-                    )}
+                    <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
                   </div>
                 </motion.div>
               ))}
             </div>
-          </motion.section>
-        ) : (
-          <motion.section variants={itemVariants}>
-            <EmptyState type="projects" variant="light" />
           </motion.section>
         )}
       </motion.main>

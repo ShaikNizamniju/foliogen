@@ -14,9 +14,9 @@ const templates = [
     description: 'Vibrant bento grid with aurora effects',
   },
   {
-    id: 'aipm',
-    name: 'The AI PM',
-    description: 'Modern product manager showcase',
+    id: 'saas',
+    name: 'The Founder',
+    description: 'Stripe-inspired metrics showcase',
   },
   {
     id: 'dev',

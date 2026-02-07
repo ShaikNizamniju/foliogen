@@ -1,15 +1,13 @@
-import { ProfileData, useProfile } from '@/contexts/ProfileContext';
+import { ProfileData } from '@/contexts/ProfileContext';
 import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { EditableHero, EditableExperience, EditableProject } from '../EditableSection';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
   onContactClick?: () => void;
-  editMode?: boolean;
 }
 
 // Skill colors for colorful badges
@@ -141,7 +139,7 @@ function TiltCard({ children, className = '' }: TiltCardProps) {
 
 // Using shared getProjectImageUrl from portfolio-utils
 
-export function CreativeTemplate({ profile, onContactClick, editMode = false }: CreativeTemplateProps) {
+export function CreativeTemplate({ profile, onContactClick }: CreativeTemplateProps) {
   return (
     <div className="min-h-screen bg-slate-950 font-sans relative overflow-hidden">
       {/* Aurora Background */}

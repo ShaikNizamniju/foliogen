@@ -14,87 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      analytics_events: {
-        Row: {
-          browser: string | null
-          city: string | null
-          country: string | null
-          created_at: string
-          device_type: string | null
-          event_type: string
-          id: string
-          page_path: string | null
-          profile_user_id: string
-          referrer: string | null
-        }
-        Insert: {
-          browser?: string | null
-          city?: string | null
-          country?: string | null
-          created_at?: string
-          device_type?: string | null
-          event_type?: string
-          id?: string
-          page_path?: string | null
-          profile_user_id: string
-          referrer?: string | null
-        }
-        Update: {
-          browser?: string | null
-          city?: string | null
-          country?: string | null
-          created_at?: string
-          device_type?: string | null
-          event_type?: string
-          id?: string
-          page_path?: string | null
-          profile_user_id?: string
-          referrer?: string | null
-        }
-        Relationships: []
-      }
-      blog_posts: {
-        Row: {
-          content: string
-          cover_image_url: string | null
-          created_at: string
-          excerpt: string | null
-          id: string
-          published: boolean
-          published_at: string | null
-          slug: string
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          content: string
-          cover_image_url?: string | null
-          created_at?: string
-          excerpt?: string | null
-          id?: string
-          published?: boolean
-          published_at?: string | null
-          slug: string
-          title: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          cover_image_url?: string | null
-          created_at?: string
-          excerpt?: string | null
-          id?: string
-          published?: boolean
-          published_at?: string | null
-          slug?: string
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       documents: {
         Row: {
           category: string
@@ -149,9 +68,6 @@ export type Database = {
           key_highlights: string[] | null
           linkedin_url: string | null
           location: string | null
-          meta_description: string | null
-          meta_keywords: string[] | null
-          meta_title: string | null
           photo_url: string | null
           projects: Json | null
           selected_template: string | null
@@ -174,9 +90,6 @@ export type Database = {
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
-          meta_description?: string | null
-          meta_keywords?: string[] | null
-          meta_title?: string | null
           photo_url?: string | null
           projects?: Json | null
           selected_template?: string | null
@@ -199,9 +112,6 @@ export type Database = {
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
-          meta_description?: string | null
-          meta_keywords?: string[] | null
-          meta_title?: string | null
           photo_url?: string | null
           projects?: Json | null
           selected_template?: string | null
@@ -215,109 +125,11 @@ export type Database = {
         }
         Relationships: []
       }
-      rate_limits: {
-        Row: {
-          endpoint: string
-          id: string
-          key: string
-          request_count: number
-          window_start: string
-        }
-        Insert: {
-          endpoint: string
-          id?: string
-          key: string
-          request_count?: number
-          window_start?: string
-        }
-        Update: {
-          endpoint?: string
-          id?: string
-          key?: string
-          request_count?: number
-          window_start?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
-      profiles_public: {
-        Row: {
-          bio: string | null
-          created_at: string | null
-          full_name: string | null
-          github_url: string | null
-          headline: string | null
-          id: string | null
-          key_highlights: string[] | null
-          linkedin_url: string | null
-          location: string | null
-          photo_url: string | null
-          projects: Json | null
-          selected_template: string | null
-          skills: string[] | null
-          twitter_url: string | null
-          updated_at: string | null
-          user_id: string | null
-          views: number | null
-          website: string | null
-          work_experience: Json | null
-        }
-        Insert: {
-          bio?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
-          id?: string | null
-          key_highlights?: string[] | null
-          linkedin_url?: string | null
-          location?: string | null
-          photo_url?: string | null
-          projects?: Json | null
-          selected_template?: string | null
-          skills?: string[] | null
-          twitter_url?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          views?: number | null
-          website?: string | null
-          work_experience?: Json | null
-        }
-        Update: {
-          bio?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
-          id?: string | null
-          key_highlights?: string[] | null
-          linkedin_url?: string | null
-          location?: string | null
-          photo_url?: string | null
-          projects?: Json | null
-          selected_template?: string | null
-          skills?: string[] | null
-          twitter_url?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          views?: number | null
-          website?: string | null
-          work_experience?: Json | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
-      check_rate_limit: {
-        Args: {
-          p_endpoint: string
-          p_key: string
-          p_max_requests?: number
-          p_window_minutes?: number
-        }
-        Returns: boolean
-      }
       increment_views: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {

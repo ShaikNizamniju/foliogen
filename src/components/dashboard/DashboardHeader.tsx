@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Rocket, FileDown, Share2, Eye, Check, Loader2, AlertCircle } from 'lucide-react';
+import { Rocket, FileDown, Share2, Eye } from 'lucide-react';
 import { PublishDialog } from './PublishDialog';
 import { ShareDialog } from './ShareDialog';
 import { ModeToggle } from '@/components/ModeToggle';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils';
+import html2pdf from 'html2pdf.js';
 
 export function DashboardHeader() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const { profile, saveStatus } = useProfile();
+  const { profile } = useProfile();
   const { user } = useAuth();
 
   // Get the base URL for portfolio
@@ -22,7 +22,7 @@ export function DashboardHeader() {
     return user ? `${baseUrl}/p/${user.id}` : '';
   };
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     // Target the ATS-friendly printable resume container
     const element = document.getElementById('printable-resume-container');
     
@@ -37,48 +37,40 @@ export function DashboardHeader() {
 
     setIsExporting(true);
     toast({
-      title: "Preparing PDF...",
-      description: "Opening print dialog for your ATS-friendly resume.",
+      title: "Generating PDF...",
+      description: "Please wait while we create your ATS-friendly resume.",
     });
 
-    // Use browser's native print functionality - secure and no vulnerable dependencies
-    // The @media print CSS in index.css handles the styling
-    setTimeout(() => {
-      window.print();
-      setIsExporting(false);
-      toast({
-        title: "Print Dialog Opened",
-        description: "Select 'Save as PDF' in your print dialog to download.",
-      });
-    }, 100);
-  };
+    const options = {
+      margin: 0,
+      filename: `${profile.fullName || 'resume'}-resume.pdf`,
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { 
+        scale: 4, // Ultra-sharp text
+        useCORS: true,
+        letterRendering: true,
+        scrollY: 0,
+        backgroundColor: '#ffffff',
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
 
-  // Save status indicator
-  const renderSaveStatus = () => {
-    switch (saveStatus) {
-      case 'saving':
-        return (
-          <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            <span>Saving...</span>
-          </div>
-        );
-      case 'saved':
-        return (
-          <div className="flex items-center gap-1.5 text-emerald-600 text-sm">
-            <Check className="h-3.5 w-3.5" />
-            <span>Saved</span>
-          </div>
-        );
-      case 'error':
-        return (
-          <div className="flex items-center gap-1.5 text-destructive text-sm">
-            <AlertCircle className="h-3.5 w-3.5" />
-            <span>Error saving</span>
-          </div>
-        );
-      default:
-        return null;
+    try {
+      await html2pdf().set(options).from(element).save();
+      toast({
+        title: "Resume Downloaded!",
+        description: "Your ATS-friendly resume has been saved.",
+      });
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "There was an error creating your PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -94,11 +86,7 @@ export function DashboardHeader() {
             <span className="text-xs text-muted-foreground">views</span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Auto-save Status */}
-          {renderSaveStatus()}
-          
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <ModeToggle />
           <Button onClick={() => setShareOpen(true)} variant="outline" size="sm" data-tour="chat">
             <Share2 className="h-4 w-4 mr-2" />
@@ -106,13 +94,12 @@ export function DashboardHeader() {
           </Button>
           <Button onClick={handleDownloadPdf} variant="outline" size="sm" disabled={isExporting} data-tour="pdf">
             <FileDown className="h-4 w-4 mr-2" />
-            {isExporting ? 'Preparing...' : 'Download PDF'}
+            {isExporting ? 'Exporting...' : 'Download PDF'}
           </Button>
           <Button onClick={() => setPublishOpen(true)} size="sm">
             <Rocket className="h-4 w-4 mr-2" />
             Publish Portfolio
           </Button>
-          </div>
         </div>
       </header>
       <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />
