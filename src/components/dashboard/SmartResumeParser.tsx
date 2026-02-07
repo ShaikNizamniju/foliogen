@@ -209,14 +209,16 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
           >
-            <div
+            <motion.div
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
+              animate={isDragging ? { scale: 1.02 } : { scale: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               className={`
-                relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300
+                relative border-2 border-dashed rounded-2xl p-12 text-center transition-colors duration-300
                 ${isDragging 
-                  ? 'border-primary bg-primary/5 scale-[1.02]' 
+                  ? 'border-primary bg-primary/5' 
                   : 'border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30'
                 }
               `}
@@ -228,12 +230,13 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
               />
               <div className="flex flex-col items-center gap-5">
-                <div className={`
-                  p-5 rounded-2xl transition-all duration-300
-                  ${isDragging ? 'bg-primary/20 scale-110' : 'bg-primary/10'}
-                `}>
+                <motion.div 
+                  className={`p-5 rounded-2xl transition-colors duration-300 ${isDragging ? 'bg-primary/20' : 'bg-primary/10'}`}
+                  animate={isDragging ? { scale: 1.1, rotate: [0, -5, 5, 0] } : { scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
                   <UploadCloud className={`w-10 h-10 transition-colors ${isDragging ? 'text-primary' : 'text-primary/70'}`} />
-                </div>
+                </motion.div>
                 <div className="space-y-2">
                   <h3 className="text-xl font-semibold text-foreground">
                     Drop your resume to auto-build your portfolio
@@ -247,7 +250,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                   <span>PDF files only • Max 10MB</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
 
@@ -259,22 +262,54 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="border border-border rounded-2xl p-8 bg-card"
+            className="relative border border-border rounded-2xl p-8 bg-card overflow-hidden"
           >
-            <div className="flex flex-col items-center gap-6">
+            {/* Laser Scan Effect - Only during analyzing */}
+            {state === 'analyzing' && (
+              <motion.div
+                className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                initial={{ top: '0%' }}
+                animate={{ top: ['0%', '100%', '0%'] }}
+                transition={{
+                  duration: 2,
+                  ease: 'easeInOut',
+                  repeat: Infinity,
+                }}
+              />
+            )}
+            
+            <div className="flex flex-col items-center gap-6 relative z-10">
               <div className="relative">
-                <div className="p-5 rounded-2xl bg-primary/10 animate-pulse">
+                <motion.div 
+                  className="p-5 rounded-2xl bg-primary/10"
+                  animate={{ 
+                    boxShadow: [
+                      '0 0 0 0 rgba(59,130,246,0)',
+                      '0 0 20px 5px rgba(59,130,246,0.3)',
+                      '0 0 0 0 rgba(59,130,246,0)',
+                    ]
+                  }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
                   <Loader2 className="w-10 h-10 text-primary animate-spin" />
-                </div>
-                <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-card border border-border">
+                </motion.div>
+                <motion.div 
+                  className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-card border border-border"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                >
                   <Sparkles className="w-4 h-4 text-primary" />
-                </div>
+                </motion.div>
               </div>
               
               <div className="text-center space-y-2">
-                <h3 className="text-lg font-semibold text-foreground">
+                <motion.h3 
+                  className="text-lg font-semibold text-foreground"
+                  animate={{ opacity: [1, 0.7, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
                   {state === 'extracting' ? 'Reading your resume...' : 'Analyzing career history...'}
-                </h3>
+                </motion.h3>
                 <p className="text-sm text-muted-foreground">
                   {fileName && <span className="font-medium">{fileName}</span>}
                 </p>
