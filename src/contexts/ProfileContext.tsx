@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './AuthContext';
-import { Json } from '@/integrations/supabase/types';
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "./AuthContext";
+import { Json } from "@/integrations/supabase/types";
 
 export interface WorkExperience {
   id: string;
@@ -39,7 +39,19 @@ export interface ProfileData {
   skills: string[];
   keyHighlights: string[];
   views: number;
-  selectedTemplate: 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist' | 'academic' | 'studio' | 'executive' | 'influencer' | 'swiss' | 'noir' | 'modern-dark';
+  selectedTemplate:
+    | "minimalist"
+    | "creative"
+    | "saas"
+    | "dev"
+    | "brutalist"
+    | "academic"
+    | "studio"
+    | "executive"
+    | "influencer"
+    | "swiss"
+    | "noir"
+    | "modern-dark";
 }
 
 interface ProfileContextType {
@@ -51,22 +63,22 @@ interface ProfileContextType {
 }
 
 const defaultProfile: ProfileData = {
-  fullName: '',
-  photoUrl: '',
-  bio: '',
-  headline: '',
-  location: '',
-  email: '',
-  website: '',
-  linkedinUrl: '',
-  githubUrl: '',
-  twitterUrl: '',
+  fullName: "",
+  photoUrl: "",
+  bio: "",
+  headline: "",
+  location: "",
+  email: "",
+  website: "",
+  linkedinUrl: "",
+  githubUrl: "",
+  twitterUrl: "",
   workExperience: [],
   projects: [],
   skills: [],
   keyHighlights: [],
   views: 0,
-  selectedTemplate: 'minimalist',
+  selectedTemplate: "minimalist",
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -88,60 +100,52 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async () => {
     if (!user) return;
-    
+
     setLoading(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', user.id)
-      .maybeSingle();
+    const { data, error } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
 
     if (data && !error) {
-      const workExp = Array.isArray(data.work_experience) 
-        ? (data.work_experience as unknown as WorkExperience[]) 
+      const workExp = Array.isArray(data.work_experience) ? (data.work_experience as unknown as WorkExperience[]) : [];
+      const proj = Array.isArray(data.projects) ? (data.projects as unknown as Project[]) : [];
+
+      const keyHighlights = Array.isArray((data as any).key_highlights)
+        ? ((data as any).key_highlights as string[])
         : [];
-      const proj = Array.isArray(data.projects) 
-        ? (data.projects as unknown as Project[]) 
-        : [];
-      
-      const keyHighlights = Array.isArray((data as any).key_highlights) 
-        ? (data as any).key_highlights as string[]
-        : [];
-      
+
       setProfile({
         id: data.id,
-        fullName: data.full_name || '',
-        photoUrl: data.photo_url || '',
-        bio: data.bio || '',
-        headline: data.headline || '',
-        location: data.location || '',
-        email: data.email || '',
-        website: data.website || '',
-        linkedinUrl: data.linkedin_url || '',
-        githubUrl: data.github_url || '',
-        twitterUrl: data.twitter_url || '',
+        fullName: data.full_name || "",
+        photoUrl: data.photo_url || "",
+        bio: data.bio || "",
+        headline: data.headline || "",
+        location: data.location || "",
+        email: data.email || "",
+        website: data.website || "",
+        linkedinUrl: data.linkedin_url || "",
+        githubUrl: data.github_url || "",
+        twitterUrl: data.twitter_url || "",
         workExperience: workExp,
         projects: proj,
         skills: data.skills || [],
         keyHighlights: keyHighlights,
         views: data.views || 0,
-        selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
+        selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "minimalist",
       });
     }
     setLoading(false);
   };
 
   const updateProfile = (updates: Partial<ProfileData>) => {
-    setProfile(prev => ({ ...prev, ...updates }));
+    setProfile((prev) => ({ ...prev, ...updates }));
   };
 
   const saveProfile = async () => {
-    if (!user) return { error: new Error('Not authenticated') };
-    
+    if (!user) return { error: new Error("Not authenticated") };
+
     setSaving(true);
-    
+
     const { error } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update({
         full_name: profile.fullName,
         photo_url: profile.photoUrl,
@@ -159,7 +163,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         key_highlights: profile.keyHighlights,
         selected_template: profile.selectedTemplate,
       } as any)
-      .eq('user_id', user.id);
+      .eq("user_id", user.id);
 
     setSaving(false);
     return { error: error as Error | null };
@@ -175,7 +179,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 export function useProfile() {
   const context = useContext(ProfileContext);
   if (context === undefined) {
-    throw new Error('useProfile must be used within a ProfileProvider');
+    throw new Error("useProfile must be used within a ProfileProvider");
   }
   return context;
 }
+selectedTemplate: "minimalist" |
+  "creative" |
+  "saas" |
+  "dev" |
+  "brutalist" |
+  "academic" |
+  "studio" |
+  "executive" |
+  "influencer" |
+  "swiss" |
+  "noir" |
+  "modern-dark";
