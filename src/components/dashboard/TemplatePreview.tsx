@@ -10,6 +10,7 @@ import { ExecutiveTemplate } from './templates/ExecutiveTemplate';
 import { InfluencerTemplate } from './templates/InfluencerTemplate';
 import { SwissTemplate } from './templates/SwissTemplate';
 import { NoirTemplate } from './templates/NoirTemplate';
+import { ModernDarkTemplate } from './templates/ModernDarkTemplate';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye } from 'lucide-react';
 
@@ -43,6 +44,7 @@ export function TemplatePreview() {
             <SelectItem value="influencer">The Influencer</SelectItem>
             <SelectItem value="swiss">The Swiss</SelectItem>
             <SelectItem value="noir">The Noir</SelectItem>
+            <SelectItem value="modern-dark">Modern Dark</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -62,6 +64,7 @@ export function TemplatePreview() {
             {profile.selectedTemplate === 'influencer' && <InfluencerTemplate profile={profile} />}
             {profile.selectedTemplate === 'swiss' && <SwissTemplate profile={profile} />}
             {profile.selectedTemplate === 'noir' && <NoirTemplate profile={profile} />}
+            {profile.selectedTemplate === 'modern-dark' && <ModernDarkTemplate profile={profile} />}
           </div>
         </div>
       </div>
