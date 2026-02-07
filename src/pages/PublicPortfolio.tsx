@@ -230,8 +230,3 @@ export default function PublicPortfolio() {
     </>
   );
 }
-import { ModernDarkTemplate } from '@/components/dashboard/templates/ModernDarkTemplate';
-
-// ... inside switch statement ...
-case 'modern-dark':
-  return <ModernDarkTemplate {...templateProps} />;

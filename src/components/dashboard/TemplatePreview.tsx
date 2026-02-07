@@ -71,12 +71,3 @@ export function TemplatePreview() {
     </div>
   );
 }
-import { ModernDarkTemplate } from "./templates/ModernDarkTemplate";
-
-// ... inside the SelectContent ...
-<SelectItem value="modern-dark">Modern Dark</SelectItem>;
-
-// ... inside the render logic ...
-{
-  profile.selectedTemplate === "modern-dark" && <ModernDarkTemplate profile={profile} />;
-}

@@ -23,14 +23,14 @@ serve(async (req) => {
 
     console.log('Chat request for profile:', profileId, 'Query:', userQuery);
 
-    // Initialize Supabase client
+    // Initialize Supabase client with anon key (uses RLS, doesn't bypass security)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch the full profile data
+    // Fetch public profile data (excludes email for privacy)
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
+      .from('profiles_public')
       .select('*')
       .eq('user_id', profileId)
       .maybeSingle();
