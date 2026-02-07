@@ -3,7 +3,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { 
   Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, 
   Phone, Send, Briefcase, GraduationCap, Target, TrendingUp,
-  Code, Palette, Users, Rocket, X, Sparkles
+  Code, Palette, Users, Rocket, X, Sparkles, FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
@@ -599,16 +599,29 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
                           </div>
                         )}
 
-                        {project.link && (
-                          <a 
-                            href={project.link} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
-                          >
-                            View Project <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
+                        <div className="flex flex-wrap items-center gap-4">
+                          {project.link && (
+                            <a 
+                              href={project.link} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                            >
+                              View Project <ExternalLink className="w-4 h-4" />
+                            </a>
+                          )}
+                          {project.docsUrl && (
+                            <a 
+                              href={project.docsUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all"
+                            >
+                              <FileText className="w-4 h-4" />
+                              Case Study
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </motion.div>

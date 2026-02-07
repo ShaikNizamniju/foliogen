@@ -23,6 +23,7 @@ export interface Project {
   techStack?: string[];
   targetKeywords?: string[];
   visible?: boolean;
+  docsUrl?: string;
 }
 
 export interface ProfileData {

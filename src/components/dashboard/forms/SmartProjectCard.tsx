@@ -13,6 +13,7 @@ import {
   Check,
   AlertCircle,
   ExternalLink,
+  FileText,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,6 +43,14 @@ export const projectSchema = z.object({
     .refine(
       (val) => !val || val.startsWith('http://') || val.startsWith('https://'),
       'Image URL must start with http:// or https://'
+    )
+    .optional()
+    .or(z.literal('')),
+  docsUrl: z
+    .string()
+    .refine(
+      (val) => !val || val.startsWith('http://') || val.startsWith('https://'),
+      'URL must start with http:// or https://'
     )
     .optional()
     .or(z.literal('')),
@@ -293,6 +302,42 @@ export function SmartProjectCard({
                   <p className="text-xs text-destructive">{validationErrors['link']}</p>
                 )}
               </div>
+            </div>
+
+            {/* Docs URL - Supporting Document / Case Study */}
+            <div className="space-y-2">
+              <Label htmlFor={`docsUrl-${project.id}`} className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                Supporting Document / Case Study
+              </Label>
+              <div className="relative">
+                <Input
+                  id={`docsUrl-${project.id}`}
+                  placeholder="https://docs.google.com/... or https://notion.so/..."
+                  value={localProject.docsUrl || ''}
+                  onChange={(e) => updateLocalField('docsUrl', e.target.value)}
+                  className={cn(
+                    'pr-10',
+                    validationErrors['docsUrl'] && 'border-destructive'
+                  )}
+                />
+                {localProject.docsUrl && !validationErrors['docsUrl'] && (
+                  <a
+                    href={localProject.docsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+              {validationErrors['docsUrl'] && (
+                <p className="text-xs text-destructive">{validationErrors['docsUrl']}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Link to a case study, PRD, Notion page, or PDF documentation
+              </p>
             </div>
 
             {/* Image URL with Smart Preview */}
