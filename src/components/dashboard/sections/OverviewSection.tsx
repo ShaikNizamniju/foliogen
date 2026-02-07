@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ChevronUp } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
+import { FavoritesSection } from './FavoritesSection';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -328,6 +329,11 @@ export function OverviewSection() {
           </motion.div>
         ))}
       </div>
+
+      {/* Favorites Section */}
+      <motion.div variants={itemVariants}>
+        <FavoritesSection />
+      </motion.div>
 
       {/* Quick Actions */}
       <motion.div 
