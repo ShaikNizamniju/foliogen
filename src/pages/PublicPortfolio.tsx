@@ -16,6 +16,7 @@ import { ExecutiveTemplate } from '@/components/dashboard/templates/ExecutiveTem
 import { InfluencerTemplate } from '@/components/dashboard/templates/InfluencerTemplate';
 import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
 import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
+import { ModernDarkTemplate } from '@/components/dashboard/templates/ModernDarkTemplate';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -173,6 +174,8 @@ export default function PublicPortfolio() {
         return <SwissTemplate {...templateProps} />;
       case 'noir':
         return <NoirTemplate {...templateProps} />;
+      case 'modern-dark':
+        return <ModernDarkTemplate {...templateProps} />;
       default:
         return <MinimalistTemplate {...templateProps} />;
     }

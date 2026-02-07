@@ -39,7 +39,7 @@ export interface ProfileData {
   skills: string[];
   keyHighlights: string[];
   views: number;
-  selectedTemplate: 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist' | 'academic' | 'studio' | 'executive' | 'influencer' | 'swiss' | 'noir';
+  selectedTemplate: 'minimalist' | 'creative' | 'saas' | 'dev' | 'brutalist' | 'academic' | 'studio' | 'executive' | 'influencer' | 'swiss' | 'noir' | 'modern-dark';
 }
 
 interface ProfileContextType {
