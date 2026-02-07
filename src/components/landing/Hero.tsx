@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { AntigravityStars } from '@/components/ui/AntigravityStars';
 
 function TypewriterText({ text, className }: { text: string; className?: string }) {
   const [displayedText, setDisplayedText] = useState('');
@@ -124,6 +125,11 @@ function Document3DAnimation() {
 export function Hero() {
   return (
     <section className="relative min-h-fit overflow-hidden bg-background pt-24 pb-6 md:py-32">
+      {/* Antigravity Stars Background */}
+      <div className="absolute inset-0 z-0 pointer-events-auto">
+        <AntigravityStars starCount={100} showConnections={true} />
+      </div>
+
       {/* Animated gradient background */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div

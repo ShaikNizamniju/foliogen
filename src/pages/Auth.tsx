@@ -9,6 +9,7 @@ import { Sparkles, Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { lovable } from '@/integrations/lovable';
+import { AntigravityStars } from '@/components/ui/AntigravityStars';
 
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -77,8 +78,13 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Antigravity Stars Background */}
+      <div className="fixed inset-0 z-0">
+        <AntigravityStars starCount={80} showConnections={true} repulsionRadius={120} />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-glow">
@@ -88,7 +94,7 @@ export default function Auth() {
         </Link>
 
         {/* Auth Card */}
-        <div className="rounded-2xl border border-border bg-card p-8 shadow-xl animate-scale-in">
+        <div className="rounded-2xl border border-border bg-card/95 backdrop-blur-sm p-8 shadow-xl animate-scale-in">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-foreground mb-2">
               {isLogin ? 'Welcome back' : 'Create your account'}
