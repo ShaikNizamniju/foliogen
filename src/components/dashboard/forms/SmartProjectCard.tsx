@@ -20,6 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SmartTagInput } from './SmartTagInput';
+import { SmartProjectImage } from '@/components/ui/SmartProjectImage';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/use-debounce';
 import { toast } from 'sonner';
@@ -294,12 +295,12 @@ export function SmartProjectCard({
               </div>
             </div>
 
-            {/* Image URL */}
+            {/* Image URL with Smart Preview */}
             <div className="space-y-2">
               <Label htmlFor={`imageUrl-${project.id}`}>Thumbnail Image URL</Label>
               <Input
                 id={`imageUrl-${project.id}`}
-                placeholder="https://example.com/project-screenshot.jpg"
+                placeholder="https://example.com/project-screenshot.jpg (leave empty for auto-generated cover)"
                 value={localProject.imageUrl}
                 onChange={(e) => updateLocalField('imageUrl', e.target.value)}
                 className={cn(validationErrors['imageUrl'] && 'border-destructive')}
@@ -307,18 +308,21 @@ export function SmartProjectCard({
               {validationErrors['imageUrl'] && (
                 <p className="text-xs text-destructive">{validationErrors['imageUrl']}</p>
               )}
-              {localProject.imageUrl && !validationErrors['imageUrl'] && (
-                <div className="mt-2 w-24 h-16 rounded-md overflow-hidden bg-muted">
-                  <img
-                    src={localProject.imageUrl}
-                    alt="Project thumbnail"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
+              {/* Smart Project Image Preview */}
+              <div className="mt-2 w-40 rounded-lg overflow-hidden border border-border">
+                <SmartProjectImage
+                  title={localProject.title}
+                  tags={[...(localProject.techStack || []), ...(localProject.targetKeywords || [])]}
+                  customImage={localProject.imageUrl}
+                  aspectRatio="video"
+                  showRefresh={!localProject.imageUrl}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {localProject.imageUrl 
+                  ? 'Using custom image' 
+                  : 'Auto-generated cover based on project title and tags'}
+              </p>
             </div>
 
             {/* Description with AI Enhance */}
