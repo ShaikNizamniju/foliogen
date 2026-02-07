@@ -20,6 +20,9 @@ export interface Project {
   imageUrl: string;
   description: string;
   visualPrompt?: string;
+  techStack?: string[];
+  targetKeywords?: string[];
+  visible?: boolean;
 }
 
 export interface ProfileData {
