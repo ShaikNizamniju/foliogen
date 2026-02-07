@@ -1,13 +1,15 @@
+import { useState } from 'react';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { 
   Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, 
   Phone, Send, Briefcase, GraduationCap, Target, TrendingUp,
-  Code, Palette, Users, Rocket
+  Code, Palette, Users, Rocket, X, Sparkles
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useJobMatch } from '@/hooks/useJobMatch';
 
 interface ModernDarkTemplateProps {
   profile: ProfileData;
@@ -150,6 +152,18 @@ function SkillTag({ skill, variant = 'default' }: { skill: string; variant?: 'de
 }
 
 export function ModernDarkTemplate({ profile, onContactClick, isLoading = false }: ModernDarkTemplateProps) {
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  
+  // Use Job Match hook for smart project sorting
+  const { 
+    sortedProjects, 
+    matchMode, 
+    matchTarget, 
+    matchType, 
+    resetView,
+    highlightedProjectIds 
+  } = useJobMatch(profile.projects);
+
   // Calculate stats from profile
   const yearsExp = profile.workExperience.length > 0 
     ? Math.max(1, Math.floor((new Date().getFullYear() - parseInt(profile.workExperience[profile.workExperience.length - 1]?.startDate?.split(' ')[1] || new Date().getFullYear().toString()))))
@@ -185,6 +199,12 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
       items: profile.keyHighlights?.slice(3, 6) || ['Driving Innovation', 'Cross-functional Leadership', 'Market Analysis']
     }
   ];
+
+  // Handler to dismiss banner and reset view
+  const handleDismissBanner = () => {
+    setBannerDismissed(true);
+    resetView();
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white font-sans relative overflow-hidden">
@@ -241,6 +261,41 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
           </button>
         </div>
       </motion.nav>
+
+      {/* Job Match Welcome Banner */}
+      <AnimatePresence>
+        {matchMode && !bannerDismissed && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="relative z-30 mx-8 mt-6"
+          >
+            <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-xl border border-cyan-500/30 rounded-2xl px-6 py-4 flex items-center justify-between shadow-lg shadow-cyan-500/5">
+              <div className="flex items-center gap-4">
+                <div className="p-2 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
+                  <Sparkles className="w-5 h-5 text-cyan-400" />
+                </div>
+                <p className="text-white/90 text-sm md:text-base">
+                  👋 Specially curated for the{' '}
+                  <span className="font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                    {matchTarget}
+                  </span>
+                  {matchType === 'company' ? ' team' : ' role'}
+                </p>
+              </div>
+              <button
+                onClick={handleDismissBanner}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium bg-white/10 border border-white/20 hover:bg-white/20 transition-all text-white/80"
+              >
+                Reset View
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <section className="relative z-10 px-8 py-20 max-w-7xl mx-auto">
@@ -459,66 +514,106 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
             <div className="space-y-6">
               {[1, 2, 3].map(i => <ProjectSkeleton key={i} />)}
             </div>
-          ) : profile.projects.length > 0 ? (
+          ) : sortedProjects.length > 0 ? (
             <div className="space-y-6">
-              {profile.projects.map((project, index) => (
-                <motion.div 
-                  key={project.id}
-                  variants={itemVariants}
-                  className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden hover:border-cyan-500/30 transition-all group"
-                >
-                  <div className="flex flex-col lg:flex-row">
-                    {/* Project Image */}
-                    <div className="w-full lg:w-80 h-48 lg:h-auto overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900">
-                      {getEmbedUrl(project.link) ? (
-                        <iframe
-                          src={getEmbedUrl(project.link)!}
-                          title={project.title}
-                          className="w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      ) : (
-                        <img 
-                          src={getProjectImageUrl(project, 'creative')} 
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      )}
-                    </div>
-
-                    {/* Project Details */}
-                    <div className="flex-1 p-6 flex flex-col justify-center">
-                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                        {project.title}
-                      </h3>
-                      <p className="text-white/60 text-sm mb-4 leading-relaxed">
-                        {project.description || 'A showcase project demonstrating technical skills and creative problem-solving.'}
-                      </p>
-                      
-                      {/* Tech Stack Placeholder */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {(project.visualPrompt?.split(',') || ['React', 'TypeScript', 'Tailwind']).slice(0, 4).map((tech, idx) => (
-                          <span key={idx} className="px-2 py-1 rounded text-xs font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                            {tech.trim()}
-                          </span>
-                        ))}
+              {sortedProjects.map((project, index) => {
+                const isHighlighted = highlightedProjectIds.has(project.id);
+                return (
+                  <motion.div 
+                    key={project.id}
+                    variants={itemVariants}
+                    className={`bg-white/5 backdrop-blur-xl border rounded-2xl overflow-hidden transition-all group ${
+                      isHighlighted 
+                        ? 'border-cyan-500/50 ring-1 ring-cyan-500/20 shadow-lg shadow-cyan-500/10' 
+                        : 'border-white/10 hover:border-cyan-500/30'
+                    }`}
+                  >
+                    {/* Match indicator badge */}
+                    {isHighlighted && matchMode && (
+                      <div className="absolute top-4 right-4 z-10">
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg">
+                          ✨ Best Match
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex flex-col lg:flex-row relative">
+                      {/* Project Image */}
+                      <div className="w-full lg:w-80 h-48 lg:h-auto overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900">
+                        {getEmbedUrl(project.link) ? (
+                          <iframe
+                            src={getEmbedUrl(project.link)!}
+                            title={project.title}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <img 
+                            src={getProjectImageUrl(project, 'creative')} 
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        )}
                       </div>
 
-                      {project.link && (
-                        <a 
-                          href={project.link} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
-                        >
-                          View Project <ExternalLink className="w-4 h-4" />
-                        </a>
-                      )}
+                      {/* Project Details */}
+                      <div className="flex-1 p-6 flex flex-col justify-center">
+                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-white/60 text-sm mb-4 leading-relaxed">
+                          {project.description || 'A showcase project demonstrating technical skills and creative problem-solving.'}
+                        </p>
+                        
+                        {/* Tech Stack - use actual techStack if available */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {(project.techStack?.length ? project.techStack : project.visualPrompt?.split(',') || ['React', 'TypeScript', 'Tailwind']).slice(0, 4).map((tech, idx) => (
+                            <span 
+                              key={idx} 
+                              className={`px-2 py-1 rounded text-xs font-medium border ${
+                                matchMode && matchTarget && tech.toLowerCase().includes(matchTarget.toLowerCase())
+                                  ? 'bg-cyan-500/30 text-cyan-200 border-cyan-400/50'
+                                  : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
+                              }`}
+                            >
+                              {typeof tech === 'string' ? tech.trim() : tech}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Target Keywords */}
+                        {project.targetKeywords && project.targetKeywords.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {project.targetKeywords.slice(0, 3).map((keyword, idx) => (
+                              <span 
+                                key={idx} 
+                                className={`px-2 py-1 rounded text-xs font-medium border ${
+                                  matchMode && matchTarget && keyword.toLowerCase().includes(matchTarget.toLowerCase())
+                                    ? 'bg-purple-500/30 text-purple-200 border-purple-400/50'
+                                    : 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                                }`}
+                              >
+                                {keyword}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {project.link && (
+                          <a 
+                            href={project.link} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                          >
+                            View Project <ExternalLink className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-12 border border-dashed border-white/10 rounded-2xl">
