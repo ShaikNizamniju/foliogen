@@ -21,11 +21,11 @@ interface AntigravityStarsProps {
 }
 
 export function AntigravityStars({
-  starCount = 120,
-  repulsionRadius = 150,
-  repulsionForce = 8,
-  returnSpeed = 0.02,
-  maxConnectionDistance = 100,
+  starCount = 150,
+  repulsionRadius = 300,
+  repulsionForce = 50,
+  returnSpeed = 0.03,
+  maxConnectionDistance = 120,
   showConnections = true,
 }: AntigravityStarsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -208,8 +208,8 @@ export function AntigravityStars({
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ background: 'transparent' }}
+      className="fixed inset-0 w-full h-full"
+      style={{ background: 'transparent', pointerEvents: 'none' }}
     />
   );
 }
