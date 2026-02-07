@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Check, Copy, ExternalLink, Rocket, Linkedin, Twitter, Mail } from 'lucide-react';
+import { Check, Copy, ExternalLink, Rocket, Linkedin, Twitter, Mail, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface PublishDialogProps {
@@ -18,16 +18,45 @@ interface PublishDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Generate a URL-safe slug from a name
+const generateSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Remove consecutive hyphens
+    .substring(0, 50); // Limit length
+};
+
 export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   const { user } = useAuth();
-  const { saveProfile, saving } = useProfile();
+  const { profile, saveProfile, saving } = useProfile();
   const [copied, setCopied] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
 
-  const portfolioUrl = user ? `${window.location.origin}/p/${user.id}` : '';
+  // Generate a robust portfolio URL - always use user.id as it's guaranteed unique
+  const portfolioUrl = useMemo(() => {
+    if (!user?.id) return '';
+    return `${window.location.origin}/p/${user.id}`;
+  }, [user?.id]);
+
+  // Check if profile has minimum required content
+  const hasMinimumContent = useMemo(() => {
+    return profile?.fullName?.trim() || profile?.headline?.trim();
+  }, [profile?.fullName, profile?.headline]);
 
   const handlePublish = async () => {
+    if (!portfolioUrl) {
+      toast({
+        title: 'Error',
+        description: 'Unable to generate portfolio URL. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsPublishing(true);
     const { error } = await saveProfile();
     setIsPublishing(false);
@@ -49,6 +78,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   };
 
   const handleCopy = async () => {
+    if (!portfolioUrl) return;
     await navigator.clipboard.writeText(portfolioUrl);
     setCopied(true);
     toast({
@@ -59,25 +89,32 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   };
 
   const handleOpenPortfolio = () => {
+    if (!portfolioUrl) return;
     window.open(portfolioUrl, '_blank');
   };
 
   const handleShareLinkedIn = () => {
+    if (!portfolioUrl) return;
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(portfolioUrl)}`;
     window.open(linkedInUrl, '_blank', 'width=600,height=600');
   };
 
   const handleShareTwitter = () => {
-    const text = `Check out my professional portfolio! 🚀`;
+    if (!portfolioUrl) return;
+    const displayName = profile?.fullName || 'my';
+    const text = `Check out ${displayName}'s professional portfolio! 🚀`;
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(portfolioUrl)}`;
     window.open(twitterUrl, '_blank', 'width=600,height=400');
   };
 
   const handleShareEmail = () => {
-    const subject = `My Professional Portfolio`;
+    if (!portfolioUrl) return;
+    const displayName = profile?.fullName || 'My';
+    const subject = `${displayName}'s Professional Portfolio`;
     const body = `Hi,\n\nI wanted to share my professional portfolio with you:\n\n${portfolioUrl}\n\nLooking forward to connecting!`;
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -86,7 +123,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
           <DialogTitle className="flex items-center gap-2">
             {isPublished ? (
               <>
-                <Check className="h-5 w-5 text-green-500" />
+                <Check className="h-5 w-5 text-emerald-500" />
                 Your portfolio is live!
               </>
             ) : (
@@ -141,7 +178,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
                 className="shrink-0"
               >
                 {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
+                  <Check className="h-4 w-4 text-emerald-500" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
