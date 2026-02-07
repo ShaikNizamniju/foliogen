@@ -183,15 +183,3 @@ export function useProfile() {
   }
   return context;
 }
-selectedTemplate: "minimalist" |
-  "creative" |
-  "saas" |
-  "dev" |
-  "brutalist" |
-  "academic" |
-  "studio" |
-  "executive" |
-  "influencer" |
-  "swiss" |
-  "noir" |
-  "modern-dark";
