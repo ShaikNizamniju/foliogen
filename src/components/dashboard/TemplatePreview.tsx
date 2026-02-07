@@ -18,7 +18,7 @@ export function TemplatePreview() {
   const { profile, updateProfile } = useProfile();
 
   return (
-    <div className="hidden lg:flex flex-col w-[500px] border-l border-border bg-muted/20 h-full">
+    <div data-template-preview className="hidden lg:flex flex-col w-[500px] border-l border-border bg-muted/20 h-full">
       {/* Preview Header */}
       <div className="flex items-center justify-between p-4 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">

@@ -116,7 +116,12 @@ export function OverviewSection() {
                   className="border-t border-border"
                 >
                   <div className="p-6">
-                    <SmartResumeParser />
+                    <SmartResumeParser 
+                      onTemplateChange={(templateId) => {
+                        // Template change is handled via updateProfile in SmartResumeParser
+                        // This callback is for additional side effects if needed
+                      }}
+                    />
                   </div>
                 </motion.div>
               </CollapsibleContent>

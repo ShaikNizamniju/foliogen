@@ -37,7 +37,11 @@ interface ParseStats {
   highlights: number;
 }
 
-export function SmartResumeParser() {
+interface SmartResumeParserProps {
+  onTemplateChange?: (templateId: string) => void;
+}
+
+export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps = {}) {
   const [state, setState] = useState<ParseState>('idle');
   const [progress, setProgress] = useState(0);
   const [parsedData, setParsedData] = useState<ParsedData | null>(null);
@@ -151,11 +155,25 @@ export function SmartResumeParser() {
       workExperience: parsedData.workExperience || profile.workExperience,
       projects: parsedData.projects || profile.projects,
       keyHighlights: parsedData.keyHighlights || profile.keyHighlights,
+      selectedTemplate: 'modern-dark',
     });
+
+    // Auto-switch to Modern Dark template
+    if (onTemplateChange) {
+      onTemplateChange('modern-dark');
+    }
+
+    // Scroll to the preview section
+    setTimeout(() => {
+      const previewSection = document.querySelector('[data-template-preview]');
+      if (previewSection) {
+        previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
 
     toast.success('Profile updated successfully!');
     resetParser();
-  }, [parsedData, profile, updateProfile, resetParser]);
+  }, [parsedData, profile, updateProfile, resetParser, onTemplateChange]);
 
   // Drag handlers
   const handleDragOver = (e: React.DragEvent) => { 
