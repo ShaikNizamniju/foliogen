@@ -124,10 +124,15 @@ function Document3DAnimation() {
 
 export function Hero() {
   return (
-    <section className="relative min-h-fit overflow-hidden bg-background pt-24 pb-6 md:py-32">
-      {/* Antigravity Stars Background */}
-      <div className="absolute inset-0 z-0 pointer-events-auto">
-        <AntigravityStars starCount={100} showConnections={true} />
+    <section className="relative min-h-fit overflow-hidden bg-transparent pt-24 pb-6 md:py-32">
+      {/* Antigravity Stars Background - Fixed position to cover full viewport */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <AntigravityStars 
+          starCount={150} 
+          showConnections={true} 
+          repulsionRadius={300}
+          repulsionForce={50}
+        />
       </div>
 
       {/* Animated gradient background */}
