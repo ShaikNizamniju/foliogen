@@ -78,11 +78,9 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Antigravity Stars Background */}
-      <div className="fixed inset-0 z-0">
-        <AntigravityStars starCount={80} showConnections={true} repulsionRadius={120} />
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      {/* Antigravity Stars Background - renders at z-index -1 */}
+      <AntigravityStars starCount={100} showConnections={true} repulsionRadius={250} repulsionForce={60} />
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
