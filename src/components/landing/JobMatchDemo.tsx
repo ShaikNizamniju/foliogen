@@ -86,7 +86,7 @@ export function JobMatchDemo() {
   const { sortedProjects, matchMode, highlightedProjectIds } = useJobMatch(DEMO_PROJECTS);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-transparent relative z-10">
       {/* Recruiter Welcome Banner */}
       <AnimatePresence>
         {matchMode && !bannerDismissed && (
