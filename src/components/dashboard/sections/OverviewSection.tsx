@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function OverviewSection() {
   const { profile, loading } = useProfile();
@@ -12,6 +16,12 @@ export function OverviewSection() {
   
   // Check if profile is "live" (has minimum required data)
   const isLive = !!(profile.fullName && profile.headline && profile.bio);
+  
+  // Check if profile is empty (no work experience)
+  const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
+  
+  // Resume parser should be expanded by default if profile is empty
+  const [isParserOpen, setIsParserOpen] = useState(isProfileEmpty);
 
   const stats = [
     {
@@ -63,6 +73,57 @@ export function OverviewSection() {
           Here's an overview of your portfolio progress.
         </p>
       </div>
+
+      {/* Smart Resume Parser - Collapsible */}
+      <Collapsible open={isParserOpen} onOpenChange={setIsParserOpen}>
+        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+          <CollapsibleTrigger asChild>
+            <button className="w-full p-5 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10">
+                  <Upload className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold text-foreground">
+                    {isProfileEmpty ? 'Get Started - Import Your Resume' : 'Update from Resume'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {isProfileEmpty 
+                      ? 'Drop your resume PDF to auto-build your portfolio in seconds'
+                      : 'Import new data from a resume or LinkedIn PDF'
+                    }
+                  </p>
+                </div>
+              </div>
+              <div className="p-2 rounded-lg hover:bg-muted transition-colors">
+                {isParserOpen ? (
+                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                )}
+              </div>
+            </button>
+          </CollapsibleTrigger>
+          
+          <AnimatePresence>
+            {isParserOpen && (
+              <CollapsibleContent forceMount>
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="border-t border-border"
+                >
+                  <div className="p-6">
+                    <SmartResumeParser />
+                  </div>
+                </motion.div>
+              </CollapsibleContent>
+            )}
+          </AnimatePresence>
+        </div>
+      </Collapsible>
 
       {/* Hero Stats Row - Glass/Bento Style */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -167,8 +228,8 @@ export function OverviewSection() {
         </div>
       </div>
 
-      {/* Completion Tips */}
-      {completionScore < 100 && (
+      {/* Completion Tips - Only show if not empty but incomplete */}
+      {completionScore < 100 && !isProfileEmpty && (
         <div className="rounded-xl border border-primary/20 bg-primary/5 p-6">
           <h2 className="font-semibold text-foreground mb-2">Complete Your Profile</h2>
           <p className="text-sm text-muted-foreground mb-4">
