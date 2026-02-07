@@ -81,7 +81,7 @@ const defaultProfile: ProfileData = {
   skills: [],
   keyHighlights: [],
   views: 0,
-  selectedTemplate: "minimalist",
+  selectedTemplate: "modern-dark",
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -132,7 +132,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         skills: data.skills || [],
         keyHighlights: keyHighlights,
         views: data.views || 0,
-        selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "minimalist",
+        selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "modern-dark",
       });
     }
     setLoading(false);
