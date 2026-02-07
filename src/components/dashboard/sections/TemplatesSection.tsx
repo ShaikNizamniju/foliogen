@@ -1,64 +1,8 @@
 import { useProfile } from '@/contexts/ProfileContext';
 import { TemplateCard } from '../TemplateCard';
 import { motion } from 'framer-motion';
-
-const templates = [
-  {
-    id: 'minimalist',
-    name: 'The Minimalist',
-    description: 'Clean Swiss design with elegant spacing',
-  },
-  {
-    id: 'creative',
-    name: 'The Creative',
-    description: 'Vibrant bento grid with aurora effects',
-  },
-  {
-    id: 'saas',
-    name: 'The Founder',
-    description: 'Stripe-inspired metrics showcase',
-  },
-  {
-    id: 'dev',
-    name: 'The Terminal',
-    description: 'Dark IDE with typewriter effects',
-  },
-  {
-    id: 'brutalist',
-    name: 'The Brutalist',
-    description: 'Neo-brutalist with bold shadows',
-  },
-  {
-    id: 'academic',
-    name: 'The Academic',
-    description: 'Ivy League elegance with serif fonts',
-  },
-  {
-    id: 'studio',
-    name: 'The Studio',
-    description: 'Visual-first masonry for creatives',
-  },
-  {
-    id: 'executive',
-    name: 'The Executive',
-    description: 'Fortune 500 navy with gold accents',
-  },
-  {
-    id: 'influencer',
-    name: 'The Influencer',
-    description: 'Premium link-in-bio with glassmorphism',
-  },
-  {
-    id: 'swiss',
-    name: 'The Swiss',
-    description: 'International typographic grid style',
-  },
-  {
-    id: 'noir',
-    name: 'The Noir',
-    description: 'Cinematic black & white with film grain',
-  },
-];
+import { useFavorites } from '@/hooks/useFavorites';
+import { templates } from './FavoritesSection';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -77,6 +21,7 @@ const itemVariants = {
 
 export function TemplatesSection() {
   const { profile, updateProfile } = useProfile();
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   return (
     <div className="space-y-8">
@@ -103,6 +48,8 @@ export function TemplatesSection() {
               description={template.description}
               isSelected={profile.selectedTemplate === template.id}
               onSelect={() => updateProfile({ selectedTemplate: template.id as any })}
+              isFavorite={isFavorite(template.id)}
+              onToggleFavorite={toggleFavorite}
             />
           </motion.div>
         ))}

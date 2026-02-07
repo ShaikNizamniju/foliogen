@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, Heart, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface TemplateCardProps {
   id: string;
@@ -8,6 +10,8 @@ interface TemplateCardProps {
   description: string;
   isSelected: boolean;
   onSelect: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: (id: string) => void;
 }
 
 // Mini preview components for each template style
@@ -188,6 +192,25 @@ const TemplatePreviewContent = ({ id }: { id: string }) => {
         </div>
       );
     
+    case 'modern-dark':
+      return (
+        <div className="h-full w-full bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f] p-3 flex flex-col relative overflow-hidden">
+          {/* Glow effect */}
+          <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/20 rounded-full blur-xl" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500" />
+              <div className="h-1.5 w-10 bg-white/80 rounded" />
+            </div>
+            <div className="h-1 w-16 bg-cyan-400/60 rounded mb-2" />
+            <div className="grid grid-cols-2 gap-1.5 flex-1">
+              <div className="bg-white/10 backdrop-blur rounded-lg border border-white/10" />
+              <div className="bg-white/10 backdrop-blur rounded-lg border border-white/10" />
+            </div>
+          </div>
+        </div>
+      );
+    
     default:
       return (
         <div className="h-full w-full bg-gray-100 p-3 flex items-center justify-center">
@@ -197,14 +220,35 @@ const TemplatePreviewContent = ({ id }: { id: string }) => {
   }
 };
 
-export function TemplateCard({ id, name, description, isSelected, onSelect }: TemplateCardProps) {
+export function TemplateCard({ 
+  id, 
+  name, 
+  description, 
+  isSelected, 
+  onSelect,
+  isFavorite = false,
+  onToggleFavorite,
+}: TemplateCardProps) {
+  const navigate = useNavigate();
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // First select the template, then navigate to templates section
+    onSelect();
+    navigate(`/dashboard?section=profile`);
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFavorite?.(id);
+  };
+
   return (
-    <motion.button
-      onClick={onSelect}
+    <motion.div
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "group relative w-full text-left rounded-xl overflow-hidden transition-all duration-300",
+        "group relative w-full rounded-xl overflow-hidden transition-all duration-300",
         "bg-card border-2",
         isSelected
           ? "border-primary ring-2 ring-primary/20 shadow-lg"
@@ -216,38 +260,71 @@ export function TemplateCard({ id, name, description, isSelected, onSelect }: Te
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute top-3 right-3 z-20 h-6 w-6 rounded-full bg-primary flex items-center justify-center shadow-lg"
+          className="absolute top-3 left-3 z-20 h-6 w-6 rounded-full bg-primary flex items-center justify-center shadow-lg"
         >
           <Check className="h-3.5 w-3.5 text-primary-foreground" />
         </motion.div>
       )}
 
-      {/* Mini Preview */}
-      <div className="aspect-[4/3] w-full overflow-hidden">
-        <motion.div
-          className="h-full w-full"
-          whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.3 }}
+      {/* Action Buttons - Top Right */}
+      <div className="absolute top-2 right-2 z-20 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          size="icon"
+          variant="secondary"
+          className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md hover:bg-background"
+          onClick={handleFavoriteClick}
         >
-          <TemplatePreviewContent id={id} />
-        </motion.div>
+          <Heart 
+            className={cn(
+              "h-4 w-4 transition-colors",
+              isFavorite 
+                ? "fill-red-500 text-red-500" 
+                : "text-muted-foreground hover:text-red-500"
+            )} 
+          />
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md hover:bg-background"
+          onClick={handleEditClick}
+        >
+          <Pencil className="h-4 w-4 text-muted-foreground" />
+        </Button>
       </div>
 
-      {/* Info */}
-      <div className="p-4 bg-card">
-        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-          {name}
-        </h3>
-        <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
-          {description}
-        </p>
-      </div>
+      {/* Clickable area for selection */}
+      <button
+        onClick={onSelect}
+        className="w-full text-left"
+      >
+        {/* Mini Preview */}
+        <div className="aspect-[4/3] w-full overflow-hidden">
+          <motion.div
+            className="h-full w-full"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.3 }}
+          >
+            <TemplatePreviewContent id={id} />
+          </motion.div>
+        </div>
+
+        {/* Info */}
+        <div className="p-4 bg-card">
+          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+            {name}
+          </h3>
+          <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
+            {description}
+          </p>
+        </div>
+      </button>
 
       {/* Hover overlay */}
       <div className={cn(
-        "absolute inset-0 bg-primary/5 opacity-0 transition-opacity duration-300",
+        "absolute inset-0 bg-primary/5 opacity-0 transition-opacity duration-300 pointer-events-none",
         "group-hover:opacity-100"
       )} />
-    </motion.button>
+    </motion.div>
   );
 }
