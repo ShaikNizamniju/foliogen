@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { 
   Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, 
@@ -154,6 +155,12 @@ function SkillTag({ skill, variant = 'default' }: { skill: string; variant?: 'de
 
 export function ModernDarkTemplate({ profile, onContactClick, isLoading = false }: ModernDarkTemplateProps) {
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [searchParams] = useSearchParams();
+  
+  // Chameleon Mode: Read company/role for personalization
+  const recruiterCompany = searchParams.get('company');
+  const recruiterRole = searchParams.get('role');
+  const isPersonalized = !!(recruiterCompany || recruiterRole);
   
   // Use Job Match hook for smart project sorting
   const { 
@@ -311,7 +318,12 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
           >
             {/* Left Content */}
             <motion.div variants={itemVariants} className="flex-1 text-center lg:text-left">
-              <p className="text-cyan-400 text-sm font-medium mb-2">👋 Welcome to my portfolio</p>
+              <p className="text-cyan-400 text-sm font-medium mb-2">
+                {isPersonalized 
+                  ? `👋 Welcome, ${recruiterCompany || recruiterRole} Team!`
+                  : '👋 Welcome to my portfolio'
+                }
+              </p>
               <h1 className="text-5xl lg:text-6xl font-bold mb-4 leading-tight">
                 Hi, I'm{' '}
                 <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
@@ -319,7 +331,12 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
                 </span>
               </h1>
               <p className="text-xl text-white/60 mb-6">
-                {profile.headline || 'Your Professional Title'}
+                {isPersonalized && recruiterCompany
+                  ? `Building innovative solutions for ${recruiterCompany}`
+                  : isPersonalized && recruiterRole
+                  ? `Your next ${recruiterRole}`
+                  : profile.headline || 'Your Professional Title'
+                }
               </p>
               <p className="text-white/50 max-w-lg mb-8 leading-relaxed">
                 {profile.bio?.slice(0, 200) || 'A passionate professional ready to make an impact. Upload your resume to populate this section with your story.'}
