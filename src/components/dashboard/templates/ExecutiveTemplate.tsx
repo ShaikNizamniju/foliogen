@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, TrendingUp, Target, Award, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, TrendingUp, Target, Award, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface ExecutiveTemplateProps {
@@ -292,6 +292,18 @@ export function ExecutiveTemplate({ profile, onContactClick }: ExecutiveTemplate
                           <ExternalLink className="h-4 w-4 text-white/30 group-hover:text-amber-400 transition-colors shrink-0" />
                         </div>
                         <p className="text-sm text-white/60 line-clamp-2">{project.description}</p>
+                        {project.docsUrl && (
+                          <a 
+                            href={project.docsUrl} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 mt-3 text-xs text-amber-400/70 hover:text-amber-400 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <FileText className="h-3.5 w-3.5" />
+                            Read Case Study →
+                          </a>
+                        )}
                       </div>
                     </motion.a>
                   ))}

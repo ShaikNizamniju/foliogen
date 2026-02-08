@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { useRef } from 'react';
 
@@ -114,6 +114,18 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
               <ArrowUpRight className="h-5 w-5 text-white/80" />
             </div>
             <p className="text-sm text-white/70 line-clamp-2 max-w-md">{project.description}</p>
+            {project.docsUrl && (
+              <a 
+                href={project.docsUrl} 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 mt-3 text-xs tracking-wide text-white/50 hover:text-white transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <FileText className="h-3.5 w-3.5" />
+                View Case Study
+              </a>
+            )}
           </motion.div>
         </div>
       </motion.div>

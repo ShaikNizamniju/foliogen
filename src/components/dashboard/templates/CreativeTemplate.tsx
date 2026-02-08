@@ -1,5 +1,5 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles, MessageSquare } from 'lucide-react';
+import { MapPin, Mail, Globe, Linkedin, Github, Twitter, ExternalLink, Sparkles, MessageSquare, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
@@ -393,11 +393,24 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                             <div className="flex items-center justify-between mb-2">
                               <h3 className="font-bold text-white text-lg">{project.title}</h3>
-                              {project.link && (
-                                <a href={project.link} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm">
-                                  <ExternalLink className="h-4 w-4 text-white" />
-                                </a>
-                              )}
+                              <div className="flex items-center gap-2">
+                                {project.docsUrl && (
+                                  <a 
+                                    href={project.docsUrl} 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <FileText className="h-4 w-4 text-white" />
+                                  </a>
+                                )}
+                                {project.link && (
+                                  <a href={project.link} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm">
+                                    <ExternalLink className="h-4 w-4 text-white" />
+                                  </a>
+                                )}
+                              </div>
                             </div>
                             <p className="text-sm text-white/70 line-clamp-2">{project.description}</p>
                           </div>

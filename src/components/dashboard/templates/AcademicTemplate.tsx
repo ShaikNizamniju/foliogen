@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface AcademicTemplateProps {
@@ -253,14 +253,28 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
                         <h3 className="text-lg" style={{ fontFamily: "'Playfair Display', 'Georgia', serif" }}>
                           {project.title}
                         </h3>
-                        {project.link && (
-                          <a 
-                            href={project.link} 
-                            className="text-[#888] hover:text-[#8b7355] transition-colors"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
-                        )}
+                        <div className="flex items-center gap-3">
+                          {project.docsUrl && (
+                            <a 
+                              href={project.docsUrl} 
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[#8b7355] hover:text-[#6b5340] transition-colors text-sm italic flex items-center gap-1"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <FileText className="h-3.5 w-3.5" />
+                              Read Paper →
+                            </a>
+                          )}
+                          {project.link && (
+                            <a 
+                              href={project.link} 
+                              className="text-[#888] hover:text-[#8b7355] transition-colors"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          )}
+                        </div>
                       </div>
                       <p className="text-[#666] text-sm leading-relaxed">{project.description}</p>
                     </div>

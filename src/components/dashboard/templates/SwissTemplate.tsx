@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, ArrowUpRight, MapPin, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, ArrowUpRight, MapPin, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface SwissTemplateProps {
@@ -261,9 +261,23 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
                     
                     <div className="mt-4 flex items-center justify-between">
                       <h3 className="text-lg font-bold uppercase">{project.title}</h3>
-                      <span className="text-xs font-bold uppercase tracking-wider text-black/40">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
+                      <div className="flex items-center gap-4">
+                        {project.docsUrl && (
+                          <a 
+                            href={project.docsUrl} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs font-bold uppercase tracking-wider text-black/40 hover:text-[#FF0000] transition-colors flex items-center gap-1"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <FileText className="h-3.5 w-3.5" />
+                            Docs
+                          </a>
+                        )}
+                        <span className="text-xs font-bold uppercase tracking-wider text-black/40">
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+                      </div>
                     </div>
                   </motion.a>
                 );

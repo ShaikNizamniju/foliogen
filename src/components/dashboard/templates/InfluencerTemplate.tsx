@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, Instagram, Youtube, Heart, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, Instagram, Youtube, Heart, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface InfluencerTemplateProps {
@@ -264,6 +264,18 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900">{project.title}</h3>
                     <p className="text-sm text-gray-500 line-clamp-2">{project.description}</p>
+                    {project.docsUrl && (
+                      <a 
+                        href={project.docsUrl} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-purple-500 hover:text-purple-600 transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                        View Details
+                      </a>
+                    )}
                   </div>
                 </motion.a>
               ))}
