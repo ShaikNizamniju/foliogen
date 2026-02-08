@@ -87,6 +87,7 @@ export default function PublicPortfolio() {
       skills: data.skills || [],
       keyHighlights: keyHighlights,
       views: data.views || 0,
+      resumeUrl: (data as any).resume_url || '',
       selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
     });
     setLoading(false);

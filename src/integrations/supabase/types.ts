@@ -175,6 +175,7 @@ export type Database = {
           meta_title: string | null
           photo_url: string | null
           projects: Json | null
+          resume_url: string | null
           selected_template: string | null
           skills: string[] | null
           twitter_url: string | null
@@ -200,6 +201,7 @@ export type Database = {
           meta_title?: string | null
           photo_url?: string | null
           projects?: Json | null
+          resume_url?: string | null
           selected_template?: string | null
           skills?: string[] | null
           twitter_url?: string | null
@@ -225,6 +227,7 @@ export type Database = {
           meta_title?: string | null
           photo_url?: string | null
           projects?: Json | null
+          resume_url?: string | null
           selected_template?: string | null
           skills?: string[] | null
           twitter_url?: string | null
@@ -275,6 +278,7 @@ export type Database = {
           location: string | null
           photo_url: string | null
           projects: Json | null
+          resume_url: string | null
           selected_template: string | null
           skills: string[] | null
           twitter_url: string | null
@@ -296,6 +300,7 @@ export type Database = {
           location?: string | null
           photo_url?: string | null
           projects?: Json | null
+          resume_url?: string | null
           selected_template?: string | null
           skills?: string[] | null
           twitter_url?: string | null
@@ -317,6 +322,7 @@ export type Database = {
           location?: string | null
           photo_url?: string | null
           projects?: Json | null
+          resume_url?: string | null
           selected_template?: string | null
           skills?: string[] | null
           twitter_url?: string | null
