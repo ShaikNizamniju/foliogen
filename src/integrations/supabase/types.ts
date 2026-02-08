@@ -210,6 +210,7 @@ export type Database = {
           github_url: string | null
           headline: string | null
           id: string
+          is_pro: boolean | null
           key_highlights: string[] | null
           linkedin_url: string | null
           location: string | null
@@ -217,10 +218,12 @@ export type Database = {
           meta_keywords: string[] | null
           meta_title: string | null
           photo_url: string | null
+          pro_since: string | null
           projects: Json | null
           resume_url: string | null
           selected_template: string | null
           skills: string[] | null
+          subscription_id: string | null
           twitter_url: string | null
           updated_at: string
           user_id: string
@@ -237,6 +240,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string
+          is_pro?: boolean | null
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
@@ -244,10 +248,12 @@ export type Database = {
           meta_keywords?: string[] | null
           meta_title?: string | null
           photo_url?: string | null
+          pro_since?: string | null
           projects?: Json | null
           resume_url?: string | null
           selected_template?: string | null
           skills?: string[] | null
+          subscription_id?: string | null
           twitter_url?: string | null
           updated_at?: string
           user_id: string
@@ -264,6 +270,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string
+          is_pro?: boolean | null
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
@@ -271,10 +278,12 @@ export type Database = {
           meta_keywords?: string[] | null
           meta_title?: string | null
           photo_url?: string | null
+          pro_since?: string | null
           projects?: Json | null
           resume_url?: string | null
           selected_template?: string | null
           skills?: string[] | null
+          subscription_id?: string | null
           twitter_url?: string | null
           updated_at?: string
           user_id?: string

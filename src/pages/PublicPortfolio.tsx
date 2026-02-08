@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ProfileData, WorkExperience, Project } from '@/contexts/ProfileContext';
 import { ContactDialog } from '@/components/ContactDialog';
 import { ProfileChatBot } from '@/components/public/ProfileChatBot';
-import { RecruiterBanner } from '@/components/public/RecruiterBanner';
+import { ProRecruiterBanner } from '@/components/public/ProRecruiterBanner';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
 import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
@@ -178,8 +178,8 @@ export default function PublicPortfolio() {
         <meta name="twitter:description" content={pageDescription} />
         {pageImage && <meta name="twitter:image" content={pageImage} />}
       </Helmet>
-      {/* Chameleon Mode: Recruiter-specific welcome banner */}
-      <RecruiterBanner />
+      {/* Chameleon Mode: Recruiter-specific welcome banner (Pro feature) */}
+      {id && <ProRecruiterBanner profileUserId={id} />}
       
       <div className="min-h-screen">
         <div id="portfolio-export-container" className="print:w-full">

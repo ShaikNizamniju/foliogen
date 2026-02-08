@@ -10,6 +10,7 @@ import { RecruiterRadar } from '@/components/dashboard/analytics/RecruiterRadar'
 import { JobSummaryCard } from '@/components/dashboard/analytics/JobSummaryCard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ProGate } from '@/components/billing/ProGate';
 
 // Animation variants for staggered entrance
 const containerVariants = {
@@ -296,9 +297,11 @@ export function OverviewSection() {
           </motion.div>
         </motion.div>
 
-        {/* Recruiter Radar Card */}
+        {/* Recruiter Radar Card - Pro Feature */}
         <motion.div variants={itemVariants}>
-          <RecruiterRadar />
+          <ProGate featureName="Spy Glass Analytics" variant="overlay">
+            <RecruiterRadar />
+          </ProGate>
         </motion.div>
       </div>
 
