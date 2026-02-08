@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,16 +18,17 @@ import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
 import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
 import { ModernDarkTemplate } from '@/components/dashboard/templates/ModernDarkTemplate';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
-import { useAuth } from '@/contexts/AuthContext';
+import { useViewTracker } from '@/hooks/useViewTracker';
 
 export default function PublicPortfolio() {
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [contactOpen, setContactOpen] = useState(false);
-  const viewCounted = useRef(false);
+
+  // Track portfolio views (handles owner detection, session/localStorage spam prevention)
+  useViewTracker(id);
 
   useEffect(() => {
     if (id) {
@@ -35,40 +36,13 @@ export default function PublicPortfolio() {
     }
   }, [id]);
 
-  // Increment view count - only for non-owners, with localStorage spam prevention
-  useEffect(() => {
-    if (!id || viewCounted.current) return;
-    
-    // Don't count if the visitor is the profile owner
-    if (user?.id === id) return;
-    
-    // Check localStorage to prevent spam refreshes
-    const visitKey = `foliogen_visited_${id}`;
-    const lastVisit = localStorage.getItem(visitKey);
-    const now = Date.now();
-    const ONE_HOUR = 60 * 60 * 1000;
-    
-    // Only count if no visit in the last hour
-    if (lastVisit && now - parseInt(lastVisit, 10) < ONE_HOUR) {
-      return;
-    }
-    
-    viewCounted.current = true;
-    localStorage.setItem(visitKey, now.toString());
-    
-    supabase.rpc('increment_views', { p_user_id: id }).then(({ error }) => {
-      if (error) {
-        console.error('Failed to increment views:', error);
-      }
-    });
-  }, [id, user]);
-
   const fetchProfile = async (userId: string) => {
     setLoading(true);
     setError(null);
 
+    // Use profiles_public view to avoid exposing private data (e.g., email)
     const { data, error: fetchError } = await supabase
-      .from('profiles')
+      .from('profiles_public')
       .select('*')
       .eq('user_id', userId)
       .maybeSingle();
@@ -96,13 +70,13 @@ export default function PublicPortfolio() {
       : [];
 
     setProfile({
-      id: data.id,
+      id: data.id || '',
       fullName: data.full_name || '',
       photoUrl: data.photo_url || '',
       bio: data.bio || '',
       headline: data.headline || '',
       location: data.location || '',
-      email: data.email || '',
+      email: '', // Not exposed in public view for privacy
       website: data.website || '',
       linkedinUrl: data.linkedin_url || '',
       githubUrl: data.github_url || '',
