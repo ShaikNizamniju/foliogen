@@ -2,6 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, Instagram, Youtube, Heart, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface InfluencerTemplateProps {
   profile: ProfileData;
@@ -243,10 +244,17 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
               <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
                 Featured Work
               </h2>
-              {profile.projects.map((project, index) => (
+            {profile.projects.map((project, index) => {
+              // Smart button promotion: determine the main link
+              const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+              const isDocsOnly = !project.link && !!project.docsUrl;
+              
+              return (
                 <motion.a
                   key={project.id}
-                  href={project.link || '#'}
+                  href={mainLink}
+                  target={mainLink !== '#' ? '_blank' : undefined}
+                  rel="noopener noreferrer"
                   className="block backdrop-blur-xl bg-white/60 border border-white/80 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
@@ -264,9 +272,10 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900">{project.title}</h3>
                     <p className="text-sm text-gray-500 line-clamp-2">{project.description}</p>
-                    {project.docsUrl && (
+                    {/* Show case study link only when both exist */}
+                    {project.link && project.docsUrl && (
                       <a 
-                        href={project.docsUrl} 
+                        href={ensureProtocol(project.docsUrl)} 
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-purple-500 hover:text-purple-600 transition-colors"
@@ -276,9 +285,17 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
                         View Details
                       </a>
                     )}
+                    {/* Indicator when only docsUrl exists */}
+                    {isDocsOnly && (
+                      <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-purple-500">
+                        <FileText className="h-3.5 w-3.5" />
+                        Case Study
+                      </span>
+                    )}
                   </div>
                 </motion.a>
-              ))}
+              );
+            })}
             </motion.div>
           )}
 

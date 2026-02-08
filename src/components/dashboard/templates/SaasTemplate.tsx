@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface SaasTemplateProps {
   profile: ProfileData;
@@ -219,55 +220,70 @@ export function SaasTemplate({ profile, onContactClick }: SaasTemplateProps) {
             Selected Work
           </h2>
           <div className="grid grid-cols-2 gap-6">
-            {profile.projects.map((project, index) => (
-              <motion.a
-                key={project.id}
-                href={project.link || '#'}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 + index * 0.1 }}
-                className="group block p-6 rounded-2xl bg-white border border-black/10 hover:border-black/20 hover:shadow-lg transition-all"
-              >
-                <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-black/5">
-                  {getEmbedUrl(project.link) ? (
-                    <iframe
-                      src={getEmbedUrl(project.link)!}
-                      title={project.title}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <img 
-                      src={getProjectImageUrl(project, 'minimal')} 
-                      alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
-                </div>
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="font-semibold mb-1 group-hover:text-violet-600 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-sm text-black/50">{project.description}</p>
-                    {project.docsUrl && (
-                      <a 
-                        href={project.docsUrl} 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 mt-2 text-xs text-violet-500 hover:text-violet-600 transition-colors"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <FileText className="h-3.5 w-3.5" />
-                        View Case Study
-                      </a>
+            {profile.projects.map((project, index) => {
+              // Smart button promotion: determine the main link
+              const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+              
+              return (
+                <motion.a
+                  key={project.id}
+                  href={mainLink}
+                  target={mainLink !== '#' ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 + index * 0.1 }}
+                  className="group block p-6 rounded-2xl bg-white border border-black/10 hover:border-black/20 hover:shadow-lg transition-all"
+                >
+                  <div className="aspect-video rounded-lg overflow-hidden mb-4 bg-black/5">
+                    {getEmbedUrl(project.link) ? (
+                      <iframe
+                        src={getEmbedUrl(project.link)!}
+                        title={project.title}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <img 
+                        src={getProjectImageUrl(project, 'minimal')} 
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                     )}
                   </div>
-                  <ArrowUpRight className="h-4 w-4 text-black/30 group-hover:text-violet-600 transition-colors shrink-0" />
-                </div>
-              </motion.a>
-            ))}
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold mb-1 group-hover:text-violet-600 transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-black/50">{project.description}</p>
+                      {/* Show case study link when both links exist */}
+                      {project.link && project.docsUrl && (
+                        <a 
+                          href={ensureProtocol(project.docsUrl)} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 mt-2 text-xs text-violet-500 hover:text-violet-600 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          View Case Study
+                        </a>
+                      )}
+                      {/* Show indicator when only docsUrl exists */}
+                      {!project.link && project.docsUrl && (
+                        <span className="inline-flex items-center gap-1.5 mt-2 text-xs text-violet-500">
+                          <FileText className="h-3.5 w-3.5" />
+                          Case Study
+                        </span>
+                      )}
+                    </div>
+                    <ArrowUpRight className="h-4 w-4 text-black/30 group-hover:text-violet-600 transition-colors shrink-0" />
+                  </div>
+                </motion.a>
+              );
+            })}
           </div>
         </motion.section>
       )}

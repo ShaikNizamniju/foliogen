@@ -1,8 +1,9 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram, FileText } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram, FileText, ExternalLink } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { useRef } from 'react';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface StudioTemplateProps {
   profile: ProfileData;
@@ -78,11 +79,17 @@ function FadeInSection({ children, delay = 0, className = "" }: { children: Reac
 function ProjectCard({ project, index }: { project: any; index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
+  
+  // Smart button promotion: determine the main link
+  const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+  const isDocsOnly = !project.link && !!project.docsUrl;
 
   return (
     <motion.a
       ref={ref}
-      href={project.link || '#'}
+      href={mainLink}
+      target={mainLink !== '#' ? '_blank' : undefined}
+      rel="noopener noreferrer"
       className="block group relative overflow-hidden rounded-2xl"
       initial={{ opacity: 0, y: 60 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
@@ -111,12 +118,17 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <h3 className="text-xl md:text-2xl font-light text-white">{project.title}</h3>
-              <ArrowUpRight className="h-5 w-5 text-white/80" />
+              {isDocsOnly ? (
+                <FileText className="h-5 w-5 text-white/80" />
+              ) : (
+                <ArrowUpRight className="h-5 w-5 text-white/80" />
+              )}
             </div>
             <p className="text-sm text-white/70 line-clamp-2 max-w-md">{project.description}</p>
-            {project.docsUrl && (
+            {/* Show case study link only when both exist */}
+            {project.link && project.docsUrl && (
               <a 
-                href={project.docsUrl} 
+                href={ensureProtocol(project.docsUrl)} 
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 mt-3 text-xs tracking-wide text-white/50 hover:text-white transition-colors"

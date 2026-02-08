@@ -2,6 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, ArrowUpRight, MapPin, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface SwissTemplateProps {
   profile: ProfileData;
@@ -225,6 +226,10 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
             {/* Asymmetrical Project Grid */}
             <div className="grid grid-cols-12 gap-8">
               {profile.projects.map((project, index) => {
+                // Smart button promotion: determine the main link
+                const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                const isDocsOnly = !project.link && !!project.docsUrl;
+                
                 // Alternate between different grid spans for asymmetry
                 const isLarge = index % 3 === 0;
                 const colSpan = isLarge ? 'col-span-12 lg:col-span-8' : 'col-span-12 lg:col-span-4';
@@ -233,7 +238,9 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
                 return (
                   <motion.a
                     key={project.id}
-                    href={project.link || '#'}
+                    href={mainLink}
+                    target={mainLink !== '#' ? '_blank' : undefined}
+                    rel="noopener noreferrer"
                     className={`${colSpan} ${offset} group block`}
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -255,16 +262,21 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
                           <h3 className="text-2xl font-black uppercase mb-2">{project.title}</h3>
                           <p className="text-sm text-black/70">{project.description}</p>
                         </div>
-                        <ArrowUpRight className="absolute top-6 right-6 h-6 w-6" />
+                        {isDocsOnly ? (
+                          <FileText className="absolute top-6 right-6 h-6 w-6" />
+                        ) : (
+                          <ArrowUpRight className="absolute top-6 right-6 h-6 w-6" />
+                        )}
                       </div>
                     </div>
                     
                     <div className="mt-4 flex items-center justify-between">
                       <h3 className="text-lg font-bold uppercase">{project.title}</h3>
                       <div className="flex items-center gap-4">
-                        {project.docsUrl && (
+                        {/* Show docs link only when both exist */}
+                        {project.link && project.docsUrl && (
                           <a 
-                            href={project.docsUrl} 
+                            href={ensureProtocol(project.docsUrl)} 
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs font-bold uppercase tracking-wider text-black/40 hover:text-[#FF0000] transition-colors flex items-center gap-1"

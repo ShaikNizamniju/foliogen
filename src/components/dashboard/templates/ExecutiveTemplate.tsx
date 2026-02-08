@@ -2,6 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, TrendingUp, Target, Award, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface ExecutiveTemplateProps {
   profile: ProfileData;
@@ -268,45 +269,58 @@ export function ExecutiveTemplate({ profile, onContactClick }: ExecutiveTemplate
                   Strategic Initiatives
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {profile.projects.map((project, index) => (
-                    <motion.a
-                      key={project.id}
-                      href={project.link || '#'}
-                      className="group block bg-white/5 border border-white/10 hover:border-amber-400/50 transition-all overflow-hidden"
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 1 + index * 0.1, duration: 0.5 }}
-                    >
-                      <div className="aspect-video overflow-hidden">
-                        <img 
-                          src={getProjectImageUrl(project, 'minimal')} 
-                          alt={project.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                      <div className="p-5">
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <h3 className="font-bold uppercase text-sm group-hover:text-amber-400 transition-colors">
-                            {project.title}
-                          </h3>
-                          <ExternalLink className="h-4 w-4 text-white/30 group-hover:text-amber-400 transition-colors shrink-0" />
+                  {profile.projects.map((project, index) => {
+                    // Smart button promotion: determine the main link
+                    const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                    const isDocsOnly = !project.link && !!project.docsUrl;
+                    
+                    return (
+                      <motion.a
+                        key={project.id}
+                        href={mainLink}
+                        target={mainLink !== '#' ? '_blank' : undefined}
+                        rel="noopener noreferrer"
+                        className="group block bg-white/5 border border-white/10 hover:border-amber-400/50 transition-all overflow-hidden"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 1 + index * 0.1, duration: 0.5 }}
+                      >
+                        <div className="aspect-video overflow-hidden">
+                          <img 
+                            src={getProjectImageUrl(project, 'minimal')} 
+                            alt={project.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
                         </div>
-                        <p className="text-sm text-white/60 line-clamp-2">{project.description}</p>
-                        {project.docsUrl && (
-                          <a 
-                            href={project.docsUrl} 
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 mt-3 text-xs text-amber-400/70 hover:text-amber-400 transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <FileText className="h-3.5 w-3.5" />
-                            Read Case Study →
-                          </a>
-                        )}
-                      </div>
-                    </motion.a>
-                  ))}
+                        <div className="p-5">
+                          <div className="flex items-start justify-between gap-3 mb-2">
+                            <h3 className="font-bold uppercase text-sm group-hover:text-amber-400 transition-colors">
+                              {project.title}
+                            </h3>
+                            {isDocsOnly ? (
+                              <FileText className="h-4 w-4 text-amber-400/70 shrink-0" />
+                            ) : (
+                              <ExternalLink className="h-4 w-4 text-white/30 group-hover:text-amber-400 transition-colors shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-sm text-white/60 line-clamp-2">{project.description}</p>
+                          {/* Show case study link only when both exist */}
+                          {project.link && project.docsUrl && (
+                            <a 
+                              href={ensureProtocol(project.docsUrl)} 
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 mt-3 text-xs text-amber-400/70 hover:text-amber-400 transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <FileText className="h-3.5 w-3.5" />
+                              Read Case Study →
+                            </a>
+                          )}
+                        </div>
+                      </motion.a>
+                    );
+                  })}
                 </div>
               </motion.section>
             )}

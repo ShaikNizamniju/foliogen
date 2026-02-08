@@ -2,6 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface AcademicTemplateProps {
   profile: ProfileData;
@@ -254,26 +255,42 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
                           {project.title}
                         </h3>
                         <div className="flex items-center gap-3">
-                          {project.docsUrl && (
+                          {/* Smart button promotion */}
+                          {project.link ? (
+                            <>
+                              {project.docsUrl && (
+                                <a 
+                                  href={ensureProtocol(project.docsUrl)} 
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[#8b7355] hover:text-[#6b5340] transition-colors text-sm italic flex items-center gap-1"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <FileText className="h-3.5 w-3.5" />
+                                  Read Paper →
+                                </a>
+                              )}
+                              <a 
+                                href={ensureProtocol(project.link)} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[#888] hover:text-[#8b7355] transition-colors"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
+                            </>
+                          ) : project.docsUrl ? (
                             <a 
-                              href={project.docsUrl} 
+                              href={ensureProtocol(project.docsUrl)} 
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-[#8b7355] hover:text-[#6b5340] transition-colors text-sm italic flex items-center gap-1"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <FileText className="h-3.5 w-3.5" />
+                              <ExternalLink className="h-3.5 w-3.5" />
                               Read Paper →
                             </a>
-                          )}
-                          {project.link && (
-                            <a 
-                              href={project.link} 
-                              className="text-[#888] hover:text-[#8b7355] transition-colors"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                       <p className="text-[#666] text-sm leading-relaxed">{project.description}</p>

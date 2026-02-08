@@ -2,6 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface BrutalistTemplateProps {
   profile: ProfileData;
@@ -230,55 +231,64 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
           >
             <h2 className="text-xl font-black uppercase mb-4">PROJECTS</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {profile.projects.map((project, index) => (
-                <motion.a
-                  key={project.id}
-                  href={project.link || '#'}
-                  initial={{ opacity: 0, rotate: index % 2 === 0 ? -3 : 3 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  transition={{ 
-                    delay: 1.4 + index * 0.1,
-                    type: 'spring',
-                    stiffness: 200
-                  }}
-                  whileHover={{ 
-                    scale: 1.02, 
-                    rotate: 1,
-                    boxShadow: '12px 12px 0px 0px rgba(0,0,0,1)'
-                  }}
-                  whileTap={{ 
-                    scale: 0.98,
-                    boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)',
-                    y: 4
-                  }}
-                  className={`${pastelColors[index % pastelColors.length]} border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 block transition-all cursor-pointer`}
-                >
-                  <div className="aspect-video mb-4 border-2 border-black overflow-hidden">
-                    <img 
-                      src={getProjectImageUrl(project, 'bold')} 
-                      alt={project.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-black mb-2 flex items-center gap-2">
-                    {project.title}
-                    <ArrowRight className="h-5 w-5" />
-                  </h3>
-                  <p className="font-medium">{project.description}</p>
-                  {project.docsUrl && (
-                    <a 
-                      href={project.docsUrl} 
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 mt-3 font-bold text-sm bg-black text-white px-3 py-1.5 border-2 border-black hover:bg-[#FF5C00] transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <FileText className="h-4 w-4" />
-                      READ DOCS
-                    </a>
-                  )}
-                </motion.a>
-              ))}
+              {profile.projects.map((project, index) => {
+                // Smart button promotion: determine the main link
+                const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                const isDocsOnly = !project.link && !!project.docsUrl;
+                
+                return (
+                  <motion.a
+                    key={project.id}
+                    href={mainLink}
+                    target={mainLink !== '#' ? '_blank' : undefined}
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, rotate: index % 2 === 0 ? -3 : 3 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    transition={{ 
+                      delay: 1.4 + index * 0.1,
+                      type: 'spring',
+                      stiffness: 200
+                    }}
+                    whileHover={{ 
+                      scale: 1.02, 
+                      rotate: 1,
+                      boxShadow: '12px 12px 0px 0px rgba(0,0,0,1)'
+                    }}
+                    whileTap={{ 
+                      scale: 0.98,
+                      boxShadow: '2px 2px 0px 0px rgba(0,0,0,1)',
+                      y: 4
+                    }}
+                    className={`${pastelColors[index % pastelColors.length]} border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 block transition-all cursor-pointer`}
+                  >
+                    <div className="aspect-video mb-4 border-2 border-black overflow-hidden">
+                      <img 
+                        src={getProjectImageUrl(project, 'bold')} 
+                        alt={project.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h3 className="text-xl font-black mb-2 flex items-center gap-2">
+                      {project.title}
+                      {isDocsOnly ? <FileText className="h-5 w-5" /> : <ArrowRight className="h-5 w-5" />}
+                    </h3>
+                    <p className="font-medium">{project.description}</p>
+                    {/* Show docs button only when both links exist */}
+                    {project.link && project.docsUrl && (
+                      <a 
+                        href={ensureProtocol(project.docsUrl)} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 mt-3 font-bold text-sm bg-black text-white px-3 py-1.5 border-2 border-black hover:bg-[#FF5C00] transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FileText className="h-4 w-4" />
+                        READ DOCS
+                      </a>
+                    )}
+                  </motion.a>
+                );
+              })}
             </div>
           </motion.div>
         )}
