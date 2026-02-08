@@ -160,6 +160,7 @@ export type Database = {
       }
       job_applications: {
         Row: {
+          ai_prep: Json | null
           company: string
           created_at: string
           id: string
@@ -172,6 +173,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_prep?: Json | null
           company: string
           created_at?: string
           id?: string
@@ -184,6 +186,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_prep?: Json | null
           company?: string
           created_at?: string
           id?: string

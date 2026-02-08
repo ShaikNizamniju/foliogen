@@ -10,13 +10,17 @@ import {
   closestCorners,
   DragOverlay,
 } from '@dnd-kit/core';
-import { JobApplication, JobStatus, useJobApplications } from '@/hooks/useJobApplications';
+import { JobApplication, JobStatus, AiPrep, useJobApplications } from '@/hooks/useJobApplications';
 import { KanbanColumn } from './KanbanColumn';
 import { AddJobDialog } from './AddJobDialog';
+import { InterviewPrepModal } from './InterviewPrepModal';
 import { JobCard } from './JobCard';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { triggerCelebration } from '@/lib/confetti';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const COLUMNS: { status: JobStatus; title: string; emoji: string }[] = [
   { status: 'saved', title: 'Saved', emoji: '📌' },
@@ -33,6 +37,7 @@ export function KanbanBoard() {
     addJob,
     updateJob,
     updateJobStatus,
+    saveAiPrep,
     deleteJob,
     getJobsByStatus,
   } = useJobApplications();
@@ -40,6 +45,11 @@ export function KanbanBoard() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobApplication | null>(null);
   const [activeJob, setActiveJob] = useState<JobApplication | null>(null);
+  
+  // Interview prep state
+  const [prepModalOpen, setPrepModalOpen] = useState(false);
+  const [prepJob, setPrepJob] = useState<JobApplication | null>(null);
+  const [generatingPrepId, setGeneratingPrepId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -68,7 +78,14 @@ export function KanbanBoard() {
     if (COLUMNS.some((col) => col.status === targetStatus)) {
       const job = jobs.find((j) => j.id === jobId);
       if (job && job.status !== targetStatus) {
+        const previousStatus = job.status;
         await updateJobStatus(jobId, targetStatus);
+        
+        // 🎉 Celebration when moving to Offer!
+        if (targetStatus === 'offer' && previousStatus !== 'offer') {
+          triggerCelebration();
+          toast.success('🎉 Congratulations on the offer!');
+        }
       }
     }
   };
@@ -89,7 +106,70 @@ export function KanbanBoard() {
   };
 
   const handleMoveStatus = async (id: string, newStatus: JobStatus) => {
+    const job = jobs.find((j) => j.id === id);
+    const previousStatus = job?.status;
+    
     await updateJobStatus(id, newStatus);
+    
+    // 🎉 Celebration when moving to Offer!
+    if (newStatus === 'offer' && previousStatus !== 'offer') {
+      triggerCelebration();
+      toast.success('🎉 Congratulations on the offer!');
+    }
+  };
+
+  const handlePrepMe = async (job: JobApplication) => {
+    // If already has AI prep, just open the modal
+    if (job.ai_prep) {
+      setPrepJob(job);
+      setPrepModalOpen(true);
+      return;
+    }
+
+    // Generate AI prep
+    setGeneratingPrepId(job.id);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-interview-prep', {
+        body: { company: job.company, role: job.role },
+      });
+
+      if (error) {
+        console.error('[KanbanBoard] Error generating prep:', error);
+        toast.error('Failed to generate interview prep');
+        return;
+      }
+
+      if (data.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      // Save to database
+      const aiPrep: AiPrep = {
+        company_summary: data.company_summary,
+        likely_questions: data.likely_questions,
+        questions_to_ask: data.questions_to_ask,
+      };
+
+      await saveAiPrep(job.id, aiPrep);
+      
+      // Update local job and open modal
+      const updatedJob = { ...job, ai_prep: aiPrep };
+      setPrepJob(updatedJob);
+      setPrepModalOpen(true);
+      toast.success('Interview prep generated!');
+    } catch (error) {
+      console.error('[KanbanBoard] Error:', error);
+      toast.error('Failed to generate interview prep');
+    } finally {
+      setGeneratingPrepId(null);
+    }
+  };
+
+  const handleSavePrepNotes = async (notes: string) => {
+    if (!prepJob) return;
+    await updateJob(prepJob.id, { notes });
   };
 
   const handleCloseDialog = (open: boolean) => {
@@ -142,6 +222,8 @@ export function KanbanBoard() {
               onEdit={handleEdit}
               onDelete={handleDelete}
               onMoveStatus={handleMoveStatus}
+              onPrepMe={handlePrepMe}
+              generatingPrepId={generatingPrepId}
             />
           ))}
         </motion.div>
@@ -169,6 +251,17 @@ export function KanbanBoard() {
         onUpdate={updateJob}
         editingJob={editingJob}
       />
+
+      {/* Interview Prep Modal */}
+      {prepJob && (
+        <InterviewPrepModal
+          open={prepModalOpen}
+          onOpenChange={setPrepModalOpen}
+          job={prepJob}
+          aiPrep={prepJob.ai_prep}
+          onSaveNotes={handleSavePrepNotes}
+        />
+      )}
     </div>
   );
 }

@@ -13,6 +13,8 @@ interface KanbanColumnProps {
   onEdit: (job: JobApplication) => void;
   onDelete: (id: string) => void;
   onMoveStatus: (id: string, newStatus: JobStatus) => void;
+  onPrepMe?: (job: JobApplication) => void;
+  generatingPrepId?: string | null;
 }
 
 const COLUMN_COLORS: Record<JobStatus, string> = {
@@ -31,6 +33,8 @@ export function KanbanColumn({
   onEdit,
   onDelete,
   onMoveStatus,
+  onPrepMe,
+  generatingPrepId,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
@@ -68,6 +72,8 @@ export function KanbanColumn({
               onEdit={onEdit}
               onDelete={onDelete}
               onMoveStatus={onMoveStatus}
+              onPrepMe={status === 'interviewing' ? onPrepMe : undefined}
+              isGeneratingPrep={generatingPrepId === job.id}
             />
           ))}
         </SortableContext>

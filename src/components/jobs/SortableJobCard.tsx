@@ -8,9 +8,18 @@ interface SortableJobCardProps {
   onEdit: (job: JobApplication) => void;
   onDelete: (id: string) => void;
   onMoveStatus: (id: string, newStatus: JobStatus) => void;
+  onPrepMe?: (job: JobApplication) => void;
+  isGeneratingPrep?: boolean;
 }
 
-export function SortableJobCard({ job, onEdit, onDelete, onMoveStatus }: SortableJobCardProps) {
+export function SortableJobCard({ 
+  job, 
+  onEdit, 
+  onDelete, 
+  onMoveStatus,
+  onPrepMe,
+  isGeneratingPrep,
+}: SortableJobCardProps) {
   const {
     attributes,
     listeners,
@@ -37,6 +46,8 @@ export function SortableJobCard({ job, onEdit, onDelete, onMoveStatus }: Sortabl
         onEdit={onEdit}
         onDelete={onDelete}
         onMoveStatus={onMoveStatus}
+        onPrepMe={onPrepMe}
+        isGeneratingPrep={isGeneratingPrep}
         isDragging={isDragging}
       />
     </div>
