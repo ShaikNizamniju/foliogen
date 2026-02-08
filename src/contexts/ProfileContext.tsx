@@ -43,6 +43,7 @@ export interface ProfileData {
   skills: string[];
   keyHighlights: string[];
   views: number;
+  resumeUrl: string;
   selectedTemplate:
     | "minimalist"
     | "creative"
@@ -82,6 +83,7 @@ const defaultProfile: ProfileData = {
   skills: [],
   keyHighlights: [],
   views: 0,
+  resumeUrl: "",
   selectedTemplate: "modern-dark",
 };
 
@@ -133,6 +135,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         skills: data.skills || [],
         keyHighlights: keyHighlights,
         views: data.views || 0,
+        resumeUrl: (data as any).resume_url || "",
         selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "modern-dark",
       });
     }
@@ -165,6 +168,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         projects: profile.projects as unknown as Json,
         skills: profile.skills,
         key_highlights: profile.keyHighlights,
+        resume_url: profile.resumeUrl,
         selected_template: profile.selectedTemplate,
       } as any)
       .eq("user_id", user.id);

@@ -6,6 +6,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfile, WorkExperience, Project } from '@/contexts/ProfileContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,8 +50,11 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [uploadedResumeUrl, setUploadedResumeUrl] = useState<string>('');
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
   
   const { profile, updateProfile } = useProfile();
+  const { user } = useAuth();
 
   const resetParser = useCallback(() => {
     setState('idle');
@@ -59,6 +63,8 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
     setStats(null);
     setFileName('');
     setErrorMessage('');
+    setUploadedResumeUrl('');
+    setCurrentFile(null);
   }, []);
 
   const processFile = async (file: File) => {
@@ -68,6 +74,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
     }
 
     setFileName(file.name);
+    setCurrentFile(file);
     setState('extracting');
     setProgress(10);
     setErrorMessage('');
@@ -133,8 +140,33 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
     }
   };
 
-  const applyToProfile = useCallback((mergeSkills: boolean = true) => {
+  const applyToProfile = useCallback(async (mergeSkills: boolean = true) => {
     if (!parsedData) return;
+
+    // Upload the resume file to storage if we have one
+    let resumeUrl = profile.resumeUrl;
+    if (currentFile && user) {
+      try {
+        const fileExt = currentFile.name.split('.').pop();
+        const filePath = `${user.id}/resume-${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('resumes')
+          .upload(filePath, currentFile, { upsert: true });
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage
+            .from('resumes')
+            .getPublicUrl(filePath);
+          
+          resumeUrl = urlData.publicUrl;
+          setUploadedResumeUrl(resumeUrl);
+        }
+      } catch (err) {
+        console.error('Resume upload error:', err);
+        // Continue without uploading - parsing still works
+      }
+    }
 
     // Merge skills if requested
     let finalSkills = parsedData.skills || [];
@@ -155,6 +187,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       workExperience: parsedData.workExperience || profile.workExperience,
       projects: parsedData.projects || profile.projects,
       keyHighlights: parsedData.keyHighlights || profile.keyHighlights,
+      resumeUrl: resumeUrl,
       selectedTemplate: 'modern-dark',
     });
 
@@ -173,7 +206,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
     toast.success('Profile updated successfully!');
     resetParser();
-  }, [parsedData, profile, updateProfile, resetParser, onTemplateChange]);
+  }, [parsedData, profile, updateProfile, resetParser, onTemplateChange, currentFile, user]);
 
   // Drag handlers
   const handleDragOver = (e: React.DragEvent) => { 
