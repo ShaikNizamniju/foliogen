@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { z } from 'zod';
@@ -14,6 +14,7 @@ import {
   AlertCircle,
   ExternalLink,
   FileText,
+  Upload,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +27,7 @@ import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/use-debounce';
 import { toast } from 'sonner';
 import { ensureProtocol } from '@/lib/urlUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 // Zod schema for project validation
 export const projectSchema = z.object({
@@ -86,6 +88,8 @@ export function SmartProjectCard({
   const [isOpen, setIsOpen] = useState(true);
   const [localProject, setLocalProject] = useState(project);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Debounce local changes
   const debouncedProject = useDebounce(localProject, 1000);
@@ -141,6 +145,68 @@ export function SmartProjectCard({
     setLocalProject((prev) => ({ ...prev, visible: newVisible }));
     // Immediate update for visibility toggle
     onUpdate(project.id, { visible: newVisible });
+  };
+
+  // Handle file upload to Supabase Storage
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Invalid file type. Please upload PDF, PNG, or JPG files.');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File too large. Maximum size is 10MB.');
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      // Create a unique file path
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${project.id}-${Date.now()}.${fileExt}`;
+      const filePath = `proofs/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('project_documents')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('project_documents')
+        .getPublicUrl(filePath);
+
+      // Auto-fill the docsUrl field
+      updateLocalField('docsUrl', publicUrl);
+      
+      // Immediate update to parent
+      onUpdate(project.id, { docsUrl: publicUrl });
+
+      toast.success('Proof uploaded successfully!');
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload file. Please try again.');
+    } finally {
+      setIsUploading(false);
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
   const StatusIndicator = () => {
@@ -354,6 +420,33 @@ export function SmartProjectCard({
               <p className="text-xs text-muted-foreground">
                 Link to a case study, PRD, Notion page, or PDF (auto-fixes URLs)
               </p>
+
+              {/* File Upload Option */}
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <Label className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  <Upload className="h-4 w-4" />
+                  Or Upload Proof (PDF / Image)
+                </Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onChange={handleFileUpload}
+                    disabled={isUploading}
+                    className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  {isUploading && (
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="text-xs">Uploading...</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  Upload certificates, screenshots, or case study PDFs (max 10MB)
+                </p>
+              </div>
             </div>
 
             {/* Image URL with Smart Preview */}

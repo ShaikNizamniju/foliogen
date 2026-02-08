@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface SaasTemplateProps {
   profile: ProfileData;
@@ -268,14 +268,14 @@ export function SaasTemplate({ profile, onContactClick }: SaasTemplateProps) {
                           onClick={(e) => e.stopPropagation()}
                         >
                           <FileText className="h-3.5 w-3.5" />
-                          View Case Study
+                          {getDocsButtonLabel(project.docsUrl)}
                         </a>
                       )}
                       {/* Show indicator when only docsUrl exists */}
                       {!project.link && project.docsUrl && (
                         <span className="inline-flex items-center gap-1.5 mt-2 text-xs text-violet-500">
                           <FileText className="h-3.5 w-3.5" />
-                          Case Study
+                          {getDocsButtonLabel(project.docsUrl)}
                         </span>
                       )}
                     </div>

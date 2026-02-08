@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin, MessageSquare, FileText, ExternalLink } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface NoirTemplateProps {
   profile: ProfileData;
@@ -263,7 +263,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
                             onClick={(e) => e.stopPropagation()}
                           >
                             <FileText className="h-4 w-4" />
-                            Case Study
+                            {getDocsButtonLabel(project.docsUrl)}
                           </a>
                         )}
                       </div>

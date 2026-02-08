@@ -3,7 +3,7 @@ import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCirc
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
@@ -299,7 +299,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                                 rel="noopener noreferrer"
                                 className="text-black/30 hover:text-black transition-colors"
                                 onClick={(e) => e.stopPropagation()}
-                                title="View Case Study"
+                                title={getDocsButtonLabel(project.docsUrl)}
                               >
                                 <FileText className="h-4 w-4" />
                               </a>
@@ -321,7 +321,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                             rel="noopener noreferrer"
                             className="text-black/30 hover:text-black transition-colors"
                             onClick={(e) => e.stopPropagation()}
-                            title="View Case Study"
+                            title={getDocsButtonLabel(project.docsUrl)}
                           >
                             <ExternalLink className="h-4 w-4" />
                           </a>
