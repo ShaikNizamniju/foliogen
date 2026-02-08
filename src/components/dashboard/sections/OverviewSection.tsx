@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
 import { FavoritesSection } from './FavoritesSection';
 import { RecruiterRadar } from '@/components/dashboard/analytics/RecruiterRadar';
+import { JobSummaryCard } from '@/components/dashboard/analytics/JobSummaryCard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -335,6 +336,11 @@ export function OverviewSection() {
           </motion.div>
         ))}
       </div>
+
+      {/* Job Summary Card */}
+      <motion.div variants={itemVariants}>
+        <JobSummaryCard />
+      </motion.div>
 
       {/* Favorites Section */}
       <motion.div variants={itemVariants}>

@@ -29,7 +29,8 @@ import { Link } from 'react-router-dom';
 const menuItems = [
   { title: 'Overview', icon: LayoutDashboard, path: '/dashboard', section: 'overview' },
   { title: 'Profile Data', icon: User, path: '/dashboard', section: 'profile' },
-  { title: 'Job Match', icon: Briefcase, path: '/dashboard', section: 'job-match' },
+  { title: 'Job Match', icon: Sparkles, path: '/dashboard', section: 'job-match' },
+  { title: 'Job Tracker', icon: Briefcase, path: '/dashboard', section: 'jobs' },
   { title: 'Templates', icon: Palette, path: '/dashboard', section: 'templates' },
   { title: 'Settings', icon: Settings, path: '/dashboard', section: 'settings' },
 ];
