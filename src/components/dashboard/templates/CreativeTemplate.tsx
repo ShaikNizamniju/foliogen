@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
@@ -405,7 +405,7 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                                         rel="noopener noreferrer"
                                         className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
                                         onClick={(e) => e.stopPropagation()}
-                                        title="View Case Study"
+                                        title={getDocsButtonLabel(project.docsUrl)}
                                       >
                                         <FileText className="h-4 w-4 text-white" />
                                       </a>
@@ -426,7 +426,7 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                                     rel="noopener noreferrer"
                                     className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
                                     onClick={(e) => e.stopPropagation()}
-                                    title="View Case Study"
+                                    title={getDocsButtonLabel(project.docsUrl)}
                                   >
                                     <ExternalLink className="h-4 w-4 text-white" />
                                   </a>

@@ -4,7 +4,7 @@ import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Folder, MessageSquare
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { useEffect, useState } from 'react';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface DevTemplateProps {
   profile: ProfileData;
@@ -308,14 +308,14 @@ export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
                             onClick={(e) => e.stopPropagation()}
                           >
                             <FileText className="h-3.5 w-3.5" />
-                            docs
+                            {project.docsUrl.toLowerCase().endsWith('.pdf') ? 'pdf' : 'docs'}
                           </a>
                         )}
                         {/* Show indicator for main action */}
                         {!project.link && project.docsUrl && (
                           <span className="ml-auto text-[#8B949E] font-mono text-xs flex items-center gap-1">
                             <FileText className="h-3.5 w-3.5" />
-                            case study
+                            {project.docsUrl.toLowerCase().endsWith('.pdf') ? 'pdf' : 'case-study'}
                           </span>
                         )}
                       </div>

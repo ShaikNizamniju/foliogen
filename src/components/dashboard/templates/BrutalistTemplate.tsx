@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface BrutalistTemplateProps {
   profile: ProfileData;
@@ -283,7 +283,7 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
                         onClick={(e) => e.stopPropagation()}
                       >
                         <FileText className="h-4 w-4" />
-                        READ DOCS
+                        {project.docsUrl.toLowerCase().endsWith('.pdf') ? 'VIEW PDF' : 'READ DOCS'}
                       </a>
                     )}
                   </motion.a>

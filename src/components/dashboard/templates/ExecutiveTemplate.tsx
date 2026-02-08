@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, TrendingUp, Target, Award, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface ExecutiveTemplateProps {
   profile: ProfileData;
@@ -314,7 +314,7 @@ export function ExecutiveTemplate({ profile, onContactClick }: ExecutiveTemplate
                               onClick={(e) => e.stopPropagation()}
                             >
                               <FileText className="h-3.5 w-3.5" />
-                              Read Case Study →
+                              {getDocsButtonLabel(project.docsUrl)} →
                             </a>
                           )}
                         </div>

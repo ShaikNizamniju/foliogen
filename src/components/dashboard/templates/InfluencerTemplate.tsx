@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, Instagram, Youtube, Heart, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface InfluencerTemplateProps {
   profile: ProfileData;
@@ -282,14 +282,14 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
                         onClick={(e) => e.stopPropagation()}
                       >
                         <FileText className="h-3.5 w-3.5" />
-                        View Details
+                        {getDocsButtonLabel(project.docsUrl)}
                       </a>
                     )}
                     {/* Indicator when only docsUrl exists */}
                     {isDocsOnly && (
                       <span className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-purple-500">
                         <FileText className="h-3.5 w-3.5" />
-                        Case Study
+                        {getDocsButtonLabel(project.docsUrl)}
                       </span>
                     )}
                   </div>

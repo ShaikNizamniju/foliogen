@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, ArrowUpRight, MapPin, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface SwissTemplateProps {
   profile: ProfileData;
@@ -283,7 +283,7 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
                             onClick={(e) => e.stopPropagation()}
                           >
                             <FileText className="h-3.5 w-3.5" />
-                            Docs
+                            {project.docsUrl.toLowerCase().endsWith('.pdf') ? 'PDF' : 'Docs'}
                           </a>
                         )}
                         <span className="text-xs font-bold uppercase tracking-wider text-black/40">

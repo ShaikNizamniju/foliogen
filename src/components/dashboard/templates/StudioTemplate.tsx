@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram, FileText, ExternalLink } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { useRef } from 'react';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface StudioTemplateProps {
   profile: ProfileData;
@@ -135,7 +135,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
                 onClick={(e) => e.stopPropagation()}
               >
                 <FileText className="h-3.5 w-3.5" />
-                View Case Study
+                {getDocsButtonLabel(project.docsUrl)}
               </a>
             )}
           </motion.div>

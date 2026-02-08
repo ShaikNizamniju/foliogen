@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
 
 interface AcademicTemplateProps {
   profile: ProfileData;
@@ -267,7 +267,7 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <FileText className="h-3.5 w-3.5" />
-                                  Read Paper →
+                                  {project.docsUrl.toLowerCase().endsWith('.pdf') ? 'Read Paper →' : getDocsButtonLabel(project.docsUrl) + ' →'}
                                 </a>
                               )}
                               <a 
@@ -288,7 +288,7 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
                               onClick={(e) => e.stopPropagation()}
                             >
                               <ExternalLink className="h-3.5 w-3.5" />
-                              Read Paper →
+                              {project.docsUrl.toLowerCase().endsWith('.pdf') ? 'Read Paper →' : getDocsButtonLabel(project.docsUrl) + ' →'}
                             </a>
                           ) : null}
                         </div>
