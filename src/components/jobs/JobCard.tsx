@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MoreHorizontal, Pencil, Trash2, ExternalLink, ChevronLeft, ChevronRight, GripVertical } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, ExternalLink, ChevronLeft, ChevronRight, GripVertical, Wand2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { JobApplication, JobStatus } from '@/hooks/useJobApplications';
+import { JobApplication, JobStatus, AiPrep } from '@/hooks/useJobApplications';
 import { motion } from 'framer-motion';
 
 interface JobCardProps {
@@ -17,15 +17,26 @@ interface JobCardProps {
   onEdit: (job: JobApplication) => void;
   onDelete: (id: string) => void;
   onMoveStatus: (id: string, newStatus: JobStatus) => void;
+  onPrepMe?: (job: JobApplication) => void;
+  isGeneratingPrep?: boolean;
   isDragging?: boolean;
 }
 
 const STATUS_ORDER: JobStatus[] = ['saved', 'applied', 'interviewing', 'offer', 'rejected'];
 
-export function JobCard({ job, onEdit, onDelete, onMoveStatus, isDragging }: JobCardProps) {
+export function JobCard({ 
+  job, 
+  onEdit, 
+  onDelete, 
+  onMoveStatus, 
+  onPrepMe,
+  isGeneratingPrep,
+  isDragging 
+}: JobCardProps) {
   const currentIndex = STATUS_ORDER.indexOf(job.status);
   const canMoveLeft = currentIndex > 0;
   const canMoveRight = currentIndex < STATUS_ORDER.length - 1;
+  const isInterviewing = job.status === 'interviewing';
 
   return (
     <motion.div
@@ -77,11 +88,52 @@ export function JobCard({ job, onEdit, onDelete, onMoveStatus, isDragging }: Job
       {/* Role */}
       <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{job.role}</p>
 
-      {/* Salary */}
-      {job.salary_range && (
-        <Badge variant="secondary" className="mb-3 text-xs">
-          {job.salary_range}
-        </Badge>
+      {/* Salary & AI Prep Badge */}
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        {job.salary_range && (
+          <Badge variant="secondary" className="text-xs">
+            {job.salary_range}
+          </Badge>
+        )}
+        {job.ai_prep && (
+          <Badge variant="outline" className="text-xs bg-violet-500/10 text-violet-600 border-violet-500/20">
+            ✨ Prepped
+          </Badge>
+        )}
+      </div>
+
+      {/* Prep Me Button - Only for Interviewing status */}
+      {isInterviewing && onPrepMe && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          className="mb-3"
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full bg-gradient-to-r from-violet-500/10 to-purple-500/10 hover:from-violet-500/20 hover:to-purple-500/20 border-violet-500/30 text-violet-600 hover:text-violet-700"
+            onClick={() => onPrepMe(job)}
+            disabled={isGeneratingPrep}
+          >
+            {isGeneratingPrep ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Generating...
+              </>
+            ) : job.ai_prep ? (
+              <>
+                <Wand2 className="h-4 w-4 mr-2" />
+                View Prep
+              </>
+            ) : (
+              <>
+                <Wand2 className="h-4 w-4 mr-2" />
+                ✨ Prep Me
+              </>
+            )}
+          </Button>
+        </motion.div>
       )}
 
       {/* Move buttons */}

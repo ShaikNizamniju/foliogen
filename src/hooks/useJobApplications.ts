@@ -5,6 +5,12 @@ import { toast } from 'sonner';
 
 export type JobStatus = 'saved' | 'applied' | 'interviewing' | 'offer' | 'rejected';
 
+export interface AiPrep {
+  company_summary: string;
+  likely_questions: string[];
+  questions_to_ask: string[];
+}
+
 export interface JobApplication {
   id: string;
   user_id: string;
@@ -14,6 +20,7 @@ export interface JobApplication {
   salary_range: string | null;
   job_url: string | null;
   notes: string | null;
+  ai_prep: AiPrep | null;
   created_at: string;
   updated_at: string;
 }
@@ -48,7 +55,7 @@ export function useJobApplications() {
       console.error('[JobApplications] Error fetching:', error);
       toast.error('Failed to load job applications');
     } else {
-      setJobs((data as JobApplication[]) || []);
+      setJobs((data as unknown as JobApplication[]) || []);
     }
     setLoading(false);
   }, [user?.id]);
@@ -80,15 +87,21 @@ export function useJobApplications() {
       return null;
     }
 
-    setJobs((prev) => [data as JobApplication, ...prev]);
+    setJobs((prev) => [data as unknown as JobApplication, ...prev]);
     toast.success('Job application added!');
-    return data as JobApplication;
+    return data as unknown as JobApplication;
   };
 
-  const updateJob = async (id: string, updates: Partial<JobApplicationInput>) => {
+  const updateJob = async (id: string, updates: Partial<JobApplicationInput & { ai_prep?: AiPrep }>) => {
+    // Convert ai_prep to JSON-compatible format
+    const dbUpdates: Record<string, unknown> = { ...updates };
+    if (updates.ai_prep) {
+      dbUpdates.ai_prep = updates.ai_prep as unknown;
+    }
+
     const { error } = await supabase
       .from('job_applications')
-      .update(updates)
+      .update(dbUpdates)
       .eq('id', id);
 
     if (error) {
@@ -105,6 +118,24 @@ export function useJobApplications() {
 
   const updateJobStatus = async (id: string, status: JobStatus) => {
     return updateJob(id, { status });
+  };
+
+  const saveAiPrep = async (id: string, aiPrep: AiPrep) => {
+    const { error } = await supabase
+      .from('job_applications')
+      .update({ ai_prep: JSON.parse(JSON.stringify(aiPrep)) })
+      .eq('id', id);
+
+    if (error) {
+      console.error('[JobApplications] Error saving AI prep:', error);
+      toast.error('Failed to save interview prep');
+      return false;
+    }
+
+    setJobs((prev) =>
+      prev.map((job) => (job.id === id ? { ...job, ai_prep: aiPrep } : job))
+    );
+    return true;
   };
 
   const deleteJob = async (id: string) => {
@@ -143,6 +174,7 @@ export function useJobApplications() {
     addJob,
     updateJob,
     updateJobStatus,
+    saveAiPrep,
     deleteJob,
     getJobsByStatus,
     getCounts,
