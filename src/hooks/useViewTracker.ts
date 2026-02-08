@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -8,9 +9,11 @@ import { useAuth } from '@/contexts/AuthContext';
  * - Prevents counting owner's own views
  * - Uses sessionStorage to prevent duplicate counts on refresh
  * - Calls the server-side rate-limited increment_views RPC
+ * - Logs visits with company/role params to visit_logs table
  */
 export function useViewTracker(profileUserId: string | undefined) {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const viewCounted = useRef(false);
 
   useEffect(() => {
@@ -48,7 +51,11 @@ export function useViewTracker(profileUserId: string | undefined) {
     sessionStorage.setItem(sessionKey, 'true');
     localStorage.setItem(localKey, now.toString());
 
-    // Call the rate-limited RPC function
+    // Get personalization params for visit logging
+    const companyName = searchParams.get('company');
+    const roleTarget = searchParams.get('role');
+
+    // Call the rate-limited RPC function for view count
     supabase
       .rpc('increment_views', { p_user_id: profileUserId })
       .then(({ error }) => {
@@ -58,5 +65,23 @@ export function useViewTracker(profileUserId: string | undefined) {
           console.log('[ViewTracker] View counted successfully');
         }
       });
-  }, [profileUserId, user?.id]);
+
+    // If company or role param exists, log to visit_logs for recruiter tracking
+    if (companyName || roleTarget) {
+      supabase
+        .from('visit_logs')
+        .insert({
+          profile_user_id: profileUserId,
+          company_name: companyName,
+          role_target: roleTarget,
+        })
+        .then(({ error }) => {
+          if (error) {
+            console.error('[ViewTracker] Failed to log visit:', error);
+          } else {
+            console.log('[ViewTracker] Recruiter visit logged:', { companyName, roleTarget });
+          }
+        });
+    }
+  }, [profileUserId, user?.id, searchParams]);
 }
