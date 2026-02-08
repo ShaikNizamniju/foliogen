@@ -15,6 +15,8 @@ import {
   ExternalLink,
   FileText,
   Upload,
+  Lock,
+  LockOpen,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -62,6 +64,8 @@ export const projectSchema = z.object({
   targetKeywords: z.array(z.string()).default([]),
   visible: z.boolean().default(true),
   visualPrompt: z.string().optional(),
+  isProtected: z.boolean().default(false),
+  password: z.string().optional(),
 });
 
 export type SmartProject = z.infer<typeof projectSchema>;
@@ -552,6 +556,61 @@ export function SmartProjectCard({
                   Job Match will highlight this project when these keywords match
                 </p>
               </div>
+            </div>
+
+            {/* Password Protection Section */}
+            <div className="border-t border-border pt-5 mt-2">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-muted-foreground" />
+                  <Label className="font-medium">🔒 Protect this Project</Label>
+                </div>
+                <Button
+                  type="button"
+                  variant={localProject.isProtected ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    const newProtected = !localProject.isProtected;
+                    updateLocalField('isProtected', newProtected);
+                    if (!newProtected) {
+                      updateLocalField('password', '');
+                    }
+                    onUpdate(project.id, { 
+                      isProtected: newProtected, 
+                      password: newProtected ? localProject.password : '' 
+                    });
+                  }}
+                  className="gap-2"
+                >
+                  {localProject.isProtected ? (
+                    <>
+                      <Lock className="h-3.5 w-3.5" />
+                      Protected
+                    </>
+                  ) : (
+                    <>
+                      <LockOpen className="h-3.5 w-3.5" />
+                      Unprotected
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {localProject.isProtected && (
+                <div className="space-y-2 animate-in slide-in-from-top-2">
+                  <Label htmlFor={`password-${project.id}`}>Project Password</Label>
+                  <Input
+                    id={`password-${project.id}`}
+                    type="password"
+                    placeholder="Set a password for this project..."
+                    value={localProject.password || ''}
+                    onChange={(e) => updateLocalField('password', e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Recruiters will need this password to view the project details
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </CollapsibleContent>

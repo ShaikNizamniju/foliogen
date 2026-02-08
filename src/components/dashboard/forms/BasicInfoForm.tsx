@@ -255,14 +255,31 @@ export function BasicInfoForm() {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="website">Website</Label>
-        <Input
-          id="website"
-          placeholder="https://johndoe.com"
-          value={profile.website}
-          onChange={(e) => updateProfile({ website: e.target.value })}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="website">Website</Label>
+          <Input
+            id="website"
+            placeholder="https://johndoe.com"
+            value={profile.website}
+            onChange={(e) => updateProfile({ website: e.target.value })}
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="calendly" className="flex items-center gap-2">
+            📅 Calendly / Cal.com Link
+          </Label>
+          <Input
+            id="calendly"
+            placeholder="https://calendly.com/your-name"
+            value={profile.calendlyUrl}
+            onChange={(e) => updateProfile({ calendlyUrl: e.target.value })}
+          />
+          <p className="text-xs text-muted-foreground">
+            Add your booking link to show a "Book Interview" button
+          </p>
+        </div>
       </div>
 
       <div className="border-t border-border pt-6">

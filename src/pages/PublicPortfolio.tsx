@@ -88,6 +88,7 @@ export default function PublicPortfolio() {
       keyHighlights: keyHighlights,
       views: data.views || 0,
       resumeUrl: (data as any).resume_url || '',
+      calendlyUrl: (data as any).calendly_url || '',
       selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
     });
     setLoading(false);

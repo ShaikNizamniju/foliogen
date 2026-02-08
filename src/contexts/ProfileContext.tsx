@@ -24,6 +24,8 @@ export interface Project {
   targetKeywords?: string[];
   visible?: boolean;
   docsUrl?: string;
+  isProtected?: boolean;
+  password?: string;
 }
 
 export interface ProfileData {
@@ -44,6 +46,7 @@ export interface ProfileData {
   keyHighlights: string[];
   views: number;
   resumeUrl: string;
+  calendlyUrl: string;
   selectedTemplate:
     | "minimalist"
     | "creative"
@@ -84,6 +87,7 @@ const defaultProfile: ProfileData = {
   keyHighlights: [],
   views: 0,
   resumeUrl: "",
+  calendlyUrl: "",
   selectedTemplate: "modern-dark",
 };
 
@@ -136,6 +140,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         keyHighlights: keyHighlights,
         views: data.views || 0,
         resumeUrl: (data as any).resume_url || "",
+        calendlyUrl: (data as any).calendly_url || "",
         selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "modern-dark",
       });
     }
@@ -169,6 +174,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         skills: profile.skills,
         key_highlights: profile.keyHighlights,
         resume_url: profile.resumeUrl,
+        calendly_url: profile.calendlyUrl,
         selected_template: profile.selectedTemplate,
       } as any)
       .eq("user_id", user.id);
