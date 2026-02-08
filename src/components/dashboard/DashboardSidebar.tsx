@@ -8,7 +8,8 @@ import {
   LogOut,
   Sparkles,
   ChevronLeft,
-  Briefcase
+  Briefcase,
+  CreditCard
 } from 'lucide-react';
 import {
   Sidebar,
@@ -32,6 +33,7 @@ const menuItems = [
   { title: 'Job Match', icon: Sparkles, path: '/dashboard', section: 'job-match' },
   { title: 'Job Tracker', icon: Briefcase, path: '/dashboard', section: 'jobs' },
   { title: 'Templates', icon: Palette, path: '/dashboard', section: 'templates' },
+  { title: 'Billing', icon: CreditCard, path: '/dashboard', section: 'billing' },
   { title: 'Settings', icon: Settings, path: '/dashboard', section: 'settings' },
 ];
 

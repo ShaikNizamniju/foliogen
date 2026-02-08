@@ -5,6 +5,7 @@ import { TemplatesSection } from './sections/TemplatesSection';
 import { SettingsSection } from './sections/SettingsSection';
 import { JobMatchSection } from './sections/JobMatchSection';
 import { JobsSection } from './sections/JobsSection';
+import { BillingSection } from './sections/BillingSection';
 
 export function DashboardContent() {
   const location = useLocation();
@@ -22,6 +23,8 @@ export function DashboardContent() {
         return <JobsSection />;
       case 'templates':
         return <TemplatesSection />;
+      case 'billing':
+        return <BillingSection />;
       case 'settings':
         return <SettingsSection />;
       default:

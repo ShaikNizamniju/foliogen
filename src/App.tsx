@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProProvider } from "@/contexts/ProContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingThemeToggle } from "@/components/FloatingThemeToggle";
 import Index from "./pages/Index";
@@ -22,23 +23,25 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="foliogen-ui-theme">
         <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/p/:id" element={<PublicPortfolio />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/social-kit" element={<SocialKit />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <FloatingThemeToggle />
-            </BrowserRouter>
-          </TooltipProvider>
+          <ProProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/p/:id" element={<PublicPortfolio />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/social-kit" element={<SocialKit />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <FloatingThemeToggle />
+              </BrowserRouter>
+            </TooltipProvider>
+          </ProProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

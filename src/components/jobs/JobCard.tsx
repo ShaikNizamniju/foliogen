@@ -11,6 +11,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { JobApplication, JobStatus, AiPrep } from '@/hooks/useJobApplications';
 import { motion } from 'framer-motion';
+import { usePro } from '@/contexts/ProContext';
+import { ProGate } from '@/components/billing/ProGate';
 
 interface JobCardProps {
   job: JobApplication;
@@ -37,6 +39,7 @@ export function JobCard({
   const canMoveLeft = currentIndex > 0;
   const canMoveRight = currentIndex < STATUS_ORDER.length - 1;
   const isInterviewing = job.status === 'interviewing';
+  const { isPro } = usePro();
 
   return (
     <motion.div
@@ -109,30 +112,34 @@ export function JobCard({
           animate={{ opacity: 1, height: 'auto' }}
           className="mb-3"
         >
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full bg-gradient-to-r from-violet-500/10 to-purple-500/10 hover:from-violet-500/20 hover:to-purple-500/20 border-violet-500/30 text-violet-600 hover:text-violet-700"
-            onClick={() => onPrepMe(job)}
-            disabled={isGeneratingPrep}
-          >
-            {isGeneratingPrep ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : job.ai_prep ? (
-              <>
-                <Wand2 className="h-4 w-4 mr-2" />
-                View Prep
-              </>
-            ) : (
-              <>
-                <Wand2 className="h-4 w-4 mr-2" />
-                ✨ Prep Me
-              </>
-            )}
-          </Button>
+          {isPro ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full bg-gradient-to-r from-violet-500/10 to-purple-500/10 hover:from-violet-500/20 hover:to-purple-500/20 border-violet-500/30 text-violet-600 hover:text-violet-700"
+              onClick={() => onPrepMe(job)}
+              disabled={isGeneratingPrep}
+            >
+              {isGeneratingPrep ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : job.ai_prep ? (
+                <>
+                  <Wand2 className="h-4 w-4 mr-2" />
+                  View Prep
+                </>
+              ) : (
+                <>
+                  <Wand2 className="h-4 w-4 mr-2" />
+                  ✨ Prep Me
+                </>
+              )}
+            </Button>
+          ) : (
+            <ProGate featureName="AI Interview Coach" variant="button" className="w-full" />
+          )}
         </motion.div>
       )}
 
