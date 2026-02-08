@@ -1,9 +1,10 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Folder, MessageSquare, FileText } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Folder, MessageSquare, FileText, ExternalLink } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { useEffect, useState } from 'react';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface DevTemplateProps {
   profile: ProfileData;
@@ -259,55 +260,70 @@ export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
               <span>ls -la</span>
             </div>
             <div className="pl-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {profile.projects.map((project, index) => (
-                <motion.a
-                  key={project.id}
-                  href={project.link || '#'}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 5.7 + index * 0.15 }}
-                  className="block bg-[#161B22] rounded-lg border border-[#30363D] hover:border-green-500/50 transition-colors group overflow-hidden"
-                >
-                  <div className="aspect-video overflow-hidden">
-                    {getEmbedUrl(project.link) ? (
-                      <iframe
-                        src={getEmbedUrl(project.link)!}
-                        title={project.title}
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
-                    ) : (
-                      <img 
-                        src={getProjectImageUrl(project, 'terminal')} 
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Folder className="h-4 w-4 text-cyan-400" />
-                      <span className="text-white font-semibold group-hover:text-green-400 transition-colors">
-                        {project.title}
-                      </span>
-                      {project.docsUrl && (
-                        <a 
-                          href={project.docsUrl} 
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="ml-auto flex items-center gap-1 text-[#8B949E] hover:text-purple-400 transition-colors font-mono text-xs"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <FileText className="h-3.5 w-3.5" />
-                          docs
-                        </a>
+              {profile.projects.map((project, index) => {
+                // Smart button promotion: determine the main link
+                const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                
+                return (
+                  <motion.a
+                    key={project.id}
+                    href={mainLink}
+                    target={mainLink !== '#' ? '_blank' : undefined}
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 5.7 + index * 0.15 }}
+                    className="block bg-[#161B22] rounded-lg border border-[#30363D] hover:border-green-500/50 transition-colors group overflow-hidden"
+                  >
+                    <div className="aspect-video overflow-hidden">
+                      {getEmbedUrl(project.link) ? (
+                        <iframe
+                          src={getEmbedUrl(project.link)!}
+                          title={project.title}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <img 
+                          src={getProjectImageUrl(project, 'terminal')} 
+                          alt={project.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
                       )}
                     </div>
-                    <p className="text-[#8B949E] text-sm">{project.description}</p>
-                  </div>
-                </motion.a>
-              ))}
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Folder className="h-4 w-4 text-cyan-400" />
+                        <span className="text-white font-semibold group-hover:text-green-400 transition-colors">
+                          {project.title}
+                        </span>
+                        {/* Show both links if both exist */}
+                        {project.link && project.docsUrl && (
+                          <a 
+                            href={ensureProtocol(project.docsUrl)} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ml-auto flex items-center gap-1 text-[#8B949E] hover:text-purple-400 transition-colors font-mono text-xs"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <FileText className="h-3.5 w-3.5" />
+                            docs
+                          </a>
+                        )}
+                        {/* Show indicator for main action */}
+                        {!project.link && project.docsUrl && (
+                          <span className="ml-auto text-[#8B949E] font-mono text-xs flex items-center gap-1">
+                            <FileText className="h-3.5 w-3.5" />
+                            case study
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[#8B949E] text-sm">{project.description}</p>
+                    </div>
+                  </motion.a>
+                );
+              })}
             </div>
           </motion.div>
         )}

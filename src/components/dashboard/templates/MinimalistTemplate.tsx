@@ -3,6 +3,7 @@ import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCirc
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
@@ -288,22 +289,43 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-bold uppercase tracking-wide text-sm">{project.title}</h3>
                       <div className="flex items-center gap-2">
-                        {project.docsUrl && (
+                        {/* Smart button promotion: show primary icon based on what's available */}
+                        {project.link ? (
+                          <>
+                            {project.docsUrl && (
+                              <a 
+                                href={ensureProtocol(project.docsUrl)} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-black/30 hover:text-black transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                                title="View Case Study"
+                              >
+                                <FileText className="h-4 w-4" />
+                              </a>
+                            )}
+                            <a 
+                              href={ensureProtocol(project.link)} 
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-black/30 hover:text-black transition-colors"
+                              title="View Project"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          </>
+                        ) : project.docsUrl ? (
                           <a 
-                            href={project.docsUrl} 
+                            href={ensureProtocol(project.docsUrl)} 
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-black/30 hover:text-black transition-colors"
                             onClick={(e) => e.stopPropagation()}
+                            title="View Case Study"
                           >
-                            <FileText className="h-4 w-4" />
-                          </a>
-                        )}
-                        {project.link && (
-                          <a href={project.link} className="text-black/30 hover:text-black transition-colors">
                             <ExternalLink className="h-4 w-4" />
                           </a>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                     <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>

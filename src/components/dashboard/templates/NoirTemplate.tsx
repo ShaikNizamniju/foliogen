@@ -1,7 +1,8 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin, MessageSquare, FileText } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin, MessageSquare, FileText, ExternalLink } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface NoirTemplateProps {
   profile: ProfileData;
@@ -201,61 +202,74 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
               </motion.h2>
               
               <div className="space-y-24">
-                {profile.projects.map((project, index) => (
-                  <motion.a
-                    key={project.id}
-                    href={project.link || '#'}
-                    className="block group"
-                    initial={{ opacity: 0, y: 60 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                  >
-                    <div className="relative overflow-hidden">
-                      <div className="aspect-[21/9] overflow-hidden">
-                        <img 
-                          src={getNoirProjectImageUrl(project)} 
-                          alt={project.title}
-                          className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-1000"
-                        />
-                      </div>
-                      
-                      {/* Dark overlay */}
-                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
-                      
-                      {/* Project info */}
-                      <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
-                        <div className="flex items-end justify-between">
-                          <div>
-                            <p className="text-xs tracking-[0.3em] uppercase text-white/40 mb-2">
-                              Project {String(index + 1).padStart(2, '0')}
-                            </p>
-                            <h3 className="text-3xl md:text-4xl font-light">{project.title}</h3>
+                {profile.projects.map((project, index) => {
+                  // Smart button promotion: determine the main link
+                  const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                  const isDocsOnly = !project.link && !!project.docsUrl;
+                  
+                  return (
+                    <motion.a
+                      key={project.id}
+                      href={mainLink}
+                      target={mainLink !== '#' ? '_blank' : undefined}
+                      rel="noopener noreferrer"
+                      className="block group"
+                      initial={{ opacity: 0, y: 60 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                    >
+                      <div className="relative overflow-hidden">
+                        <div className="aspect-[21/9] overflow-hidden">
+                          <img 
+                            src={getNoirProjectImageUrl(project)} 
+                            alt={project.title}
+                            className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-1000"
+                          />
+                        </div>
+                        
+                        {/* Dark overlay */}
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
+                        
+                        {/* Project info */}
+                        <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
+                          <div className="flex items-end justify-between">
+                            <div>
+                              <p className="text-xs tracking-[0.3em] uppercase text-white/40 mb-2">
+                                {isDocsOnly ? 'Case Study' : 'Project'} {String(index + 1).padStart(2, '0')}
+                              </p>
+                              <h3 className="text-3xl md:text-4xl font-light">{project.title}</h3>
+                            </div>
+                            {isDocsOnly ? (
+                              <FileText className="h-6 w-6 text-white/50 group-hover:text-white transition-all duration-300" />
+                            ) : (
+                              <ArrowRight className="h-6 w-6 text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all duration-300" />
+                            )}
                           </div>
-                          <ArrowRight className="h-6 w-6 text-white/50 group-hover:text-white group-hover:translate-x-2 transition-all duration-300" />
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="mt-6 flex items-center gap-4">
-                      <p className="text-white/50 font-light italic max-w-2xl flex-1">
-                        {project.description}
-                      </p>
-                      {project.docsUrl && (
-                        <a 
-                          href={project.docsUrl} 
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs tracking-[0.2em] uppercase text-white/30 hover:text-white transition-colors flex items-center gap-2 shrink-0"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <FileText className="h-4 w-4" />
-                          Case Study
-                        </a>
-                      )}
-                    </div>
-                  </motion.a>
-                ))}
+                      
+                      <div className="mt-6 flex items-center gap-4">
+                        <p className="text-white/50 font-light italic max-w-2xl flex-1">
+                          {project.description}
+                        </p>
+                        {/* Show case study link only when both exist */}
+                        {project.link && project.docsUrl && (
+                          <a 
+                            href={ensureProtocol(project.docsUrl)} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs tracking-[0.2em] uppercase text-white/30 hover:text-white transition-colors flex items-center gap-2 shrink-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <FileText className="h-4 w-4" />
+                            Case Study
+                          </a>
+                        )}
+                      </div>
+                    </motion.a>
+                  );
+                })}
               </div>
             </div>
           </section>

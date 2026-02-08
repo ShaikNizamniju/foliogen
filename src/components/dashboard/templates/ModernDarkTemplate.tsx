@@ -10,6 +10,7 @@ import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useJobMatch } from '@/hooks/useJobMatch';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface ModernDarkTemplateProps {
   profile: ProfileData;
@@ -600,27 +601,40 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
                         )}
 
                         <div className="flex flex-wrap items-center gap-4">
-                          {project.link && (
+                          {/* Smart button promotion: if only docsUrl exists, make it primary */}
+                          {project.link ? (
+                            <>
+                              <a 
+                                href={ensureProtocol(project.link)} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                              >
+                                View Project <ExternalLink className="w-4 h-4" />
+                              </a>
+                              {project.docsUrl && (
+                                <a 
+                                  href={ensureProtocol(project.docsUrl)} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all"
+                                >
+                                  <FileText className="w-4 h-4" />
+                                  Case Study
+                                </a>
+                              )}
+                            </>
+                          ) : project.docsUrl ? (
                             <a 
-                              href={project.link} 
+                              href={ensureProtocol(project.docsUrl)} 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
                             >
-                              View Project <ExternalLink className="w-4 h-4" />
-                            </a>
-                          )}
-                          {project.docsUrl && (
-                            <a 
-                              href={project.docsUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all"
-                            >
                               <FileText className="w-4 h-4" />
-                              Case Study
+                              View Case Study <ExternalLink className="w-4 h-4" />
                             </a>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     </div>

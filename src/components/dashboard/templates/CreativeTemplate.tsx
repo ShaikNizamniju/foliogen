@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
@@ -394,22 +395,42 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                             <div className="flex items-center justify-between mb-2">
                               <h3 className="font-bold text-white text-lg">{project.title}</h3>
                               <div className="flex items-center gap-2">
-                                {project.docsUrl && (
+                                {/* Smart button promotion */}
+                                {project.link ? (
+                                  <>
+                                    {project.docsUrl && (
+                                      <a 
+                                        href={ensureProtocol(project.docsUrl)} 
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+                                        onClick={(e) => e.stopPropagation()}
+                                        title="View Case Study"
+                                      >
+                                        <FileText className="h-4 w-4 text-white" />
+                                      </a>
+                                    )}
+                                    <a 
+                                      href={ensureProtocol(project.link)} 
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+                                    >
+                                      <ExternalLink className="h-4 w-4 text-white" />
+                                    </a>
+                                  </>
+                                ) : project.docsUrl ? (
                                   <a 
-                                    href={project.docsUrl} 
+                                    href={ensureProtocol(project.docsUrl)} 
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
                                     onClick={(e) => e.stopPropagation()}
+                                    title="View Case Study"
                                   >
-                                    <FileText className="h-4 w-4 text-white" />
-                                  </a>
-                                )}
-                                {project.link && (
-                                  <a href={project.link} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm">
                                     <ExternalLink className="h-4 w-4 text-white" />
                                   </a>
-                                )}
+                                ) : null}
                               </div>
                             </div>
                             <p className="text-sm text-white/70 line-clamp-2">{project.description}</p>

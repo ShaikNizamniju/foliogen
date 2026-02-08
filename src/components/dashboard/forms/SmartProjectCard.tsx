@@ -25,6 +25,7 @@ import { SmartProjectImage } from '@/components/ui/SmartProjectImage';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/use-debounce';
 import { toast } from 'sonner';
+import { ensureProtocol } from '@/lib/urlUtils';
 
 // Zod schema for project validation
 export const projectSchema = z.object({
@@ -279,28 +280,37 @@ export function SmartProjectCard({
                 <div className="relative">
                   <Input
                     id={`link-${project.id}`}
-                    placeholder="https://myproject.com"
+                    placeholder="https://myproject.com or myproject.com"
                     value={localProject.link}
                     onChange={(e) => updateLocalField('link', e.target.value)}
+                    onBlur={(e) => {
+                      const sanitized = ensureProtocol(e.target.value);
+                      if (sanitized !== e.target.value) {
+                        updateLocalField('link', sanitized);
+                      }
+                    }}
                     className={cn(
                       'pr-10',
                       validationErrors['link'] && 'border-destructive'
                     )}
                   />
                   {localProject.link && !validationErrors['link'] && (
-                    <a
-                      href={localProject.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    <button
+                      type="button"
+                      onClick={() => window.open(ensureProtocol(localProject.link), '_blank', 'noopener,noreferrer')}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      title="Test link in new tab"
                     >
                       <ExternalLink className="h-4 w-4" />
-                    </a>
+                    </button>
                   )}
                 </div>
                 {validationErrors['link'] && (
                   <p className="text-xs text-destructive">{validationErrors['link']}</p>
                 )}
+                <p className="text-xs text-muted-foreground">
+                  URLs are auto-fixed: "google.com" → "https://google.com"
+                </p>
               </div>
             </div>
 
@@ -313,30 +323,36 @@ export function SmartProjectCard({
               <div className="relative">
                 <Input
                   id={`docsUrl-${project.id}`}
-                  placeholder="https://docs.google.com/... or https://notion.so/..."
+                  placeholder="docs.google.com/... or notion.so/..."
                   value={localProject.docsUrl || ''}
                   onChange={(e) => updateLocalField('docsUrl', e.target.value)}
+                  onBlur={(e) => {
+                    const sanitized = ensureProtocol(e.target.value);
+                    if (sanitized !== e.target.value) {
+                      updateLocalField('docsUrl', sanitized);
+                    }
+                  }}
                   className={cn(
                     'pr-10',
                     validationErrors['docsUrl'] && 'border-destructive'
                   )}
                 />
                 {localProject.docsUrl && !validationErrors['docsUrl'] && (
-                  <a
-                    href={localProject.docsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  <button
+                    type="button"
+                    onClick={() => window.open(ensureProtocol(localProject.docsUrl), '_blank', 'noopener,noreferrer')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    title="Test link in new tab"
                   >
                     <ExternalLink className="h-4 w-4" />
-                  </a>
+                  </button>
                 )}
               </div>
               {validationErrors['docsUrl'] && (
                 <p className="text-xs text-destructive">{validationErrors['docsUrl']}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Link to a case study, PRD, Notion page, or PDF documentation
+                Link to a case study, PRD, Notion page, or PDF (auto-fixes URLs)
               </p>
             </div>
 
