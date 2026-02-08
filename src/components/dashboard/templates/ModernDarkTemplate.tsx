@@ -4,7 +4,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { 
   Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, 
   Phone, Send, Briefcase, GraduationCap, Target, TrendingUp,
-  Code, Palette, Users, Rocket, X, Sparkles, FileText
+  Code, Palette, Users, Rocket, X, Sparkles, FileText, Calendar, Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
@@ -12,6 +12,8 @@ import { getEmbedUrl } from '@/lib/video-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useJobMatch } from '@/hooks/useJobMatch';
 import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ProjectPasswordDialog } from '@/components/public/ProjectPasswordDialog';
+import { Project } from '@/contexts/ProfileContext';
 
 interface ModernDarkTemplateProps {
   profile: ProfileData;
@@ -156,6 +158,8 @@ function SkillTag({ skill, variant = 'default' }: { skill: string; variant?: 'de
 export function ModernDarkTemplate({ profile, onContactClick, isLoading = false }: ModernDarkTemplateProps) {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [searchParams] = useSearchParams();
+  const [unlockedProjects, setUnlockedProjects] = useState<Set<string>>(new Set());
+  const [passwordDialogProject, setPasswordDialogProject] = useState<Project | null>(null);
   
   // Chameleon Mode: Read company/role for personalization
   const recruiterCompany = searchParams.get('company');
@@ -345,6 +349,19 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
               
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start mb-10">
+                {/* Book Interview - Priority if calendly exists */}
+                {profile.calendlyUrl && (
+                  <a 
+                    href={profile.calendlyUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="px-6 py-3 rounded-full font-medium bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 transition-all flex items-center gap-2"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    Book Interview
+                  </a>
+                )}
+                
                 {profile.resumeUrl ? (
                   <a 
                     href={profile.resumeUrl} 
@@ -590,81 +607,103 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
                       <div className="flex-1 p-6 flex flex-col justify-center">
                         <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
                           {project.title}
+                          {project.isProtected && !unlockedProjects.has(project.id) && (
+                            <Lock className="w-4 h-4 inline ml-2 text-amber-400" />
+                          )}
                         </h3>
-                        <p className="text-white/60 text-sm mb-4 leading-relaxed">
-                          {project.description || 'A showcase project demonstrating technical skills and creative problem-solving.'}
-                        </p>
                         
-                        {/* Tech Stack - use actual techStack if available */}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {(project.techStack?.length ? project.techStack : project.visualPrompt?.split(',') || ['React', 'TypeScript', 'Tailwind']).slice(0, 4).map((tech, idx) => (
-                            <span 
-                              key={idx} 
-                              className={`px-2 py-1 rounded text-xs font-medium border ${
-                                matchMode && matchTarget && tech.toLowerCase().includes(matchTarget.toLowerCase())
-                                  ? 'bg-cyan-500/30 text-cyan-200 border-cyan-400/50'
-                                  : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
-                              }`}
+                        {/* Protected project content */}
+                        {project.isProtected && !unlockedProjects.has(project.id) ? (
+                          <div className="space-y-4">
+                            <p className="text-white/40 text-sm italic">
+                              🔒 This project contains confidential content.
+                            </p>
+                            <button
+                              onClick={() => setPasswordDialogProject(project)}
+                              className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:bg-amber-500/30 transition-all"
                             >
-                              {typeof tech === 'string' ? tech.trim() : tech}
-                            </span>
-                          ))}
-                        </div>
-
-                        {/* Target Keywords */}
-                        {project.targetKeywords && project.targetKeywords.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {project.targetKeywords.slice(0, 3).map((keyword, idx) => (
-                              <span 
-                                key={idx} 
-                                className={`px-2 py-1 rounded text-xs font-medium border ${
-                                  matchMode && matchTarget && keyword.toLowerCase().includes(matchTarget.toLowerCase())
-                                    ? 'bg-purple-500/30 text-purple-200 border-purple-400/50'
-                                    : 'bg-purple-500/20 text-purple-300 border-purple-500/30'
-                                }`}
-                              >
-                                {keyword}
-                              </span>
-                            ))}
+                              <Lock className="w-4 h-4" />
+                              Enter Password to View
+                            </button>
                           </div>
-                        )}
+                        ) : (
+                          <>
+                            <p className="text-white/60 text-sm mb-4 leading-relaxed">
+                              {project.description || 'A showcase project demonstrating technical skills and creative problem-solving.'}
+                            </p>
+                            
+                            {/* Tech Stack - use actual techStack if available */}
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {(project.techStack?.length ? project.techStack : project.visualPrompt?.split(',') || ['React', 'TypeScript', 'Tailwind']).slice(0, 4).map((tech, idx) => (
+                                <span 
+                                  key={idx} 
+                                  className={`px-2 py-1 rounded text-xs font-medium border ${
+                                    matchMode && matchTarget && tech.toLowerCase().includes(matchTarget.toLowerCase())
+                                      ? 'bg-cyan-500/30 text-cyan-200 border-cyan-400/50'
+                                      : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
+                                  }`}
+                                >
+                                  {typeof tech === 'string' ? tech.trim() : tech}
+                                </span>
+                              ))}
+                            </div>
 
-                        <div className="flex flex-wrap items-center gap-4">
-                          {/* Smart button promotion: if only docsUrl exists, make it primary */}
-                          {project.link ? (
-                            <>
-                              <a 
-                                href={ensureProtocol(project.link)} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
-                              >
-                                View Project <ExternalLink className="w-4 h-4" />
-                              </a>
-                              {project.docsUrl && (
+                            {/* Target Keywords */}
+                            {project.targetKeywords && project.targetKeywords.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                {project.targetKeywords.slice(0, 3).map((keyword, idx) => (
+                                  <span 
+                                    key={idx} 
+                                    className={`px-2 py-1 rounded text-xs font-medium border ${
+                                      matchMode && matchTarget && keyword.toLowerCase().includes(matchTarget.toLowerCase())
+                                        ? 'bg-purple-500/30 text-purple-200 border-purple-400/50'
+                                        : 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                                    }`}
+                                  >
+                                    {keyword}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-4">
+                              {/* Smart button promotion: if only docsUrl exists, make it primary */}
+                              {project.link ? (
+                                <>
+                                  <a 
+                                    href={ensureProtocol(project.link)} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                                  >
+                                    View Project <ExternalLink className="w-4 h-4" />
+                                  </a>
+                                  {project.docsUrl && (
+                                    <a 
+                                      href={ensureProtocol(project.docsUrl)} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all"
+                                    >
+                                      <FileText className="w-4 h-4" />
+                                      {getDocsButtonLabel(project.docsUrl)}
+                                    </a>
+                                  )}
+                                </>
+                              ) : project.docsUrl ? (
                                 <a 
                                   href={ensureProtocol(project.docsUrl)} 
                                   target="_blank" 
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 text-sm font-medium px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 hover:bg-white/5 transition-all"
+                                  className="inline-flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
                                 >
                                   <FileText className="w-4 h-4" />
-                                  {getDocsButtonLabel(project.docsUrl)}
+                                  {getDocsButtonLabel(project.docsUrl)} <ExternalLink className="w-4 h-4" />
                                 </a>
-                              )}
-                            </>
-                          ) : project.docsUrl ? (
-                            <a 
-                              href={ensureProtocol(project.docsUrl)} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-sm font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
-                            >
-                              <FileText className="w-4 h-4" />
-                              {getDocsButtonLabel(project.docsUrl)} <ExternalLink className="w-4 h-4" />
-                            </a>
-                          ) : null}
-                        </div>
+                              ) : null}
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -833,6 +872,19 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
           </p>
         </div>
       </footer>
+
+      {/* Password Dialog for Protected Projects */}
+      {passwordDialogProject && (
+        <ProjectPasswordDialog
+          open={!!passwordDialogProject}
+          onOpenChange={(open) => !open && setPasswordDialogProject(null)}
+          project={passwordDialogProject}
+          onUnlock={() => {
+            setUnlockedProjects((prev) => new Set([...prev, passwordDialogProject.id]));
+            setPasswordDialogProject(null);
+          }}
+        />
+      )}
     </div>
   );
 }

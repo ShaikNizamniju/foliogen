@@ -203,6 +203,7 @@ export type Database = {
       profiles: {
         Row: {
           bio: string | null
+          calendly_url: string | null
           created_at: string
           email: string | null
           full_name: string | null
@@ -229,6 +230,7 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          calendly_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -255,6 +257,7 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          calendly_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -334,6 +337,7 @@ export type Database = {
       profiles_public: {
         Row: {
           bio: string | null
+          calendly_url: string | null
           created_at: string | null
           full_name: string | null
           github_url: string | null
@@ -356,6 +360,7 @@ export type Database = {
         }
         Insert: {
           bio?: string | null
+          calendly_url?: string | null
           created_at?: string | null
           full_name?: string | null
           github_url?: string | null
@@ -378,6 +383,7 @@ export type Database = {
         }
         Update: {
           bio?: string | null
+          calendly_url?: string | null
           created_at?: string | null
           full_name?: string | null
           github_url?: string | null
