@@ -263,6 +263,30 @@ export type Database = {
         }
         Relationships: []
       }
+      visit_logs: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          id: string
+          profile_user_id: string
+          role_target: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          profile_user_id: string
+          role_target?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          id?: string
+          profile_user_id?: string
+          role_target?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       profiles_public: {

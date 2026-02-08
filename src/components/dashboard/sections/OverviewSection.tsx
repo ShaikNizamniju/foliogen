@@ -6,6 +6,7 @@ import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, Chevr
 import { Button } from '@/components/ui/button';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
 import { FavoritesSection } from './FavoritesSection';
+import { RecruiterRadar } from '@/components/dashboard/analytics/RecruiterRadar';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -193,7 +194,7 @@ export function OverviewSection() {
       </motion.div>
 
       {/* Hero Stats Row - Glass/Bento Style */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Total Views Card */}
         <motion.div 
           variants={itemVariants}
@@ -292,6 +293,11 @@ export function OverviewSection() {
               )}
             </p>
           </motion.div>
+        </motion.div>
+
+        {/* Recruiter Radar Card */}
+        <motion.div variants={itemVariants}>
+          <RecruiterRadar />
         </motion.div>
       </div>
 
