@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 
@@ -251,6 +251,18 @@ export function SaasTemplate({ profile, onContactClick }: SaasTemplateProps) {
                       {project.title}
                     </h3>
                     <p className="text-sm text-black/50">{project.description}</p>
+                    {project.docsUrl && (
+                      <a 
+                        href={project.docsUrl} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-2 text-xs text-violet-500 hover:text-violet-600 transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                        View Case Study
+                      </a>
+                    )}
                   </div>
                   <ArrowUpRight className="h-4 w-4 text-black/30 group-hover:text-violet-600 transition-colors shrink-0" />
                 </div>

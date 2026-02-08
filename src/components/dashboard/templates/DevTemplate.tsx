@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Folder, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Folder, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { useEffect, useState } from 'react';
@@ -291,6 +291,18 @@ export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
                       <span className="text-white font-semibold group-hover:text-green-400 transition-colors">
                         {project.title}
                       </span>
+                      {project.docsUrl && (
+                        <a 
+                          href={project.docsUrl} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-auto flex items-center gap-1 text-[#8B949E] hover:text-purple-400 transition-colors font-mono text-xs"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          docs
+                        </a>
+                      )}
                     </div>
                     <p className="text-[#8B949E] text-sm">{project.description}</p>
                   </div>

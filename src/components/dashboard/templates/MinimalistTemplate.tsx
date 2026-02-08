@@ -1,5 +1,5 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCircle, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
@@ -287,11 +287,24 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                   <div className="p-5">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-bold uppercase tracking-wide text-sm">{project.title}</h3>
-                      {project.link && (
-                        <a href={project.link} className="text-black/30 hover:text-black transition-colors">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {project.docsUrl && (
+                          <a 
+                            href={project.docsUrl} 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-black/30 hover:text-black transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <FileText className="h-4 w-4" />
+                          </a>
+                        )}
+                        {project.link && (
+                          <a href={project.link} className="text-black/30 hover:text-black transition-colors">
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                     <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
                   </div>

@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, Twitter, ArrowRight, Star, Zap, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface BrutalistTemplateProps {
@@ -265,6 +265,18 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
                     <ArrowRight className="h-5 w-5" />
                   </h3>
                   <p className="font-medium">{project.description}</p>
+                  {project.docsUrl && (
+                    <a 
+                      href={project.docsUrl} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 mt-3 font-bold text-sm bg-black text-white px-3 py-1.5 border-2 border-black hover:bg-[#FF5C00] transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <FileText className="h-4 w-4" />
+                      READ DOCS
+                    </a>
+                  )}
                 </motion.a>
               ))}
             </div>

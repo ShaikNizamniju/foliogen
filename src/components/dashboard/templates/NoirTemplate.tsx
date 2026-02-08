@@ -1,6 +1,6 @@
 import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
-import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin, MessageSquare } from 'lucide-react';
+import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 
 interface NoirTemplateProps {
@@ -237,9 +237,23 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
                       </div>
                     </div>
                     
-                    <p className="mt-6 text-white/50 font-light italic max-w-2xl">
-                      {project.description}
-                    </p>
+                    <div className="mt-6 flex items-center gap-4">
+                      <p className="text-white/50 font-light italic max-w-2xl flex-1">
+                        {project.description}
+                      </p>
+                      {project.docsUrl && (
+                        <a 
+                          href={project.docsUrl} 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs tracking-[0.2em] uppercase text-white/30 hover:text-white transition-colors flex items-center gap-2 shrink-0"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <FileText className="h-4 w-4" />
+                          Case Study
+                        </a>
+                      )}
+                    </div>
                   </motion.a>
                 ))}
               </div>
