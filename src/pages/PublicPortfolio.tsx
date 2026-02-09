@@ -37,16 +37,36 @@ export default function PublicPortfolio() {
     }
   }, [id]);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (identifier: string) => {
     setLoading(true);
     setError(null);
 
-    // Use profiles_public view to avoid exposing private data (e.g., email)
-    const { data, error: fetchError } = await supabase
-      .from('profiles_public')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
+    // Try to fetch by username first, then by user_id (supports both custom and legacy URLs)
+    let data = null;
+    let fetchError = null;
+
+    // Check if identifier looks like a UUID (legacy format)
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+
+    if (isUUID) {
+      // Legacy URL: fetch by user_id
+      const result = await supabase
+        .from('profiles_public')
+        .select('*')
+        .eq('user_id', identifier)
+        .maybeSingle();
+      data = result.data;
+      fetchError = result.error;
+    } else {
+      // Custom username URL: fetch by username
+      const result = await supabase
+        .from('profiles_public')
+        .select('*')
+        .eq('username', identifier.toLowerCase())
+        .maybeSingle();
+      data = result.data;
+      fetchError = result.error;
+    }
 
     if (fetchError) {
       setError('Failed to load portfolio');

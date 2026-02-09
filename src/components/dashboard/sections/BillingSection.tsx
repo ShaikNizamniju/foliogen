@@ -130,9 +130,9 @@ export function BillingSection() {
 
             <div className="flex items-baseline gap-2 mb-6">
               <span className="text-4xl font-bold text-foreground">₹199</span>
-              <span className="text-muted-foreground line-through">₹499</span>
+              <span className="text-muted-foreground line-through">₹999</span>
               <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-                60% OFF
+                80% OFF
               </Badge>
             </div>
 
