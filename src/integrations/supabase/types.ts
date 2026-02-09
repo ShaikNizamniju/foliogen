@@ -227,6 +227,7 @@ export type Database = {
           twitter_url: string | null
           updated_at: string
           user_id: string
+          username: string | null
           views: number | null
           website: string | null
           work_experience: Json | null
@@ -257,6 +258,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           user_id: string
+          username?: string | null
           views?: number | null
           website?: string | null
           work_experience?: Json | null
@@ -287,6 +289,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           user_id?: string
+          username?: string | null
           views?: number | null
           website?: string | null
           work_experience?: Json | null
@@ -363,6 +366,7 @@ export type Database = {
           twitter_url: string | null
           updated_at: string | null
           user_id: string | null
+          username: string | null
           views: number | null
           website: string | null
           work_experience: Json | null
@@ -386,6 +390,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string | null
           user_id?: string | null
+          username?: string | null
           views?: number | null
           website?: string | null
           work_experience?: Json | null
@@ -409,6 +414,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string | null
           user_id?: string | null
+          username?: string | null
           views?: number | null
           website?: string | null
           work_experience?: Json | null

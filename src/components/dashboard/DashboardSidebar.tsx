@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { LaunchTimer } from './LaunchTimer';
 
 const menuItems = [
   { title: 'Overview', icon: LayoutDashboard, path: '/dashboard', section: 'overview' },
@@ -61,6 +62,9 @@ export function DashboardSidebar() {
           {!collapsed && <span className="font-semibold text-sidebar-foreground">FolioGen</span>}
         </Link>
       </SidebarHeader>
+
+      {/* Launch Timer */}
+      {!collapsed && <LaunchTimer />}
 
       <SidebarContent>
         <SidebarGroup>
