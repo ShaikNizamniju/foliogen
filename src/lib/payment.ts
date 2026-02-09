@@ -14,7 +14,7 @@ export interface PaymentUser {
   name?: string;
 }
 
-export const RAZORPAY_KEY = "YOUR_RAZORPAY_TEST_KEY"; // Replace with your Razorpay test/live key
+export const RAZORPAY_KEY = "rzp_test_SE6pBwbZL7Xo7T";
 
 export async function handlePayment(
   user: PaymentUser,
