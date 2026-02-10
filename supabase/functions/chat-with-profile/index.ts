@@ -40,21 +40,30 @@ serve(async (req) => {
       );
     }
 
-    const { userQuery, profileId, conversationHistory = [] } = await req.json();
+    const body = await req.json();
+    const { profileId } = body;
+    let { userQuery, conversationHistory } = body;
 
-    if (!userQuery || !profileId) {
+    if (!userQuery || typeof userQuery !== 'string' || !profileId || typeof profileId !== 'string') {
       return new Response(
         JSON.stringify({ error: 'userQuery and profileId are required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Validate input lengths
-    if (userQuery.length > 1000) {
+    // Sanitize user query: trim, limit length, strip HTML tags
+    userQuery = userQuery.replace(/<[^>]*>/g, '').trim().substring(0, 1000);
+
+    if (!userQuery) {
       return new Response(
-        JSON.stringify({ error: 'Query too long' }),
+        JSON.stringify({ error: 'Query cannot be empty' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // Validate conversationHistory structure
+    if (!Array.isArray(conversationHistory)) {
+      conversationHistory = [];
     }
 
     if (conversationHistory.length > 20) {
@@ -63,6 +72,20 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Validate each message in conversation history
+    const validRoles = ['user', 'assistant'];
+    conversationHistory = conversationHistory.filter(
+      (msg: any) =>
+        msg &&
+        typeof msg.role === 'string' &&
+        validRoles.includes(msg.role) &&
+        typeof msg.content === 'string' &&
+        msg.content.length <= 2000
+    ).map((msg: any) => ({
+      role: msg.role,
+      content: msg.content.replace(/<[^>]*>/g, '').trim(),
+    }));
 
     console.log('Chat request for profile:', profileId);
 
