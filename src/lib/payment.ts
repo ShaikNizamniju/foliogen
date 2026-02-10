@@ -47,18 +47,13 @@ export async function handlePayment(
       },
       handler: async function (response: any) {
         try {
-          // Update user's pro status in database
-          const { error } = await supabase
-            .from("profiles")
-            .update({
-              is_pro: true,
-              subscription_id: response.razorpay_payment_id,
-              pro_since: new Date().toISOString(),
-            } as any)
-            .eq("user_id", user.id);
+          // Activate Pro via server-side edge function (prevents client-side bypass)
+          const { data, error } = await supabase.functions.invoke('activate-pro', {
+            body: { paymentId: response.razorpay_payment_id },
+          });
 
           if (error) {
-            console.error("Error updating pro status:", error);
+            console.error("Error activating pro:", error);
             toast({
               title: "Payment Error",
               description: "Payment received but failed to activate Pro. Contact support.",

@@ -6,6 +6,25 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(key, { count: 1, windowStart: now });
+    return false;
+  }
+  entry.count++;
+  if (entry.count > RATE_LIMIT_MAX) {
+    return true;
+  }
+  return false;
+}
+
 interface ContactRequest {
   name: string;
   email: string;
@@ -15,29 +34,30 @@ interface ContactRequest {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Rate limit by IP
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
+    if (isRateLimited(`email:${clientIP}`)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Too many requests. Please try again later." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const EMAILJS_SERVICE_ID = Deno.env.get("EMAILJS_SERVICE_ID");
     const EMAILJS_TEMPLATE_ID = Deno.env.get("EMAILJS_TEMPLATE_ID");
     const EMAILJS_PUBLIC_KEY = Deno.env.get("EMAILJS_PUBLIC_KEY");
 
-    if (!EMAILJS_SERVICE_ID) {
-      throw new Error("EMAILJS_SERVICE_ID is not configured");
-    }
-    if (!EMAILJS_TEMPLATE_ID) {
-      throw new Error("EMAILJS_TEMPLATE_ID is not configured");
-    }
-    if (!EMAILJS_PUBLIC_KEY) {
-      throw new Error("EMAILJS_PUBLIC_KEY is not configured");
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+      throw new Error("EmailJS configuration is incomplete");
     }
 
     const { name, email, message, toEmail, toName }: ContactRequest = await req.json();
 
-    // Validate required fields
     if (!name || !email || !message) {
       return new Response(
         JSON.stringify({ success: false, error: "Missing required fields" }),
@@ -54,17 +74,16 @@ serve(async (req) => {
       );
     }
 
-    // Validate message length
-    if (message.length > 5000) {
+    // Validate field lengths
+    if (name.length > 200 || email.length > 254 || message.length > 5000) {
       return new Response(
-        JSON.stringify({ success: false, error: "Message is too long (max 5000 characters)" }),
+        JSON.stringify({ success: false, error: "Input too long" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Sending contact email from ${name} (${email}) to ${toEmail}`);
+    console.log(`Sending contact email from ${name} to ${toEmail}`);
 
-    // Send via EmailJS API
     const emailJsResponse = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
       method: "POST",
       headers: {
@@ -87,7 +106,7 @@ serve(async (req) => {
     if (!emailJsResponse.ok) {
       const errorText = await emailJsResponse.text();
       console.error("EmailJS API error:", errorText);
-      throw new Error(`EmailJS API error: ${emailJsResponse.status}`);
+      throw new Error(`Email service error`);
     }
 
     console.log("Email sent successfully");
@@ -98,9 +117,8 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error("Error sending contact email:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
+      JSON.stringify({ success: false, error: "Failed to send email" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
