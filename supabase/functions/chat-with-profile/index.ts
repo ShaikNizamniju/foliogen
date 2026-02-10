@@ -6,12 +6,40 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
+const RATE_LIMIT_MAX = 20;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(key, { count: 1, windowStart: now });
+    return false;
+  }
+  entry.count++;
+  if (entry.count > RATE_LIMIT_MAX) {
+    return true;
+  }
+  return false;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Rate limit by IP
+    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
+    if (isRateLimited(`chat:${clientIP}`)) {
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { userQuery, profileId, conversationHistory = [] } = await req.json();
 
     if (!userQuery || !profileId) {
@@ -21,7 +49,22 @@ serve(async (req) => {
       );
     }
 
-    console.log('Chat request for profile:', profileId, 'Query:', userQuery);
+    // Validate input lengths
+    if (userQuery.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Query too long' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (conversationHistory.length > 20) {
+      return new Response(
+        JSON.stringify({ error: 'Conversation too long. Please start a new chat.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Chat request for profile:', profileId);
 
     // Initialize Supabase client with anon key (uses RLS, doesn't bypass security)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -50,13 +93,12 @@ serve(async (req) => {
       );
     }
 
-    // Construct profile data for the AI
+    // Construct profile data for the AI (no email - privacy)
     const profileData = {
       name: profile.full_name || 'Unknown',
       headline: profile.headline || '',
       bio: profile.bio || '',
       location: profile.location || '',
-      email: profile.email || '',
       website: profile.website || '',
       skills: profile.skills || [],
       keyHighlights: profile.key_highlights || [],
@@ -64,7 +106,6 @@ serve(async (req) => {
       projects: profile.projects || [],
     };
 
-    // Build the system prompt with human, conversational tone
     const systemPrompt = `You are a senior recruiter recommending ${profileData.name} to a hiring manager. Be concise, conversational, and direct.
 
 CANDIDATE DATA:
@@ -76,16 +117,15 @@ CRITICAL RULES:
 3. Do NOT use robotic transitions like "Here is why", "In conclusion", "Additionally", or "Furthermore". Just answer the question directly.
 4. Sound like a human recommending a colleague, not an AI reading a resume.
 5. If asked about something not in the data, simply say "I don't see that in their experience" and move on.
-6. Highlight specific achievements and metrics when relevant—these make candidates memorable.`;
+6. Highlight specific achievements and metrics when relevant—these make candidates memorable.
+7. NEVER share or reveal the candidate's email address or any private contact information.`;
 
-    // Build messages array
     const messages = [
       { role: 'system', content: systemPrompt },
       ...conversationHistory,
       { role: 'user', content: userQuery }
     ];
 
-    // Call the AI gateway
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
@@ -122,7 +162,6 @@ CRITICAL RULES:
       throw new Error('AI gateway error');
     }
 
-    // Return streaming response
     return new Response(response.body, {
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
@@ -130,7 +169,7 @@ CRITICAL RULES:
   } catch (error) {
     console.error('Chat error:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: 'An unexpected error occurred' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

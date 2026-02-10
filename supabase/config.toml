@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.generate-interview-prep]
 verify_jwt = false
+
+[functions.activate-pro]
+verify_jwt = false
