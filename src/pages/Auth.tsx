@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Sparkles, Mail, Lock, Loader2, Linkedin } from 'lucide-react';
+import { Sparkles, Loader2, Linkedin, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { lovable } from '@/integrations/lovable';
+import { cn } from '@/lib/utils';
 
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -20,6 +21,8 @@ export default function Auth() {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ email?: boolean; password?: boolean; fullName?: boolean }>({});
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -42,17 +45,20 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: typeof errors = {};
 
-    try {
-      emailSchema.parse(email);
-      passwordSchema.parse(password);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        toast.error(err.errors[0].message);
-        return;
-      }
+    try { emailSchema.parse(email); } catch { newErrors.email = true; }
+    try { passwordSchema.parse(password); } catch { newErrors.password = true; }
+    if (!isLogin && !fullName.trim()) newErrors.fullName = true;
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      const firstErr = newErrors.email ? 'Please enter a valid email' : newErrors.password ? 'Password must be at least 6 characters' : 'Please enter your full name';
+      toast.error(firstErr);
+      return;
     }
 
+    setErrors({});
     setLoading(true);
 
     if (isLogin) {
@@ -66,11 +72,7 @@ export default function Auth() {
     } else {
       const { error } = await signUp(email, password, fullName);
       if (error) {
-        if (error.message.includes('already registered')) {
-          toast.error('This email is already registered. Please sign in instead.');
-        } else {
-          toast.error(error.message || 'Failed to create account');
-        }
+        toast.error(error.message?.includes('already registered') ? 'This email is already registered. Please sign in instead.' : error.message || 'Failed to create account');
       } else {
         toast.success('Account created! Welcome to FolioGen.');
         navigate('/dashboard');
@@ -81,31 +83,23 @@ export default function Auth() {
   };
 
   const handleForgotPassword = async () => {
-    if (!email) {
-      toast.error('Please enter your email first.');
-      return;
-    }
-    try {
-      emailSchema.parse(email);
-    } catch {
-      toast.error('Please enter a valid email.');
-      return;
-    }
+    if (!email) { toast.error('Please enter your email first.'); return; }
+    try { emailSchema.parse(email); } catch { toast.error('Please enter a valid email.'); return; }
     const { supabase } = await import('@/integrations/supabase/client');
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth`,
-    });
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Password reset email sent! Check your inbox.');
-    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth` });
+    if (error) toast.error(error.message);
+    else toast.success('Password reset email sent! Check your inbox.');
+  };
+
+  const switchMode = () => {
+    setIsLogin(!isLogin);
+    setErrors({});
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-muted/30" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
       {/* Navbar */}
-      <nav className="w-full border-b border-border bg-background/95 backdrop-blur-sm">
+      <nav className="w-full border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 h-16">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
@@ -113,37 +107,23 @@ export default function Auth() {
             </div>
             <span className="text-xl font-bold text-foreground">FolioGen</span>
           </Link>
-          {isLogin ? (
-            <Button variant="outline" size="sm" onClick={() => setIsLogin(false)}>
-              Create Account
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" onClick={() => setIsLogin(true)}>
-              Sign In
-            </Button>
-          )}
+          <Button variant="outline" size="sm" onClick={switchMode}>
+            {isLogin ? 'Create Account' : 'Sign In'}
+          </Button>
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Main */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-[420px]">
-          <h1 className="text-3xl font-bold text-center text-foreground mb-10">
+        <div className={cn("w-full max-w-[420px] bg-background rounded-xl shadow-lg border border-border p-8 transition-all duration-300", isLogin ? "animate-fade-in" : "animate-fade-in")}>
+          <h1 className="text-3xl font-bold text-center text-foreground mb-8">
             {isLogin ? 'Sign In' : 'Create Account'}
           </h1>
 
           {/* Social Auth */}
           <div className="space-y-3 mb-6">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-12 text-base font-medium gap-3 rounded-lg"
-              onClick={handleGoogleLogin}
-              disabled={googleLoading || loading}
-            >
-              {googleLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
+            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-lg" onClick={handleGoogleLogin} disabled={googleLoading || loading}>
+              {googleLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -153,14 +133,7 @@ export default function Auth() {
               )}
               Continue with Google
             </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full h-12 text-base font-medium gap-3 rounded-lg bg-muted/50"
-              onClick={handleLinkedInClick}
-              disabled={loading}
-            >
+            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-lg bg-muted/50" onClick={handleLinkedInClick} disabled={loading}>
               <Linkedin className="h-5 w-5 text-[#0A66C2]" />
               Continue with LinkedIn
             </Button>
@@ -168,99 +141,55 @@ export default function Auth() {
 
           {/* Divider */}
           <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
+            <div className="absolute inset-0 flex items-center"><Separator className="w-full" /></div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-background px-3 text-muted-foreground">
-                Or, sign in with your email
-              </span>
+              <span className="bg-background px-3 text-muted-foreground">Or, continue with email</span>
             </div>
           </div>
 
-          {/* Email Form */}
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="fullName" className="text-sm font-semibold">Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="h-11"
-                  required
-                />
+                <Input id="fullName" type="text" placeholder="John Doe" value={fullName} onChange={(e) => { setFullName(e.target.value); setErrors(p => ({ ...p, fullName: false })); }} className={cn("h-11", errors.fullName && "border-destructive animate-shake")} required />
               </div>
             )}
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-11"
-                required
-              />
+              <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: false })); }} className={cn("h-11", errors.email && "border-destructive animate-shake")} required />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-semibold">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-11"
-                required
-              />
+              <div className="relative">
+                <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: false })); }} className={cn("h-11 pr-10", errors.password && "border-destructive animate-shake")} required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors" tabIndex={-1}>
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full h-12 text-base font-semibold rounded-lg mt-2"
-              disabled={loading}
-            >
-              {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                isLogin ? 'Sign in' : 'Create Account'
-              )}
+            <Button type="submit" className="w-full h-12 text-base font-semibold rounded-lg mt-2" disabled={loading}>
+              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : isLogin ? 'Sign in' : 'Create Account'}
             </Button>
           </form>
 
-          {/* Footer Links */}
+          {/* Footer */}
           <div className="mt-6 space-y-3">
             {isLogin && (
-              <button
-                type="button"
-                onClick={handleForgotPassword}
-                className="text-sm text-primary hover:underline"
-              >
-                Forgot password?
-              </button>
+              <button type="button" onClick={handleForgotPassword} className="text-sm text-primary hover:underline">Forgot password?</button>
             )}
-
             <p className="text-sm text-muted-foreground">
               {isLogin ? "Don't have an account? " : 'Already have an account? '}
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-primary hover:underline font-medium"
-              >
+              <button type="button" onClick={switchMode} className="text-primary hover:underline font-medium">
                 {isLogin ? 'Create account' : 'Sign in'}
               </button>
             </p>
-
             <p className="text-xs text-muted-foreground pt-2">
               By signing up, you agree to our{' '}
-              <Link to="/privacy" className="text-primary hover:underline">Terms Of Use</Link>
-              {' '}and{' '}
+              <Link to="/privacy" className="text-primary hover:underline">Terms Of Use</Link>{' '}and{' '}
               <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
             </p>
           </div>
