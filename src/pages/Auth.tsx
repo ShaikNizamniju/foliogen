@@ -97,9 +97,9 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted/30" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Navbar */}
-      <nav className="w-full border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="w-full border-b border-border bg-background sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 h-16">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
@@ -115,14 +115,14 @@ export default function Auth() {
 
       {/* Main */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className={cn("w-full max-w-[420px] bg-background rounded-xl shadow-lg border border-border p-8 transition-all duration-300", isLogin ? "animate-fade-in" : "animate-fade-in")}>
+        <div className={cn("w-full max-w-[400px] mx-4 transition-all duration-300 animate-fade-in")}>
           <h1 className="text-3xl font-bold text-center text-foreground mb-8">
             {isLogin ? 'Sign In' : 'Create Account'}
           </h1>
 
           {/* Social Auth */}
           <div className="space-y-3 mb-6">
-            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-lg" onClick={handleGoogleLogin} disabled={googleLoading || loading}>
+            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-md border-border" onClick={handleGoogleLogin} disabled={googleLoading || loading}>
               {googleLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -133,7 +133,7 @@ export default function Auth() {
               )}
               Continue with Google
             </Button>
-            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-lg bg-muted/50" onClick={handleLinkedInClick} disabled={loading}>
+            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-md bg-accent/50 border-border" onClick={handleLinkedInClick} disabled={loading}>
               <Linkedin className="h-5 w-5 text-[#0A66C2]" />
               Continue with LinkedIn
             </Button>
@@ -143,7 +143,7 @@ export default function Auth() {
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center"><Separator className="w-full" /></div>
             <div className="relative flex justify-center text-xs">
-              <span className="bg-background px-3 text-muted-foreground">Or, continue with email</span>
+              <span className="bg-background px-3 text-muted-foreground">Or, sign in with your email</span>
             </div>
           </div>
 
@@ -151,27 +151,27 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm font-semibold">Full Name</Label>
-                <Input id="fullName" type="text" placeholder="John Doe" value={fullName} onChange={(e) => { setFullName(e.target.value); setErrors(p => ({ ...p, fullName: false })); }} className={cn("h-11", errors.fullName && "border-destructive animate-shake")} required />
+                <Label htmlFor="fullName" className="text-sm font-semibold text-foreground">Full Name</Label>
+                <Input id="fullName" type="text" placeholder="John Doe" value={fullName} onChange={(e) => { setFullName(e.target.value); setErrors(p => ({ ...p, fullName: false })); }} className={cn("h-12", errors.fullName && "border-destructive animate-shake")} required />
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: false })); }} className={cn("h-11", errors.email && "border-destructive animate-shake")} required />
+              <Label htmlFor="email" className="text-sm font-semibold text-foreground">Email</Label>
+              <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={(e) => { setEmail(e.target.value); setErrors(p => ({ ...p, email: false })); }} className={cn("h-12", errors.email && "border-destructive animate-shake")} required />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold">Password</Label>
+              <Label htmlFor="password" className="text-sm font-semibold text-foreground">Password</Label>
               <div className="relative">
-                <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: false })); }} className={cn("h-11 pr-10", errors.password && "border-destructive animate-shake")} required />
+                <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: false })); }} className={cn("h-12 pr-10", errors.password && "border-destructive animate-shake")} required />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors" tabIndex={-1}>
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-12 text-base font-semibold rounded-lg mt-2" disabled={loading}>
+            <Button type="submit" className="w-full h-12 text-base font-semibold rounded-md mt-2 bg-[hsl(358,100%,67%)] hover:bg-[hsl(358,100%,60%)] text-white" disabled={loading}>
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : isLogin ? 'Sign in' : 'Create Account'}
             </Button>
           </form>
