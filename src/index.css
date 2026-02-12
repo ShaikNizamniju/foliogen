@@ -66,43 +66,43 @@
   .dark {
     /* Deep cinematic black */
     --background: 0 0% 2%;
-    --foreground: 210 20% 95%;
+    --foreground: 0 0% 100%;
 
     /* Glassmorphism cards */
     --card: 220 15% 8%;
-    --card-foreground: 210 20% 95%;
+    --card-foreground: 0 0% 100%;
 
     --popover: 220 15% 8%;
-    --popover-foreground: 210 20% 95%;
+    --popover-foreground: 0 0% 100%;
 
     /* Electric Cyan primary */
     --primary: 186 100% 50%;
     --primary-foreground: 220 30% 5%;
 
     --secondary: 220 15% 12%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary-foreground: 0 0% 93%;
 
     --muted: 220 15% 12%;
-    --muted-foreground: 220 10% 55%;
+    --muted-foreground: 240 5% 65%;
 
     --accent: 186 50% 15%;
     --accent-foreground: 186 100% 70%;
 
     --destructive: 0 62% 40%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 220 15% 15%;
-    --input: 220 15% 15%;
+    --border: 186 40% 18%;
+    --input: 186 30% 16%;
     --ring: 186 100% 50%;
 
     /* Sidebar */
     --sidebar-background: 0 0% 3%;
-    --sidebar-foreground: 210 20% 90%;
+    --sidebar-foreground: 0 0% 93%;
     --sidebar-primary: 186 100% 50%;
     --sidebar-primary-foreground: 220 30% 5%;
     --sidebar-accent: 186 50% 12%;
     --sidebar-accent-foreground: 186 100% 70%;
-    --sidebar-border: 220 15% 12%;
+    --sidebar-border: 186 30% 14%;
     --sidebar-ring: 186 100% 50%;
 
     /* Cinematic gradients */
@@ -159,14 +159,39 @@
     background: hsl(var(--card) / 0.5);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--foreground) / 0.1);
+    border: 1px solid hsl(var(--border));
   }
 
   .glass-strong {
     background: hsl(var(--card) / 0.7);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid hsl(var(--foreground) / 0.1);
+    border: 1px solid hsl(var(--border));
+  }
+
+  /* Laser-cut section divider */
+  .laser-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, hsl(186 100% 50% / 0.4) 50%, transparent 100%);
+  }
+
+  /* Interactive card hover glow */
+  .hover-glow {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .hover-glow:hover {
+    box-shadow: 0 0 24px -6px hsl(186 100% 50% / 0.25);
+    border-color: hsl(186 80% 40%);
+  }
+
+  /* Button click pulse */
+  .click-pulse:active {
+    animation: click-pulse-anim 0.3s ease-out;
+  }
+
+  @keyframes click-pulse-anim {
+    0% { box-shadow: 0 0 0 0 hsl(186 100% 50% / 0.5); }
+    100% { box-shadow: 0 0 0 12px hsl(186 100% 50% / 0); }
   }
 
   /* Shadow utilities */

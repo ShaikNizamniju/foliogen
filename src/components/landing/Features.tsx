@@ -105,7 +105,7 @@ export function Features() {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section id="features" className="relative pt-10 pb-24 sm:py-32 bg-background overflow-hidden">
+    <section id="features" className="relative pt-10 pb-24 sm:py-36 bg-background overflow-hidden">
       {/* Noise texture overlay */}
       <div 
         className="absolute inset-0 opacity-[0.015] pointer-events-none"
@@ -127,7 +127,7 @@ export function Features() {
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-2xl text-center mb-16"
         >
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl text-balance">
+          <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl text-balance">
             Everything you need to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               stand out
@@ -143,12 +143,12 @@ export function Features() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-5"
         >
           {/* Card 1: Context-Aware RAG Chat (Large - spans 2 cols) */}
           <motion.div
             variants={itemVariants}
-            className="group relative md:col-span-2 rounded-2xl glass p-6 sm:p-8 transition-all duration-300 hover:shadow-glow"
+            className="group relative md:col-span-2 rounded-2xl glass hover-glow p-6 sm:p-8 transition-all duration-300"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -169,7 +169,7 @@ export function Features() {
           {/* Card 2: Ghost Resume (Small - top right) */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
+            className="group relative rounded-2xl glass hover-glow p-6 transition-all duration-300"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -190,7 +190,7 @@ export function Features() {
           {/* Card 3: 11 Premium Templates */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
+            className="group relative rounded-2xl glass hover-glow p-6 transition-all duration-300"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -210,7 +210,7 @@ export function Features() {
           {/* Card 4: Multimedia Embeds */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
+            className="group relative rounded-2xl glass hover-glow p-6 transition-all duration-300"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -231,7 +231,7 @@ export function Features() {
           {/* Card 5: Instant Publishing */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
+            className="group relative rounded-2xl glass hover-glow p-6 transition-all duration-300"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">

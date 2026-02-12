@@ -40,10 +40,10 @@ const plans = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="py-24 sm:py-32">
+    <section id="pricing" className="py-28 sm:py-36">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
             Simple, transparent pricing
           </h2>
           <p className="text-lg text-muted-foreground">
@@ -55,10 +55,10 @@ export function Pricing() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl p-8 transition-all glass ${
+              className={`relative rounded-2xl p-8 transition-all glass hover-glow ${
                 plan.popular
                   ? 'border-primary shadow-glow'
-                  : 'border-border hover:border-primary/20 hover:shadow-lg'
+                  : ''
               }`}
             >
               {plan.popular && (
