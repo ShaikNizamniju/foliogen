@@ -28,7 +28,7 @@ export function HowItWorks() {
   const isInView = useInView(containerRef, { once: true, margin: '-100px' });
 
   return (
-    <section className="relative py-28 sm:py-36 overflow-hidden">
+    <section className="relative py-24 sm:py-32 bg-muted/30 overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />
@@ -43,7 +43,7 @@ export function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="mx-auto max-w-2xl text-center mb-16"
         >
-          <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl text-balance">
+          <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl text-balance">
             From Resume to Portfolio{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               in 3 Steps

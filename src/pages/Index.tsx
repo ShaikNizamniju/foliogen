@@ -29,7 +29,7 @@ const Index = () => {
   // If Job Match mode is active, show the demo experience
   if (hasJobMatchParams) {
     return (
-      <div className="min-h-screen bg-background spotlight">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <JobMatchDemo />
         <Footer />
@@ -38,18 +38,13 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background spotlight">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <Hero />
-      <div className="laser-divider mx-auto max-w-4xl" />
       <HowItWorks />
-      <div className="laser-divider mx-auto max-w-4xl" />
       <Features />
-      <div className="laser-divider mx-auto max-w-4xl" />
       <TemplateGallery />
-      <div className="laser-divider mx-auto max-w-4xl" />
       <Pricing />
-      <div className="laser-divider mx-auto max-w-4xl" />
       <CompanyMarquee />
       <Footer />
     </div>

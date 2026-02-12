@@ -30,7 +30,7 @@ export function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 glass-strong"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center">
@@ -53,7 +53,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           {user ? (
-              <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-btn border-0">
+            <Button asChild className="bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0">
               <Link to="/dashboard">Dashboard</Link>
             </Button>
           ) : (
@@ -67,7 +67,7 @@ export function Navbar() {
               </Button>
               <Button 
                 asChild 
-                className="hidden sm:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-btn border-0"
+                className="hidden sm:inline-flex bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
               >
                 <Link to="/auth">Get Started</Link>
               </Button>
@@ -93,7 +93,7 @@ export function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-border/50 glass-strong"
+            className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl"
           >
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
               {navLinks.map((link) => (
@@ -111,7 +111,7 @@ export function Navbar() {
                   <Button asChild variant="ghost" className="justify-start text-muted-foreground hover:text-foreground hover:bg-muted">
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
                   </Button>
-                  <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-btn border-0">
+                  <Button asChild className="bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0">
                     <Link to="/auth" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
                   </Button>
                 </div>

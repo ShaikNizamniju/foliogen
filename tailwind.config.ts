@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -60,6 +60,18 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        indigo: {
+          50: "hsl(239 84% 97%)",
+          100: "hsl(239 84% 94%)",
+          200: "hsl(239 84% 88%)",
+          300: "hsl(239 84% 78%)",
+          400: "hsl(239 84% 72%)",
+          500: "hsl(239 84% 67%)",
+          600: "hsl(239 84% 60%)",
+          700: "hsl(239 84% 50%)",
+          800: "hsl(239 84% 40%)",
+          900: "hsl(239 84% 30%)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -67,9 +79,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
-        'glow': '0 0 40px -10px hsl(186 100% 50% / 0.4)',
-        'glow-lg': '0 0 60px -15px hsl(186 100% 50% / 0.5)',
-        'glow-btn': '0 0 20px -3px hsl(186 100% 50% / 0.5), 0 0 6px -1px hsl(186 100% 50% / 0.3)',
+        'glow': '0 0 40px -10px hsl(239 84% 67% / 0.4)',
+        'glow-lg': '0 0 60px -15px hsl(239 84% 67% / 0.5)',
       },
       keyframes: {
         "accordion-down": {
