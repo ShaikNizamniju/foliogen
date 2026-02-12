@@ -41,10 +41,15 @@ const Index = () => {
     <div className="min-h-screen bg-background spotlight">
       <Navbar />
       <Hero />
+      <div className="laser-divider mx-auto max-w-4xl" />
       <HowItWorks />
+      <div className="laser-divider mx-auto max-w-4xl" />
       <Features />
+      <div className="laser-divider mx-auto max-w-4xl" />
       <TemplateGallery />
+      <div className="laser-divider mx-auto max-w-4xl" />
       <Pricing />
+      <div className="laser-divider mx-auto max-w-4xl" />
       <CompanyMarquee />
       <Footer />
     </div>
