@@ -28,7 +28,7 @@ export function HowItWorks() {
   const isInView = useInView(containerRef, { once: true, margin: '-100px' });
 
   return (
-    <section className="relative py-24 sm:py-32 bg-muted/30 overflow-hidden">
+    <section className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-[100px]" />

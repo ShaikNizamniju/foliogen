@@ -40,7 +40,7 @@ const plans = [
 
 export function Pricing() {
   return (
-    <section id="pricing" className="bg-muted/30 py-24 sm:py-32">
+    <section id="pricing" className="py-24 sm:py-32">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -55,7 +55,7 @@ export function Pricing() {
           {plans.map((plan) => (
             <div
               key={plan.name}
-              className={`relative rounded-2xl border bg-card p-8 transition-all ${
+              className={`relative rounded-2xl p-8 transition-all glass ${
                 plan.popular
                   ? 'border-primary shadow-glow'
                   : 'border-border hover:border-primary/20 hover:shadow-lg'

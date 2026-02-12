@@ -148,7 +148,7 @@ export function Features() {
           {/* Card 1: Context-Aware RAG Chat (Large - spans 2 cols) */}
           <motion.div
             variants={itemVariants}
-            className="group relative md:col-span-2 rounded-2xl border border-border bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10"
+            className="group relative md:col-span-2 rounded-2xl glass p-6 sm:p-8 transition-all duration-300 hover:shadow-glow"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -169,7 +169,7 @@ export function Features() {
           {/* Card 2: Ghost Resume (Small - top right) */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10"
+            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -190,7 +190,7 @@ export function Features() {
           {/* Card 3: 11 Premium Templates */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-accent/20 to-accent/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-accent/30 hover:shadow-2xl hover:shadow-accent/10"
+            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -210,7 +210,7 @@ export function Features() {
           {/* Card 4: Multimedia Embeds */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-violet-500/20 to-violet-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-500/10"
+            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
@@ -231,7 +231,7 @@ export function Features() {
           {/* Card 5: Instant Publishing */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-amber-500/20 to-amber-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10"
+            className="group relative rounded-2xl glass p-6 transition-all duration-300 hover:shadow-glow"
           >
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">

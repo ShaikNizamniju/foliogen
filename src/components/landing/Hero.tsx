@@ -124,7 +124,7 @@ function Document3DAnimation() {
 
 export function Hero() {
   return (
-    <section className="relative min-h-fit overflow-hidden pt-24 pb-6 md:py-32">
+    <section className="relative min-h-fit overflow-hidden pt-24 pb-6 md:py-32 spotlight">
       {/* Antigravity Stars Background - renders at fixed z-index -1 */}
       <AntigravityStars 
         starCount={150} 
@@ -216,7 +216,7 @@ export function Hero() {
             <Button
               asChild
               size="lg"
-              className="relative h-16 px-12 text-lg font-bold shadow-[0_0_40px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_0_60px_12px_rgba(59,130,246,0.4)] transition-all duration-300 bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
+              className="relative h-16 px-12 text-lg font-bold shadow-glow-btn hover:shadow-glow transition-all duration-300 bg-primary hover:bg-primary/90 text-primary-foreground border-0"
             >
               <Link to="/auth">
                 <motion.span

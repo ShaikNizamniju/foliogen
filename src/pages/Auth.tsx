@@ -97,9 +97,9 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background spotlight">
       {/* Navbar */}
-      <nav className="w-full border-b border-border bg-background sticky top-0 z-50">
+      <nav className="w-full border-b border-border/50 glass-strong sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 h-16">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
@@ -171,7 +171,7 @@ export default function Auth() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-12 text-base font-semibold rounded-md mt-2 bg-[hsl(358,100%,67%)] hover:bg-[hsl(358,100%,60%)] text-white" disabled={loading}>
+            <Button type="submit" className="w-full h-12 text-base font-semibold rounded-md mt-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-btn" disabled={loading}>
               {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : isLogin ? 'Sign in' : 'Create Account'}
             </Button>
           </form>
