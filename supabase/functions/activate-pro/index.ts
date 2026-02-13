@@ -39,9 +39,49 @@ serve(async (req) => {
     const userId = claimsData.claims.sub;
     const { paymentId } = await req.json();
 
-    if (!paymentId) {
+    if (!paymentId || typeof paymentId !== 'string') {
       return new Response(
         JSON.stringify({ error: 'Payment ID is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify payment with Razorpay API
+    const RAZORPAY_KEY_ID = Deno.env.get('RAZORPAY_KEY_ID');
+    const RAZORPAY_KEY_SECRET = Deno.env.get('RAZORPAY_KEY_SECRET');
+
+    if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
+      console.error('Razorpay credentials not configured');
+      return new Response(
+        JSON.stringify({ error: 'Payment verification not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const verifyResponse = await fetch(
+      `https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`,
+      {
+        headers: {
+          'Authorization': `Basic ${btoa(RAZORPAY_KEY_ID + ':' + RAZORPAY_KEY_SECRET)}`,
+        },
+      }
+    );
+
+    if (!verifyResponse.ok) {
+      console.error('Razorpay verification failed:', verifyResponse.status);
+      return new Response(
+        JSON.stringify({ error: 'Invalid payment' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const payment = await verifyResponse.json();
+
+    // Verify payment is captured and matches expected amount
+    if (payment.status !== 'captured' || payment.amount !== 19900 || payment.currency !== 'INR') {
+      console.error('Payment verification failed:', payment.status, payment.amount, payment.currency);
+      return new Response(
+        JSON.stringify({ error: 'Payment verification failed' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -49,6 +89,20 @@ serve(async (req) => {
     // Use service role to update pro fields (bypasses the trigger protection)
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+    // Check if this payment ID was already used
+    const { data: existingProfile } = await adminClient
+      .from('profiles')
+      .select('subscription_id')
+      .eq('subscription_id', paymentId)
+      .maybeSingle();
+
+    if (existingProfile) {
+      return new Response(
+        JSON.stringify({ error: 'Payment already used' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const { error: updateError } = await adminClient
       .from('profiles')
