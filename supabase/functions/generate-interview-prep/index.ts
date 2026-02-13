@@ -36,6 +36,22 @@ serve(async (req) => {
       );
     }
 
+    const userId = claimsData.claims.sub;
+
+    // Check Pro status server-side
+    const { data: proProfile } = await supabase
+      .from('profiles')
+      .select('is_pro')
+      .eq('user_id', userId)
+      .single();
+
+    if (!proProfile?.is_pro) {
+      return new Response(
+        JSON.stringify({ error: 'Pro subscription required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { company, role } = await req.json();
     
     console.log(`[generate-interview-prep] Generating prep for ${role} at ${company}`);
