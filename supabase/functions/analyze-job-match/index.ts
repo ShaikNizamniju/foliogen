@@ -46,12 +46,19 @@ serve(async (req) => {
       );
     }
 
-    // Fetch the user's profile
+    // Fetch the user's profile and check Pro status
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("user_id", user.id)
       .single();
+
+    if (!profileError && profile && !profile.is_pro) {
+      return new Response(
+        JSON.stringify({ error: "Pro subscription required" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (profileError || !profile) {
       return new Response(
@@ -195,7 +202,7 @@ Be strategic and specific. Reference actual details from both the profile and jo
   } catch (error) {
     console.error("analyze-job-match error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "An unexpected error occurred" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
