@@ -11,11 +11,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, Unlock, Loader2 } from 'lucide-react';
 import { Project } from '@/contexts/ProfileContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ProjectPasswordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   project: Project;
+  profileUserId: string;
   onUnlock: () => void;
 }
 
@@ -23,6 +25,7 @@ export function ProjectPasswordDialog({
   open,
   onOpenChange,
   project,
+  profileUserId,
   onUnlock,
 }: ProjectPasswordDialogProps) {
   const [password, setPassword] = useState('');
@@ -34,15 +37,24 @@ export function ProjectPasswordDialog({
     setError('');
     setChecking(true);
 
-    // Simulate a brief check delay
-    await new Promise((r) => setTimeout(r, 500));
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('verify-project-password', {
+        body: {
+          profileUserId,
+          projectId: project.id,
+          password: password.trim(),
+        },
+      });
 
-    if (password === project.password) {
-      onUnlock();
-      setPassword('');
-      onOpenChange(false);
-    } else {
-      setError('Incorrect password. Please try again.');
+      if (fnError || !data?.success) {
+        setError('Incorrect password. Please try again.');
+      } else {
+        onUnlock();
+        setPassword('');
+        onOpenChange(false);
+      }
+    } catch {
+      setError('Something went wrong. Please try again.');
     }
     setChecking(false);
   };
