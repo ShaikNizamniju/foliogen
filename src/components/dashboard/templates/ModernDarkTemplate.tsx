@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { 
   Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, 
@@ -158,6 +158,7 @@ function SkillTag({ skill, variant = 'default' }: { skill: string; variant?: 'de
 export function ModernDarkTemplate({ profile, onContactClick, isLoading = false }: ModernDarkTemplateProps) {
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [searchParams] = useSearchParams();
+  const routeParams = useParams<{ id: string }>();
   const [unlockedProjects, setUnlockedProjects] = useState<Set<string>>(new Set());
   const [passwordDialogProject, setPasswordDialogProject] = useState<Project | null>(null);
   
@@ -879,6 +880,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
           open={!!passwordDialogProject}
           onOpenChange={(open) => !open && setPasswordDialogProject(null)}
           project={passwordDialogProject}
+          profileUserId={routeParams.id || ''}
           onUnlock={() => {
             setUnlockedProjects((prev) => new Set([...prev, passwordDialogProject.id]));
             setPasswordDialogProject(null);

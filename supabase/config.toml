@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.activate-pro]
 verify_jwt = false
+
+[functions.verify-project-password]
+verify_jwt = false
