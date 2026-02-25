@@ -28,6 +28,17 @@ export interface Project {
   password?: string;
 }
 
+export type FontChoice = "default" | "transcity" | "agraham" | "vertensie" | "runiga" | "gafiya";
+
+export const FONT_OPTIONS: { id: FontChoice; label: string; googleFont: string; preview: string }[] = [
+  { id: "default", label: "Default (Inter)", googleFont: "", preview: "Inter" },
+  { id: "transcity", label: "Transcity", googleFont: "Playfair+Display:wght@400;500;600;700", preview: "Playfair Display" },
+  { id: "agraham", label: "Agraham", googleFont: "Cormorant+Garamond:wght@400;500;600;700", preview: "Cormorant Garamond" },
+  { id: "vertensie", label: "Vertensie", googleFont: "Raleway:wght@300;400;500;600;700", preview: "Raleway" },
+  { id: "runiga", label: "Runiga", googleFont: "Josefin+Sans:wght@300;400;500;600;700", preview: "Josefin Sans" },
+  { id: "gafiya", label: "Gafiya", googleFont: "Libre+Baskerville:wght@400;700", preview: "Libre Baskerville" },
+];
+
 export interface ProfileData {
   id?: string;
   fullName: string;
@@ -47,6 +58,7 @@ export interface ProfileData {
   views: number;
   resumeUrl: string;
   calendlyUrl: string;
+  selectedFont: FontChoice;
   selectedTemplate:
     | "minimalist"
     | "creative"
@@ -88,6 +100,7 @@ const defaultProfile: ProfileData = {
   views: 0,
   resumeUrl: "",
   calendlyUrl: "",
+  selectedFont: "default",
   selectedTemplate: "modern-dark",
 };
 
@@ -141,6 +154,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         views: data.views || 0,
         resumeUrl: (data as any).resume_url || "",
         calendlyUrl: (data as any).calendly_url || "",
+        selectedFont: ((data as any).selected_font as FontChoice) || "default",
         selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "modern-dark",
       });
     }
@@ -175,6 +189,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         key_highlights: profile.keyHighlights,
         resume_url: profile.resumeUrl,
         calendly_url: profile.calendlyUrl,
+        selected_font: profile.selectedFont,
         selected_template: profile.selectedTemplate,
       } as any)
       .eq("user_id", user.id);

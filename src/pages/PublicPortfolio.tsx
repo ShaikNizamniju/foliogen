@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
-import { ProfileData, WorkExperience, Project } from '@/contexts/ProfileContext';
+import { ProfileData, WorkExperience, Project, FontChoice, FONT_OPTIONS } from '@/contexts/ProfileContext';
 import { ContactDialog } from '@/components/ContactDialog';
 import { ProfileChatBot } from '@/components/public/ProfileChatBot';
 import { ProRecruiterBanner } from '@/components/public/ProRecruiterBanner';
@@ -109,6 +109,7 @@ export default function PublicPortfolio() {
       views: data.views || 0,
       resumeUrl: (data as any).resume_url || '',
       calendlyUrl: (data as any).calendly_url || '',
+      selectedFont: ((data as any).selected_font as FontChoice) || 'default',
       selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
     });
     setLoading(false);
@@ -201,7 +202,31 @@ export default function PublicPortfolio() {
       {/* Chameleon Mode: Recruiter-specific welcome banner (Pro feature) */}
       {id && <ProRecruiterBanner profileUserId={id} />}
       
-      <div className="min-h-screen">
+      {/* Load selected Google Font */}
+      {profile.selectedFont && profile.selectedFont !== 'default' && (() => {
+        const fontOption = FONT_OPTIONS.find(f => f.id === profile.selectedFont);
+        if (!fontOption) return null;
+        return (
+          <Helmet>
+            <link
+              rel="stylesheet"
+              href={`https://fonts.googleapis.com/css2?family=${fontOption.googleFont}&display=swap`}
+            />
+          </Helmet>
+        );
+      })()}
+      
+      <div
+        className="min-h-screen"
+        style={{
+          fontFamily: (() => {
+            const fontOption = FONT_OPTIONS.find(f => f.id === profile.selectedFont);
+            return fontOption && profile.selectedFont !== 'default'
+              ? `'${fontOption.preview}', sans-serif`
+              : undefined;
+          })(),
+        }}
+      >
         <div id="portfolio-export-container" className="print:w-full">
           {renderTemplate()}
         </div>
