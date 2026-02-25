@@ -28,15 +28,26 @@ export interface Project {
   password?: string;
 }
 
-export type FontChoice = "default" | "transcity" | "agraham" | "vertensie" | "runiga" | "gafiya";
+export type FontChoice = "default" | "transcity" | "agraham" | "vertensie" | "runiga" | "gafiya" | "king" | "banera" | "sirelia" | "daeling" | "koya" | "oreon" | "remap" | "marietta" | "avinga" | "hanoble" | "wistle";
 
-export const FONT_OPTIONS: { id: FontChoice; label: string; googleFont: string; preview: string }[] = [
-  { id: "default", label: "Default (Inter)", googleFont: "", preview: "Inter" },
-  { id: "transcity", label: "Transcity", googleFont: "Playfair+Display:wght@400;500;600;700", preview: "Playfair Display" },
-  { id: "agraham", label: "Agraham", googleFont: "Cormorant+Garamond:wght@400;500;600;700", preview: "Cormorant Garamond" },
-  { id: "vertensie", label: "Vertensie", googleFont: "Raleway:wght@300;400;500;600;700", preview: "Raleway" },
-  { id: "runiga", label: "Runiga", googleFont: "Josefin+Sans:wght@300;400;500;600;700", preview: "Josefin Sans" },
-  { id: "gafiya", label: "Gafiya", googleFont: "Libre+Baskerville:wght@400;700", preview: "Libre Baskerville" },
+export const FONT_OPTIONS: { id: FontChoice; label: string; googleFont: string; preview: string; category?: string }[] = [
+  { id: "default", label: "Default (Inter)", googleFont: "", preview: "Inter", category: "Classic" },
+  { id: "transcity", label: "Transcity", googleFont: "Playfair+Display:wght@400;500;600;700", preview: "Playfair Display", category: "Classic" },
+  { id: "agraham", label: "Agraham", googleFont: "Cormorant+Garamond:wght@400;500;600;700", preview: "Cormorant Garamond", category: "Classic" },
+  { id: "vertensie", label: "Vertensie", googleFont: "Raleway:wght@300;400;500;600;700", preview: "Raleway", category: "Classic" },
+  { id: "runiga", label: "Runiga", googleFont: "Josefin+Sans:wght@300;400;500;600;700", preview: "Josefin Sans", category: "Classic" },
+  { id: "gafiya", label: "Gafiya", googleFont: "Libre+Baskerville:wght@400;700", preview: "Libre Baskerville", category: "Classic" },
+  { id: "king", label: "King", googleFont: "DM+Serif+Display:wght@400", preview: "DM Serif Display", category: "Modern" },
+  { id: "banera", label: "Banera", googleFont: "Space+Grotesk:wght@300;400;500;600;700", preview: "Space Grotesk", category: "Modern" },
+  { id: "sirelia", label: "Sirelia", googleFont: "Outfit:wght@300;400;500;600;700", preview: "Outfit", category: "Modern" },
+  { id: "daeling", label: "Daeling", googleFont: "Sora:wght@300;400;500;600;700", preview: "Sora", category: "Modern" },
+  { id: "koya", label: "Koya", googleFont: "Plus+Jakarta+Sans:wght@300;400;500;600;700", preview: "Plus Jakarta Sans", category: "Modern" },
+  { id: "oreon", label: "Oreon", googleFont: "Unbounded:wght@300;400;500;600;700", preview: "Unbounded", category: "Modern" },
+  { id: "remap", label: "Remap", googleFont: "JetBrains+Mono:wght@300;400;500;600;700", preview: "JetBrains Mono", category: "Modern" },
+  { id: "marietta", label: "Marietta", googleFont: "Fraunces:wght@300;400;500;600;700", preview: "Fraunces", category: "Modern" },
+  { id: "avinga", label: "Avinga", googleFont: "Manrope:wght@300;400;500;600;700", preview: "Manrope", category: "Modern" },
+  { id: "hanoble", label: "Hanoble", googleFont: "Instrument+Serif:wght@400", preview: "Instrument Serif", category: "Modern" },
+  { id: "wistle", label: "Wistle", googleFont: "Bricolage+Grotesque:wght@300;400;500;600;700", preview: "Bricolage Grotesque", category: "Modern" },
 ];
 
 export interface ProfileData {

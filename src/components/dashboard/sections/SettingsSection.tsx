@@ -61,40 +61,45 @@ export function SettingsSection() {
         <p className="text-sm text-muted-foreground mb-4">
           Choose a font for your public portfolio. The selected font will be applied across your entire portfolio page.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {FONT_OPTIONS.map((font) => {
-            const isSelected = (profile.selectedFont || 'default') === font.id;
-            return (
-              <button
-                key={font.id}
-                onClick={() => handleFontSelect(font.id)}
-                className={`relative p-4 rounded-lg border-2 text-left transition-all hover:border-primary/50 ${
-                  isSelected
-                    ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                    : 'border-border bg-card hover:bg-muted/50'
-                }`}
-              >
-                {isSelected && (
-                  <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="h-3 w-3 text-primary-foreground" />
-                  </div>
-                )}
-                <p
-                  className="text-lg text-foreground mb-1"
-                  style={{ fontFamily: font.preview }}
-                >
-                  {font.label}
-                </p>
-                <p
-                  className="text-sm text-muted-foreground"
-                  style={{ fontFamily: font.preview }}
-                >
-                  The quick brown fox jumps over the lazy dog
-                </p>
-              </button>
-            );
-          })}
-        </div>
+        {['Classic', 'Modern'].map((category) => (
+          <div key={category} className="mb-6">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{category} Fonts</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {FONT_OPTIONS.filter((f) => (f.category || 'Classic') === category).map((font) => {
+                const isSelected = (profile.selectedFont || 'default') === font.id;
+                return (
+                  <button
+                    key={font.id}
+                    onClick={() => handleFontSelect(font.id)}
+                    className={`relative p-4 rounded-lg border-2 text-left transition-all hover:border-primary/50 ${
+                      isSelected
+                        ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                        : 'border-border bg-card hover:bg-muted/50'
+                    }`}
+                  >
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="h-3 w-3 text-primary-foreground" />
+                      </div>
+                    )}
+                    <p
+                      className="text-lg text-foreground mb-1"
+                      style={{ fontFamily: font.preview }}
+                    >
+                      {font.label}
+                    </p>
+                    <p
+                      className="text-sm text-muted-foreground"
+                      style={{ fontFamily: font.preview }}
+                    >
+                      The quick brown fox jumps over the lazy dog
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Account Info */}
