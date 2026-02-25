@@ -221,6 +221,7 @@ export type Database = {
           pro_since: string | null
           projects: Json | null
           resume_url: string | null
+          selected_font: string | null
           selected_template: string | null
           skills: string[] | null
           subscription_id: string | null
@@ -252,6 +253,7 @@ export type Database = {
           pro_since?: string | null
           projects?: Json | null
           resume_url?: string | null
+          selected_font?: string | null
           selected_template?: string | null
           skills?: string[] | null
           subscription_id?: string | null
@@ -283,6 +285,7 @@ export type Database = {
           pro_since?: string | null
           projects?: Json | null
           resume_url?: string | null
+          selected_font?: string | null
           selected_template?: string | null
           skills?: string[] | null
           subscription_id?: string | null
@@ -361,6 +364,7 @@ export type Database = {
           photo_url: string | null
           projects: Json | null
           resume_url: string | null
+          selected_font: string | null
           selected_template: string | null
           skills: string[] | null
           twitter_url: string | null
@@ -385,6 +389,7 @@ export type Database = {
           photo_url?: string | null
           projects?: never
           resume_url?: string | null
+          selected_font?: string | null
           selected_template?: string | null
           skills?: string[] | null
           twitter_url?: string | null
@@ -409,6 +414,7 @@ export type Database = {
           photo_url?: string | null
           projects?: never
           resume_url?: string | null
+          selected_font?: string | null
           selected_template?: string | null
           skills?: string[] | null
           twitter_url?: string | null
