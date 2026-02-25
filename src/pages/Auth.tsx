@@ -133,9 +133,10 @@ export default function Auth() {
               )}
               Continue with Google
             </Button>
-            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-md bg-accent/50 border-border" onClick={handleLinkedInClick} disabled={loading}>
+            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-md bg-accent/50 border-border opacity-60 cursor-not-allowed" onClick={handleLinkedInClick} disabled>
               <Linkedin className="h-5 w-5 text-[#0A66C2]" />
               Continue with LinkedIn
+              <span className="ml-auto text-xs text-muted-foreground">Coming soon</span>
             </Button>
           </div>
 
