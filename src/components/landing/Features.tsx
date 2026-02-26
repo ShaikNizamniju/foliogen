@@ -7,20 +7,24 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.15,
+      delayChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.95 },
+  hidden: { opacity: 0, y: 60, scale: 0.9, filter: 'blur(8px)' },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
+    filter: 'blur(0px)',
     transition: {
-      duration: 0.6,
-      ease: [0.25, 0.1, 0.25, 1] as const,
+      type: 'spring' as const,
+      stiffness: 90,
+      damping: 18,
+      mass: 0.8,
     },
   },
 };

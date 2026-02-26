@@ -122,10 +122,36 @@ function Document3DAnimation() {
   );
 }
 
+const heroContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.18,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const heroItemVariants = {
+  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring' as const,
+      stiffness: 80,
+      damping: 20,
+      mass: 1,
+    },
+  },
+};
+
 export function Hero() {
   return (
     <section className="relative min-h-fit overflow-hidden pt-24 pb-6 md:py-32">
-      {/* Antigravity Stars Background - renders at fixed z-index -1 */}
+      {/* Antigravity Stars Background */}
       <AntigravityStars 
         starCount={150} 
         showConnections={true} 
@@ -170,12 +196,15 @@ export function Hero() {
       </div>
 
       <div className="container relative mx-auto px-4">
-        <div className="mx-auto max-w-5xl text-center">
+        <motion.div 
+          className="mx-auto max-w-5xl text-center"
+          variants={heroContainerVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            variants={heroItemVariants}
             className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-5 py-2.5 text-sm font-medium text-primary backdrop-blur-sm"
           >
             <motion.span
@@ -189,9 +218,7 @@ export function Hero() {
 
           {/* Headline with typewriter */}
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            variants={heroItemVariants}
             className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
           >
             <TypewriterText text="Your Career. Accelerated." />
@@ -199,20 +226,14 @@ export function Hero() {
 
           {/* Subheadline */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            variants={heroItemVariants}
             className="mx-auto mb-12 max-w-2xl text-lg text-muted-foreground sm:text-xl"
           >
             Transform your Resume into a World-Class Portfolio in seconds using AI.
           </motion.p>
 
           {/* Glowing CTA Button */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
+          <motion.div variants={heroItemVariants}>
             <Button
               asChild
               size="lg"
@@ -221,11 +242,16 @@ export function Hero() {
               <Link to="/auth">
                 <motion.span
                   className="flex items-center gap-3"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Build My Portfolio
-                  <ArrowRight className="h-5 w-5" />
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <ArrowRight className="h-5 w-5" />
+                  </motion.span>
                 </motion.span>
               </Link>
             </Button>
@@ -233,14 +259,12 @@ export function Hero() {
 
           {/* 3D Document Animation */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            variants={heroItemVariants}
             className="mt-4 sm:mt-8 h-48 sm:h-72"
           >
             <Document3DAnimation />
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
