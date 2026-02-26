@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Link } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
 import { FavoritesSection } from './FavoritesSection';
@@ -11,6 +11,7 @@ import { JobSummaryCard } from '@/components/dashboard/analytics/JobSummaryCard'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProGate } from '@/components/billing/ProGate';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 // Animation variants for staggered entrance
 const containerVariants = {
@@ -53,6 +54,7 @@ const cardHoverVariants = {
 export function OverviewSection() {
   const { profile, loading } = useProfile();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const completionScore = calculateCompletionScore(profile);
   
@@ -304,6 +306,42 @@ export function OverviewSection() {
           </ProGate>
         </motion.div>
       </div>
+
+      {/* Portfolio Preview Card */}
+      <motion.div variants={itemVariants}>
+        <div
+          className="rounded-2xl border border-border bg-card p-6 cursor-pointer hover:border-primary/30 hover:shadow-lg transition-all"
+          onClick={() => navigate('/dashboard?section=profile')}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-foreground">Portfolio Preview</h2>
+            <Button variant="ghost" size="sm" className="gap-1.5 text-primary" asChild>
+              <Link to={`/p/${user?.id}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                <ExternalLink className="h-3.5 w-3.5" />
+                View Live
+              </Link>
+            </Button>
+          </div>
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border/50">
+            <Avatar className="h-14 w-14 border-2 border-border">
+              <AvatarImage src={profile.photoUrl} alt={profile.fullName} />
+              <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                {profile.fullName?.charAt(0) || '?'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-foreground truncate">{profile.fullName || 'Your Name'}</p>
+              <p className="text-sm text-muted-foreground truncate">{profile.headline || 'Add a headline'}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Template: <span className="capitalize">{profile.selectedTemplate}</span> · {profile.projects.length} projects · {profile.skills.length} skills
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-3 text-center">
+            Click to edit your profile data →
+          </p>
+        </div>
+      </motion.div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4">

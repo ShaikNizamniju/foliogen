@@ -20,9 +20,9 @@ const plans = [
   },
   {
     name: 'Pro',
-    price: '$12',
-    period: 'per month',
-    description: 'For professionals who want more',
+    price: '₹199',
+    period: 'lifetime',
+    description: 'Launch offer — one-time payment',
     features: [
       'Unlimited Portfolios',
       'All 3 Pro Templates',
