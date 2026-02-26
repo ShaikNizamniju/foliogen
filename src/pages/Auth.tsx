@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Sparkles, Loader2, Linkedin, Eye, EyeOff } from 'lucide-react';
+import { Sparkles, Loader2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { lovable } from '@/integrations/lovable';
@@ -39,9 +39,8 @@ export default function Auth() {
     }
   };
 
-  const handleLinkedInClick = () => {
-    toast.info('LinkedIn sign-in is not yet available. Please use Google or email.');
-  };
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,22 +60,26 @@ export default function Auth() {
     setErrors({});
     setLoading(true);
 
-    if (isLogin) {
-      const { error } = await signIn(email, password);
-      if (error) {
-        toast.error(error.message || 'Failed to sign in');
+    try {
+      if (isLogin) {
+        const { error } = await signIn(email, password);
+        if (error) {
+          toast.error(error.message || 'Failed to sign in');
+        } else {
+          toast.success('Welcome back!');
+          navigate('/dashboard');
+        }
       } else {
-        toast.success('Welcome back!');
-        navigate('/dashboard');
+        const { error } = await signUp(email, password, fullName);
+        if (error) {
+          toast.error(error.message?.includes('already registered') ? 'This email is already registered. Please sign in instead.' : error.message || 'Failed to create account');
+        } else {
+          toast.success('Account created! Welcome to FolioGen.');
+          navigate('/dashboard');
+        }
       }
-    } else {
-      const { error } = await signUp(email, password, fullName);
-      if (error) {
-        toast.error(error.message?.includes('already registered') ? 'This email is already registered. Please sign in instead.' : error.message || 'Failed to create account');
-      } else {
-        toast.success('Account created! Welcome to FolioGen.');
-        navigate('/dashboard');
-      }
+    } catch (err: any) {
+      toast.error(err?.message || 'An unexpected error occurred. Please try again.');
     }
 
     setLoading(false);
@@ -133,11 +136,8 @@ export default function Auth() {
               )}
               Continue with Google
             </Button>
-            <Button type="button" variant="outline" className="w-full h-12 text-base font-medium gap-3 rounded-md bg-accent/50 border-border opacity-60 cursor-not-allowed" onClick={handleLinkedInClick} disabled>
-              <Linkedin className="h-5 w-5 text-[#0A66C2]" />
-              Continue with LinkedIn
-              <span className="ml-auto text-xs text-muted-foreground">Coming soon</span>
-            </Button>
+
+
           </div>
 
           {/* Divider */}
