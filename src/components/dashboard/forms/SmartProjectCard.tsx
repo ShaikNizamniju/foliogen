@@ -66,6 +66,14 @@ export const projectSchema = z.object({
   visualPrompt: z.string().optional(),
   isProtected: z.boolean().default(false),
   password: z.string().optional(),
+  references: z.array(z.object({
+    id: z.string(),
+    type: z.enum(['url', 'testimonial']),
+    title: z.string(),
+    url: z.string().optional(),
+    content: z.string().optional(),
+    author: z.string().optional(),
+  })).default([]),
 });
 
 export type SmartProject = z.infer<typeof projectSchema>;
@@ -556,6 +564,118 @@ export function SmartProjectCard({
                   Job Match will highlight this project when these keywords match
                 </p>
               </div>
+            </div>
+
+            {/* References Section */}
+            <div className="border-t border-border pt-5 mt-2">
+              <div className="flex items-center justify-between mb-3">
+                <Label className="font-medium flex items-center gap-2">
+                  📎 References & Testimonials
+                </Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newRef = {
+                      id: crypto.randomUUID(),
+                      type: 'url' as const,
+                      title: '',
+                      url: '',
+                    };
+                    const currentRefs = localProject.references || [];
+                    updateLocalField('references', [...currentRefs, newRef]);
+                  }}
+                  className="gap-1.5"
+                >
+                  + Add Reference
+                </Button>
+              </div>
+              {(localProject.references || []).length > 0 && (
+                <div className="space-y-3">
+                  {(localProject.references || []).map((ref, refIdx) => (
+                    <div key={ref.id} className="p-3 rounded-lg border border-border bg-muted/30 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={ref.type}
+                          onChange={(e) => {
+                            const refs = [...(localProject.references || [])];
+                            refs[refIdx] = { ...refs[refIdx], type: e.target.value as 'url' | 'testimonial' };
+                            updateLocalField('references', refs);
+                          }}
+                          className="text-xs rounded border border-border bg-background px-2 py-1"
+                        >
+                          <option value="url">External URL</option>
+                          <option value="testimonial">Testimonial</option>
+                        </select>
+                        <Input
+                          placeholder="Reference title"
+                          value={ref.title}
+                          onChange={(e) => {
+                            const refs = [...(localProject.references || [])];
+                            refs[refIdx] = { ...refs[refIdx], title: e.target.value };
+                            updateLocalField('references', refs);
+                          }}
+                          className="flex-1 h-8 text-sm"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive hover:text-destructive shrink-0"
+                          onClick={() => {
+                            const refs = (localProject.references || []).filter((_, i) => i !== refIdx);
+                            updateLocalField('references', refs);
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      {ref.type === 'url' ? (
+                        <Input
+                          placeholder="https://example.com/reference"
+                          value={ref.url || ''}
+                          onChange={(e) => {
+                            const refs = [...(localProject.references || [])];
+                            refs[refIdx] = { ...refs[refIdx], url: e.target.value };
+                            updateLocalField('references', refs);
+                          }}
+                          className="h-8 text-sm"
+                        />
+                      ) : (
+                        <>
+                          <Textarea
+                            placeholder="Write a testimonial or reference quote..."
+                            value={ref.content || ''}
+                            onChange={(e) => {
+                              const refs = [...(localProject.references || [])];
+                              refs[refIdx] = { ...refs[refIdx], content: e.target.value };
+                              updateLocalField('references', refs);
+                            }}
+                            rows={2}
+                            className="text-sm"
+                          />
+                          <Input
+                            placeholder="Author name"
+                            value={ref.author || ''}
+                            onChange={(e) => {
+                              const refs = [...(localProject.references || [])];
+                              refs[refIdx] = { ...refs[refIdx], author: e.target.value };
+                              updateLocalField('references', refs);
+                            }}
+                            className="h-8 text-sm"
+                          />
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {(localProject.references || []).length === 0 && (
+                <p className="text-xs text-muted-foreground">
+                  Add external links or testimonials to strengthen your project credibility.
+                </p>
+              )}
             </div>
 
             {/* Password Protection Section */}

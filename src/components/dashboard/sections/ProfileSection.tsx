@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useProfile } from '@/contexts/ProfileContext';
+import { useState, useEffect } from 'react';
+import { useProfile, FONT_OPTIONS, FontChoice } from '@/contexts/ProfileContext';
 import { BasicInfoForm } from '../forms/BasicInfoForm';
 import { WorkExperienceForm } from '../forms/WorkExperienceForm';
 import { ProjectsForm } from '../forms/ProjectsForm';
@@ -7,21 +7,36 @@ import { SkillsForm } from '../forms/SkillsForm';
 import { ResumeUpload } from '../forms/ResumeUpload';
 import { LinkedInPdfUpload } from '../forms/LinkedInPdfUpload';
 import { Button } from '@/components/ui/button';
-import { Save, User, Briefcase, FolderKanban, Sparkles, Upload, Linkedin } from 'lucide-react';
+import { Save, User, Briefcase, FolderKanban, Sparkles, Upload, Linkedin, Type } from 'lucide-react';
 import { toast } from 'sonner';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Load Google Font dynamically
+function loadGoogleFont(fontUrl: string) {
+  if (!fontUrl) return;
+  const id = `gfont-${fontUrl.replace(/[^a-zA-Z]/g, '')}`;
+  if (document.getElementById(id)) return;
+  const link = document.createElement('link');
+  link.id = id;
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${fontUrl}&display=swap`;
+  document.head.appendChild(link);
+}
 
 const tabs = [
   { id: 'basic', label: 'Basic Info', icon: User },
   { id: 'experience', label: 'Experience', icon: Briefcase },
   { id: 'projects', label: 'Projects', icon: FolderKanban },
   { id: 'skills', label: 'Skills', icon: Sparkles },
+  { id: 'font', label: 'Portfolio Font', icon: Type },
   { id: 'resume', label: 'Resume Upload', icon: Upload },
   { id: 'linkedin', label: 'Import LinkedIn PDF', icon: Linkedin },
 ];
 
 export function ProfileSection() {
   const [activeTab, setActiveTab] = useState('basic');
-  const { saveProfile, saving } = useProfile();
+  const { profile, updateProfile, saveProfile, saving } = useProfile();
 
   const handleSave = async () => {
     const { error } = await saveProfile();
@@ -30,6 +45,15 @@ export function ProfileSection() {
     } else {
       toast.success('Profile saved successfully');
     }
+  };
+
+  // Preload fonts for dropdown preview
+  useEffect(() => {
+    FONT_OPTIONS.forEach((f) => loadGoogleFont(f.googleFont));
+  }, []);
+
+  const handleFontChange = (fontId: string) => {
+    updateProfile({ selectedFont: fontId as FontChoice });
   };
 
   const renderForm = () => {
@@ -42,6 +66,48 @@ export function ProfileSection() {
         return <ProjectsForm />;
       case 'skills':
         return <SkillsForm />;
+      case 'font':
+        return (
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground mb-1">Portfolio Font</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Choose a font for your public portfolio. It will be applied across your entire portfolio page.
+              </p>
+            </div>
+            <div className="space-y-2 max-w-md">
+              <Label htmlFor="fontSelect">Font Family</Label>
+              <Select value={profile.selectedFont || 'default'} onValueChange={handleFontChange}>
+                <SelectTrigger id="fontSelect" className="h-12">
+                  <SelectValue placeholder="Select a font" />
+                </SelectTrigger>
+                <SelectContent>
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Classic</div>
+                  {FONT_OPTIONS.filter(f => (f.category || 'Classic') === 'Classic').map(font => (
+                    <SelectItem key={font.id} value={font.id}>
+                      <span style={{ fontFamily: font.preview }}>{font.label}</span>
+                    </SelectItem>
+                  ))}
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-1">Modern</div>
+                  {FONT_OPTIONS.filter(f => f.category === 'Modern').map(font => (
+                    <SelectItem key={font.id} value={font.id}>
+                      <span style={{ fontFamily: font.preview }}>{font.label}</span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Preview */}
+            {profile.selectedFont && profile.selectedFont !== 'default' && (
+              <div className="mt-6 p-4 rounded-lg border border-border bg-muted/50">
+                <p className="text-sm text-muted-foreground mb-2">Preview</p>
+                <p className="text-2xl text-foreground" style={{ fontFamily: FONT_OPTIONS.find(f => f.id === profile.selectedFont)?.preview }}>
+                  The quick brown fox jumps over the lazy dog
+                </p>
+              </div>
+            )}
+          </div>
+        );
       case 'resume':
         return <ResumeUpload />;
       case 'linkedin':

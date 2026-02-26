@@ -38,6 +38,7 @@ function toSmartProject(project: Project): SmartProject {
     targetKeywords: (project as any).targetKeywords || [],
     visible: (project as any).visible !== false,
     visualPrompt: project.visualPrompt,
+    references: project.references || [],
   };
 }
 
@@ -50,10 +51,10 @@ function toProfileProject(project: SmartProject): Project {
     imageUrl: project.imageUrl || '',
     description: project.description || '',
     visualPrompt: project.visualPrompt,
-    // Extended fields stored in the same object
     techStack: project.techStack,
     targetKeywords: project.targetKeywords,
     visible: project.visible,
+    references: project.references,
   } as Project;
 }
 

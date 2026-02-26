@@ -13,6 +13,15 @@ export interface WorkExperience {
   description: string;
 }
 
+export interface ProjectReference {
+  id: string;
+  type: 'url' | 'testimonial';
+  title: string;
+  url?: string;
+  content?: string;
+  author?: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -26,6 +35,7 @@ export interface Project {
   docsUrl?: string;
   isProtected?: boolean;
   password?: string;
+  references?: ProjectReference[];
 }
 
 export type FontChoice = "default" | "transcity" | "agraham" | "vertensie" | "runiga" | "gafiya" | "king" | "banera" | "sirelia" | "daeling" | "koya" | "oreon" | "remap" | "marietta" | "avinga" | "hanoble" | "wistle";

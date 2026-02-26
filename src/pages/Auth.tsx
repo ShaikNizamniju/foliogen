@@ -29,12 +29,17 @@ export default function Auth() {
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
-      const { error } = await lovable.auth.signInWithOAuth('google', {
+      const result = await lovable.auth.signInWithOAuth('google', {
         redirect_uri: window.location.origin,
       });
-      if (error) throw error;
+      if (result?.error) throw result.error;
+      // If not redirected (session set inline), navigate to dashboard
+      if (!result?.redirected) {
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       toast.error(error?.message || 'Google login failed');
+    } finally {
       setGoogleLoading(false);
     }
   };
