@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -23,8 +23,15 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: boolean; password?: boolean; fullName?: boolean }>({});
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already authenticated (handles OAuth callback return)
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
@@ -33,15 +40,15 @@ export default function Auth() {
         redirect_uri: window.location.origin,
       });
       if (result?.error) throw result.error;
-      // If not redirected (session set inline), navigate to dashboard
+      // OAuth typically redirects — if session is set inline, navigate
       if (!result?.redirected) {
         navigate('/dashboard');
       }
     } catch (error: any) {
       toast.error(error?.message || 'Google login failed');
-    } finally {
       setGoogleLoading(false);
     }
+    // Don't reset googleLoading in finally — if redirecting, component unmounts
   };
 
 
