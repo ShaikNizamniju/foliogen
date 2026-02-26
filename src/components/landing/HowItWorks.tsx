@@ -72,9 +72,9 @@ export function HowItWorks() {
             {steps.map((step, index) => (
               <motion.div
                 key={step.title}
-                initial={{ opacity: 0, y: 40 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.3 + index * 0.2 }}
+                initial={{ opacity: 0, y: 60, scale: 0.85, filter: 'blur(8px)' }}
+                animate={isInView ? { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' } : {}}
+                transition={{ type: 'spring', stiffness: 80, damping: 18, delay: 0.3 + index * 0.25 }}
                 className="relative flex flex-col items-center text-center"
               >
                 {/* Icon circle */}
