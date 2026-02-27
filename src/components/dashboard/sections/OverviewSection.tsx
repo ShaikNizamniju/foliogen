@@ -2,52 +2,30 @@ import { useState } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
-import { FavoritesSection } from './FavoritesSection';
-import { RecruiterRadar } from '@/components/dashboard/analytics/RecruiterRadar';
-import { JobSummaryCard } from '@/components/dashboard/analytics/JobSummaryCard';
+import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ProGate } from '@/components/billing/ProGate';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// Animation variants for staggered entrance
-const containerVariants = {
+const stagger = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.05,
-    },
-  },
-} as const;
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 100,
-      damping: 15,
-    },
+    transition: { staggerChildren: 0.08, delayChildren: 0.04 },
   },
 };
 
-const cardHoverVariants = {
-  rest: { y: 0, scale: 1 },
-  hover: { 
-    y: -5, 
-    scale: 1.02,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 400,
-      damping: 20,
-    },
+const fadeUp = {
+  hidden: { opacity: 0, y: 16, filter: 'blur(8px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { type: 'spring' as const, stiffness: 120, damping: 20 },
   },
 };
 
@@ -57,117 +35,167 @@ export function OverviewSection() {
   const navigate = useNavigate();
 
   const completionScore = calculateCompletionScore(profile);
-  
-  // Check if profile is "live" (has minimum required data)
   const isLive = !!(profile.fullName && profile.headline && profile.bio);
-  
-  // Check if profile is empty (no work experience)
   const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
-  
-  // Resume parser should be expanded by default if profile is empty
   const [isParserOpen, setIsParserOpen] = useState(isProfileEmpty);
-
-  const stats = [
-    {
-      label: 'Profile Completion',
-      value: `${completionScore}%`,
-      icon: TrendingUp,
-      color: 'text-primary',
-      bgColor: 'bg-primary/10',
-    },
-    {
-      label: 'Work Experiences',
-      value: profile.workExperience.length,
-      icon: FileText,
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-500/10',
-    },
-    {
-      label: 'Projects',
-      value: profile.projects.length,
-      icon: Palette,
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-500/10',
-    },
-    {
-      label: 'Skills',
-      value: profile.skills.length,
-      icon: Clock,
-      color: 'text-violet-600',
-      bgColor: 'bg-violet-500/10',
-    },
-  ];
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-muted animate-pulse rounded" />
-        <div className="grid grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-28 bg-muted animate-pulse rounded-xl" />
+        <Skeleton className="h-10 w-64 rounded-xl" />
+        <Skeleton className="h-5 w-96 rounded-lg" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-36 rounded-2xl" />
           ))}
         </div>
+        <Skeleton className="h-48 rounded-2xl" />
       </div>
     );
   }
 
   return (
     <motion.div 
-      className="space-y-8"
+      className="space-y-8 max-w-4xl"
       initial="hidden"
       animate="visible"
-      variants={containerVariants}
+      variants={stagger}
     >
-      {/* Welcome Message */}
-      <motion.div variants={itemVariants}>
-        <h1 className="text-2xl font-bold text-foreground mb-2">
-          Welcome back{profile.fullName ? `, ${profile.fullName.split(' ')[0]}` : ''}!
+      {/* Welcome */}
+      <motion.div variants={fadeUp}>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">
+          Welcome back{profile.fullName ? `, ${profile.fullName.split(' ')[0]}` : ''}
         </h1>
-        <p className="text-muted-foreground">
-          Here's an overview of your portfolio progress.
+        <p className="text-muted-foreground mt-1">
+          Your portfolio at a glance. Keep it sharp for recruiters.
         </p>
       </motion.div>
 
-      {/* Smart Resume Parser - Collapsible */}
-      <motion.div variants={itemVariants}>
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Views */}
+        <motion.div
+          variants={fadeUp}
+          whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
+          className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2.5 rounded-xl bg-primary/10">
+                <Eye className="h-4 w-4 text-primary" />
+              </div>
+              <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Views</span>
+            </div>
+            <motion.p 
+              className="text-4xl font-bold text-foreground tabular-nums"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+            >
+              {profile.views?.toLocaleString() || '0'}
+            </motion.p>
+            <p className="text-xs text-muted-foreground mt-1">Total portfolio visitors</p>
+          </div>
+        </motion.div>
+
+        {/* Profile Status */}
+        <motion.div
+          variants={fadeUp}
+          whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
+          className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2.5 rounded-xl bg-emerald-500/10">
+                <Globe className="h-4 w-4 text-emerald-500" />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <motion.div
+                  animate={isLive ? { scale: [1, 1.3, 1] } : {}}
+                  transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+                  className={`h-2 w-2 rounded-full ${isLive ? 'bg-emerald-500' : 'bg-muted-foreground/40'}`}
+                />
+                <span className={`text-xs font-medium ${isLive ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                  {isLive ? 'Live' : 'Draft'}
+                </span>
+              </div>
+            </div>
+            <p className="text-4xl font-bold text-foreground">
+              {isLive ? 'Live' : 'Draft'}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {isLive ? (
+                <a href={`/p/${user?.id}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+                  View portfolio <ArrowUpRight className="h-3 w-3" />
+                </a>
+              ) : 'Complete profile to go live'}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Completion */}
+        <motion.div
+          variants={fadeUp}
+          whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
+          className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2.5 rounded-xl bg-violet-500/10">
+                <TrendingUp className="h-4 w-4 text-violet-500" />
+              </div>
+              <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Score</span>
+            </div>
+            <motion.p 
+              className="text-4xl font-bold text-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {completionScore}%
+            </motion.p>
+            <div className="mt-2">
+              <Progress value={completionScore} className="h-1.5 bg-muted" />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Resume Upload */}
+      <motion.div variants={fadeUp}>
         <Collapsible open={isParserOpen} onOpenChange={setIsParserOpen}>
-          <motion.div 
-            className="rounded-2xl border border-border bg-card overflow-hidden"
-            initial="rest"
-            whileHover="hover"
-            variants={{
-              rest: { boxShadow: '0 0 0 rgba(0,0,0,0)' },
-              hover: { boxShadow: '0 10px 40px -15px rgba(0,0,0,0.15)' },
-            }}
-          >
+          <div className="rounded-2xl border border-border/60 bg-card overflow-hidden hover:border-border transition-colors">
             <CollapsibleTrigger asChild>
-              <button className="w-full p-5 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <button className="w-full p-5 flex items-center justify-between hover:bg-muted/30 transition-colors">
                 <div className="flex items-center gap-4">
                   <motion.div 
-                    className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className="p-3 rounded-xl bg-primary/10"
+                    whileHover={{ scale: 1.1 }}
                     transition={{ type: 'spring', stiffness: 400 }}
                   >
                     <Upload className="h-5 w-5 text-primary" />
                   </motion.div>
                   <div className="text-left">
-                    <h3 className="font-semibold text-foreground">
-                      {isProfileEmpty ? 'Get Started - Import Your Resume' : 'Update from Resume'}
+                    <h3 className="font-semibold text-foreground text-sm">
+                      {isProfileEmpty ? 'Get Started — Import Resume' : 'Update from Resume'}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       {isProfileEmpty 
-                        ? 'Drop your resume PDF to auto-build your portfolio in seconds'
+                        ? 'Drop your resume PDF to build your portfolio instantly'
                         : 'Import new data from a resume or LinkedIn PDF'
                       }
                     </p>
                   </div>
                 </div>
                 <motion.div 
-                  className="p-2 rounded-lg hover:bg-muted transition-colors"
                   animate={{ rotate: isParserOpen ? 180 : 0 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.2 }}
+                  className="p-2 rounded-lg text-muted-foreground"
                 >
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                  <ChevronDown className="h-4 w-4" />
                 </motion.div>
               </button>
             </CollapsibleTrigger>
@@ -179,304 +207,145 @@ export function OverviewSection() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    className="border-t border-border"
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    className="border-t border-border/50"
                   >
                     <div className="p-6">
-                      <SmartResumeParser 
-                        onTemplateChange={(templateId) => {
-                          // Template change is handled via updateProfile in SmartResumeParser
-                        }}
-                      />
+                      <SmartResumeParser onTemplateChange={() => {}} />
                     </div>
                   </motion.div>
                 </CollapsibleContent>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
         </Collapsible>
       </motion.div>
 
-      {/* Hero Stats Row - Glass/Bento Style */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Total Views Card */}
-        <motion.div 
-          variants={itemVariants}
-          initial="rest"
-          whileHover="hover"
-          className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-primary/5 p-6 cursor-default"
-        >
-          <motion.div
-            variants={cardHoverVariants}
-            className="relative z-10"
-          >
-            {/* Noise texture overlay */}
-            <div 
-              className="absolute inset-0 opacity-30 pointer-events-none -z-10"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-              }}
-            />
-            <div className="flex items-center gap-3 mb-4">
-              <motion.div 
-                className="p-2.5 rounded-xl bg-primary/20 backdrop-blur-sm"
-                whileHover={{ scale: 1.15, rotate: -10 }}
-                transition={{ type: 'spring', stiffness: 400 }}
-              >
-                <Eye className="h-5 w-5 text-primary" />
-              </motion.div>
-              <span className="text-sm font-medium text-muted-foreground">Total Views</span>
-            </div>
-            <motion.p 
-              className="text-4xl font-bold text-foreground mb-1"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-            >
-              {profile.views?.toLocaleString() || 0}
-            </motion.p>
-            <p className="text-xs text-muted-foreground">
-              Unique visitors to your portfolio
-            </p>
-          </motion.div>
-        </motion.div>
-
-        {/* Profile Status Card */}
-        <motion.div 
-          variants={itemVariants}
-          initial="rest"
-          whileHover="hover"
-          className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-card to-emerald-500/5 p-6 cursor-default"
-        >
-          <motion.div
-            variants={cardHoverVariants}
-            className="relative z-10"
-          >
-            {/* Noise texture overlay */}
-            <div 
-              className="absolute inset-0 opacity-30 pointer-events-none -z-10"
-              style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-              }}
-            />
-            <div className="flex items-center gap-3 mb-4">
-              <motion.div 
-                className="p-2.5 rounded-xl bg-emerald-500/20 backdrop-blur-sm"
-                whileHover={{ scale: 1.15, rotate: 10 }}
-                transition={{ type: 'spring', stiffness: 400 }}
-              >
-                <Globe className="h-5 w-5 text-emerald-500" />
-              </motion.div>
-              <span className="text-sm font-medium text-muted-foreground">Profile Status</span>
-            </div>
-            <div className="flex items-center gap-2 mb-1">
-              <motion.div
-                animate={isLive ? { scale: [1, 1.2, 1] } : {}}
-                transition={{ repeat: Infinity, duration: 2 }}
-              >
-                <Circle 
-                  className={`h-3 w-3 ${isLive ? 'text-emerald-500 fill-emerald-500' : 'text-muted-foreground fill-muted-foreground'}`} 
-                />
-              </motion.div>
-              <p className="text-4xl font-bold text-foreground">
-                {isLive ? 'Live' : 'Draft'}
-              </p>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {isLive ? (
-                <a 
-                  href={`/p/${user?.id}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  View your public portfolio →
-                </a>
-              ) : (
-                'Complete your profile to go live'
-              )}
-            </p>
-          </motion.div>
-        </motion.div>
-
-        {/* Recruiter Radar Card - Pro Feature */}
-        <motion.div variants={itemVariants}>
-          <ProGate featureName="Spy Glass Analytics" variant="overlay">
-            <RecruiterRadar />
-          </ProGate>
-        </motion.div>
-      </div>
-
       {/* Portfolio Preview Card */}
-      <motion.div variants={itemVariants}>
-        <div
-          className="rounded-2xl border border-border bg-card p-6 cursor-pointer hover:border-primary/30 hover:shadow-lg transition-all"
+      <motion.div variants={fadeUp}>
+        <motion.div
+          className="rounded-2xl border border-border/60 bg-card overflow-hidden cursor-pointer group"
           onClick={() => navigate('/dashboard?section=profile')}
+          whileHover={{ y: -2 }}
+          transition={{ type: 'spring', stiffness: 300 }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-foreground">Portfolio Preview</h2>
-            <Button variant="ghost" size="sm" className="gap-1.5 text-primary" asChild>
-              <Link to={`/p/${user?.id}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                <ExternalLink className="h-3.5 w-3.5" />
-                View Live
-              </Link>
-            </Button>
-          </div>
-          <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border/50">
-            <Avatar className="h-14 w-14 border-2 border-border">
-              <AvatarImage src={profile.photoUrl} alt={profile.fullName} />
-              <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                {profile.fullName?.charAt(0) || '?'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-foreground truncate">{profile.fullName || 'Your Name'}</p>
-              <p className="text-sm text-muted-foreground truncate">{profile.headline || 'Add a headline'}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Template: <span className="capitalize">{profile.selectedTemplate}</span> · {profile.projects.length} projects · {profile.skills.length} skills
-              </p>
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-sm font-semibold text-foreground">Portfolio Preview</h2>
+              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-primary gap-1" asChild>
+                <Link to={`/p/${user?.id}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                  <ExternalLink className="h-3 w-3" />
+                  View Live
+                </Link>
+              </Button>
+            </div>
+            
+            <div className="flex items-center gap-5 p-4 rounded-xl bg-muted/40 border border-border/40 group-hover:border-primary/20 transition-colors">
+              <div className="relative">
+                <Avatar className="h-16 w-16 border-2 border-border ring-2 ring-primary/10 ring-offset-2 ring-offset-card">
+                  <AvatarImage src={profile.photoUrl} alt={profile.fullName} />
+                  <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
+                    {profile.fullName?.charAt(0) || '?'}
+                  </AvatarFallback>
+                </Avatar>
+                {isLive && (
+                  <motion.div
+                    className="absolute -bottom-0.5 -right-0.5 h-4 w-4 bg-emerald-500 rounded-full border-2 border-card"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                  />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-foreground truncate text-base">{profile.fullName || 'Your Name'}</p>
+                <p className="text-sm text-muted-foreground truncate">{profile.headline || 'Add a headline'}</p>
+                <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1"><FolderIcon className="h-3 w-3" />{profile.projects.length} projects</span>
+                  <span className="flex items-center gap-1"><Zap className="h-3 w-3" />{profile.skills.length} skills</span>
+                  <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" />{profile.workExperience.length} roles</span>
+                </div>
+              </div>
+              <ArrowUpRight className="h-5 w-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
             </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-3 text-center">
-            Click to edit your profile data →
-          </p>
-        </div>
+        </motion.div>
       </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {stats.map((stat, index) => (
-          <motion.div 
-            key={stat.label} 
-            variants={itemVariants}
-            initial="rest"
-            whileHover="hover"
-            custom={index}
-            className="rounded-xl border border-border bg-card p-5 cursor-default"
+      {/* Quick Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {[
+          { label: 'Experiences', value: profile.workExperience.length, icon: Briefcase, accent: 'bg-emerald-500/10 text-emerald-500' },
+          { label: 'Projects', value: profile.projects.length, icon: Palette, accent: 'bg-amber-500/10 text-amber-500' },
+          { label: 'Skills', value: profile.skills.length, icon: Zap, accent: 'bg-violet-500/10 text-violet-500' },
+          { label: 'Completion', value: `${completionScore}%`, icon: TrendingUp, accent: 'bg-primary/10 text-primary' },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            variants={fadeUp}
+            whileHover={{ y: -3 }}
+            className="rounded-xl border border-border/50 bg-card p-4 cursor-default"
           >
-            <motion.div variants={cardHoverVariants}>
-              <div className="flex items-center gap-3 mb-3">
-                <motion.div 
-                  className={`p-2 rounded-lg ${stat.bgColor}`}
-                  whileHover={{ scale: 1.2, rotate: -5 }}
-                  transition={{ type: 'spring', stiffness: 400 }}
-                >
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                </motion.div>
-                <span className="text-sm text-muted-foreground">{stat.label}</span>
+            <div className="flex items-center gap-2.5 mb-2">
+              <div className={`p-1.5 rounded-lg ${stat.accent}`}>
+                <stat.icon className="h-3.5 w-3.5" />
               </div>
-              <motion.p 
-                className="text-3xl font-bold text-foreground"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
-              >
-                {stat.value}
-              </motion.p>
-            </motion.div>
+              <span className="text-xs text-muted-foreground">{stat.label}</span>
+            </div>
+            <motion.p 
+              className="text-2xl font-bold text-foreground tabular-nums"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15 + i * 0.05 }}
+            >
+              {stat.value}
+            </motion.p>
           </motion.div>
         ))}
       </div>
 
-      {/* Job Summary Card */}
-      <motion.div variants={itemVariants}>
-        <JobSummaryCard />
-      </motion.div>
-
-      {/* Favorites Section */}
-      <motion.div variants={itemVariants}>
-        <FavoritesSection />
-      </motion.div>
-
       {/* Quick Actions */}
-      <motion.div 
-        variants={itemVariants}
-        className="rounded-xl border border-border bg-card p-6"
-      >
-        <h2 className="font-semibold text-foreground mb-4">Quick Actions</h2>
-        <div className="space-y-3">
-          <Link to="/dashboard?section=profile">
-            <motion.div
-              whileHover={{ x: 5, scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              transition={{ type: 'spring', stiffness: 400 }}
-            >
-              <Button variant="outline" className="w-full justify-start">
-                <FileText className="h-4 w-4 mr-2" />
-                Edit Profile Data
-              </Button>
-            </motion.div>
-          </Link>
-          <Link to="/dashboard?section=templates">
-            <motion.div
-              whileHover={{ x: 5, scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              transition={{ type: 'spring', stiffness: 400 }}
-            >
-              <Button variant="outline" className="w-full justify-start">
-                <Palette className="h-4 w-4 mr-2" />
-                Choose Template
-              </Button>
-            </motion.div>
-          </Link>
-        </div>
+      <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
+        <Link to="/dashboard?section=profile">
+          <Button variant="outline" size="sm" className="rounded-xl gap-2 hover:border-primary/30 hover:bg-primary/5">
+            <FileText className="h-3.5 w-3.5" />
+            Edit Profile
+          </Button>
+        </Link>
+        <Link to="/dashboard?section=templates">
+          <Button variant="outline" size="sm" className="rounded-xl gap-2 hover:border-primary/30 hover:bg-primary/5">
+            <Palette className="h-3.5 w-3.5" />
+            Choose Template
+          </Button>
+        </Link>
+        <Link to="/dashboard?section=settings">
+          <Button variant="outline" size="sm" className="rounded-xl gap-2 hover:border-primary/30 hover:bg-primary/5">
+            <Clock className="h-3.5 w-3.5" />
+            Settings
+          </Button>
+        </Link>
       </motion.div>
 
-      {/* Completion Tips - Only show if not empty but incomplete */}
+      {/* Completion Tips */}
       <AnimatePresence>
         {completionScore < 100 && !isProfileEmpty && (
           <motion.div 
-            variants={itemVariants}
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="rounded-xl border border-primary/20 bg-primary/5 p-6"
+            variants={fadeUp}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="rounded-2xl border border-primary/15 bg-primary/5 p-5"
           >
-            <h2 className="font-semibold text-foreground mb-2">Complete Your Profile</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Add more details to make your portfolio stand out.
-            </p>
-            <div className="space-y-2 text-sm">
-              {!profile.bio && (
-                <motion.p 
-                  className="text-muted-foreground"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  • Add a bio to introduce yourself
-                </motion.p>
-              )}
-              {profile.workExperience.length === 0 && (
-                <motion.p 
-                  className="text-muted-foreground"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  • Add your work experience
-                </motion.p>
-              )}
-              {profile.projects.length === 0 && (
-                <motion.p 
-                  className="text-muted-foreground"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  • Showcase your projects
-                </motion.p>
-              )}
-              {profile.skills.length === 0 && (
-                <motion.p 
-                  className="text-muted-foreground"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  • List your skills
-                </motion.p>
-              )}
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="h-4 w-4 text-primary" />
+              <h3 className="text-sm font-semibold text-foreground">Boost Your Profile</h3>
+            </div>
+            <div className="space-y-1.5 text-sm text-muted-foreground">
+              {!profile.bio && <p>• Add a bio to introduce yourself</p>}
+              {profile.workExperience.length === 0 && <p>• Add your work experience</p>}
+              {profile.projects.length === 0 && <p>• Showcase your projects</p>}
+              {profile.skills.length === 0 && <p>• List your skills</p>}
+              {!profile.location && <p>• Add your location</p>}
+              {!profile.email && <p>• Add a contact email</p>}
             </div>
           </motion.div>
         )}
@@ -484,6 +353,12 @@ export function OverviewSection() {
     </motion.div>
   );
 }
+
+function FolderIcon({ className }: { className?: string }) {
+  return <FolderOpen className={className} />;
+}
+
+import { FolderOpen } from 'lucide-react';
 
 function calculateCompletionScore(profile: ReturnType<typeof useProfile>['profile']): number {
   let score = 0;
@@ -497,10 +372,6 @@ function calculateCompletionScore(profile: ReturnType<typeof useProfile>['profil
     profile.projects.length > 0,
     profile.skills.length > 0,
   ];
-  
-  checks.forEach((check) => {
-    if (check) score += 12.5;
-  });
-  
+  checks.forEach((check) => { if (check) score += 12.5; });
   return Math.round(score);
 }
