@@ -26,7 +26,7 @@ export function ProRecruiterBanner({ profileUserId }: ProRecruiterBannerProps) {
       }
       
       const { data, error } = await supabase
-        .from('profiles')
+        .from('profiles_public')
         .select('is_pro')
         .eq('user_id', profileUserId)
         .maybeSingle();

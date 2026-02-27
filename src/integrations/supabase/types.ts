@@ -358,6 +358,7 @@ export type Database = {
           github_url: string | null
           headline: string | null
           id: string | null
+          is_pro: boolean | null
           key_highlights: string[] | null
           linkedin_url: string | null
           location: string | null
@@ -383,6 +384,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string | null
+          is_pro?: boolean | null
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
@@ -408,6 +410,7 @@ export type Database = {
           github_url?: string | null
           headline?: string | null
           id?: string | null
+          is_pro?: boolean | null
           key_highlights?: string[] | null
           linkedin_url?: string | null
           location?: string | null
