@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import PublicPortfolio from "./pages/PublicPortfolio";
 import Privacy from "./pages/Privacy";
 import SocialKit from "./pages/SocialKit";
+import TemplatesGallery from "./pages/TemplatesGallery";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
                   <Route path="/p/:id" element={<PublicPortfolio />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/social-kit" element={<SocialKit />} />
+                  <Route path="/templates" element={<TemplatesGallery />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
