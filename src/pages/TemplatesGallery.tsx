@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Eye, ArrowRight } from 'lucide-react';
 import { GasparTemplate } from '@/components/templates/GasparTemplate';
+import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
 import { Helmet } from 'react-helmet-async';
 
 interface TemplateEntry {
@@ -17,10 +18,18 @@ const galleryTemplates: TemplateEntry[] = [
   {
     id: 'gaspar',
     name: 'GASPAR',
-    tagline: 'Editorial luxury with serif elegance',
+    tagline: 'High-end branding studio with serif typography',
     style: 'Editorial · Luxury · Serif',
-    gradient: 'from-[#D4C9B8] to-[#F5F0E8]',
+    gradient: 'from-[#F5F0E8] to-[#E8E0D0]',
     preview: GasparTemplate,
+  },
+  {
+    id: 'destello',
+    name: 'DESTELLO',
+    tagline: 'Dramatic agency with numbered works & process accordion',
+    style: 'Bold · Creative · Studio',
+    gradient: 'from-[#FFFFFF] to-[#FFF0F0]',
+    preview: DestelloTemplate,
   },
 ];
 
@@ -42,7 +51,7 @@ export default function TemplatesGallery() {
       <Helmet>
         <title>Template Gallery — FolioGen</title>
         <meta name="description" content="Browse premium portfolio templates for professionals. From editorial luxury to minimalist elegance." />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Helmet>
 
       <div className="min-h-screen bg-background">
