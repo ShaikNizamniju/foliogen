@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Eye, ArrowRight } from 'lucide-react';
 import { GasparTemplate } from '@/components/templates/GasparTemplate';
 import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
+import { FrqncyTemplate } from '@/components/templates/FrqncyTemplate';
 import { Helmet } from 'react-helmet-async';
 
 interface TemplateEntry {
@@ -31,6 +32,14 @@ const galleryTemplates: TemplateEntry[] = [
     gradient: 'from-[#FFFFFF] to-[#FFF0F0]',
     preview: DestelloTemplate,
   },
+  {
+    id: 'frqncy',
+    name: 'FRQNCY',
+    tagline: 'High-energy neon bento grid with music producer vibes',
+    style: 'Gen-Z · Creative · Neon',
+    gradient: 'from-[#F0F0F0] to-[#E8FFD0]',
+    preview: FrqncyTemplate,
+  },
 ];
 
 const cardVariants = {
@@ -51,7 +60,7 @@ export default function TemplatesGallery() {
       <Helmet>
         <title>Template Gallery — FolioGen</title>
         <meta name="description" content="Browse premium portfolio templates for professionals. From editorial luxury to minimalist elegance." />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Helmet>
 
       <div className="min-h-screen bg-background">
