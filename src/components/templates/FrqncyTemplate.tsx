@@ -1,4 +1,9 @@
 import { motion } from 'framer-motion';
+import { ProfileData } from '@/contexts/ProfileContext';
+
+interface FrqncyTemplateProps {
+  profile?: ProfileData;
+}
 
 const tags = ['#design', '#motion', '#visual', '#creative', '#branding'];
 
@@ -67,7 +72,7 @@ function ProjectMarquee() {
 }
 
 /* ── Main Template ── */
-export function FrqncyTemplate() {
+export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F0F0F0', color: '#111111', fontFamily: "'Inter', sans-serif" }}>
       {/* Navbar */}

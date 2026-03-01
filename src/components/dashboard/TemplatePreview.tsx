@@ -11,6 +11,11 @@ import { InfluencerTemplate } from "./templates/InfluencerTemplate";
 import { SwissTemplate } from "./templates/SwissTemplate";
 import { NoirTemplate } from "./templates/NoirTemplate";
 import { ModernDarkTemplate } from "./templates/ModernDarkTemplate";
+import { GasparTemplate } from "@/components/templates/GasparTemplate";
+import { DestelloTemplate } from "@/components/templates/DestelloTemplate";
+import { FrqncyTemplate } from "@/components/templates/FrqncyTemplate";
+import { ArpeggioTemplate } from "@/components/templates/ArpeggioTemplate";
+import { NakulaTemplate } from "@/components/templates/NakulaTemplate";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye } from "lucide-react";
 
@@ -45,6 +50,11 @@ export function TemplatePreview() {
             <SelectItem value="swiss">The Swiss</SelectItem>
             <SelectItem value="noir">The Noir</SelectItem>
             <SelectItem value="modern-dark">Modern Dark</SelectItem>
+            <SelectItem value="gaspar">Gaspar</SelectItem>
+            <SelectItem value="destello">Destello</SelectItem>
+            <SelectItem value="frqncy">Frqncy</SelectItem>
+            <SelectItem value="arpeggio">Arpeggio</SelectItem>
+            <SelectItem value="nakula">Nakula</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -65,6 +75,11 @@ export function TemplatePreview() {
             {profile.selectedTemplate === "swiss" && <SwissTemplate profile={profile} />}
             {profile.selectedTemplate === "noir" && <NoirTemplate profile={profile} />}
             {profile.selectedTemplate === "modern-dark" && <ModernDarkTemplate profile={profile} />}
+            {profile.selectedTemplate === "gaspar" && <GasparTemplate profile={profile} />}
+            {profile.selectedTemplate === "destello" && <DestelloTemplate profile={profile} />}
+            {profile.selectedTemplate === "frqncy" && <FrqncyTemplate profile={profile} />}
+            {profile.selectedTemplate === "arpeggio" && <ArpeggioTemplate profile={profile} />}
+            {profile.selectedTemplate === "nakula" && <NakulaTemplate profile={profile} />}
           </div>
         </div>
       </div>

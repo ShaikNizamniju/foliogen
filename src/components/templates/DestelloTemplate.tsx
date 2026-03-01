@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ArrowRight, ArrowLeft, ChevronRight, Send } from 'lucide-react';
+import { ProfileData } from '@/contexts/ProfileContext';
+
+interface DestelloTemplateProps {
+  profile?: ProfileData;
+}
 
 /* ── Data ── */
 const works = [
@@ -96,7 +101,7 @@ function ProcessAccordion({ step, index }: { step: typeof processSteps[0]; index
 }
 
 /* ── Main Template ── */
-export function DestelloTemplate() {
+export function DestelloTemplate({ profile }: DestelloTemplateProps) {
   const [activeWork, setActiveWork] = useState<number | null>(null);
   const [testimIdx, setTestimIdx] = useState(0);
 

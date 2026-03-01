@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Eye, ArrowRight } from 'lucide-react';
+import { X, Eye, ArrowRight, Filter } from 'lucide-react';
 import { GasparTemplate } from '@/components/templates/GasparTemplate';
 import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
 import { FrqncyTemplate } from '@/components/templates/FrqncyTemplate';
+import { ArpeggioTemplate } from '@/components/templates/ArpeggioTemplate';
+import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
 import { Helmet } from 'react-helmet-async';
 
 interface TemplateEntry {
@@ -11,8 +13,9 @@ interface TemplateEntry {
   name: string;
   tagline: string;
   style: string;
+  category: 'editorial' | 'brutalist' | 'modern' | 'creative' | 'glassmorphic';
   gradient: string;
-  preview: React.ComponentType;
+  preview: React.ComponentType<any>;
 }
 
 const galleryTemplates: TemplateEntry[] = [
@@ -21,6 +24,7 @@ const galleryTemplates: TemplateEntry[] = [
     name: 'GASPAR',
     tagline: 'High-end branding studio with serif typography',
     style: 'Editorial · Luxury · Serif',
+    category: 'editorial',
     gradient: 'from-[#F5F0E8] to-[#E8E0D0]',
     preview: GasparTemplate,
   },
@@ -29,6 +33,7 @@ const galleryTemplates: TemplateEntry[] = [
     name: 'DESTELLO',
     tagline: 'Dramatic agency with numbered works & process accordion',
     style: 'Bold · Creative · Studio',
+    category: 'creative',
     gradient: 'from-[#FFFFFF] to-[#FFF0F0]',
     preview: DestelloTemplate,
   },
@@ -37,9 +42,36 @@ const galleryTemplates: TemplateEntry[] = [
     name: 'FRQNCY',
     tagline: 'High-energy neon bento grid with music producer vibes',
     style: 'Gen-Z · Creative · Neon',
+    category: 'creative',
     gradient: 'from-[#F0F0F0] to-[#E8FFD0]',
     preview: FrqncyTemplate,
   },
+  {
+    id: 'arpeggio',
+    name: 'ARPEGGIO',
+    tagline: 'Dark brutalist grid with bold headings & staggered reveals',
+    style: 'Brutalist · Dark · Grid',
+    category: 'brutalist',
+    gradient: 'from-[#0A0A0A] to-[#1A1A1A]',
+    preview: ArpeggioTemplate,
+  },
+  {
+    id: 'nakula',
+    name: 'NAKULA',
+    tagline: 'Airy glassmorphic layout with refined serif elegance',
+    style: 'Glassmorphic · Airy · Elegant',
+    category: 'glassmorphic',
+    gradient: 'from-[#FAFAF8] to-[#F0EDE8]',
+    preview: NakulaTemplate,
+  },
+];
+
+const categories = [
+  { id: 'all', label: 'All' },
+  { id: 'editorial', label: 'Editorial' },
+  { id: 'creative', label: 'Creative' },
+  { id: 'brutalist', label: 'Brutalist' },
+  { id: 'glassmorphic', label: 'Glassmorphic' },
 ];
 
 const cardVariants = {
@@ -47,20 +79,25 @@ const cardVariants = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: 0.15 * i, duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const },
+    transition: { delay: 0.1 * i, duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const },
   }),
 };
 
 export default function TemplatesGallery() {
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState('all');
   const activeTemplate = galleryTemplates.find((t) => t.id === previewId);
+
+  const filtered = activeCategory === 'all'
+    ? galleryTemplates
+    : galleryTemplates.filter((t) => t.category === activeCategory);
 
   return (
     <>
       <Helmet>
         <title>Template Gallery — FolioGen</title>
         <meta name="description" content="Browse premium portfolio templates for professionals. From editorial luxury to minimalist elegance." />
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Helmet>
 
       <div className="min-h-screen bg-background">
@@ -78,13 +115,13 @@ export default function TemplatesGallery() {
               <span className="text-sm text-muted-foreground">Templates</span>
             </div>
             <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
-              {galleryTemplates.length} Template{galleryTemplates.length !== 1 ? 's' : ''}
+              {filtered.length} Template{filtered.length !== 1 ? 's' : ''}
             </span>
           </div>
         </motion.header>
 
         {/* Hero */}
-        <section className="max-w-7xl mx-auto px-6 md:px-12 pt-16 pb-12">
+        <section className="max-w-7xl mx-auto px-6 md:px-12 pt-16 pb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -102,56 +139,84 @@ export default function TemplatesGallery() {
           </motion.div>
         </section>
 
+        {/* Style Filter */}
+        <section className="max-w-7xl mx-auto px-6 md:px-12 pb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="flex items-center gap-2 flex-wrap"
+          >
+            <Filter className="h-4 w-4 text-muted-foreground mr-1" />
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-4 py-1.5 text-xs tracking-wider uppercase rounded-full border transition-all duration-200 ${
+                  activeCategory === cat.id
+                    ? 'bg-foreground text-background border-foreground'
+                    : 'bg-transparent text-muted-foreground border-border hover:border-foreground/30'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </motion.div>
+        </section>
+
         {/* Grid */}
         <section className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryTemplates.map((template, i) => (
-              <motion.div
-                key={template.id}
-                custom={i}
-                variants={cardVariants}
-                initial="hidden"
-                animate="visible"
-                className="group relative rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-primary/40 transition-colors duration-300"
-                onClick={() => setPreviewId(template.id)}
-              >
-                {/* Thumbnail */}
-                <div className={`relative h-56 bg-gradient-to-br ${template.gradient} overflow-hidden`}>
-                  {/* Mini preview scaled down */}
-                  <div className="absolute inset-0 origin-top-left scale-[0.25] w-[400%] h-[400%] pointer-events-none">
-                    <template.preview />
-                  </div>
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300 flex items-center justify-center">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileHover={{ opacity: 1, scale: 1 }}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-lg">
-                        <Eye className="h-4 w-4" />
-                        Preview
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {filtered.map((template, i) => (
+                <motion.div
+                  key={template.id}
+                  custom={i}
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="group relative rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-primary/40 transition-colors duration-300"
+                  onClick={() => setPreviewId(template.id)}
+                >
+                  {/* Thumbnail */}
+                  <div className={`relative h-56 bg-gradient-to-br ${template.gradient} overflow-hidden`}>
+                    <div className="absolute inset-0 origin-top-left scale-[0.25] w-[400%] h-[400%] pointer-events-none">
+                      <template.preview />
+                    </div>
+                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300 flex items-center justify-center">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-lg">
+                          <Eye className="h-4 w-4" />
+                          Preview
+                        </div>
                       </div>
-                    </motion.div>
+                    </div>
                   </div>
-                </div>
 
-                {/* Info */}
-                <div className="p-5">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-foreground tracking-tight">
-                      {template.name}
-                    </h3>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+                  {/* Info */}
+                  <div className="p-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-semibold text-foreground tracking-tight">
+                        {template.name}
+                      </h3>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">{template.tagline}</p>
+                    <span className="text-xs tracking-wider uppercase text-muted-foreground/70">
+                      {template.style}
+                    </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">{template.tagline}</p>
-                  <span className="text-xs tracking-wider uppercase text-muted-foreground/70">
-                    {template.style}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </section>
 
         {/* Full-screen Preview Modal */}
@@ -164,7 +229,6 @@ export default function TemplatesGallery() {
               transition={{ duration: 0.3 }}
               className="fixed inset-0 z-50 bg-background"
             >
-              {/* Close bar */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -183,7 +247,6 @@ export default function TemplatesGallery() {
                 </button>
               </motion.div>
 
-              {/* Template render */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

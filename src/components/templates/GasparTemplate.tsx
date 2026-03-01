@@ -1,5 +1,9 @@
 import { motion } from 'framer-motion';
+import { ProfileData } from '@/contexts/ProfileContext';
 
+interface GasparTemplateProps {
+  profile?: ProfileData;
+}
 const cities = ['MUMBAI', 'DELHI', 'BANGALORE', 'TOKYO', 'MILAN'];
 
 const projects = [
@@ -47,7 +51,21 @@ function ClientMarquee() {
   );
 }
 
-export function GasparTemplate() {
+export function GasparTemplate({ profile }: GasparTemplateProps) {
+  const name = profile?.fullName || 'GASPAR';
+  const tagline = profile?.headline || 'Crafting stories through design';
+  const email = profile?.email || 'hello@gaspar.studio';
+  const profileProjects = profile?.projects?.length
+    ? profile.projects.slice(0, 4).map((p, i) => ({
+        id: i + 1,
+        title: p.title,
+        category: p.techStack?.[0] || 'Design',
+        year: '2024',
+        image: p.imageUrl || `https://picsum.photos/seed/gaspar${i + 1}/600/400`,
+      }))
+    : projects;
+  const profileSkills = profile?.skills?.length ? profile.skills.slice(0, 8) : marqueeClients;
+  
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F0E8', color: '#1A1A1A', fontFamily: "'Inter', sans-serif" }}>
       {/* Navbar */}
@@ -58,7 +76,7 @@ export function GasparTemplate() {
         className="sticky top-0 z-30 flex items-center justify-between px-8 md:px-16 py-6 backdrop-blur-md"
         style={{ backgroundColor: 'rgba(245,240,232,0.85)' }}
       >
-        <span className="text-2xl tracking-[0.15em] font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>GASPAR</span>
+        <span className="text-2xl tracking-[0.15em] font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{name.split(' ')[0]?.toUpperCase() || 'GASPAR'}</span>
         <div className="flex gap-8 text-xs tracking-[0.2em] uppercase" style={{ color: '#8B7355' }}>
           {['Work', 'About', 'Contact'].map((l) => (
             <span key={l} className="cursor-pointer transition-colors hover:text-[#1A1A1A]">{l}</span>
@@ -87,7 +105,7 @@ export function GasparTemplate() {
           })}
         </motion.div>
         <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8 }} className="px-8 md:px-16 pt-10 pb-6 text-5xl md:text-7xl italic font-light" style={{ fontFamily: "'Playfair Display', serif", color: '#1A1A1A' }}>
-          Crafting stories through design
+          {tagline}
         </motion.h1>
       </section>
 
@@ -99,11 +117,11 @@ export function GasparTemplate() {
               <span className="text-xs tracking-[0.3em] uppercase block mb-3" style={{ color: '#8B7355' }}>Portfolio</span>
               <h2 className="text-4xl md:text-6xl font-light" style={{ fontFamily: "'Playfair Display', serif" }}>Selected <span className="italic">Work</span></h2>
             </div>
-            <span className="text-xs tracking-[0.2em] uppercase hidden md:block" style={{ color: '#8B7355' }}>{projects.length} Projects</span>
+            <span className="text-xs tracking-[0.2em] uppercase hidden md:block" style={{ color: '#8B7355' }}>{profileProjects.length} Projects</span>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            {projects.map((p) => (
+            {profileProjects.map((p) => (
               <motion.div key={p.id} variants={itemVariants} className="group cursor-pointer">
                 <div className="relative overflow-hidden mb-5">
                   <motion.img src={p.image} alt={p.title} className="w-full aspect-[3/2] object-cover" whileHover={{ scale: 1.05 }} transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }} />
