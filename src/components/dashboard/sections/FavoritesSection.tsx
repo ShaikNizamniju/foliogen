@@ -68,6 +68,31 @@ export const templates = [
     name: 'The Noir',
     description: 'Cinematic black & white with film grain',
   },
+  {
+    id: 'gaspar',
+    name: 'Gaspar',
+    description: 'Editorial luxury with serif typography',
+  },
+  {
+    id: 'destello',
+    name: 'Destello',
+    description: 'Bold creative studio with numbered works',
+  },
+  {
+    id: 'frqncy',
+    name: 'Frqncy',
+    description: 'Gen-Z neon bento grid with creative vibes',
+  },
+  {
+    id: 'arpeggio',
+    name: 'Arpeggio',
+    description: 'Dark brutalist grid with staggered reveals',
+  },
+  {
+    id: 'nakula',
+    name: 'Nakula',
+    description: 'Airy glassmorphic layout with serif elegance',
+  },
 ];
 
 const containerVariants = {

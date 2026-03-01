@@ -92,7 +92,12 @@ export interface ProfileData {
     | "influencer"
     | "swiss"
     | "noir"
-    | "modern-dark";
+    | "modern-dark"
+    | "gaspar"
+    | "destello"
+    | "frqncy"
+    | "arpeggio"
+    | "nakula";
 }
 
 interface ProfileContextType {
