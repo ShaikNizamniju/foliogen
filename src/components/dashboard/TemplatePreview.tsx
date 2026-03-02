@@ -16,6 +16,8 @@ import { DestelloTemplate } from "@/components/templates/DestelloTemplate";
 import { FrqncyTemplate } from "@/components/templates/FrqncyTemplate";
 import { ArpeggioTemplate } from "@/components/templates/ArpeggioTemplate";
 import { NakulaTemplate } from "@/components/templates/NakulaTemplate";
+import { NijuBoldTemplate } from "@/components/templates/NijuBoldTemplate";
+import { MinimalSaasTemplate } from "@/components/templates/MinimalSaasTemplate";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye } from "lucide-react";
 
@@ -55,6 +57,8 @@ export function TemplatePreview() {
             <SelectItem value="frqncy">Frqncy</SelectItem>
             <SelectItem value="arpeggio">Arpeggio</SelectItem>
             <SelectItem value="nakula">Nakula</SelectItem>
+            <SelectItem value="niju-bold">Niju Bold</SelectItem>
+            <SelectItem value="minimal-saas">Minimal SaaS</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -80,6 +84,8 @@ export function TemplatePreview() {
             {profile.selectedTemplate === "frqncy" && <FrqncyTemplate profile={profile} />}
             {profile.selectedTemplate === "arpeggio" && <ArpeggioTemplate profile={profile} />}
             {profile.selectedTemplate === "nakula" && <NakulaTemplate profile={profile} />}
+            {profile.selectedTemplate === "niju-bold" && <NijuBoldTemplate profile={profile} />}
+            {profile.selectedTemplate === "minimal-saas" && <MinimalSaasTemplate profile={profile} />}
           </div>
         </div>
       </div>

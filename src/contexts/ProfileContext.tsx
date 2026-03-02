@@ -97,7 +97,9 @@ export interface ProfileData {
     | "destello"
     | "frqncy"
     | "arpeggio"
-    | "nakula";
+    | "nakula"
+    | "niju-bold"
+    | "minimal-saas";
 }
 
 interface ProfileContextType {

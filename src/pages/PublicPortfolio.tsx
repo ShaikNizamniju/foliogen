@@ -18,6 +18,13 @@ import { InfluencerTemplate } from '@/components/dashboard/templates/InfluencerT
 import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
 import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
 import { ModernDarkTemplate } from '@/components/dashboard/templates/ModernDarkTemplate';
+import { GasparTemplate } from '@/components/templates/GasparTemplate';
+import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
+import { FrqncyTemplate } from '@/components/templates/FrqncyTemplate';
+import { ArpeggioTemplate } from '@/components/templates/ArpeggioTemplate';
+import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
+import { NijuBoldTemplate } from '@/components/templates/NijuBoldTemplate';
+import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 import { useViewTracker } from '@/hooks/useViewTracker';
 
@@ -174,6 +181,20 @@ export default function PublicPortfolio() {
         return <NoirTemplate {...templateProps} />;
       case 'modern-dark':
         return <ModernDarkTemplate {...templateProps} />;
+      case 'gaspar':
+        return <GasparTemplate {...templateProps} />;
+      case 'destello':
+        return <DestelloTemplate {...templateProps} />;
+      case 'frqncy':
+        return <FrqncyTemplate {...templateProps} />;
+      case 'arpeggio':
+        return <ArpeggioTemplate {...templateProps} />;
+      case 'nakula':
+        return <NakulaTemplate {...templateProps} />;
+      case 'niju-bold':
+        return <NijuBoldTemplate {...templateProps} />;
+      case 'minimal-saas':
+        return <MinimalSaasTemplate {...templateProps} />;
       default:
         return <MinimalistTemplate {...templateProps} />;
     }

@@ -211,6 +211,38 @@ const TemplatePreviewContent = ({ id }: { id: string }) => {
         </div>
       );
     
+    case 'niju-bold':
+      return (
+        <div className="h-full w-full bg-[#0A0A0A] p-3 flex flex-col justify-end relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#E11D48] to-[#F97316]" />
+          <div className="h-3 w-16 bg-white rounded-sm mb-0.5" />
+          <div className="h-3 w-12 bg-[#E11D48] rounded-sm mb-2" />
+          <div className="h-1 w-20 bg-white/30 rounded" />
+        </div>
+      );
+
+    case 'minimal-saas':
+      return (
+        <div className="h-full w-full bg-[#FAFBFC] p-3 flex flex-col">
+          <div className="flex items-center gap-1 mb-2">
+            <div className="h-1.5 w-6 bg-[#111827] rounded" />
+            <div className="h-1.5 w-1.5 rounded-full bg-[#6366F1]" />
+          </div>
+          <div className="h-2 w-14 bg-[#111827] rounded mb-1" />
+          <div className="h-1 w-10 bg-[#6366F1] rounded mb-3" />
+          <div className="flex-1 grid grid-cols-2 gap-1.5">
+            <div className="bg-white rounded border border-[#E5E7EB] p-1">
+              <div className="h-1 w-6 bg-[#111827]/60 rounded mb-0.5" />
+              <div className="h-1 w-4 bg-[#6366F1]/30 rounded" />
+            </div>
+            <div className="bg-white rounded border border-[#E5E7EB] p-1">
+              <div className="h-1 w-6 bg-[#111827]/60 rounded mb-0.5" />
+              <div className="h-1 w-4 bg-[#6366F1]/30 rounded" />
+            </div>
+          </div>
+        </div>
+      );
+
     default:
       return (
         <div className="h-full w-full bg-gray-100 p-3 flex items-center justify-center">
