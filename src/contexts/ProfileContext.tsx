@@ -80,6 +80,7 @@ export interface ProfileData {
   resumeUrl: string;
   calendlyUrl: string;
   selectedFont: FontChoice;
+  username?: string;
   selectedTemplate:
     | "minimalist"
     | "creative"
@@ -184,6 +185,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         calendlyUrl: (data as any).calendly_url || "",
         selectedFont: ((data as any).selected_font as FontChoice) || "default",
         selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "modern-dark",
+        username: (data as any).username || "",
       });
     }
     setLoading(false);

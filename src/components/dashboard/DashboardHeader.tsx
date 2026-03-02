@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Rocket, FileDown, Share2, Eye, Search } from 'lucide-react';
+import { Rocket, FileDown, Share2, Eye, Copy, Check } from 'lucide-react';
 import { PublishDialog } from './PublishDialog';
 import { ShareDialog } from './ShareDialog';
 import { ModeToggle } from '@/components/ModeToggle';
@@ -14,12 +14,31 @@ export function DashboardHeader() {
   const [publishOpen, setPublishOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [copied, setCopied] = useState(false);
   const { profile } = useProfile();
   const { user } = useAuth();
+
+  const getPublicUrl = () => {
+    const baseUrl = window.location.origin;
+    const slug = profile.username || user?.id;
+    return slug ? `${baseUrl}/u/${slug}` : '';
+  };
 
   const getPortfolioUrl = () => {
     const baseUrl = window.location.origin;
     return user ? `${baseUrl}/p/${user.id}` : '';
+  };
+
+  const handleCopyLink = async () => {
+    const url = getPublicUrl();
+    if (!url) {
+      toast({ title: "No link available", description: "Publish your portfolio first to get a shareable link.", variant: "destructive" });
+      return;
+    }
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast({ title: "Link copied!", description: url });
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownloadPdf = async () => {
@@ -67,6 +86,10 @@ export function DashboardHeader() {
         </div>
         <div className="flex items-center gap-2">
           <ModeToggle />
+          <Button onClick={handleCopyLink} variant="ghost" size="sm" className="hidden sm:flex text-muted-foreground hover:text-foreground gap-1.5">
+            {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+            {copied ? 'Copied!' : 'Copy Link'}
+          </Button>
           <Button onClick={() => setShareOpen(true)} variant="ghost" size="sm" className="hidden sm:flex text-muted-foreground hover:text-foreground" data-tour="chat">
             <Share2 className="h-4 w-4 mr-2" />
             Share
