@@ -207,7 +207,7 @@ export function MinimalSaasTemplate({ profile, onContactClick }: MinimalSaasTemp
           )}
         </div>
         <p className="text-[10px] mt-4" style={{ color: '#D1D5DB' }}>
-          Built with FolioGen
+          Built with Foliogen
         </p>
       </footer>
     </div>

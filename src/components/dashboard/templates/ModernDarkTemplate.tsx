@@ -869,7 +869,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
             </span>
           </div>
           <p className="text-xs text-white/40">
-            Built with FolioGen
+            Built with Foliogen
           </p>
         </div>
       </footer>

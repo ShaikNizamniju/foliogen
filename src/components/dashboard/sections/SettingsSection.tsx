@@ -54,7 +54,7 @@ export function SettingsSection() {
       <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
         <h2 className="font-semibold text-foreground mb-4">Sign Out</h2>
         <p className="text-sm text-muted-foreground mb-4">
-          Sign out of your FolioGen account.
+          Sign out of your Foliogen account.
         </p>
         <Button variant="outline" onClick={handleSignOut} className="text-destructive border-destructive/50 hover:bg-destructive hover:text-destructive-foreground">
           <LogOut className="h-4 w-4 mr-2" />

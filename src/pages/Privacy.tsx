@@ -9,7 +9,7 @@ const Privacy = () => {
       <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="FolioGen" className="h-10 w-auto" />
+            <img src={logo} alt="Foliogen" className="h-10 w-auto" />
           </Link>
           <Link 
             to="/" 
@@ -104,7 +104,7 @@ const Privacy = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold text-white mb-4">7. Terms of Service</h2>
             <p className="text-slate-400 leading-relaxed">
-              By using FolioGen, you agree to use the service for lawful purposes only. You retain 
+              By using Foliogen, you agree to use the service for lawful purposes only. You retain 
               ownership of all content you upload. We reserve the right to terminate accounts that 
               violate these terms or engage in abusive behavior.
             </p>
@@ -116,7 +116,7 @@ const Privacy = () => {
       <footer className="border-t border-white/10 bg-slate-950 py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} FolioGen. All rights reserved.
+            © {new Date().getFullYear()} Foliogen. All rights reserved.
           </p>
         </div>
       </footer>
