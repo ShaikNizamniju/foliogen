@@ -221,7 +221,7 @@ export function Hero() {
             variants={heroItemVariants}
             className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
           >
-            <TypewriterText text="Your Career. Accelerated." />
+            <TypewriterText text="Your Professional Identity, Engineered." />
           </motion.h1>
 
           {/* Subheadline */}

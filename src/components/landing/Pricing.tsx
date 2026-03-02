@@ -11,6 +11,7 @@ const plans = [
     features: [
       '1 Portfolio',
       'Minimalist Template',
+      'AI Portfolio Scoring',
       'FolioGen Subdomain',
       'Basic Analytics',
       'Email Support',
@@ -25,7 +26,7 @@ const plans = [
     description: 'Launch offer — one-time payment',
     features: [
       'Unlimited Portfolios',
-      'All 3 Pro Templates',
+      'All 7+ Design Systems',
       'Custom Domain',
       'AI Writing Assistant',
       'LinkedIn Import',

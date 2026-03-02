@@ -1,5 +1,5 @@
 import { motion, useInView } from 'framer-motion';
-import { Database, Sparkles, Rocket } from 'lucide-react';
+import { Database, Sparkles, Rocket, TrendingUp } from 'lucide-react';
 import { useRef } from 'react';
 
 const steps = [
@@ -20,6 +20,12 @@ const steps = [
     title: 'Deploy',
     description: 'Launch a live portfolio and export an ATS-PDF.',
     gradient: 'from-emerald-500 to-green-400',
+  },
+  {
+    icon: TrendingUp,
+    title: 'Optimize',
+    description: 'Get real-time AI feedback with our Scoring Engine to maximize your hiring potential.',
+    gradient: 'from-indigo-500 to-violet-400',
   },
 ];
 
@@ -46,7 +52,7 @@ export function HowItWorks() {
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl text-balance">
             From Resume to Portfolio{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-              in 3 Steps
+              in 4 Steps
             </span>
           </h2>
           <p className="text-lg text-muted-foreground text-balance">
@@ -68,7 +74,7 @@ export function HowItWorks() {
           />
 
           {/* Steps */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4">
             {steps.map((step, index) => (
               <motion.div
                 key={step.title}

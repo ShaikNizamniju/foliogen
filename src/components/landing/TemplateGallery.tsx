@@ -3,40 +3,46 @@ import { Palette, Code, Briefcase, Sparkles, Zap, GraduationCap } from 'lucide-r
 
 const templates = [
   {
-    name: 'Minimalist',
-    description: 'Clean and elegant for any profession',
-    icon: Sparkles,
-    gradient: 'from-slate-500 to-slate-700',
-  },
-  {
-    name: 'Creative',
-    description: 'Bold colors for designers & artists',
-    icon: Palette,
-    gradient: 'from-pink-500 to-purple-600',
-  },
-  {
-    name: 'Developer',
-    description: 'Terminal-inspired for engineers',
+    name: 'Arpeggio — Brutalist',
+    description: 'Raw, high-impact layouts for engineers & makers',
     icon: Code,
-    gradient: 'from-green-500 to-emerald-600',
+    gradient: 'from-rose-500 to-red-700',
   },
   {
-    name: 'Executive',
-    description: 'Professional for business leaders',
+    name: 'Nakula — Glassmorphic',
+    description: 'Frosted-glass elegance for creatives & designers',
+    icon: Palette,
+    gradient: 'from-sky-400 to-cyan-600',
+  },
+  {
+    name: 'Niju Bold — Leadership',
+    description: 'Commanding typography for speakers & thought leaders',
     icon: Briefcase,
     gradient: 'from-amber-500 to-orange-600',
   },
   {
-    name: 'SaaS',
-    description: 'Modern tech startup aesthetic',
+    name: 'Minimal SaaS',
+    description: 'Clean indigo-accented layout for PMs & developers',
     icon: Zap,
-    gradient: 'from-blue-500 to-cyan-500',
+    gradient: 'from-indigo-500 to-violet-600',
   },
   {
-    name: 'Academic',
-    description: 'Scholarly for researchers & educators',
+    name: 'Destello — Creative',
+    description: 'Vibrant gradients for artists & storytellers',
+    icon: Sparkles,
+    gradient: 'from-pink-500 to-purple-600',
+  },
+  {
+    name: 'Gaspar — Executive',
+    description: 'Refined dark tones for corporate professionals',
     icon: GraduationCap,
-    gradient: 'from-indigo-500 to-violet-600',
+    gradient: 'from-slate-500 to-slate-700',
+  },
+  {
+    name: 'FRQNCY — Tech',
+    description: 'Signal-inspired aesthetic for data & AI roles',
+    icon: Code,
+    gradient: 'from-green-500 to-emerald-600',
   },
 ];
 
@@ -80,13 +86,13 @@ export function TemplateGallery() {
           className="mx-auto max-w-2xl text-center mb-16"
         >
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-            11 Premium{' '}
+            7+ Industry-Standard{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
-              Templates
+              Design Systems
             </span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            From minimalist to creative, find the perfect design for your industry.
+            From Brutalist to Glassmorphic, find the perfect style for your domain.
           </p>
         </motion.div>
 
@@ -95,7 +101,7 @@ export function TemplateGallery() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="mx-auto max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="mx-auto max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
           {templates.map((template) => (
             <motion.div
@@ -128,7 +134,7 @@ export function TemplateGallery() {
           viewport={{ once: true }}
           className="text-center text-muted-foreground mt-8"
         >
-          + 5 more templates available in your dashboard
+          More design systems added regularly — pick your domain, we pick the perfect fit.
         </motion.p>
       </div>
     </section>
