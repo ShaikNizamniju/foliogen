@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import * as pdfjsLib from 'pdfjs-dist';
+import { getRecommendedTemplate, ProfessionalDomain } from '@/lib/domainRecommendation';
 
 // Use the specific CDNJS URL for version 3.11.174 (Matches the installed package)
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
@@ -29,6 +30,7 @@ interface ParsedData {
   workExperience?: WorkExperience[];
   projects?: Project[];
   keyHighlights?: string[];
+  predictedDomain?: ProfessionalDomain;
 }
 
 interface ParseStats {
@@ -176,6 +178,15 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       finalSkills = [...profile.skills, ...newSkills];
     }
 
+    // Determine template: use AI-predicted domain or fallback to modern-dark
+    const domain = parsedData.predictedDomain as ProfessionalDomain | undefined;
+    const recommendedTemplate = domain ? getRecommendedTemplate(domain) : 'modern-dark';
+
+    // Save domain to localStorage for gallery recommendations
+    if (domain) {
+      localStorage.setItem('foliogen_domain', domain);
+    }
+
     updateProfile({
       fullName: parsedData.fullName || profile.fullName,
       headline: parsedData.headline || profile.headline,
@@ -188,12 +199,11 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       projects: parsedData.projects || profile.projects,
       keyHighlights: parsedData.keyHighlights || profile.keyHighlights,
       resumeUrl: resumeUrl,
-      selectedTemplate: 'modern-dark',
+      selectedTemplate: recommendedTemplate as typeof profile.selectedTemplate,
     });
 
-    // Auto-switch to Modern Dark template
     if (onTemplateChange) {
-      onTemplateChange('modern-dark');
+      onTemplateChange(recommendedTemplate);
     }
 
     // Scroll to the preview section
@@ -341,7 +351,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                   animate={{ opacity: [1, 0.7, 1] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
-                  {state === 'extracting' ? 'Reading your resume...' : 'Analyzing career history...'}
+                  {state === 'extracting' ? 'Reading your resume...' : 'Brainstorming your portfolio...'}
                 </motion.h3>
                 <p className="text-sm text-muted-foreground">
                   {fileName && <span className="font-medium">{fileName}</span>}

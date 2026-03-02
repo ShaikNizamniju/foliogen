@@ -28,7 +28,7 @@ const fadeUp = {
 };
 
 export function NijuBoldTemplate({ profile, onContactClick }: NijuBoldTemplateProps) {
-  const name = profile?.fullName || 'ALEXANDRA VOSS';
+  const name = profile?.fullName || 'ALEX RIVERA';
   const headline = profile?.headline || 'Thought Leader · Keynote Speaker · Author';
   const bio = profile?.bio || 'I help organizations navigate disruption with clarity. 15 years of strategy, 300+ keynotes, one mission: make complexity simple.';
   const skills = profile?.skills?.length ? profile.skills : ['Strategy', 'Public Speaking', 'Leadership', 'Innovation', 'AI Ethics', 'Product Vision'];
@@ -36,7 +36,7 @@ export function NijuBoldTemplate({ profile, onContactClick }: NijuBoldTemplatePr
     ? profile.projects.slice(0, 4).map((p) => ({ ...p, techStack: p.techStack || [] }))
     : demoProjects;
   const experience = profile?.workExperience?.length ? profile.workExperience : demoExperience;
-  const email = profile?.email || 'hello@alexandravoss.com';
+  const email = profile?.email || 'hello@alexrivera.com';
   const linkedin = profile?.linkedinUrl || '';
 
   return (
