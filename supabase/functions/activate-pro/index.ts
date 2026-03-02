@@ -6,13 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
+// Plan configuration
+const PLAN_CONFIG: Record<number, { planType: string; renewalDays: number }> = {
+  19900: { planType: 'basic', renewalDays: 30 },   // ₹199 monthly
+  99900: { planType: 'pro', renewalDays: 365 },     // ₹999 yearly
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Authenticate user
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -76,8 +81,8 @@ serve(async (req) => {
 
     const payment = await verifyResponse.json();
 
-    // Verify payment is captured and matches expected amounts (₹199 basic or ₹999 pro)
-    const validAmounts = [19900, 99900]; // paise
+    // Verify payment is captured and matches expected amounts
+    const validAmounts = Object.keys(PLAN_CONFIG).map(Number);
     if (payment.status !== 'captured' || !validAmounts.includes(payment.amount) || payment.currency !== 'INR') {
       console.error('Payment verification failed:', payment.status, payment.amount, payment.currency);
       return new Response(
@@ -86,7 +91,12 @@ serve(async (req) => {
       );
     }
 
-    // Use service role to update pro fields (bypasses the trigger protection)
+    const config = PLAN_CONFIG[payment.amount];
+    const now = new Date();
+    const renewalDate = new Date(now);
+    renewalDate.setDate(renewalDate.getDate() + config.renewalDays);
+
+    // Use service role to update pro fields
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
@@ -109,7 +119,10 @@ serve(async (req) => {
       .update({
         is_pro: true,
         subscription_id: paymentId,
-        pro_since: new Date().toISOString(),
+        pro_since: now.toISOString(),
+        plan_type: config.planType,
+        subscription_status: 'active',
+        next_renewal_date: renewalDate.toISOString(),
       })
       .eq('user_id', userId);
 
@@ -121,10 +134,40 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Pro activated for user ${userId} with payment ${paymentId}`);
+    // Send confirmation email via EmailJS
+    try {
+      const EMAILJS_SERVICE_ID = Deno.env.get('EMAILJS_SERVICE_ID');
+      const EMAILJS_TEMPLATE_ID = Deno.env.get('EMAILJS_TEMPLATE_ID');
+      const EMAILJS_PUBLIC_KEY = Deno.env.get('EMAILJS_PUBLIC_KEY');
+
+      if (EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
+        const planLabel = config.planType === 'pro' ? 'Pro (₹999/year)' : 'Basic (₹199/mo)';
+        await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            service_id: EMAILJS_SERVICE_ID,
+            template_id: EMAILJS_TEMPLATE_ID,
+            user_id: EMAILJS_PUBLIC_KEY,
+            template_params: {
+              from_name: "Foliogen",
+              from_email: "noreply@foliogen.in",
+              to_email: user.email,
+              to_name: user.user_metadata?.full_name || "there",
+              message: `🎉 Welcome to Foliogen ${config.planType === 'pro' ? 'Pro' : 'Basic'}!\n\nYour ${planLabel} plan is now active.\nPayment ID: ${paymentId}\nAmount: ₹${payment.amount / 100}\n\nYou now have access to ${config.planType === 'pro' ? 'all 19+ templates, Priority AI, SpyGlass Analytics, and more' : '4 premium templates and standard AI suggestions'}.\n\nThank you for choosing Foliogen!\n— Team Foliogen`,
+            },
+          }),
+        });
+        console.log('Confirmation email sent to', user.email);
+      }
+    } catch (emailErr) {
+      console.error('Email send failed (non-blocking):', emailErr);
+    }
+
+    console.log(`${config.planType} activated for user ${userId} with payment ${paymentId}`);
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ success: true, planType: config.planType }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

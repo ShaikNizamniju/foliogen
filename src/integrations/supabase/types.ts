@@ -376,58 +376,6 @@ export type Database = {
           website: string | null
           work_experience: Json | null
         }
-        Insert: {
-          bio?: string | null
-          calendly_url?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
-          id?: string | null
-          is_pro?: boolean | null
-          key_highlights?: string[] | null
-          linkedin_url?: string | null
-          location?: string | null
-          photo_url?: string | null
-          projects?: never
-          resume_url?: string | null
-          selected_font?: string | null
-          selected_template?: string | null
-          skills?: string[] | null
-          twitter_url?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          username?: string | null
-          views?: number | null
-          website?: string | null
-          work_experience?: Json | null
-        }
-        Update: {
-          bio?: string | null
-          calendly_url?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          github_url?: string | null
-          headline?: string | null
-          id?: string | null
-          is_pro?: boolean | null
-          key_highlights?: string[] | null
-          linkedin_url?: string | null
-          location?: string | null
-          photo_url?: string | null
-          projects?: never
-          resume_url?: string | null
-          selected_font?: string | null
-          selected_template?: string | null
-          skills?: string[] | null
-          twitter_url?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          username?: string | null
-          views?: number | null
-          website?: string | null
-          work_experience?: Json | null
-        }
         Relationships: []
       }
     }
