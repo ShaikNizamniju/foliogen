@@ -58,6 +58,7 @@ export function BillingSection() {
   }
 
   const displayPlanName = planType === 'pro' ? 'Pro' : planType === 'basic' ? 'Basic' : 'Free';
+  const isFree = planType === 'free' || (!planType || planType === '');
   const isActivePlan = subscriptionStatus === 'active';
 
   return (
@@ -158,9 +159,34 @@ export function BillingSection() {
             )}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            You're on the free plan. Choose a plan below to unlock premium features.
-          </p>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-border">
+              <div className="p-2 rounded-lg bg-muted">
+                <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-foreground">Free Plan</p>
+                <p className="text-sm text-muted-foreground">
+                  1 template, basic resume parsing, community support
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={() => handleUpgrade(19900)}
+              disabled={paying}
+              size="lg"
+              className="w-full"
+            >
+              {paying ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                "Upgrade to Basic — ₹199/mo"
+              )}
+            </Button>
+          </div>
         )}
       </div>
 
