@@ -29,12 +29,30 @@ function getUserDomain(): ProfessionalDomain | null {
   return null;
 }
 
+// Domain-aware benchmark targets
+interface DomainBenchmarks {
+  projectTarget: number;
+  skillTarget: number;
+  contactTarget: number;
+}
+
+function getDomainBenchmarks(domain: ProfessionalDomain | null): DomainBenchmarks {
+  switch (domain) {
+    case 'tech': return { projectTarget: 5, skillTarget: 15, contactTarget: 4 };
+    case 'creative': return { projectTarget: 5, skillTarget: 10, contactTarget: 3 };
+    case 'corporate': return { projectTarget: 3, skillTarget: 12, contactTarget: 5 };
+    case 'luxury': return { projectTarget: 4, skillTarget: 10, contactTarget: 3 };
+    default: return { projectTarget: 5, skillTarget: 12, contactTarget: 4 };
+  }
+}
+
 export function calculatePortfolioStrength(profile: ProfileData): PortfolioStrength {
-  const projects = getProjectScore(profile.projects.length);
-  const contact = getContactScore(profile);
-  const mapping = getSkillMappingScore(profile.skills, profile.projects);
   const domain = getUserDomain();
-  const recommendations = getRecommendations(profile, domain);
+  const benchmarks = getDomainBenchmarks(domain);
+  const projects = getProjectScore(profile.projects.length, benchmarks.projectTarget);
+  const contact = getContactScore(profile, benchmarks.contactTarget);
+  const mapping = getSkillMappingScore(profile.skills, profile.projects, benchmarks.skillTarget);
+  const recommendations = getRecommendations(profile, domain, benchmarks);
 
   return {
     totalScore: projects + contact + mapping,
@@ -43,56 +61,66 @@ export function calculatePortfolioStrength(profile: ProfileData): PortfolioStren
   };
 }
 
-function getProjectScore(count: number): number {
-  if (count >= 5) return 30;
-  if (count >= 3) return 25;
-  if (count >= 1) return 15;
-  return 0;
+function getProjectScore(count: number, target: number): number {
+  return Math.min(30, Math.round((count / target) * 30));
 }
 
-function getContactScore(profile: ProfileData): number {
+function getContactScore(profile: ProfileData, target: number): number {
   const fields = [profile.email, profile.linkedinUrl, profile.githubUrl, profile.twitterUrl, profile.website];
-  return fields.filter(Boolean).length * 4;
+  const filled = fields.filter(Boolean).length;
+  return Math.min(20, Math.round((filled / target) * 20));
 }
 
-function getSkillMappingScore(skills: string[], projects: ProfileData["projects"]): number {
+function getSkillMappingScore(skills: string[], projects: ProfileData["projects"], target: number): number {
   if (skills.length === 0) return 0;
 
-  // Cap at 15 skills for scoring purposes — encourages quality over quantity
-  const cappedSkills = skills.slice(0, 15);
+  const cappedSkills = skills.slice(0, target);
   const allTech = new Set(
     projects.flatMap((p) => (p.techStack ?? []).map((t) => t.toLowerCase()))
   );
 
   const matched = cappedSkills.filter((s) => allTech.has(s.toLowerCase())).length;
-  return Math.round((matched / cappedSkills.length) * 50);
+  return Math.round((matched / Math.min(skills.length, target)) * 50);
 }
 
 // --- Domain-aware recommendations ---
 
-function getRecommendations(profile: ProfileData, domain: ProfessionalDomain | null): Recommendation[] {
+function getRecommendations(profile: ProfileData, domain: ProfessionalDomain | null, benchmarks: DomainBenchmarks): Recommendation[] {
   const recs: Recommendation[] = [];
+  const domainLabel = domain ? domain.charAt(0).toUpperCase() + domain.slice(1) : 'Your field';
 
-  // Universal recommendations
-  if (profile.projects.length < 5) {
-    const needed = 5 - profile.projects.length;
-    const pts = profile.projects.length < 1 ? 15 : profile.projects.length < 3 ? 10 : 5;
-    recs.push({ id: 'more-projects', label: `Add ${needed} more project${needed > 1 ? 's' : ''} to gain +${pts} points`, completed: false, points: pts });
+  // Dynamic project recommendation
+  if (profile.projects.length < benchmarks.projectTarget) {
+    const needed = benchmarks.projectTarget - profile.projects.length;
+    const currentPct = Math.round((profile.projects.length / benchmarks.projectTarget) * 30);
+    const pts = 30 - currentPct;
+    recs.push({ id: 'more-projects', label: `Current: ${profile.projects.length} / Required for ${domainLabel}: ${benchmarks.projectTarget} projects (+${pts} pts)`, completed: false, points: pts });
   }
-  if (!profile.email) recs.push({ id: 'add-email', label: 'Add a contact email (+4 pts)', completed: false, points: 4 });
-  if (!profile.linkedinUrl) recs.push({ id: 'add-linkedin', label: 'Add your LinkedIn profile (+4 pts)', completed: false, points: 4 });
-  if (!profile.githubUrl) recs.push({ id: 'add-github', label: 'Add your GitHub link (+4 pts)', completed: false, points: 4 });
-  if (!profile.website) recs.push({ id: 'add-website', label: 'Add a personal website (+4 pts)', completed: false, points: 4 });
 
-  // Skill mapping tip
+  // Contact recommendations with dynamic target
+  const contactFields = [
+    { key: 'email', label: 'contact email', value: profile.email },
+    { key: 'linkedin', label: 'LinkedIn profile', value: profile.linkedinUrl },
+    { key: 'github', label: 'GitHub link', value: profile.githubUrl },
+    { key: 'website', label: 'personal website', value: profile.website },
+  ];
+  const filledContacts = contactFields.filter(f => !!f.value).length;
+  const missingContacts = contactFields.filter(f => !f.value);
+  if (filledContacts < benchmarks.contactTarget && missingContacts.length > 0) {
+    const top = missingContacts[0];
+    const ptsPerContact = Math.round(20 / benchmarks.contactTarget);
+    recs.push({ id: `add-${top.key}`, label: `Current: ${filledContacts} / Required for ${domainLabel}: ${benchmarks.contactTarget} links — Add ${top.label} (+${ptsPerContact} pts)`, completed: false, points: ptsPerContact });
+  }
+
+  // Skill mapping tip with dynamic target
   if (profile.skills.length > 0 && profile.projects.length > 0) {
     const allTech = new Set(profile.projects.flatMap((p) => (p.techStack ?? []).map((t) => t.toLowerCase())));
     const unmatched = profile.skills.filter((s) => !allTech.has(s.toLowerCase()));
     if (unmatched.length > 0) {
-      recs.push({ id: 'match-skills', label: `Add "${unmatched[0]}" to a project's tech stack to boost mapping score`, completed: false, points: Math.round(50 / profile.skills.length) });
+      recs.push({ id: 'match-skills', label: `Add "${unmatched[0]}" to a project's tech stack to boost mapping score`, completed: false, points: Math.round(50 / Math.min(profile.skills.length, benchmarks.skillTarget)) });
     }
   } else if (profile.skills.length === 0) {
-    recs.push({ id: 'add-skills', label: 'Add skills and map them to project tech stacks (+50 pts potential)', completed: false, points: 50 });
+    recs.push({ id: 'add-skills', label: `Current: 0 / Required for ${domainLabel}: ${benchmarks.skillTarget} skills (+50 pts potential)`, completed: false, points: 50 });
   }
 
   // Domain-specific tips

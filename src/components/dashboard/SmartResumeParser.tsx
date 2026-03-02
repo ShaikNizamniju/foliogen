@@ -281,12 +281,12 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                   <UploadCloud className={`w-10 h-10 transition-colors ${isDragging ? 'text-primary' : 'text-primary/70'}`} />
                 </motion.div>
                 <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-foreground">
-                    Drop your resume to auto-build your portfolio
-                  </h3>
-                  <p className="text-sm text-muted-foreground max-w-md">
-                    Our AI will extract your work experience, skills, and achievements in seconds
-                  </p>
+                   <h3 className="text-xl font-semibold text-foreground">
+                     Drop your Resume or LinkedIn PDF
+                   </h3>
+                   <p className="text-sm text-muted-foreground max-w-md">
+                     Supports standard resumes and LinkedIn PDF exports — AI maps everything automatically
+                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <FileText className="w-4 h-4" />
