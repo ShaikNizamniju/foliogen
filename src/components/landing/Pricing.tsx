@@ -4,10 +4,24 @@ import { Link } from 'react-router-dom';
 
 const plans = [
   {
+    name: 'Free',
+    price: '₹0',
+    period: 'forever',
+    description: 'The hook — see your Portfolio Strength Score',
+    features: [
+      '1 Standard Template',
+      'Basic Resume Parsing',
+      'Foliogen Subdomain',
+      'Community Support',
+    ],
+    cta: 'Start for Free',
+    popular: false,
+  },
+  {
     name: 'Basic',
     price: '₹199',
     period: 'mo',
-    description: 'Great for professionals getting started',
+    description: 'Unlock professional templates & better AI tips',
     features: [
       '4 Portfolio Templates',
       'AI Portfolio Scoring',
@@ -54,7 +68,7 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 gap-8 lg:grid-cols-2">
+        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -74,7 +88,7 @@ export function Pricing() {
 
               <div className="mb-6">
                 <h3 className="text-xl font-semibold text-foreground">{plan.name}</h3>
-                <p className="mt-1 text-muted-foreground">{plan.description}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
               </div>
 
               <div className="mb-6">
@@ -88,7 +102,7 @@ export function Pricing() {
                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
                       <Check className="h-3 w-3" />
                     </div>
-                    <span className="text-foreground">{feature}</span>
+                    <span className="text-sm text-foreground">{feature}</span>
                   </li>
                 ))}
               </ul>
