@@ -41,9 +41,9 @@ export const domainOptions: DomainOption[] = [
 
 /** Domain → template tag map for highlighting in the gallery */
 export const domainTemplateMap: Record<ProfessionalDomain, string[]> = {
-  tech: ['arpeggio', 'dev', 'minimal-saas', 'modern-dark'],
-  creative: ['destello', 'frqncy', 'niju-bold', 'studio', 'brutalist'],
-  corporate: ['executive', 'saas', 'minimalist', 'swiss'],
+  tech: ['arpeggio', 'dev', 'minimal-saas', 'modern-dark', 'frqncy'],
+  creative: ['destello', 'frqncy', 'niju-bold', 'studio', 'brutalist', 'creative', 'influencer'],
+  corporate: ['executive', 'saas', 'minimalist', 'swiss', 'academic'],
   luxury: ['gaspar', 'nakula', 'academic', 'noir'],
 };
 

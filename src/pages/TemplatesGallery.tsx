@@ -8,23 +8,38 @@ import { ArpeggioTemplate } from '@/components/templates/ArpeggioTemplate';
 import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
 import { NijuBoldTemplate } from '@/components/templates/NijuBoldTemplate';
 import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
+import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
+import { ModernDarkTemplate } from '@/components/dashboard/templates/ModernDarkTemplate';
+import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
+import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
+import { DevTemplate } from '@/components/dashboard/templates/DevTemplate';
+import { BrutalistTemplate } from '@/components/dashboard/templates/BrutalistTemplate';
+import { AcademicTemplate } from '@/components/dashboard/templates/AcademicTemplate';
+import { StudioTemplate } from '@/components/dashboard/templates/StudioTemplate';
+import { ExecutiveTemplate } from '@/components/dashboard/templates/ExecutiveTemplate';
+import { InfluencerTemplate } from '@/components/dashboard/templates/InfluencerTemplate';
+import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
+import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
 import { Helmet } from 'react-helmet-async';
 import { Badge } from '@/components/ui/badge';
 import { isRecommendedForDomain, isDomainRelevant, type ProfessionalDomain } from '@/lib/domainRecommendation';
 
 const ONBOARDING_DONE_KEY = 'foliogen_onboarding_domain';
 
+type TemplateCategory = 'editorial' | 'brutalist' | 'modern' | 'creative' | 'glassmorphic' | 'tech' | 'bold' | 'minimal' | 'corporate' | 'cinematic';
+
 interface TemplateEntry {
   id: string;
   name: string;
   tagline: string;
   style: string;
-  category: 'editorial' | 'brutalist' | 'modern' | 'creative' | 'glassmorphic' | 'tech' | 'bold';
+  category: TemplateCategory;
   gradient: string;
   preview: React.ComponentType<any>;
 }
 
 const galleryTemplates: TemplateEntry[] = [
+  // ── New "Genius" Templates ──
   {
     id: 'gaspar',
     name: 'GASPAR',
@@ -88,6 +103,115 @@ const galleryTemplates: TemplateEntry[] = [
     gradient: 'from-[#FAFBFC] to-[#EEF2FF]',
     preview: MinimalSaasTemplate,
   },
+  // ── Original Templates ──
+  {
+    id: 'modern-dark',
+    name: 'MODERN DARK',
+    tagline: 'Cosmic night with glassmorphism & cyan accents',
+    style: 'Modern · Dark · Glassmorphic',
+    category: 'modern',
+    gradient: 'from-[#0A0A1F] to-[#0F172A]',
+    preview: ModernDarkTemplate,
+  },
+  {
+    id: 'minimalist',
+    name: 'THE MINIMALIST',
+    tagline: 'Clean Swiss design with elegant spacing & editorial sidebar',
+    style: 'Minimal · Swiss · Monochrome',
+    category: 'minimal',
+    gradient: 'from-[#FFFFFF] to-[#F0F0F0]',
+    preview: MinimalistTemplate,
+  },
+  {
+    id: 'creative',
+    name: 'THE CREATIVE',
+    tagline: 'Vibrant bento grid with aurora effects & colorful badges',
+    style: 'Creative · Bento · Aurora',
+    category: 'creative',
+    gradient: 'from-[#F8F0FF] to-[#FFF0F8]',
+    preview: CreativeTemplate,
+  },
+  {
+    id: 'saas',
+    name: 'THE FOUNDER',
+    tagline: 'Stripe-inspired metrics showcase for startup builders',
+    style: 'Corporate · Metrics · SaaS',
+    category: 'corporate',
+    gradient: 'from-[#F5F5FF] to-[#EEF2FF]',
+    preview: SaasTemplate,
+  },
+  {
+    id: 'dev',
+    name: 'THE TERMINAL',
+    tagline: 'Dark IDE with typewriter effects for developers',
+    style: 'Tech · Terminal · Dark',
+    category: 'tech',
+    gradient: 'from-[#0D1117] to-[#161B22]',
+    preview: DevTemplate,
+  },
+  {
+    id: 'brutalist',
+    name: 'THE BRUTALIST',
+    tagline: 'Neo-brutalist with bold shadows & raw edges',
+    style: 'Brutalist · Bold · Raw',
+    category: 'brutalist',
+    gradient: 'from-[#FFFBE6] to-[#FFF0B3]',
+    preview: BrutalistTemplate,
+  },
+  {
+    id: 'academic',
+    name: 'THE ACADEMIC',
+    tagline: 'Ivy League elegance with serif fonts & classic layout',
+    style: 'Academic · Serif · Classic',
+    category: 'editorial',
+    gradient: 'from-[#FAF9F6] to-[#F0EDE8]',
+    preview: AcademicTemplate,
+  },
+  {
+    id: 'studio',
+    name: 'THE STUDIO',
+    tagline: 'Visual-first masonry grid for photographers & creatives',
+    style: 'Creative · Masonry · Visual',
+    category: 'creative',
+    gradient: 'from-[#FAFAFA] to-[#F0F0F0]',
+    preview: StudioTemplate,
+  },
+  {
+    id: 'executive',
+    name: 'THE EXECUTIVE',
+    tagline: 'Fortune 500 navy with gold accents & authority layout',
+    style: 'Corporate · Navy · Executive',
+    category: 'corporate',
+    gradient: 'from-[#0B1D3A] to-[#0F2849]',
+    preview: ExecutiveTemplate,
+  },
+  {
+    id: 'influencer',
+    name: 'THE INFLUENCER',
+    tagline: 'Premium link-in-bio with glassmorphism & social focus',
+    style: 'Modern · Social · Glassmorphic',
+    category: 'modern',
+    gradient: 'from-[#FFF0F5] to-[#F0E8FF]',
+    preview: InfluencerTemplate,
+  },
+  {
+    id: 'swiss',
+    name: 'THE SWISS',
+    tagline: 'International typographic grid style with precision layout',
+    style: 'Minimal · Grid · Typography',
+    category: 'minimal',
+    gradient: 'from-[#FFFFFF] to-[#F5F5F5]',
+    preview: SwissTemplate,
+  },
+  {
+    id: 'noir',
+    name: 'THE NOIR',
+    tagline: 'Cinematic black & white with film grain & dramatic lighting',
+    style: 'Cinematic · B&W · Film',
+    category: 'cinematic',
+    gradient: 'from-[#0A0A0A] to-[#1A1A1A]',
+    preview: NoirTemplate,
+  },
 ];
 
 const categories = [
@@ -98,6 +222,10 @@ const categories = [
   { id: 'glassmorphic', label: 'Glassmorphic' },
   { id: 'bold', label: 'Bold' },
   { id: 'tech', label: 'Tech' },
+  { id: 'modern', label: 'Modern' },
+  { id: 'minimal', label: 'Minimal' },
+  { id: 'corporate', label: 'Corporate' },
+  { id: 'cinematic', label: 'Cinematic' },
 ];
 
 const domainFilters = [
@@ -147,7 +275,7 @@ export default function TemplatesGallery() {
   return (
     <>
       <Helmet>
-        <title>Template Gallery — FolioGen</title>
+        <title>Template Gallery — Foliogen</title>
         <meta name="description" content="Browse premium portfolio templates for professionals. From editorial luxury to minimalist elegance." />
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Helmet>
@@ -162,12 +290,12 @@ export default function TemplatesGallery() {
         >
           <div className="max-w-7xl mx-auto px-6 md:px-12 py-5 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-xl font-bold tracking-tight text-foreground">FolioGen</span>
+              <span className="text-xl font-bold tracking-tight text-foreground">Foliogen</span>
               <span className="text-muted-foreground">/</span>
               <span className="text-sm text-muted-foreground">Templates</span>
             </div>
             <span className="text-xs tracking-[0.15em] uppercase text-muted-foreground">
-              {filtered.length} Template{filtered.length !== 1 ? 's' : ''}
+              {galleryTemplates.length}+ Premium Design Systems
             </span>
           </div>
         </motion.header>

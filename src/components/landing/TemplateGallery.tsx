@@ -86,7 +86,7 @@ export function TemplateGallery() {
           className="mx-auto max-w-2xl text-center mb-16"
         >
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
-            7+ Industry-Standard{' '}
+            19+ Industry-Standard{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
               Design Systems
             </span>
