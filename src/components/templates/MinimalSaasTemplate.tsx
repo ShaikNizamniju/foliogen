@@ -29,7 +29,7 @@ const fadeUp = {
 };
 
 export function MinimalSaasTemplate({ profile, onContactClick }: MinimalSaasTemplateProps) {
-  const name = profile?.fullName || 'Jordan Lee';
+  const name = profile?.fullName || 'Alex Rivera';
   const headline = profile?.headline || 'AI Product Manager & Full-Stack Developer';
   const bio = profile?.bio || 'I ship products at the intersection of AI and developer tooling. Passionate about turning complex systems into intuitive experiences.';
   const location = profile?.location || 'San Francisco, CA';
@@ -38,7 +38,7 @@ export function MinimalSaasTemplate({ profile, onContactClick }: MinimalSaasTemp
     ? profile.projects.slice(0, 6).map((p) => ({ ...p, techStack: p.techStack || [] }))
     : demoProjects;
   const experience = profile?.workExperience?.length ? profile.workExperience : demoExperience;
-  const email = profile?.email || 'jordan@example.com';
+  const email = profile?.email || 'alex@example.com';
   const github = profile?.githubUrl || '';
   const linkedin = profile?.linkedinUrl || '';
   const website = profile?.website || '';

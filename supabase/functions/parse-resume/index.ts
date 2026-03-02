@@ -68,6 +68,7 @@ serve(async (req) => {
 - workExperience (array: jobTitle, company, startDate, endDate, current, description)
 - projects (array: title, description, visualPrompt). For visualPrompt: generate a 2-4 word visual description for AI image generation, e.g., "futuristic finance dashboard neon", "minimalist e-commerce mobile", "social media analytics dark".
 - keyHighlights (array of 3-5 short, punchy strings, max 10 words each. These should be the candidate's strongest selling points, unique skills, or impressive metrics found in the text.)
+- predictedDomain: Predict the professional domain of this person. Must be exactly one of: "tech", "creative", "corporate", "luxury". Base this on their job titles, skills, and industry keywords.
 
 Return ONLY raw JSON. No markdown, no backticks.
 
