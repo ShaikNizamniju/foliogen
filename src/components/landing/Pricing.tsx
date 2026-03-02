@@ -32,7 +32,7 @@ const plans = [
       'LinkedIn Import',
       'Advanced Analytics',
       'Priority Support',
-      'Remove FolioGen Branding',
+      'Remove Foliogen Branding',
     ],
     cta: 'Start Pro Trial',
     popular: true,
