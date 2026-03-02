@@ -105,7 +105,7 @@ function MarqueeRow({ direction = 'left' }: { direction?: 'left' | 'right' }) {
             key={`${c.name}-${i}`}
             className="flex items-center gap-3 px-7 py-3.5 rounded-full border border-border/60 bg-card/40 backdrop-blur-sm whitespace-nowrap group transition-all duration-300 hover:border-primary/30 hover:bg-card/70"
           >
-            <div className="h-5 w-5 flex items-center justify-center opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="h-5 w-5 flex items-center justify-center transition-all duration-300">
               <c.Logo className="h-5 w-5" />
             </div>
             <span className="text-sm font-medium text-muted-foreground/60 group-hover:text-foreground transition-colors duration-300">
