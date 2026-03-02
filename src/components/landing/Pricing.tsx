@@ -55,6 +55,33 @@ const plans = [
   },
 ];
 
+const comparisonRows = [
+  {
+    feature: 'Design Systems',
+    free: '1 Template',
+    basic: '4 Templates',
+    pro: '19+ Templates',
+  },
+  {
+    feature: 'AI Strategy',
+    free: 'Basic',
+    basic: 'Standard',
+    pro: 'Priority + SpyGlass',
+  },
+  {
+    feature: 'Branding',
+    free: 'Foliogen Branding',
+    basic: 'Foliogen Branding',
+    pro: 'Custom Domain / No Branding',
+  },
+  {
+    feature: 'Portfolio Strength',
+    free: 'Score Only',
+    basic: 'Score + Tips',
+    pro: 'Full Optimization Engine',
+  },
+];
+
 export function Pricing() {
   return (
     <section id="pricing" className="bg-muted/30 py-24 sm:py-32">
@@ -121,6 +148,36 @@ export function Pricing() {
               </Button>
             </div>
           ))}
+        </div>
+
+        {/* Feature Comparison Table */}
+        <div className="mx-auto mt-16 max-w-5xl overflow-x-auto">
+          <h3 className="mb-6 text-center text-xl font-semibold text-foreground">
+            Compare Plans
+          </h3>
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-border/50">
+                <th className="py-4 px-4 text-left font-medium text-muted-foreground">Feature</th>
+                <th className="py-4 px-4 text-center font-medium text-muted-foreground">Free</th>
+                <th className="py-4 px-4 text-center font-medium text-muted-foreground">Basic</th>
+                <th className="py-4 px-4 text-center font-medium text-primary">Pro</th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonRows.map((row, i) => (
+                <tr
+                  key={row.feature}
+                  className={`border-b border-border/30 ${i % 2 === 0 ? 'bg-muted/5' : ''}`}
+                >
+                  <td className="py-4 px-4 font-medium text-foreground">{row.feature}</td>
+                  <td className="py-4 px-4 text-center text-muted-foreground">{row.free}</td>
+                  <td className="py-4 px-4 text-center text-foreground">{row.basic}</td>
+                  <td className="py-4 px-4 text-center font-medium text-primary">{row.pro}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
