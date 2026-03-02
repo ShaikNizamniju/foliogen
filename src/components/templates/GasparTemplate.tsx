@@ -52,9 +52,9 @@ function ClientMarquee() {
 }
 
 export function GasparTemplate({ profile }: GasparTemplateProps) {
-  const name = profile?.fullName || 'GASPAR';
+  const name = profile?.fullName || 'ALEX RIVERA';
   const tagline = profile?.headline || 'Crafting stories through design';
-  const email = profile?.email || 'hello@gaspar.studio';
+  const email = profile?.email || 'hello@alexrivera.design';
   const profileProjects = profile?.projects?.length
     ? profile.projects.slice(0, 4).map((p, i) => ({
         id: i + 1,
@@ -76,7 +76,7 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
         className="sticky top-0 z-30 flex items-center justify-between px-8 md:px-16 py-6 backdrop-blur-md"
         style={{ backgroundColor: 'rgba(245,240,232,0.85)' }}
       >
-        <span className="text-2xl tracking-[0.15em] font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{name.split(' ')[0]?.toUpperCase() || 'GASPAR'}</span>
+        <span className="text-2xl tracking-[0.15em] font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{name.split(' ')[0]?.toUpperCase() || 'ALEX'}</span>
         <div className="flex gap-8 text-xs tracking-[0.2em] uppercase" style={{ color: '#8B7355' }}>
           {['Work', 'About', 'Contact'].map((l) => (
             <span key={l} className="cursor-pointer transition-colors hover:text-[#1A1A1A]">{l}</span>

@@ -32,9 +32,9 @@ const processSteps = [
 ];
 
 const testimonials = [
-  { quote: 'Destello transformed our brand from ordinary to extraordinary. Their creative instinct is unmatched.', name: 'Sarah Chen', role: 'CMO, NovaTech' },
-  { quote: 'The attention to detail and strategic thinking blew us away. A true creative partner.', name: 'Marcus Rivera', role: 'Founder, Vertex Labs' },
-  { quote: 'Working with Destello felt like having an in-house creative team that actually gets it.', name: 'Lina Johansson', role: 'Brand Director, Ember Co.' },
+  { quote: 'Destello transformed our brand from ordinary to extraordinary. Their creative instinct is unmatched.', name: 'Taylor Morgan', role: 'CMO, NovaTech' },
+  { quote: 'The attention to detail and strategic thinking blew us away. A true creative partner.', name: 'Jordan Ellis', role: 'Founder, Vertex Labs' },
+  { quote: 'Working with Destello felt like having an in-house creative team that actually gets it.', name: 'Casey Lin', role: 'Brand Director, Ember Co.' },
 ];
 
 const faqs = [

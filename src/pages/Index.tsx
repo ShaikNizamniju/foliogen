@@ -9,6 +9,7 @@ import { TemplateGallery } from '@/components/landing/TemplateGallery';
 import { Pricing } from '@/components/landing/Pricing';
 import { CompanyMarquee } from '@/components/landing/CompanyMarquee';
 import { Footer } from '@/components/landing/Footer';
+import { Testimonials } from '@/components/landing/Testimonials';
 import { JobMatchDemo } from '@/components/landing/JobMatchDemo';
 
 const Index = () => {
@@ -45,6 +46,7 @@ const Index = () => {
       <Features />
       <TemplateGallery />
       <Pricing />
+      <Testimonials />
       <CompanyMarquee />
       <Footer />
     </div>

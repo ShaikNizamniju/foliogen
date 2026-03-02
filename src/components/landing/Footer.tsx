@@ -35,7 +35,7 @@ export function Footer() {
 
           {/* Copyright */}
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} FolioGen. All rights reserved.
+            © {new Date().getFullYear()} Foliogen. All rights reserved.
           </p>
         </div>
       </div>
