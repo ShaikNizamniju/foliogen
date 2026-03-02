@@ -15,7 +15,7 @@ const tourSteps: TourStep[] = [
   {
     id: 'welcome',
     target: null,
-    title: 'Welcome to FolioGen',
+    title: 'Welcome to Foliogen',
     description: 'Your career story, upgraded. Let\'s configure your AI-powered portfolio in 3 steps.',
     position: 'center',
   },

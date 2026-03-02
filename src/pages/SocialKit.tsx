@@ -45,7 +45,7 @@ const SocialKit = () => {
                 <Sparkles className="h-9 w-9 text-white" />
               </div>
               <span className="text-5xl font-bold text-white tracking-tight">
-                FolioGen
+                Foliogen
               </span>
             </div>
             

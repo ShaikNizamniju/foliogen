@@ -12,7 +12,7 @@ const plans = [
       '1 Portfolio',
       'Minimalist Template',
       'AI Portfolio Scoring',
-      'FolioGen Subdomain',
+      'Foliogen Subdomain',
       'Basic Analytics',
       'Email Support',
     ],
