@@ -53,6 +53,7 @@ describe("calculatePortfolioStrength", () => {
     const result = calculatePortfolioStrength(profile);
     expect(result.totalScore).toBe(100);
     expect(result.breakdown).toEqual({ projects: 30, contact: 20, mapping: 50 });
+    expect(result.recommendations).toHaveLength(0);
   });
 
   it("calculates correctly for a partial profile", () => {

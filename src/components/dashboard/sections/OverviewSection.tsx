@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
 import { Progress } from '@/components/ui/progress';
@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { calculatePortfolioStrength } from '@/utils/scoringEngine';
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -29,11 +30,52 @@ const fadeUp = {
   },
 };
 
+// Radial progress ring component
+function RadialProgress({ score, size = 120, strokeWidth = 8 }: { score: number; size?: number; strokeWidth?: number }) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  const color = score >= 80 ? 'text-emerald-500' : score >= 50 ? 'text-amber-500' : 'text-red-400';
+
+  return (
+    <div className="relative" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} className="stroke-muted/40" />
+        <motion.circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          className={`stroke-current ${color}`}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
+          style={{ strokeDasharray: circumference }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <motion.span
+          className="text-2xl font-bold text-foreground tabular-nums"
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
+        >
+          {score}
+        </motion.span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-wider">/ 100</span>
+      </div>
+    </div>
+  );
+}
+
 export function OverviewSection() {
   const { profile, loading } = useProfile();
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const strength = calculatePortfolioStrength(profile);
   const completionScore = calculateCompletionScore(profile);
   const isLive = !!(profile.fullName && profile.headline && profile.bio);
   const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
@@ -69,6 +111,72 @@ export function OverviewSection() {
         <p className="text-muted-foreground mt-1">
           Your portfolio at a glance. Keep it sharp for recruiters.
         </p>
+      </motion.div>
+
+      {/* Portfolio Strength Score */}
+      <motion.div variants={fadeUp}>
+        <div className="rounded-2xl border border-border/60 bg-card p-6">
+          <div className="flex flex-col sm:flex-row items-start gap-6">
+            {/* Radial score */}
+            <div className="shrink-0">
+              <RadialProgress score={strength.totalScore} />
+            </div>
+
+            {/* Breakdown + Tips */}
+            <div className="flex-1 min-w-0">
+              <h2 className="text-sm font-semibold text-foreground mb-3">Portfolio Strength</h2>
+
+              {/* Score breakdown */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {[
+                  { label: 'Projects', value: strength.breakdown.projects, max: 30 },
+                  { label: 'Contact', value: strength.breakdown.contact, max: 20 },
+                  { label: 'Skill Map', value: strength.breakdown.mapping, max: 50 },
+                ].map((seg) => (
+                  <div key={seg.label}>
+                    <div className="flex items-baseline justify-between mb-1">
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{seg.label}</span>
+                      <span className="text-xs font-semibold text-foreground tabular-nums">{seg.value}/{seg.max}</span>
+                    </div>
+                    <Progress value={(seg.value / seg.max) * 100} className="h-1.5 bg-muted" />
+                  </div>
+                ))}
+              </div>
+
+              {/* Tips to improve */}
+              {strength.recommendations.length > 0 && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+                    <span className="text-xs font-medium text-muted-foreground">Tips to Improve</span>
+                  </div>
+                  <AnimatePresence mode="popLayout">
+                    {strength.recommendations.slice(0, 4).map((rec) => (
+                      <motion.div
+                        key={rec.id}
+                        layout
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 8, height: 0 }}
+                        className="flex items-start gap-2 text-xs text-muted-foreground"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0 mt-0.5" />
+                        <span>{rec.label}</span>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {strength.totalScore === 100 && (
+                <div className="flex items-center gap-2 text-sm text-emerald-500 font-medium">
+                  <CheckCircle2 className="h-4 w-4" />
+                  Perfect score! Your portfolio is fully optimized.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Metrics Row */}
@@ -260,7 +368,7 @@ export function OverviewSection() {
                 <p className="font-semibold text-foreground truncate text-base">{profile.fullName || 'Your Name'}</p>
                 <p className="text-sm text-muted-foreground truncate">{profile.headline || 'Add a headline'}</p>
                 <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><FolderIcon className="h-3 w-3" />{profile.projects.length} projects</span>
+                  <span className="flex items-center gap-1"><FolderOpen className="h-3 w-3" />{profile.projects.length} projects</span>
                   <span className="flex items-center gap-1"><Zap className="h-3 w-3" />{profile.skills.length} skills</span>
                   <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" />{profile.workExperience.length} roles</span>
                 </div>
@@ -277,7 +385,7 @@ export function OverviewSection() {
           { label: 'Experiences', value: profile.workExperience.length, icon: Briefcase, accent: 'bg-emerald-500/10 text-emerald-500' },
           { label: 'Projects', value: profile.projects.length, icon: Palette, accent: 'bg-amber-500/10 text-amber-500' },
           { label: 'Skills', value: profile.skills.length, icon: Zap, accent: 'bg-violet-500/10 text-violet-500' },
-          { label: 'Completion', value: `${completionScore}%`, icon: TrendingUp, accent: 'bg-primary/10 text-primary' },
+          { label: 'Strength', value: `${strength.totalScore}`, icon: TrendingUp, accent: 'bg-primary/10 text-primary' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -324,41 +432,9 @@ export function OverviewSection() {
           </Button>
         </Link>
       </motion.div>
-
-      {/* Completion Tips */}
-      <AnimatePresence>
-        {completionScore < 100 && !isProfileEmpty && (
-          <motion.div 
-            variants={fadeUp}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="rounded-2xl border border-primary/15 bg-primary/5 p-5"
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <Zap className="h-4 w-4 text-primary" />
-              <h3 className="text-sm font-semibold text-foreground">Boost Your Profile</h3>
-            </div>
-            <div className="space-y-1.5 text-sm text-muted-foreground">
-              {!profile.bio && <p>• Add a bio to introduce yourself</p>}
-              {profile.workExperience.length === 0 && <p>• Add your work experience</p>}
-              {profile.projects.length === 0 && <p>• Showcase your projects</p>}
-              {profile.skills.length === 0 && <p>• List your skills</p>}
-              {!profile.location && <p>• Add your location</p>}
-              {!profile.email && <p>• Add a contact email</p>}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 }
-
-function FolderIcon({ className }: { className?: string }) {
-  return <FolderOpen className={className} />;
-}
-
-import { FolderOpen } from 'lucide-react';
 
 function calculateCompletionScore(profile: ReturnType<typeof useProfile>['profile']): number {
   let score = 0;

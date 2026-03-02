@@ -34,6 +34,7 @@ const App = () => (
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/p/:id" element={<PublicPortfolio />} />
+                  <Route path="/u/:id" element={<PublicPortfolio />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/social-kit" element={<SocialKit />} />
                   <Route path="/templates" element={<TemplatesGallery />} />
