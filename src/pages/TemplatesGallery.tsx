@@ -1,19 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Eye, ArrowRight, Filter } from 'lucide-react';
+import { X, Eye, ArrowRight, Filter, Sparkles } from 'lucide-react';
 import { GasparTemplate } from '@/components/templates/GasparTemplate';
 import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
 import { FrqncyTemplate } from '@/components/templates/FrqncyTemplate';
 import { ArpeggioTemplate } from '@/components/templates/ArpeggioTemplate';
 import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
+import { NijuBoldTemplate } from '@/components/templates/NijuBoldTemplate';
+import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
 import { Helmet } from 'react-helmet-async';
+import { Badge } from '@/components/ui/badge';
+import { isRecommendedForDomain, isDomainRelevant, type ProfessionalDomain } from '@/lib/domainRecommendation';
+
+const ONBOARDING_DONE_KEY = 'foliogen_onboarding_domain';
 
 interface TemplateEntry {
   id: string;
   name: string;
   tagline: string;
   style: string;
-  category: 'editorial' | 'brutalist' | 'modern' | 'creative' | 'glassmorphic';
+  category: 'editorial' | 'brutalist' | 'modern' | 'creative' | 'glassmorphic' | 'tech' | 'bold';
   gradient: string;
   preview: React.ComponentType<any>;
 }
@@ -64,6 +70,24 @@ const galleryTemplates: TemplateEntry[] = [
     gradient: 'from-[#FAFAF8] to-[#F0EDE8]',
     preview: NakulaTemplate,
   },
+  {
+    id: 'niju-bold',
+    name: 'NIJU BOLD',
+    tagline: 'High-contrast massive typography for speakers & thought leaders',
+    style: 'Bold · High-Contrast · Leadership',
+    category: 'bold',
+    gradient: 'from-[#0A0A0A] to-[#1A0A10]',
+    preview: NijuBoldTemplate,
+  },
+  {
+    id: 'minimal-saas',
+    name: 'MINIMAL SAAS',
+    tagline: 'Clean tech-focused layout for AI PMs and developers',
+    style: 'Tech · Minimal · Professional',
+    category: 'tech',
+    gradient: 'from-[#FAFBFC] to-[#EEF2FF]',
+    preview: MinimalSaasTemplate,
+  },
 ];
 
 const categories = [
@@ -72,6 +96,16 @@ const categories = [
   { id: 'creative', label: 'Creative' },
   { id: 'brutalist', label: 'Brutalist' },
   { id: 'glassmorphic', label: 'Glassmorphic' },
+  { id: 'bold', label: 'Bold' },
+  { id: 'tech', label: 'Tech' },
+];
+
+const domainFilters = [
+  { id: null as ProfessionalDomain | null, label: 'All Domains' },
+  { id: 'tech' as ProfessionalDomain, label: '⌨️ Tech' },
+  { id: 'creative' as ProfessionalDomain, label: '🎨 Creative' },
+  { id: 'corporate' as ProfessionalDomain, label: '📊 Corporate' },
+  { id: 'luxury' as ProfessionalDomain, label: '✦ Luxury' },
 ];
 
 const cardVariants = {
@@ -86,11 +120,29 @@ const cardVariants = {
 export default function TemplatesGallery() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [activeDomain, setActiveDomain] = useState<ProfessionalDomain | null>(null);
   const activeTemplate = galleryTemplates.find((t) => t.id === previewId);
 
-  const filtered = activeCategory === 'all'
+  // Load saved domain from onboarding
+  useEffect(() => {
+    const stored = localStorage.getItem(ONBOARDING_DONE_KEY);
+    if (stored && stored !== 'skipped') {
+      setActiveDomain(stored as ProfessionalDomain);
+    }
+  }, []);
+
+  let filtered = activeCategory === 'all'
     ? galleryTemplates
     : galleryTemplates.filter((t) => t.category === activeCategory);
+
+  // Sort: recommended first when domain is active
+  if (activeDomain) {
+    filtered = [...filtered].sort((a, b) => {
+      const aRec = isRecommendedForDomain(a.id, activeDomain) ? -2 : isDomainRelevant(a.id, activeDomain) ? -1 : 0;
+      const bRec = isRecommendedForDomain(b.id, activeDomain) ? -2 : isDomainRelevant(b.id, activeDomain) ? -1 : 0;
+      return aRec - bRec;
+    });
+  }
 
   return (
     <>
@@ -139,6 +191,32 @@ export default function TemplatesGallery() {
           </motion.div>
         </section>
 
+        {/* Domain Filter */}
+        <section className="max-w-7xl mx-auto px-6 md:px-12 pb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="flex items-center gap-2 flex-wrap"
+          >
+            <Sparkles className="h-4 w-4 text-primary mr-1" />
+            <span className="text-xs text-muted-foreground mr-1">Domain:</span>
+            {domainFilters.map((df) => (
+              <button
+                key={df.label}
+                onClick={() => setActiveDomain(df.id)}
+                className={`px-3 py-1 text-xs rounded-full border transition-all duration-200 ${
+                  activeDomain === df.id
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-transparent text-muted-foreground border-border hover:border-primary/30'
+                }`}
+              >
+                {df.label}
+              </button>
+            ))}
+          </motion.div>
+        </section>
+
         {/* Style Filter */}
         <section className="max-w-7xl mx-auto px-6 md:px-12 pb-8">
           <motion.div
@@ -168,53 +246,74 @@ export default function TemplatesGallery() {
         <section className="max-w-7xl mx-auto px-6 md:px-12 pb-24">
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeCategory}
+              key={`${activeCategory}-${activeDomain}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              {filtered.map((template, i) => (
-                <motion.div
-                  key={template.id}
-                  custom={i}
-                  variants={cardVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className="group relative rounded-2xl border border-border bg-card overflow-hidden cursor-pointer hover:border-primary/40 transition-colors duration-300"
-                  onClick={() => setPreviewId(template.id)}
-                >
-                  {/* Thumbnail */}
-                  <div className={`relative h-56 bg-gradient-to-br ${template.gradient} overflow-hidden`}>
-                    <div className="absolute inset-0 origin-top-left scale-[0.25] w-[400%] h-[400%] pointer-events-none">
-                      <template.preview />
-                    </div>
-                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-lg">
-                          <Eye className="h-4 w-4" />
-                          Preview
+              {filtered.map((template, i) => {
+                const isRecommended = isRecommendedForDomain(template.id, activeDomain);
+                const isRelevant = isDomainRelevant(template.id, activeDomain);
+
+                return (
+                  <motion.div
+                    key={template.id}
+                    custom={i}
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className={`group relative rounded-2xl border bg-card overflow-hidden cursor-pointer transition-all duration-300 ${
+                      isRecommended
+                        ? 'border-primary ring-2 ring-primary/20 shadow-lg'
+                        : activeDomain && !isRelevant
+                        ? 'border-border opacity-50'
+                        : 'border-border hover:border-primary/40'
+                    }`}
+                    onClick={() => setPreviewId(template.id)}
+                  >
+                    {/* Recommended badge */}
+                    {isRecommended && (
+                      <div className="absolute top-3 left-3 z-20">
+                        <Badge className="bg-primary text-primary-foreground gap-1 text-[10px] shadow-lg">
+                          <Sparkles className="h-3 w-3" />
+                          Recommended
+                        </Badge>
+                      </div>
+                    )}
+
+                    {/* Thumbnail */}
+                    <div className={`relative h-56 bg-gradient-to-br ${template.gradient} overflow-hidden`}>
+                      <div className="absolute inset-0 origin-top-left scale-[0.25] w-[400%] h-[400%] pointer-events-none">
+                        <template.preview />
+                      </div>
+                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-lg">
+                            <Eye className="h-4 w-4" />
+                            Preview
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Info */}
-                  <div className="p-5">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-semibold text-foreground tracking-tight">
-                        {template.name}
-                      </h3>
-                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+                    {/* Info */}
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-foreground tracking-tight">
+                          {template.name}
+                        </h3>
+                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">{template.tagline}</p>
+                      <span className="text-xs tracking-wider uppercase text-muted-foreground/70">
+                        {template.style}
+                      </span>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">{template.tagline}</p>
-                    <span className="text-xs tracking-wider uppercase text-muted-foreground/70">
-                      {template.style}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </motion.div>
           </AnimatePresence>
         </section>
@@ -238,6 +337,12 @@ export default function TemplatesGallery() {
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-foreground">{activeTemplate.name}</span>
                   <span className="text-xs text-muted-foreground">{activeTemplate.style}</span>
+                  {isRecommendedForDomain(activeTemplate.id, activeDomain) && (
+                    <Badge className="bg-primary text-primary-foreground gap-1 text-[10px]">
+                      <Sparkles className="h-3 w-3" />
+                      Recommended
+                    </Badge>
+                  )}
                 </div>
                 <button
                   onClick={() => setPreviewId(null)}

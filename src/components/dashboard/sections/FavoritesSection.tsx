@@ -93,6 +93,16 @@ export const templates = [
     name: 'Nakula',
     description: 'Airy glassmorphic layout with serif elegance',
   },
+  {
+    id: 'niju-bold',
+    name: 'Niju Bold',
+    description: 'High-contrast large type for thought leaders',
+  },
+  {
+    id: 'minimal-saas',
+    name: 'Minimal SaaS',
+    description: 'Clean tech-focused layout for PMs & devs',
+  },
 ];
 
 const containerVariants = {
