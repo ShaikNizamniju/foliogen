@@ -8,9 +8,9 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.15,
-      delayChildren: 0.1,
-    },
-  },
+      delayChildren: 0.1
+    }
+  }
 };
 
 const itemVariants = {
@@ -24,9 +24,9 @@ const itemVariants = {
       type: 'spring' as const,
       stiffness: 90,
       damping: 18,
-      mass: 0.8,
-    },
-  },
+      mass: 0.8
+    }
+  }
 };
 
 // Mock chat messages for RAG Chat card
@@ -51,8 +51,8 @@ function MockChatWindow() {
           <Bot className="w-3 h-3 text-white" />
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // Ghost Resume visual
@@ -72,8 +72,8 @@ function GhostResumeVisual() {
       <motion.div
         animate={{ x: [0, 4, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
-        className="text-primary"
-      >
+        className="text-primary">
+
         →
       </motion.div>
       {/* 3D Web Icon */}
@@ -82,26 +82,26 @@ function GhostResumeVisual() {
           <span className="text-white text-lg">🌐</span>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 // Multimedia logos
 function MultimediaLogos() {
   return (
     <div className="mt-4 flex items-center justify-center gap-3">
-      {['🎬', '📺', '🎨'].map((emoji, i) => (
-        <motion.div
-          key={i}
-          initial={{ scale: 0.8, opacity: 0.5 }}
-          whileHover={{ scale: 1.1 }}
-          className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-xl"
-        >
+      {['🎬', '📺', '🎨'].map((emoji, i) =>
+      <motion.div
+        key={i}
+        initial={{ scale: 0.8, opacity: 0.5 }}
+        whileHover={{ scale: 1.1 }}
+        className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-xl">
+
           {emoji}
         </motion.div>
-      ))}
-    </div>
-  );
+      )}
+    </div>);
+
 }
 
 export function Features() {
@@ -111,12 +111,12 @@ export function Features() {
   return (
     <section id="features" className="relative pt-10 pb-24 sm:py-32 bg-background overflow-hidden">
       {/* Noise texture overlay */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.015] pointer-events-none"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")`
+        }} />
+
 
       {/* Background effects */}
       <div className="absolute inset-0">
@@ -129,8 +129,8 @@ export function Features() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="mx-auto max-w-2xl text-center mb-16"
-        >
+          className="mx-auto max-w-2xl text-center mb-16">
+
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-foreground sm:text-5xl text-balance">
             Everything you need to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">
@@ -147,13 +147,13 @@ export function Features() {
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
-          className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-4"
-        >
+          className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-4">
+
           {/* Card 1: Context-Aware RAG Chat (Large - spans 2 cols) */}
           <motion.div
             variants={itemVariants}
-            className="group relative md:col-span-2 rounded-2xl border border-border bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10"
-          >
+            className="group relative md:col-span-2 rounded-2xl border border-border bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-sm p-6 sm:p-8 transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/10">
+
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
@@ -173,8 +173,8 @@ export function Features() {
           {/* Card 2: Ghost Resume (Small - top right) */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10"
-          >
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/10">
+
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
@@ -194,8 +194,8 @@ export function Features() {
           {/* Card 3: 11 Premium Templates */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-accent/20 to-accent/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-accent/30 hover:shadow-2xl hover:shadow-accent/10"
-          >
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-accent/20 to-accent/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-accent/30 hover:shadow-2xl hover:shadow-accent/10">
+
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
@@ -204,9 +204,9 @@ export function Features() {
                   <Palette className="h-5 w-5" />
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-foreground">7+ Design Systems</h3>
+              <h3 className="mb-2 text-xl font-semibold text-foreground">19+ Design Systems</h3>
               <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
-                Industry-standard styles — Brutalist, Glassmorphic, Bold Leadership, and more.
+                From minimalist to creative, stunning designs for every industry.
               </p>
             </div>
           </motion.div>
@@ -214,8 +214,8 @@ export function Features() {
           {/* Card 4: Multimedia Embeds */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-violet-500/20 to-violet-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-500/10"
-          >
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-violet-500/20 to-violet-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-violet-500/30 hover:shadow-2xl hover:shadow-violet-500/10">
+
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
@@ -235,8 +235,8 @@ export function Features() {
           {/* Card 5: Instant Publishing */}
           <motion.div
             variants={itemVariants}
-            className="group relative rounded-2xl border border-border bg-gradient-to-br from-amber-500/20 to-amber-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10"
-          >
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-amber-500/20 to-amber-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/10">
+
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="relative">
               <div className="mb-4 flex items-center gap-3">
@@ -253,6 +253,6 @@ export function Features() {
           </motion.div>
         </motion.div>
       </div>
-    </section>
-  );
+    </section>);
+
 }
