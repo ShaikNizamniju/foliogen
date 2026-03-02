@@ -96,10 +96,20 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
+        <motion.div
+          className="mx-auto mt-16 grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-80px' }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }}
+        >
           {plans.map((plan) => (
-            <div
+            <motion.div
               key={plan.name}
+              variants={{
+                hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
+                visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 120, damping: 22 } },
+              }}
               className={`relative rounded-2xl border bg-card p-8 transition-all ${
                 plan.popular
                   ? 'border-primary shadow-glow'
@@ -147,9 +157,9 @@ export function Pricing() {
               >
                 <Link to="/auth">{plan.cta}</Link>
               </Button>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Feature Comparison Table */}
         <motion.div
