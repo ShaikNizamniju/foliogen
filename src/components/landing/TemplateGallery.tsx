@@ -3,19 +3,19 @@ import { Palette, Code, Briefcase, Sparkles, Zap, GraduationCap } from 'lucide-r
 
 const templates = [
   {
-    name: 'Arpeggio — Brutalist',
+    name: 'Arpeggio - Brutalist',
     description: 'Raw, high-impact layouts for engineers & makers',
     icon: Code,
     gradient: 'from-rose-500 to-red-700',
   },
   {
-    name: 'Nakula — Glassmorphic',
+    name: 'Nakula - Glassmorphic',
     description: 'Frosted-glass elegance for creatives & designers',
     icon: Palette,
     gradient: 'from-sky-400 to-cyan-600',
   },
   {
-    name: 'Niju Bold — Leadership',
+    name: 'Hero Bold - Leadership',
     description: 'Commanding typography for speakers & thought leaders',
     icon: Briefcase,
     gradient: 'from-amber-500 to-orange-600',
@@ -27,19 +27,19 @@ const templates = [
     gradient: 'from-indigo-500 to-violet-600',
   },
   {
-    name: 'Destello — Creative',
+    name: 'Destello - Creative',
     description: 'Vibrant gradients for artists & storytellers',
     icon: Sparkles,
     gradient: 'from-pink-500 to-purple-600',
   },
   {
-    name: 'Gaspar — Executive',
+    name: 'Gaspar - Executive',
     description: 'Refined dark tones for corporate professionals',
     icon: GraduationCap,
     gradient: 'from-slate-500 to-slate-700',
   },
   {
-    name: 'FRQNCY — Tech',
+    name: 'FRQNCY - Tech',
     description: 'Signal-inspired aesthetic for data & AI roles',
     icon: Code,
     gradient: 'from-green-500 to-emerald-600',
