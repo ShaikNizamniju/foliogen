@@ -8,11 +8,11 @@ interface NakulaTemplateProps {
 
 /* ── Demo Data ── */
 const demoProfile = {
-  fullName: 'Anika Sharma',
+  fullName: 'Alex Rivera',
   headline: 'Brand Designer & Art Director',
   bio: 'I craft visual identities that feel both timeless and alive. My work lives at the intersection of editorial design, motion, and meticulous craft — where every curve, color, and composition is an intentional conversation with the viewer.',
-  location: 'New Delhi, India',
-  email: 'hello@anikasharma.com',
+  location: 'New York, NY',
+  email: 'hello@alexrivera.design',
   skills: ['Brand Strategy', 'Visual Identity', 'Editorial Design', 'Art Direction', 'Typography', 'Motion Graphics'],
   projects: [
     { title: 'Solstice', desc: 'Brand identity for a wellness retreat.', category: 'Identity', image: 'https://picsum.photos/seed/nak1/800/600' },

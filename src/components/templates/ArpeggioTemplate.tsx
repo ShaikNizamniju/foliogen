@@ -8,11 +8,11 @@ interface ArpeggioTemplateProps {
 
 /* ── Demo Data ── */
 const demoProfile = {
-  fullName: 'Rajan Mehta',
+  fullName: 'Alex Rivera',
   headline: 'Product Designer & Creative Technologist',
   bio: 'I build systems that bridge design and engineering. Currently focused on spatial interfaces and design tooling for the next generation of creators.',
-  location: 'Bengaluru, India',
-  email: 'rajan@arpeggio.studio',
+  location: 'San Francisco, CA',
+  email: 'hello@alexrivera.design',
   skills: ['Product Design', 'Systems Thinking', 'Prototyping', 'Design Tokens', 'React', 'Figma', 'Motion Design', 'User Research'],
   projects: [
     { title: 'Modular Design System', category: 'Design Systems', year: '2024', image: 'https://picsum.photos/seed/arp1/800/600', description: 'A token-driven system used across 12 products serving 4M+ users.' },
