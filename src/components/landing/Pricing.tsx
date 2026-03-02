@@ -1,6 +1,7 @@
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const plans = [
   {
@@ -151,10 +152,19 @@ export function Pricing() {
         </div>
 
         {/* Feature Comparison Table */}
-        <div className="mx-auto mt-16 max-w-5xl overflow-x-auto">
-          <h3 className="mb-6 text-center text-xl font-semibold text-foreground">
+        <motion.div
+          className="mx-auto mt-16 max-w-5xl overflow-x-auto"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } }}
+        >
+          <motion.h3
+            className="mb-6 text-center text-xl font-semibold text-foreground"
+            variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
+          >
             Compare Plans
-          </h3>
+          </motion.h3>
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="border-b border-border/50">
@@ -166,19 +176,23 @@ export function Pricing() {
             </thead>
             <tbody>
               {comparisonRows.map((row, i) => (
-                <tr
+                <motion.tr
                   key={row.feature}
                   className={`border-b border-border/30 ${i % 2 === 0 ? 'bg-muted/5' : ''}`}
+                  variants={{
+                    hidden: { opacity: 0, x: -16, filter: 'blur(4px)' },
+                    visible: { opacity: 1, x: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 120, damping: 20 } },
+                  }}
                 >
                   <td className="py-4 px-4 font-medium text-foreground">{row.feature}</td>
                   <td className="py-4 px-4 text-center text-muted-foreground">{row.free}</td>
                   <td className="py-4 px-4 text-center text-foreground">{row.basic}</td>
                   <td className="py-4 px-4 text-center font-medium text-primary">{row.pro}</td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
