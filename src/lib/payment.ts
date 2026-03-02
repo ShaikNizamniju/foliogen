@@ -16,9 +16,15 @@ export interface PaymentUser {
 
 export const RAZORPAY_KEY = "rzp_test_SE6pBwbZL7Xo7T";
 
+const PLAN_LABELS: Record<number, string> = {
+  19900: "Basic (₹199/mo)",
+  99900: "Pro (₹999/year)",
+};
+
 export async function handlePayment(
   user: PaymentUser,
-  onSuccess: () => void
+  onSuccess: () => void,
+  amount: number = 99900
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     if (!window.Razorpay) {
@@ -31,12 +37,14 @@ export async function handlePayment(
       return;
     }
 
+    const planLabel = PLAN_LABELS[amount] || `₹${amount / 100}`;
+
     const options = {
       key: RAZORPAY_KEY,
-      amount: 99900, // Amount in paise (₹999 Pro yearly)
+      amount,
       currency: "INR",
-      name: "Foliogen Pro",
-      description: "All 19+ templates, Priority AI, SpyGlass Analytics & more",
+      name: "Foliogen",
+      description: `Foliogen ${planLabel}`,
       image: "/og-image.png",
       prefill: {
         email: user.email || "",
@@ -47,7 +55,6 @@ export async function handlePayment(
       },
       handler: async function (response: any) {
         try {
-          // Activate Pro via server-side edge function (prevents client-side bypass)
           const { data, error } = await supabase.functions.invoke('activate-pro', {
             body: { paymentId: response.razorpay_payment_id },
           });
@@ -56,18 +63,17 @@ export async function handlePayment(
             console.error("Error activating pro:", error);
             toast({
               title: "Payment Error",
-              description: "Payment received but failed to activate Pro. Contact support.",
+              description: "Payment received but failed to activate. Contact support.",
               variant: "destructive",
             });
             reject(error);
             return;
           }
 
-          // Celebrate!
           triggerCelebration();
           toast({
-            title: "Welcome to Pro! 🚀",
-            description: "You now have access to all premium features!",
+            title: `Welcome to Foliogen ${data?.planType === 'pro' ? 'Pro' : 'Basic'}! 🚀`,
+            description: "You now have access to all your plan features!",
           });
 
           onSuccess();

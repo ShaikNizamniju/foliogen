@@ -7,6 +7,9 @@ interface ProContextType {
   loading: boolean;
   subscriptionId: string | null;
   proSince: Date | null;
+  planType: string;
+  subscriptionStatus: string;
+  nextRenewalDate: Date | null;
   refreshProStatus: () => Promise<void>;
 }
 
@@ -18,6 +21,9 @@ export function ProProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
   const [proSince, setProSince] = useState<Date | null>(null);
+  const [planType, setPlanType] = useState<string>("free");
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string>("inactive");
+  const [nextRenewalDate, setNextRenewalDate] = useState<Date | null>(null);
 
   const fetchProStatus = useCallback(async () => {
     if (!user) {
@@ -29,7 +35,7 @@ export function ProProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     const { data, error } = await supabase
       .from("profiles")
-      .select("is_pro, subscription_id, pro_since")
+      .select("is_pro, subscription_id, pro_since, plan_type, subscription_status, next_renewal_date")
       .eq("user_id", user.id)
       .maybeSingle();
 
@@ -37,6 +43,9 @@ export function ProProvider({ children }: { children: ReactNode }) {
       setIsPro((data as any).is_pro || false);
       setSubscriptionId((data as any).subscription_id || null);
       setProSince((data as any).pro_since ? new Date((data as any).pro_since) : null);
+      setPlanType((data as any).plan_type || "free");
+      setSubscriptionStatus((data as any).subscription_status || "inactive");
+      setNextRenewalDate((data as any).next_renewal_date ? new Date((data as any).next_renewal_date) : null);
     }
     setLoading(false);
   }, [user]);
@@ -50,7 +59,7 @@ export function ProProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ProContext.Provider value={{ isPro, loading, subscriptionId, proSince, refreshProStatus }}>
+    <ProContext.Provider value={{ isPro, loading, subscriptionId, proSince, planType, subscriptionStatus, nextRenewalDate, refreshProStatus }}>
       {children}
     </ProContext.Provider>
   );

@@ -32,7 +32,8 @@ export function ProGate({
         { id: user.id, email: user.email, name: user.user_metadata?.full_name },
         () => {
           refreshProStatus();
-        }
+        },
+        99900
       );
     } catch (error) {
       console.error('Payment error:', error);
