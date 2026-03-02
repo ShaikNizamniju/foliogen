@@ -8,7 +8,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="FolioGen" className="h-10 w-auto" />
+            <img src={logo} alt="Foliogen" className="h-10 w-auto" />
           </Link>
 
           {/* Navigation */}
