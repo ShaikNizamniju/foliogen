@@ -58,12 +58,14 @@ function getContactScore(profile: ProfileData): number {
 function getSkillMappingScore(skills: string[], projects: ProfileData["projects"]): number {
   if (skills.length === 0) return 0;
 
+  // Cap at 15 skills for scoring purposes — encourages quality over quantity
+  const cappedSkills = skills.slice(0, 15);
   const allTech = new Set(
     projects.flatMap((p) => (p.techStack ?? []).map((t) => t.toLowerCase()))
   );
 
-  const matched = skills.filter((s) => allTech.has(s.toLowerCase())).length;
-  return Math.round((matched / skills.length) * 50);
+  const matched = cappedSkills.filter((s) => allTech.has(s.toLowerCase())).length;
+  return Math.round((matched / cappedSkills.length) * 50);
 }
 
 // --- Domain-aware recommendations ---

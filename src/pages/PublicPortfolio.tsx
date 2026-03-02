@@ -23,7 +23,7 @@ import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
 import { FrqncyTemplate } from '@/components/templates/FrqncyTemplate';
 import { ArpeggioTemplate } from '@/components/templates/ArpeggioTemplate';
 import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
-import { NijuBoldTemplate } from '@/components/templates/NijuBoldTemplate';
+import { HeroBoldTemplate } from '@/components/templates/HeroBoldTemplate';
 import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 import { useViewTracker } from '@/hooks/useViewTracker';
@@ -192,7 +192,7 @@ export default function PublicPortfolio() {
       case 'nakula':
         return <NakulaTemplate {...templateProps} />;
       case 'niju-bold':
-        return <NijuBoldTemplate {...templateProps} />;
+        return <HeroBoldTemplate {...templateProps} />;
       case 'minimal-saas':
         return <MinimalSaasTemplate {...templateProps} />;
       default:

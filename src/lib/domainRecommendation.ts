@@ -1,4 +1,4 @@
-export type ProfessionalDomain = 'tech' | 'creative' | 'corporate' | 'luxury';
+export type ProfessionalDomain = 'tech' | 'creative' | 'corporate' | 'luxury' | 'other';
 
 export interface DomainOption {
   id: ProfessionalDomain;
@@ -45,6 +45,7 @@ export const domainTemplateMap: Record<ProfessionalDomain, string[]> = {
   creative: ['destello', 'frqncy', 'niju-bold', 'studio', 'brutalist', 'creative', 'influencer'],
   corporate: ['executive', 'saas', 'minimalist', 'swiss', 'academic'],
   luxury: ['gaspar', 'nakula', 'academic', 'noir'],
+  other: ['modern-dark', 'minimalist', 'saas', 'creative', 'niju-bold'],
 };
 
 export function getRecommendedTemplate(domain: ProfessionalDomain): string {

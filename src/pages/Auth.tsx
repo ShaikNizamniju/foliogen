@@ -12,7 +12,12 @@ import { lovable } from '@/integrations/lovable';
 import { cn } from '@/lib/utils';
 
 const emailSchema = z.string().email('Please enter a valid email');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
+const passwordSchema = z.string()
+  .min(6, 'Password must be 6–16 characters')
+  .max(16, 'Password must be 6–16 characters')
+  .regex(/[A-Z]/, 'Password needs at least 1 uppercase letter')
+  .regex(/\d/, 'Password needs at least 1 number')
+  .regex(/[^A-Za-z0-9]/, 'Password needs at least 1 symbol');
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -108,7 +113,7 @@ export default function Auth() {
     if (!email) { toast.error('Please enter your email first.'); return; }
     try { emailSchema.parse(email); } catch { toast.error('Please enter a valid email.'); return; }
     const { supabase } = await import('@/integrations/supabase/client');
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth` });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/reset-password` });
     if (error) toast.error(error.message);
     else toast.success('Password reset email sent! Check your inbox.');
   };

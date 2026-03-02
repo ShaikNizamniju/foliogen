@@ -211,7 +211,7 @@ const TemplatePreviewContent = ({ id }: { id: string }) => {
         </div>
       );
     
-    case 'niju-bold':
+    case 'niju-bold': // Hero Bold
       return (
         <div className="h-full w-full bg-[#0A0A0A] p-3 flex flex-col justify-end relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#E11D48] to-[#F97316]" />

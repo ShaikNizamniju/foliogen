@@ -113,7 +113,7 @@ export function HowItWorks() {
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold text-foreground mb-2">{step.title}</h3>
+                <h3 className="text-xl font-semibold text-foreground mb-2 mt-8">{step.title}</h3>
                 <p className="text-muted-foreground text-sm max-w-[200px]">{step.description}</p>
               </motion.div>
             ))}

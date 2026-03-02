@@ -27,16 +27,15 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       return new Response(
         JSON.stringify({ error: 'Invalid token' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const userId = claimsData.claims.sub;
+    const userId = user.id;
     const { paymentId } = await req.json();
 
     if (!paymentId || typeof paymentId !== 'string') {
@@ -77,8 +76,9 @@ serve(async (req) => {
 
     const payment = await verifyResponse.json();
 
-    // Verify payment is captured and matches expected amount
-    if (payment.status !== 'captured' || payment.amount !== 19900 || payment.currency !== 'INR') {
+    // Verify payment is captured and matches expected amounts (₹199 basic or ₹999 pro)
+    const validAmounts = [19900, 99900]; // paise
+    if (payment.status !== 'captured' || !validAmounts.includes(payment.amount) || payment.currency !== 'INR') {
       console.error('Payment verification failed:', payment.status, payment.amount, payment.currency);
       return new Response(
         JSON.stringify({ error: 'Payment verification failed' }),
