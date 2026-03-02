@@ -58,7 +58,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an expert Career Strategist. Analyze the provided text (Resume or LinkedIn PDF). Extract structured data and return ONLY raw JSON with no markdown formatting."
+            content: "You are an expert Career Strategist. Analyze the provided text which may be either a standard Resume PDF or a LinkedIn-generated PDF export. LinkedIn PDFs have a specific structure with sections like 'Experience', 'Education', 'Skills', 'Languages', 'Certifications'. Identify the format and extract structured data accordingly. Return ONLY raw JSON with no markdown formatting."
           },
           {
             role: "user",

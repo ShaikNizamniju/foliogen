@@ -40,7 +40,7 @@ export function DashboardContent() {
   };
 
   return (
-    <div className="flex-1 overflow-auto p-6 lg:p-8 max-w-5xl">
+    <div className="flex-1 overflow-auto p-6 lg:p-8 max-w-5xl pb-8">
       <AnimatePresence mode="wait">
         <motion.div key={section} {...pageTransition}>
           {renderSection()}
