@@ -76,7 +76,14 @@ export default function Auth() {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          toast.error(error.message || 'Failed to sign in');
+          const msg = error.message?.toLowerCase() || '';
+          if (msg.includes('invalid') || msg.includes('credentials')) {
+            toast.error('Invalid email or password. Please try again.');
+          } else if (msg.includes('not confirmed') || msg.includes('email not confirmed')) {
+            toast.error('Please confirm your email address before signing in.');
+          } else {
+            toast.error(error.message || 'Failed to sign in');
+          }
         } else {
           toast.success('Welcome back!');
           navigate('/dashboard');
@@ -86,15 +93,15 @@ export default function Auth() {
         if (error) {
           toast.error(error.message?.includes('already registered') ? 'This email is already registered. Please sign in instead.' : error.message || 'Failed to create account');
         } else {
-          toast.success('Account created! Welcome to FolioGen.');
+          toast.success('Account created! Welcome to Foliogen.');
           navigate('/dashboard');
         }
       }
     } catch (err: any) {
       toast.error(err?.message || 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleForgotPassword = async () => {
@@ -120,7 +127,7 @@ export default function Auth() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">FolioGen</span>
+            <span className="text-xl font-bold text-foreground">Foliogen</span>
           </Link>
           <Button variant="outline" size="sm" onClick={switchMode}>
             {isLogin ? 'Create Account' : 'Sign In'}
