@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingThemeToggle } from "@/components/FloatingThemeToggle";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import PublicPortfolio from "./pages/PublicPortfolio";
 import Privacy from "./pages/Privacy";
@@ -32,6 +33,7 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/p/:id" element={<PublicPortfolio />} />
                   <Route path="/u/:id" element={<PublicPortfolio />} />

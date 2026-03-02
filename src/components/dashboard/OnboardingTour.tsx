@@ -225,9 +225,9 @@ export function OnboardingTour() {
             className="fixed z-[10000]"
             style={getTooltipPosition()}
           >
-            <div className="relative w-[360px] max-w-[calc(100vw-32px)] rounded-2xl border border-white/20 bg-card/95 backdrop-blur-xl shadow-2xl overflow-hidden">
+            <div className="relative w-[360px] max-w-[calc(100vw-32px)] rounded-2xl border border-border/30 bg-background/70 backdrop-blur-2xl shadow-2xl overflow-hidden">
               {/* Gradient border effect */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/20 via-transparent to-accent/20 pointer-events-none" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/10 via-transparent to-accent/10 pointer-events-none" />
               
               {/* Glass shine effect */}
               <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />

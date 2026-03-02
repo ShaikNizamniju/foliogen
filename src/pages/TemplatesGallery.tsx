@@ -6,7 +6,7 @@ import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
 import { FrqncyTemplate } from '@/components/templates/FrqncyTemplate';
 import { ArpeggioTemplate } from '@/components/templates/ArpeggioTemplate';
 import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
-import { NijuBoldTemplate } from '@/components/templates/NijuBoldTemplate';
+import { HeroBoldTemplate } from '@/components/templates/HeroBoldTemplate';
 import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { ModernDarkTemplate } from '@/components/dashboard/templates/ModernDarkTemplate';
@@ -87,12 +87,12 @@ const galleryTemplates: TemplateEntry[] = [
   },
   {
     id: 'niju-bold',
-    name: 'NIJU BOLD',
+    name: 'HERO BOLD',
     tagline: 'High-contrast massive typography for speakers & thought leaders',
     style: 'Bold · High-Contrast · Leadership',
     category: 'bold',
     gradient: 'from-[#0A0A0A] to-[#1A0A10]',
-    preview: NijuBoldTemplate,
+    preview: HeroBoldTemplate,
   },
   {
     id: 'minimal-saas',

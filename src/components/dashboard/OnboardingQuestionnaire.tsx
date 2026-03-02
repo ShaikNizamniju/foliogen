@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { domainOptions, getRecommendedTemplate, type ProfessionalDomain } from '@/lib/domainRecommendation';
 import { useProfile } from '@/contexts/ProfileContext';
 import { cn } from '@/lib/utils';
@@ -12,6 +13,8 @@ const ONBOARDING_DONE_KEY = 'foliogen_onboarding_domain';
 export function OnboardingQuestionnaire() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<ProfessionalDomain | null>(null);
+  const [showOtherInput, setShowOtherInput] = useState(false);
+  const [otherText, setOtherText] = useState('');
   const { updateProfile } = useProfile();
 
   useEffect(() => {
@@ -26,6 +29,9 @@ export function OnboardingQuestionnaire() {
     if (!selected) return;
     const recommended = getRecommendedTemplate(selected);
     localStorage.setItem(ONBOARDING_DONE_KEY, selected);
+    if (selected === 'other' && otherText.trim()) {
+      localStorage.setItem('foliogen_custom_domain', otherText.trim());
+    }
     updateProfile({ selectedTemplate: recommended as any });
     setOpen(false);
   };
@@ -33,6 +39,11 @@ export function OnboardingQuestionnaire() {
   const handleSkip = () => {
     localStorage.setItem(ONBOARDING_DONE_KEY, 'skipped');
     setOpen(false);
+  };
+
+  const handleSelectOther = () => {
+    setSelected('other');
+    setShowOtherInput(true);
   };
 
   return (
@@ -80,10 +91,10 @@ export function OnboardingQuestionnaire() {
               initial={{ opacity: 0, x: -16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15 + i * 0.06 }}
-              onClick={() => setSelected(opt.id)}
+              onClick={() => { setSelected(opt.id); setShowOtherInput(false); }}
               className={cn(
                 'w-full flex items-center gap-4 p-3.5 rounded-xl border text-left transition-all duration-200',
-                selected === opt.id
+                selected === opt.id && !showOtherInput
                   ? 'border-primary bg-primary/5 shadow-sm'
                   : 'border-border hover:border-primary/30 hover:bg-muted/40'
               )}
@@ -93,7 +104,7 @@ export function OnboardingQuestionnaire() {
                 <span className="text-sm font-medium text-foreground">{opt.label}</span>
                 <span className="block text-xs text-muted-foreground mt-0.5">{opt.description}</span>
               </div>
-              {selected === opt.id && (
+              {selected === opt.id && !showOtherInput && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -104,6 +115,55 @@ export function OnboardingQuestionnaire() {
               )}
             </motion.button>
           ))}
+
+          {/* Others option */}
+          <motion.button
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.15 + domainOptions.length * 0.06 }}
+            onClick={handleSelectOther}
+            className={cn(
+              'w-full flex items-center gap-4 p-3.5 rounded-xl border text-left transition-all duration-200',
+              showOtherInput
+                ? 'border-primary bg-primary/5 shadow-sm'
+                : 'border-border hover:border-primary/30 hover:bg-muted/40'
+            )}
+          >
+            <span className="text-xl shrink-0 w-8 text-center">🌐</span>
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-medium text-foreground">Others</span>
+              <span className="block text-xs text-muted-foreground mt-0.5">Tell us your profession</span>
+            </div>
+            {showOtherInput && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="h-5 w-5 rounded-full bg-primary flex items-center justify-center shrink-0"
+              >
+                <div className="h-2 w-2 rounded-full bg-primary-foreground" />
+              </motion.div>
+            )}
+          </motion.button>
+
+          {/* Custom text input for "Others" */}
+          <AnimatePresence>
+            {showOtherInput && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <Input
+                  placeholder="e.g. Healthcare, Education, Marketing..."
+                  value={otherText}
+                  onChange={(e) => setOtherText(e.target.value)}
+                  className="h-10 mt-1"
+                  autoFocus
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Footer */}

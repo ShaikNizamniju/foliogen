@@ -33,10 +33,10 @@ export async function handlePayment(
 
     const options = {
       key: RAZORPAY_KEY,
-      amount: 19900, // Amount in paise (₹199)
+      amount: 99900, // Amount in paise (₹999 Pro yearly)
       currency: "INR",
       name: "Foliogen Pro",
-      description: "Unlock Analytics, AI Coach & Chameleon Mode",
+      description: "All 19+ templates, Priority AI, SpyGlass Analytics & more",
       image: "/og-image.png",
       prefill: {
         email: user.email || "",

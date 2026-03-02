@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 
-interface NijuBoldTemplateProps {
+interface HeroBoldTemplateProps {
   profile?: ProfileData;
   onContactClick?: () => void;
 }
@@ -27,7 +27,7 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const } },
 };
 
-export function NijuBoldTemplate({ profile, onContactClick }: NijuBoldTemplateProps) {
+export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplateProps) {
   const name = profile?.fullName || 'ALEX RIVERA';
   const headline = profile?.headline || 'Thought Leader · Keynote Speaker · Author';
   const bio = profile?.bio || 'I help organizations navigate disruption with clarity. 15 years of strategy, 300+ keynotes, one mission: make complexity simple.';

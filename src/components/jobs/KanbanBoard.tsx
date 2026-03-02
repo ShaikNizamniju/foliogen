@@ -190,7 +190,7 @@ export function KanbanBoard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Job Command Center</h1>
+          <h1 className="text-2xl font-bold text-foreground">Job Command Centre</h1>
           <p className="text-muted-foreground">Track and manage your job applications</p>
         </div>
         <Button onClick={() => setDialogOpen(true)}>

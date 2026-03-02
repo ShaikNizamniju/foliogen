@@ -95,7 +95,7 @@ export const templates = [
   },
   {
     id: 'niju-bold',
-    name: 'Niju Bold',
+    name: 'Hero Bold',
     description: 'High-contrast large type for thought leaders',
   },
   {
