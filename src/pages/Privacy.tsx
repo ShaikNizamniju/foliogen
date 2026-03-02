@@ -11,10 +11,10 @@ const Privacy = () => {
           <Link to="/" className="flex items-center">
             <img src={logo} alt="Foliogen" className="h-10 w-auto" />
           </Link>
-          <Link 
-            to="/" 
-            className="flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-white"
-          >
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-white">
+            
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
@@ -92,8 +92,8 @@ const Privacy = () => {
               For any privacy inquiries or data deletion requests, please contact us:
             </p>
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-              <p className="text-slate-300">
-                Email: <a href="mailto:privacy@foliogen.com" className="text-primary hover:underline">privacy@foliogen.com</a>
+              <p className="text-slate-300">Email:foliogen.in@gmail.com
+                <a href="mailto:privacy@foliogen.com" className="text-primary hover:underline"></a>
               </p>
               <p className="text-slate-400 text-sm mt-2">
                 We will respond to all requests within 30 days.
@@ -120,8 +120,8 @@ const Privacy = () => {
           </p>
         </div>
       </footer>
-    </div>
-  );
+    </div>);
+
 };
 
 export default Privacy;
