@@ -204,9 +204,9 @@ export function Features() {
                   <Palette className="h-5 w-5" />
                 </div>
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-foreground">11 Premium Templates</h3>
+              <h3 className="mb-2 text-xl font-semibold text-foreground">7+ Design Systems</h3>
               <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
-                From minimalist to creative, stunning designs for every industry.
+                Industry-standard styles — Brutalist, Glassmorphic, Bold Leadership, and more.
               </p>
             </div>
           </motion.div>
