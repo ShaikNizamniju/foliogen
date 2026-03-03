@@ -106,7 +106,7 @@ export interface ProfileData {
 interface ProfileContextType {
   profile: ProfileData;
   updateProfile: (updates: Partial<ProfileData>) => void;
-  saveProfile: () => Promise<{ error: Error | null }>;
+  saveProfile: (overrides?: Partial<ProfileData>) => Promise<{ error: Error | null }>;
   loading: boolean;
   saving: boolean;
 }
@@ -195,32 +195,36 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setProfile((prev) => ({ ...prev, ...updates }));
   };
 
-  const saveProfile = async () => {
+  const saveProfile = async (overrides?: Partial<ProfileData>) => {
     if (!user) return { error: new Error("Not authenticated") };
+
+    // Merge overrides with current profile so callers can save freshly-set data
+    // without waiting for a React re-render
+    const data = overrides ? { ...profile, ...overrides } : profile;
 
     setSaving(true);
 
     const { error } = await supabase
       .from("profiles")
       .update({
-        full_name: profile.fullName,
-        photo_url: profile.photoUrl,
-        bio: profile.bio,
-        headline: profile.headline,
-        location: profile.location,
-        email: profile.email,
-        website: profile.website,
-        linkedin_url: profile.linkedinUrl,
-        github_url: profile.githubUrl,
-        twitter_url: profile.twitterUrl,
-        work_experience: profile.workExperience as unknown as Json,
-        projects: profile.projects as unknown as Json,
-        skills: profile.skills,
-        key_highlights: profile.keyHighlights,
-        resume_url: profile.resumeUrl,
-        calendly_url: profile.calendlyUrl,
-        selected_font: profile.selectedFont,
-        selected_template: profile.selectedTemplate,
+        full_name: data.fullName,
+        photo_url: data.photoUrl,
+        bio: data.bio,
+        headline: data.headline,
+        location: data.location,
+        email: data.email,
+        website: data.website,
+        linkedin_url: data.linkedinUrl,
+        github_url: data.githubUrl,
+        twitter_url: data.twitterUrl,
+        work_experience: data.workExperience as unknown as Json,
+        projects: data.projects as unknown as Json,
+        skills: data.skills,
+        key_highlights: data.keyHighlights,
+        resume_url: data.resumeUrl,
+        calendly_url: data.calendlyUrl,
+        selected_font: data.selectedFont,
+        selected_template: data.selectedTemplate,
       } as any)
       .eq("user_id", user.id);
 
