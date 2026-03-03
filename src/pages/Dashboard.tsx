@@ -10,6 +10,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
 import { OnboardingQuestionnaire } from '@/components/dashboard/OnboardingQuestionnaire';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -37,7 +38,9 @@ export default function Dashboard() {
 
   return (
     <ProfileProvider>
-      <DashboardInner />
+      <ErrorBoundary fallbackMessage="Dashboard encountered an error">
+        <DashboardInner />
+      </ErrorBoundary>
     </ProfileProvider>
   );
 }

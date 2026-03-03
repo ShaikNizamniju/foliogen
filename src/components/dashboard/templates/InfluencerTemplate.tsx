@@ -150,6 +150,8 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
             {profile.linkedinUrl && (
               <motion.a
                 href={profile.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-4 backdrop-blur-xl bg-white/60 border border-white/80 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
@@ -168,6 +170,8 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
             {profile.githubUrl && (
               <motion.a
                 href={profile.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-4 backdrop-blur-xl bg-white/60 border border-white/80 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
@@ -186,6 +190,8 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
             {profile.twitterUrl && (
               <motion.a
                 href={profile.twitterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-4 backdrop-blur-xl bg-white/60 border border-white/80 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
@@ -204,6 +210,8 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
             {profile.website && (
               <motion.a
                 href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-4 backdrop-blur-xl bg-white/60 border border-white/80 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-shadow"
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}

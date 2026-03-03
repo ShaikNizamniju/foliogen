@@ -27,7 +27,6 @@ export function LinkedInPdfUpload() {
 
     setIsParsing(true);
     try {
-      console.log("Starting LinkedIn PDF extraction...");
       const arrayBuffer = await file.arrayBuffer();
 
       // Load PDF
