@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -144,6 +144,13 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
+
+              {plan.popular && (
+                <div className="mb-6 flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5">
+                  <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
+                  <span className="text-xs font-medium text-emerald-400">Encrypted & Secure</span>
+                </div>
+              )}
 
               <Button
                 asChild

@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Loader2, Send } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { SecurityBadge } from '@/components/ui/SecurityBadge';
 
 export function Footer() {
   const [name, setName] = useState('');
@@ -122,10 +123,13 @@ export function Footer() {
             </Link>
           </nav>
 
-          {/* Copyright */}
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Foliogen. All rights reserved.
-          </p>
+          {/* Copyright + Security Badge */}
+          <div className="flex flex-col items-center sm:items-end gap-3">
+            <SecurityBadge />
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Foliogen. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </footer>
