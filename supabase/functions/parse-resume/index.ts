@@ -36,14 +36,23 @@ serve(async (req) => {
       })
     }
 
-    const { resumeText } = await req.json()
+    const body = await req.json()
+    const resumeText = body?.resumeText
+
+    if (!resumeText || typeof resumeText !== 'string' || resumeText.trim().length < 50) {
+      return new Response(JSON.stringify({ error: "Resume text is too short or missing. The PDF may be image-based." }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400
+      })
+    }
+
     const apiKey = Deno.env.get('LOVABLE_API_KEY')
 
     if (!apiKey) {
       console.error("Missing LOVABLE_API_KEY")
       return new Response(JSON.stringify({ error: "Server configuration error: Missing API Key" }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
+        status: 500
       })
     }
 
@@ -58,19 +67,22 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an expert Career Strategist. Analyze the provided text which may be either a standard Resume PDF or a LinkedIn-generated PDF export. LinkedIn PDFs have a specific structure with sections like 'Experience', 'Education', 'Skills', 'Languages', 'Certifications'. Identify the format and extract structured data accordingly. Return ONLY raw JSON with no markdown formatting."
+            content: `You are an expert Career Strategist. Analyze the provided text which may be either a standard Resume PDF or a LinkedIn-generated PDF export. LinkedIn PDFs have a specific structure with sections like 'Experience', 'Education', 'Skills', 'Languages', 'Certifications'. Identify the format and extract structured data accordingly.
+
+CRITICAL: Return ONLY raw JSON. No markdown, no backticks, no code fences.
+CRITICAL: All keys MUST be camelCase to match the TypeScript interface (e.g., fullName, workExperience, linkedinUrl, keyHighlights, predictedDomain).`
           },
           {
             role: "user",
-            content: `Extract these fields into pure JSON:
-- fullName, headline, bio, location, email, linkedinUrl
+            content: `Extract these fields into pure JSON (camelCase keys only):
+- fullName (string), headline (string), bio (string), location (string), email (string), linkedinUrl (string)
 - skills (array of strings)
-- workExperience (array: jobTitle, company, startDate, endDate, current, description)
-- projects (array: title, description, visualPrompt). For visualPrompt: generate a 2-4 word visual description for AI image generation, e.g., "futuristic finance dashboard neon", "minimalist e-commerce mobile", "social media analytics dark".
+- workExperience (array of objects with keys: jobTitle, company, startDate, endDate, current, description)
+- projects (array of objects with keys: title, description, visualPrompt). For visualPrompt: generate a 2-4 word visual description for AI image generation, e.g., "futuristic finance dashboard neon", "minimalist e-commerce mobile", "social media analytics dark".
 - keyHighlights (array of 3-5 short, punchy strings, max 10 words each. These should be the candidate's strongest selling points, unique skills, or impressive metrics found in the text.)
 - predictedDomain: Predict the professional domain of this person. Must be exactly one of: "tech", "creative", "corporate", "luxury". Base this on their job titles, skills, and industry keywords.
 
-Return ONLY raw JSON. No markdown, no backticks.
+Return ONLY raw JSON. No markdown, no backticks, no explanation.
 
 Resume Text:
 ${resumeText.substring(0, 30000)}`
@@ -80,50 +92,75 @@ ${resumeText.substring(0, 30000)}`
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error("AI Gateway Error:", response.status, errorText)
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200
+          status: 429
         })
       }
       if (response.status === 402) {
         return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200
+          status: 502
         })
       }
-      const errorText = await response.text()
-      console.error("AI Gateway Error:", response.status, errorText)
       return new Response(JSON.stringify({ error: "AI service error" }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
+        status: 502
       })
     }
 
     const data = await response.json()
 
-    try {
-      let rawText = data.choices?.[0]?.message?.content || "{}"
-      rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim()
-      const parsedProfile = JSON.parse(rawText)
-      
-      return new Response(JSON.stringify(parsedProfile), {
+    let rawText = data.choices?.[0]?.message?.content
+    if (!rawText || typeof rawText !== 'string' || rawText.trim().length === 0) {
+      console.error("AI returned empty content:", JSON.stringify(data))
+      return new Response(JSON.stringify({ error: "AI returned an empty response. Please try again." }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
-      })
-    } catch (parseError) {
-      console.error("Parsing Error:", parseError)
-      return new Response(JSON.stringify({ error: "AI response was not valid JSON" }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200
+        status: 502
       })
     }
+
+    // Strip markdown code fences if AI included them
+    rawText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
+
+    let parsedProfile
+    try {
+      parsedProfile = JSON.parse(rawText)
+    } catch (parseError) {
+      console.error("JSON Parse Error. Raw AI output:", rawText.substring(0, 500))
+      return new Response(JSON.stringify({ error: "AI response was not valid JSON. Please try again." }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 502
+      })
+    }
+
+    // Validate that we got meaningful data
+    const skillsCount = Array.isArray(parsedProfile.skills) ? parsedProfile.skills.length : 0
+    const projectsCount = Array.isArray(parsedProfile.projects) ? parsedProfile.projects.length : 0
+    const workCount = Array.isArray(parsedProfile.workExperience) ? parsedProfile.workExperience.length : 0
+
+    console.log(`✅ Parse complete — Name: "${parsedProfile.fullName || 'N/A'}", Skills: ${skillsCount}, Projects: ${projectsCount}, Work: ${workCount}, Domain: ${parsedProfile.predictedDomain || 'N/A'}`)
+
+    if (!parsedProfile.fullName && skillsCount === 0 && workCount === 0) {
+      return new Response(JSON.stringify({ error: "Could not extract meaningful data from this PDF. It may be image-based or in an unsupported format." }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 422
+      })
+    }
+
+    return new Response(JSON.stringify(parsedProfile), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200
+    })
 
   } catch (error) {
     console.error("Unexpected Error:", error)
     return new Response(JSON.stringify({ error: "An unexpected error occurred" }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200
+      status: 500
     })
   }
 })
