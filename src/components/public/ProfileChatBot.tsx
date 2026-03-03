@@ -73,17 +73,21 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
         .filter((m) => m.id !== 'initial')
         .map((m) => ({ role: m.role, content: m.content }));
 
-      // Use session JWT when available, fall back to anon key for public visitors
+      // Use session JWT when available; only send Authorization for authenticated users
       const { data: { session } } = await supabase.auth.getSession();
-      const authToken = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      };
+
+      if (session?.access_token) {
+        headers.Authorization = `Bearer ${session.access_token}`;
+      }
 
       const response = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${authToken}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        headers,
         body: JSON.stringify({
           userQuery: userMessage.content,
           profileId,
