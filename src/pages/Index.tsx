@@ -8,6 +8,7 @@ import { Features } from '@/components/landing/Features';
 import { TemplateGallery } from '@/components/landing/TemplateGallery';
 import { Pricing } from '@/components/landing/Pricing';
 import { CompanyMarquee } from '@/components/landing/CompanyMarquee';
+import { FAQ } from '@/components/landing/FAQ';
 import { Footer } from '@/components/landing/Footer';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { JobMatchDemo } from '@/components/landing/JobMatchDemo';
@@ -47,6 +48,7 @@ const Index = () => {
       <TemplateGallery />
       <Pricing />
       <Testimonials />
+      <FAQ />
       <CompanyMarquee />
       <Footer />
     </div>

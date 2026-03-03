@@ -14,8 +14,8 @@ import { Progress } from '@/components/ui/progress';
 import * as pdfjsLib from 'pdfjs-dist';
 import { getRecommendedTemplate, ProfessionalDomain } from '@/lib/domainRecommendation';
 
-// Use CDNJS URL matching installed pdfjs-dist version
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs`;
+// Dynamically resolve worker URL to match installed pdfjs-dist version
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 type ParseState = 'idle' | 'extracting' | 'analyzing' | 'success' | 'error';
 
