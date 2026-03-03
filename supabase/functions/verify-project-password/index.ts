@@ -64,15 +64,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Constant-time comparison to prevent timing attacks
+    // Constant-time comparison using Deno's crypto.subtle.timingSafeEqual
     const encoder = new TextEncoder();
     const expectedBytes = encoder.encode(project.password.padEnd(256, '\0'));
     const providedBytes = encoder.encode(password.padEnd(256, '\0'));
-    let diff = project.password.length !== password.length ? 1 : 0;
-    for (let i = 0; i < expectedBytes.length; i++) {
-      diff |= expectedBytes[i] ^ providedBytes[i];
-    }
-    const isValid = diff === 0;
+    const lengthMatch = project.password.length === password.length;
+    const bytesMatch = crypto.subtle.timingSafeEqual(expectedBytes, providedBytes);
+    const isValid = lengthMatch && bytesMatch;
 
     if (!isValid) {
       return new Response(
