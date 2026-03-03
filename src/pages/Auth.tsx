@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { lovable } from '@/integrations/lovable';
 import { cn } from '@/lib/utils';
+import { SecurityBadge } from '@/components/ui/SecurityBadge';
 
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z.string()
@@ -217,6 +218,11 @@ export default function Auth() {
               <Link to="/privacy" className="text-primary hover:underline">Terms Of Use</Link>{' '}and{' '}
               <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
             </p>
+          </div>
+
+          {/* Security Badge */}
+          <div className="flex justify-center pt-4">
+            <SecurityBadge />
           </div>
         </div>
       </div>

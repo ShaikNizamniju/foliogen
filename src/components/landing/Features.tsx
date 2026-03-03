@@ -1,4 +1,4 @@
-import { Bot, Palette, FileDown, MessageSquare, Video, Zap } from 'lucide-react';
+import { Bot, Palette, FileDown, MessageSquare, Video, Zap, Lock } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
@@ -248,6 +248,26 @@ export function Features() {
               <h3 className="mb-2 text-xl font-semibold text-foreground">Instant Publishing</h3>
               <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
                 Go live in seconds with your custom subdomain.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Card 6: Privacy First */}
+          <motion.div
+            variants={itemVariants}
+            className="group relative rounded-2xl border border-border bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 backdrop-blur-sm p-6 transition-all duration-300 hover:border-cyan-500/30 hover:shadow-2xl hover:shadow-cyan-500/10"
+          >
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-3xl">🔒</span>
+                <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-muted text-foreground transition-colors group-hover:bg-muted/80">
+                  <Lock className="h-5 w-5 transition-all group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_6px_hsl(187,80%,55%)]" />
+                </div>
+              </div>
+              <h3 className="mb-2 text-xl font-semibold text-foreground">Your Data, Your Control</h3>
+              <p className="text-muted-foreground group-hover:text-foreground/80 transition-colors text-sm">
+                We use Security Invoker logic and stripped public views to ensure your private data (email, subscription status) never leaks to the public.
               </p>
             </div>
           </motion.div>
