@@ -25,7 +25,7 @@ const pageTransition = {
 
 export function DashboardContent() {
   const location = useLocation();
-  const section = new URLSearchParams(location.search).get('section') || 'overview';
+  const section = new URLSearchParams(location.search).get('section') || 'jobs';
 
   const renderSection = () => {
     switch (section) {
