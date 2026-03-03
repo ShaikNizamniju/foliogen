@@ -32,7 +32,7 @@ export function ProRecruiterBanner({ profileUserId }: ProRecruiterBannerProps) {
         .maybeSingle();
       
       if (data && !error) {
-        setIsOwnerPro((data as any).is_pro || false);
+        setIsOwnerPro(data.is_pro || false);
       }
       setLoading(false);
     };
