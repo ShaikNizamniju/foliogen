@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
-import { useProfile, WorkExperience, Project } from '@/contexts/ProfileContext';
+import { useProfile, WorkExperience, Project, ProfileData } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -55,7 +55,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   const [uploadedResumeUrl, setUploadedResumeUrl] = useState<string>('');
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, saveProfile } = useProfile();
   const { user } = useAuth();
 
   const resetParser = useCallback(() => {
@@ -166,7 +166,6 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         }
       } catch (err) {
         console.error('Resume upload error:', err);
-        // Continue without uploading - parsing still works
       }
     }
 
@@ -178,16 +177,32 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       finalSkills = [...profile.skills, ...newSkills];
     }
 
-    // Determine template: use AI-predicted domain or fallback to modern-dark
+    // Ensure work experience entries have IDs
+    const safeWorkExperience = (parsedData.workExperience || []).map((w, i) => ({
+      ...w,
+      id: w.id || crypto.randomUUID(),
+    }));
+
+    // Ensure project entries have IDs
+    const safeProjects = (parsedData.projects || []).map((p) => ({
+      title: p.title || '',
+      description: p.description || '',
+      link: p.link || '',
+      imageUrl: p.imageUrl || '',
+      visualPrompt: p.visualPrompt || '',
+      ...p,
+      id: p.id || crypto.randomUUID(),
+    }));
+
+    // Determine template
     const domain = parsedData.predictedDomain as ProfessionalDomain | undefined;
     const recommendedTemplate = domain ? getRecommendedTemplate(domain) : 'modern-dark';
 
-    // Save domain to localStorage for gallery recommendations
     if (domain) {
       localStorage.setItem('foliogen_domain', domain);
     }
 
-    updateProfile({
+    const updates: Partial<ProfileData> = {
       fullName: parsedData.fullName || profile.fullName,
       headline: parsedData.headline || profile.headline,
       bio: parsedData.bio || profile.bio,
@@ -195,18 +210,34 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       email: parsedData.email || profile.email,
       linkedinUrl: parsedData.linkedinUrl || profile.linkedinUrl,
       skills: finalSkills,
-      workExperience: parsedData.workExperience || profile.workExperience,
-      projects: parsedData.projects || profile.projects,
+      workExperience: safeWorkExperience,
+      projects: safeProjects,
       keyHighlights: parsedData.keyHighlights || profile.keyHighlights,
       resumeUrl: resumeUrl,
       selectedTemplate: recommendedTemplate as typeof profile.selectedTemplate,
-    });
+    };
+
+    updateProfile(updates);
 
     if (onTemplateChange) {
       onTemplateChange(recommendedTemplate);
     }
 
-    // Scroll to the preview section
+    // Auto-save to database so data persists
+    try {
+      const { error: saveError } = await saveProfile(updates);
+      if (saveError) {
+        console.error('Auto-save failed:', saveError);
+        toast.error('Profile updated locally but failed to save. Please click "Save Changes".');
+      } else {
+        toast.success('Profile updated & saved!');
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+      toast.error('Profile updated locally. Please save manually.');
+    }
+
+    // Scroll to preview
     setTimeout(() => {
       const previewSection = document.querySelector('[data-template-preview]');
       if (previewSection) {
@@ -214,9 +245,8 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       }
     }, 100);
 
-    toast.success('Profile updated successfully!');
     resetParser();
-  }, [parsedData, profile, updateProfile, resetParser, onTemplateChange, currentFile, user]);
+  }, [parsedData, profile, updateProfile, saveProfile, resetParser, onTemplateChange, currentFile, user]);
 
   // Drag handlers
   const handleDragOver = (e: React.DragEvent) => { 

@@ -11,7 +11,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs
 export function ResumeUpload() {
   const [isDragging, setIsDragging] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
-  const { updateProfile } = useProfile();
+  const { updateProfile, saveProfile } = useProfile();
 
   const processFile = async (file: File) => {
     if (file.type !== 'application/pdf') {
@@ -24,7 +24,6 @@ export function ResumeUpload() {
       console.log("Starting PDF extraction...");
       const arrayBuffer = await file.arrayBuffer();
 
-      // Load PDF (Stable Worker)
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdf = await loadingTask.promise;
 
@@ -42,19 +41,28 @@ export function ResumeUpload() {
 
       toast.info('Analyzing with AI...');
 
-      // Call Edge Function
       const { data, error } = await supabase.functions.invoke('parse-resume', {
         body: { resumeText: fullText }
       });
 
       if (error) throw new Error("Connection failed: " + error.message);
+      if (data.error) throw new Error(data.error);
 
-      // Handle logic errors returned by the function
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      // Ensure IDs on work experience and projects
+      const safeWorkExperience = (data.workExperience || []).map((w: any) => ({
+        ...w,
+        id: w.id || crypto.randomUUID(),
+      }));
+      const safeProjects = (data.projects || []).map((p: any) => ({
+        title: p.title || '',
+        description: p.description || '',
+        link: p.link || '',
+        imageUrl: p.imageUrl || '',
+        ...p,
+        id: p.id || crypto.randomUUID(),
+      }));
 
-      updateProfile({
+      const updates = {
         fullName: data.fullName,
         headline: data.headline,
         bio: data.bio,
@@ -62,11 +70,25 @@ export function ResumeUpload() {
         email: data.email,
         linkedinUrl: data.linkedinUrl,
         skills: data.skills || [],
-        workExperience: data.workExperience || [],
-        projects: data.projects || []
-      });
+        workExperience: safeWorkExperience,
+        projects: safeProjects,
+      };
 
-      toast.success('Resume parsed successfully!');
+      updateProfile(updates);
+
+      // Auto-save to database (pass overrides to avoid stale state)
+      try {
+        const { error: saveError } = await saveProfile(updates);
+        if (saveError) {
+          console.error('Auto-save failed:', saveError);
+          toast.success('Resume parsed! Please click "Save Changes" to persist.');
+        } else {
+          toast.success('Resume parsed & saved!');
+        }
+      } catch (err) {
+        console.error('Save error:', err);
+        toast.success('Resume parsed! Please save manually.');
+      }
 
     } catch (error: any) {
       console.error('Upload Error:', error);
