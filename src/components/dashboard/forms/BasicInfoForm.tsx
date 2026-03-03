@@ -124,9 +124,8 @@ export function BasicInfoForm() {
         // Attempt to delete from storage (ignore errors as file might not exist)
         await supabase.storage.from('profile_photos').remove([filePath]);
       }
-    } catch (error) {
+    } catch {
       // Ignore storage deletion errors
-      console.log('Could not delete from storage:', error);
     }
 
     // Clear the photo URL from profile

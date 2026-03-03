@@ -355,25 +355,25 @@ export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
               )
             )}
             {profile.website && (
-              <a href={profile.website} className="flex items-center gap-2 text-[#8B949E] hover:text-cyan-400 transition-colors">
+              <a href={profile.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#8B949E] hover:text-cyan-400 transition-colors">
                 <Globe className="h-4 w-4" />
                 <span className="text-sm">Website</span>
               </a>
             )}
             {profile.githubUrl && (
-              <a href={profile.githubUrl} className="flex items-center gap-2 text-[#8B949E] hover:text-purple-400 transition-colors">
+              <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#8B949E] hover:text-purple-400 transition-colors">
                 <Github className="h-4 w-4" />
                 <span className="text-sm">GitHub</span>
               </a>
             )}
             {profile.linkedinUrl && (
-              <a href={profile.linkedinUrl} className="flex items-center gap-2 text-[#8B949E] hover:text-blue-400 transition-colors">
+              <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#8B949E] hover:text-blue-400 transition-colors">
                 <Linkedin className="h-4 w-4" />
                 <span className="text-sm">LinkedIn</span>
               </a>
             )}
             {profile.twitterUrl && (
-              <a href={profile.twitterUrl} className="flex items-center gap-2 text-[#8B949E] hover:text-sky-400 transition-colors">
+              <a href={profile.twitterUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#8B949E] hover:text-sky-400 transition-colors">
                 <Twitter className="h-4 w-4" />
                 <span className="text-sm">Twitter</span>
               </a>

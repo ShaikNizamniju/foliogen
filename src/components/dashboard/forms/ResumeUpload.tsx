@@ -21,7 +21,6 @@ export function ResumeUpload() {
 
     setIsParsing(true);
     try {
-      console.log("Starting PDF extraction...");
       const arrayBuffer = await file.arrayBuffer();
 
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
@@ -80,19 +79,16 @@ export function ResumeUpload() {
       try {
         const { error: saveError } = await saveProfile(updates);
         if (saveError) {
-          console.error('Auto-save failed:', saveError);
           toast.success('Resume parsed! Please click "Save Changes" to persist.');
         } else {
           toast.success('Resume parsed & saved!');
         }
-      } catch (err) {
-        console.error('Save error:', err);
+      } catch {
         toast.success('Resume parsed! Please save manually.');
       }
 
     } catch (error: any) {
-      console.error('Upload Error:', error);
-      toast.error(error.message || 'Failed to parse resume');
+      toast.error(error?.message || 'Failed to parse resume');
     } finally {
       setIsParsing(false);
     }

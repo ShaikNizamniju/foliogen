@@ -135,10 +135,10 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       setProgress(100);
 
     } catch (error: any) {
-      console.error('Parse Error:', error);
       setState('error');
-      setErrorMessage(error.message || 'Failed to parse resume');
-      toast.error(error.message || 'Failed to parse resume');
+      const msg = error?.message || 'Failed to parse resume';
+      setErrorMessage(msg);
+      toast.error(msg);
     }
   };
 
@@ -164,8 +164,8 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
           resumeUrl = urlData.publicUrl;
           setUploadedResumeUrl(resumeUrl);
         }
-      } catch (err) {
-        console.error('Resume upload error:', err);
+      } catch {
+        // Resume upload is non-critical; profile data still applies
       }
     }
 
@@ -227,13 +227,11 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
     try {
       const { error: saveError } = await saveProfile(updates);
       if (saveError) {
-        console.error('Auto-save failed:', saveError);
         toast.error('Profile updated locally but failed to save. Please click "Save Changes".');
       } else {
         toast.success('Profile updated & saved!');
       }
-    } catch (err) {
-      console.error('Save error:', err);
+    } catch {
       toast.error('Profile updated locally. Please save manually.');
     }
 

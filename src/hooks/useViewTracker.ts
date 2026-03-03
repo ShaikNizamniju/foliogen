@@ -22,14 +22,12 @@ export function useViewTracker(profileUserId: string | undefined) {
 
     // Don't count if the visitor is the profile owner
     if (user?.id === profileUserId) {
-      console.log('[ViewTracker] Owner visit - not counting');
       return;
     }
 
     // Check sessionStorage to prevent counting refreshes in the same session
     const sessionKey = `viewed_${profileUserId}`;
     if (sessionStorage.getItem(sessionKey)) {
-      console.log('[ViewTracker] Already viewed this session - not counting');
       return;
     }
 
@@ -40,7 +38,6 @@ export function useViewTracker(profileUserId: string | undefined) {
     const ONE_HOUR = 60 * 60 * 1000;
 
     if (lastVisit && now - parseInt(lastVisit, 10) < ONE_HOUR) {
-      console.log('[ViewTracker] Visited within last hour - not counting');
       return;
     }
 
@@ -60,9 +57,7 @@ export function useViewTracker(profileUserId: string | undefined) {
       .rpc('increment_views', { p_user_id: profileUserId })
       .then(({ error }) => {
         if (error) {
-          console.error('[ViewTracker] Failed to increment views:', error);
-        } else {
-          console.log('[ViewTracker] View counted successfully');
+          // Silently fail - view tracking is non-critical
         }
       });
 
@@ -77,9 +72,7 @@ export function useViewTracker(profileUserId: string | undefined) {
         })
         .then(({ error }) => {
           if (error) {
-            console.error('[ViewTracker] Failed to log visit:', error);
-          } else {
-            console.log('[ViewTracker] Recruiter visit logged:', { companyName, roleTarget });
+            // Silently fail - visit logging is non-critical
           }
         });
     }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
@@ -249,7 +250,9 @@ export default function PublicPortfolio() {
         }}
       >
         <div id="portfolio-export-container" className="print:w-full">
-          {renderTemplate()}
+          <ErrorBoundary fallbackMessage="Portfolio template encountered an error">
+            {renderTemplate()}
+          </ErrorBoundary>
         </div>
       </div>
       
