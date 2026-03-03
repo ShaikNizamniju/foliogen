@@ -16,7 +16,7 @@ interface ProContextType {
 const ProContext = createContext<ProContextType | undefined>(undefined);
 
 // VIP beta testers — bypass payment gate locally
-const VIP_WHITELIST = [
+const VIP_WHITELIST: string[] = [
   'shaiknizamniju@gmail.com',
   'grv1979@gmail.com',
   'eshan.tiwari16@gmail.com',
