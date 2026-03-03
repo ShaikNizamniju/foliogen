@@ -81,6 +81,8 @@ export interface ProfileData {
   calendlyUrl: string;
   selectedFont: FontChoice;
   username?: string;
+  isPro?: boolean;
+  predictedDomain?: string;
   selectedTemplate:
     | "minimalist"
     | "creative"
@@ -186,6 +188,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         selectedFont: ((data as any).selected_font as FontChoice) || "default",
         selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "modern-dark",
         username: (data as any).username || "",
+        isPro: (data as any).is_pro || false,
+        predictedDomain: (data as any).predicted_domain || "",
       });
     }
     setLoading(false);

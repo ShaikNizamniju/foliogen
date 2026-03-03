@@ -95,6 +95,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_queries: {
+        Row: {
+          ai_response: string | null
+          created_at: string
+          id: string
+          profile_user_id: string
+          visitor_company: string | null
+          visitor_question: string | null
+        }
+        Insert: {
+          ai_response?: string | null
+          created_at?: string
+          id?: string
+          profile_user_id: string
+          visitor_company?: string | null
+          visitor_question?: string | null
+        }
+        Update: {
+          ai_response?: string | null
+          created_at?: string
+          id?: string
+          profile_user_id?: string
+          visitor_company?: string | null
+          visitor_question?: string | null
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string
@@ -218,6 +245,7 @@ export type Database = {
           meta_keywords: string[] | null
           meta_title: string | null
           photo_url: string | null
+          predicted_domain: string | null
           pro_since: string | null
           projects: Json | null
           resume_url: string | null
@@ -250,6 +278,7 @@ export type Database = {
           meta_keywords?: string[] | null
           meta_title?: string | null
           photo_url?: string | null
+          predicted_domain?: string | null
           pro_since?: string | null
           projects?: Json | null
           resume_url?: string | null
@@ -282,6 +311,7 @@ export type Database = {
           meta_keywords?: string[] | null
           meta_title?: string | null
           photo_url?: string | null
+          predicted_domain?: string | null
           pro_since?: string | null
           projects?: Json | null
           resume_url?: string | null
@@ -375,6 +405,58 @@ export type Database = {
           views: number | null
           website: string | null
           work_experience: Json | null
+        }
+        Insert: {
+          bio?: string | null
+          calendly_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          github_url?: string | null
+          headline?: string | null
+          id?: string | null
+          is_pro?: boolean | null
+          key_highlights?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          photo_url?: string | null
+          projects?: Json | null
+          resume_url?: string | null
+          selected_font?: string | null
+          selected_template?: string | null
+          skills?: string[] | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+          views?: number | null
+          website?: string | null
+          work_experience?: Json | null
+        }
+        Update: {
+          bio?: string | null
+          calendly_url?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          github_url?: string | null
+          headline?: string | null
+          id?: string | null
+          is_pro?: boolean | null
+          key_highlights?: string[] | null
+          linkedin_url?: string | null
+          location?: string | null
+          photo_url?: string | null
+          projects?: Json | null
+          resume_url?: string | null
+          selected_font?: string | null
+          selected_template?: string | null
+          skills?: string[] | null
+          twitter_url?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+          views?: number | null
+          website?: string | null
+          work_experience?: Json | null
         }
         Relationships: []
       }

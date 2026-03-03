@@ -20,13 +20,21 @@ interface ProfileChatBotProps {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-with-profile`;
 
+const QUALIFYING_QUESTIONS = [
+  "Hi! Before I share details, which company are you reaching out from?",
+  "Great, thanks! What role are you looking to fill?",
+  "And what's your timeline for this hire?",
+];
+
 export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [qualificationStep, setQualificationStep] = useState(0);
+  const [visitorCompany, setVisitorCompany] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'initial',
       role: 'assistant',
-      content: `Hi! I'm an AI assistant. Ask me anything about ${profileName || 'this professional'}'s experience, skills, or projects.`,
+      content: QUALIFYING_QUESTIONS[0],
     },
   ]);
   const [input, setInput] = useState('');
@@ -57,12 +65,43 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
 
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
-    setIsLoading(true);
 
+    // Handle qualifying questions locally
+    if (qualificationStep < QUALIFYING_QUESTIONS.length) {
+      // Capture company name from first answer
+      if (qualificationStep === 0) {
+        setVisitorCompany(userMessage.content);
+      }
+
+      const nextStep = qualificationStep + 1;
+      setQualificationStep(nextStep);
+
+      if (nextStep < QUALIFYING_QUESTIONS.length) {
+        // Ask next qualifying question
+        setMessages((prev) => [
+          ...prev,
+          { id: crypto.randomUUID(), role: 'assistant', content: QUALIFYING_QUESTIONS[nextStep] },
+        ]);
+        return;
+      } else {
+        // All questions answered — greet and proceed
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: `Thanks for the context! I'm ready to tell you about ${profileName || 'this professional'}. What would you like to know?`,
+          },
+        ]);
+        return;
+      }
+    }
+
+    // Qualification complete — send to AI
+    setIsLoading(true);
     let assistantContent = '';
     const assistantId = crypto.randomUUID();
 
-    // Add empty assistant message that will be updated
     setMessages((prev) => [
       ...prev,
       { id: assistantId, role: 'assistant', content: '' },
@@ -73,7 +112,6 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
         .filter((m) => m.id !== 'initial')
         .map((m) => ({ role: m.role, content: m.content }));
 
-      // Use session JWT when available; only send Authorization for authenticated users
       const { data: { session } } = await supabase.auth.getSession();
 
       const headers: Record<string, string> = {
@@ -92,6 +130,7 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
           userQuery: userMessage.content,
           profileId,
           conversationHistory,
+          visitorCompany,
         }),
       });
 
@@ -136,14 +175,13 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
               );
             }
           } catch {
-            // Incomplete JSON, put back and wait
             buffer = line + '\n' + buffer;
             break;
           }
         }
       }
 
-      // Handle any remaining buffer
+      // Handle remaining buffer
       if (buffer.trim()) {
         for (let raw of buffer.split('\n')) {
           if (!raw) continue;
@@ -167,7 +205,6 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
         }
       }
     } catch (error) {
-      console.error('Chat error:', error);
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId
@@ -275,7 +312,7 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask a question..."
+                  placeholder={qualificationStep < QUALIFYING_QUESTIONS.length ? "Type your answer..." : "Ask a question..."}
                   disabled={isLoading}
                   className="flex-1 bg-background"
                 />

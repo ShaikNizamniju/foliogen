@@ -8,9 +8,10 @@ import {
   LogOut,
   Sparkles,
   Briefcase,
-  FolderOpen,
+  MessageSquareText,
   ChevronLeft,
 } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import {
   Sidebar,
   SidebarContent,
@@ -33,8 +34,9 @@ const menuItems = [
   { title: 'Overview', icon: LayoutDashboard, section: 'overview' },
   { title: 'Profile', icon: User, section: 'profile' },
   { title: 'Job Match', icon: Sparkles, section: 'job-match' },
-  { title: 'Projects', icon: FolderOpen, section: 'jobs' },
+  { title: 'Career Hub', icon: Briefcase, section: 'jobs' },
   { title: 'Templates', icon: Palette, section: 'templates' },
+  { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },
   { title: 'Settings', icon: Settings, section: 'settings' },
 ];
 
@@ -57,11 +59,11 @@ export function DashboardSidebar() {
       <SidebarHeader className="p-5">
         <Link to="/" className="flex items-center gap-3">
           <motion.div 
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent-foreground"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl overflow-hidden"
             whileHover={{ scale: 1.1, rotate: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
-            <Sparkles className="h-4.5 w-4.5 text-primary-foreground" />
+            <img src={logoImg} alt="Foliogen" className="h-9 w-9 object-contain" />
           </motion.div>
           {!collapsed && (
             <motion.span 

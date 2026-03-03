@@ -55,6 +55,12 @@ export function TemplatesSection() {
         <p className="text-muted-foreground mt-1">
           Select a design that best represents your professional style.
         </p>
+        {profile.predictedDomain && (
+          <div className="mt-3 p-3 rounded-xl bg-primary/5 border border-primary/20 text-sm text-foreground">
+            <span className="font-medium">🎯 Optimized for {profile.predictedDomain}.</span>{' '}
+            <span className="text-muted-foreground">Changing templates may reduce your portfolio's effectiveness for this domain.</span>
+          </div>
+        )}
         {!isPro && (
           <div className="mt-3 flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
             <Crown className="h-4 w-4" />

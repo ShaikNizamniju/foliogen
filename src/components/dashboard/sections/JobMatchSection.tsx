@@ -73,8 +73,20 @@ export function JobMatchSection() {
   const [copied, setCopied] = useState(false);
 
   const handleAnalyze = async () => {
-    if (!jobDescription.trim()) {
+    const trimmed = jobDescription.trim();
+    if (!trimmed) {
       toast.error('Please paste a job description first');
+      return;
+    }
+
+    // Detect URLs and guide user
+    if (/^https?:\/\//i.test(trimmed)) {
+      toast.error('URL fetching is not supported yet. Please paste the job description text directly.');
+      return;
+    }
+
+    if (!profile.isPro) {
+      toast.error('Job Match Agent is a Pro feature. Upgrade to Pro for ₹199 to unlock.');
       return;
     }
 
@@ -102,7 +114,6 @@ export function JobMatchSection() {
       setResult(data);
       toast.success('Analysis complete!');
     } catch (error) {
-      console.error('Job match analysis error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to analyze job match');
     } finally {
       setIsAnalyzing(false);
