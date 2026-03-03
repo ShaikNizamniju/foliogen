@@ -11,8 +11,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-// Use CDNJS URL matching installed pdfjs-dist version
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.8.69/pdf.worker.min.mjs`;
+// Dynamically resolve worker URL to match installed pdfjs-dist version
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
 export function LinkedInPdfUpload() {
   const [isDragging, setIsDragging] = useState(false);
