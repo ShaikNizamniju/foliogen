@@ -7,7 +7,7 @@ import { ModeToggle } from '@/components/ModeToggle';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
-import html2pdf from 'html2pdf.js';
+
 import { motion } from 'framer-motion';
 
 export function DashboardHeader() {
@@ -47,22 +47,16 @@ export function DashboardHeader() {
       toast({ title: "Export Error", description: "Could not find resume content to export.", variant: "destructive" });
       return;
     }
+
     setIsExporting(true);
-    toast({ title: "Generating PDF...", description: "Please wait while we create your ATS-friendly resume." });
-    const options = {
-      margin: 0,
-      filename: `${profile.fullName || 'resume'}-resume.pdf`,
-      image: { type: 'jpeg', quality: 1 },
-      html2canvas: { scale: 4, useCORS: true, letterRendering: true, scrollY: 0, backgroundColor: '#ffffff' },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
+    toast({ title: "Preparing print view...", description: "Use your browser's Save as PDF option to export your resume." });
+
     try {
-      await html2pdf().set(options).from(element).save();
-      toast({ title: "Resume Downloaded!", description: "Your ATS-friendly resume has been saved." });
+      window.print();
+      toast({ title: "Print dialog opened", description: "Select Save as PDF to complete your export." });
     } catch (error) {
       console.error('PDF export error:', error);
-      toast({ title: "Export Failed", description: "There was an error creating your PDF. Please try again.", variant: "destructive" });
+      toast({ title: "Export Failed", description: "There was an error opening print dialog. Please try again.", variant: "destructive" });
     } finally {
       setIsExporting(false);
     }
