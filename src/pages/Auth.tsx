@@ -202,8 +202,13 @@ export default function Auth() {
             </Button>
           </form>
 
+          {/* Security Badge — centered below form */}
+          <div className="flex justify-center mt-6">
+            <SecurityBadge />
+          </div>
+
           {/* Footer */}
-          <div className="mt-6 space-y-3">
+          <div className="mt-5 space-y-3">
             {isLogin && (
               <button type="button" onClick={handleForgotPassword} className="text-sm text-primary hover:underline">Forgot password?</button>
             )}
@@ -218,11 +223,11 @@ export default function Auth() {
               <Link to="/privacy" className="text-primary hover:underline">Terms Of Use</Link>{' '}and{' '}
               <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>.
             </p>
-          </div>
-
-          {/* Security Badge */}
-          <div className="flex justify-center pt-4">
-            <SecurityBadge />
+            <p className="text-xs text-center text-muted-foreground pt-1">
+              <a href="/#contact" className="text-primary/80 hover:text-primary hover:underline transition-colors">
+                Found a bug? Help us improve.
+              </a>
+            </p>
           </div>
         </div>
       </div>
