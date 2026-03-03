@@ -4,10 +4,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ProProvider } from "@/contexts/ProContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingThemeToggle } from "@/components/FloatingThemeToggle";
+import { AuthLoadingOverlay } from "@/components/AuthLoadingOverlay";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -20,6 +21,30 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function AppRoutes() {
+  const { initializing } = useAuth();
+
+  return (
+    <>
+      <AuthLoadingOverlay show={initializing} />
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/p/:id" element={<PublicPortfolio />} />
+        <Route path="/u/:id" element={<PublicPortfolio />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/social-kit" element={<SocialKit />} />
+        <Route path="/templates" element={<TemplatesGallery />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <FloatingThemeToggle />
+    </>
+  );
+}
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
@@ -30,20 +55,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/p/:id" element={<PublicPortfolio />} />
-                  <Route path="/u/:id" element={<PublicPortfolio />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/social-kit" element={<SocialKit />} />
-                  <Route path="/templates" element={<TemplatesGallery />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <FloatingThemeToggle />
+                <AppRoutes />
               </BrowserRouter>
             </TooltipProvider>
           </ProProvider>
