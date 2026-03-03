@@ -44,7 +44,7 @@ export function TemplatePreview() {
             </SelectTrigger>
             <SelectContent>
               {FONT_OPTIONS.map((font) => (
-                <SelectItem key={font.id} value={font.id} className="text-xs">
+                <SelectItem key={font.id} value={font.id} className="text-xs" style={{ fontFamily: font.preview }}>
                   {font.label}
                 </SelectItem>
               ))}

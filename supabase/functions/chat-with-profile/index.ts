@@ -6,10 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-// Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
 const RATE_LIMIT_MAX = 20;
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 
 function isRateLimited(key: string): boolean {
   const now = Date.now();
@@ -19,10 +18,7 @@ function isRateLimited(key: string): boolean {
     return false;
   }
   entry.count++;
-  if (entry.count > RATE_LIMIT_MAX) {
-    return true;
-  }
-  return false;
+  return entry.count > RATE_LIMIT_MAX;
 }
 
 serve(async (req) => {
@@ -31,7 +27,6 @@ serve(async (req) => {
   }
 
   try {
-    // Rate limit by IP
     const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
     if (isRateLimited(`chat:${clientIP}`)) {
       return new Response(
@@ -42,7 +37,7 @@ serve(async (req) => {
 
     const body = await req.json();
     const { profileId } = body;
-    let { userQuery, conversationHistory } = body;
+    let { userQuery, conversationHistory, visitorCompany } = body;
 
     if (!userQuery || typeof userQuery !== 'string' || !profileId || typeof profileId !== 'string') {
       return new Response(
@@ -51,9 +46,7 @@ serve(async (req) => {
       );
     }
 
-    // Sanitize user query: trim, limit length, strip HTML tags
     userQuery = userQuery.replace(/<[^>]*>/g, '').trim().substring(0, 1000);
-
     if (!userQuery) {
       return new Response(
         JSON.stringify({ error: 'Query cannot be empty' }),
@@ -61,11 +54,7 @@ serve(async (req) => {
       );
     }
 
-    // Validate conversationHistory structure
-    if (!Array.isArray(conversationHistory)) {
-      conversationHistory = [];
-    }
-
+    if (!Array.isArray(conversationHistory)) conversationHistory = [];
     if (conversationHistory.length > 20) {
       return new Response(
         JSON.stringify({ error: 'Conversation too long. Please start a new chat.' }),
@@ -73,50 +62,35 @@ serve(async (req) => {
       );
     }
 
-    // Validate each message in conversation history
     const validRoles = ['user', 'assistant'];
     conversationHistory = conversationHistory.filter(
       (msg: any) =>
-        msg &&
-        typeof msg.role === 'string' &&
-        validRoles.includes(msg.role) &&
-        typeof msg.content === 'string' &&
-        msg.content.length <= 2000
+        msg && typeof msg.role === 'string' && validRoles.includes(msg.role) &&
+        typeof msg.content === 'string' && msg.content.length <= 2000
     ).map((msg: any) => ({
       role: msg.role,
       content: msg.content.replace(/<[^>]*>/g, '').trim(),
     }));
 
-    console.log('Chat request for profile:', profileId);
-
-    // Initialize Supabase client with anon key (uses RLS, doesn't bypass security)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    // Fetch public profile data (excludes email for privacy)
     const { data: profile, error: profileError } = await supabase
       .from('profiles_public')
       .select('*')
       .eq('user_id', profileId)
       .maybeSingle();
 
-    if (profileError) {
-      console.error('Error fetching profile:', profileError);
+    if (profileError || !profile) {
       return new Response(
-        JSON.stringify({ error: 'Failed to fetch profile data' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: profileError ? 'Failed to fetch profile data' : 'Profile not found' }),
+        { status: profileError ? 500 : 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    if (!profile) {
-      return new Response(
-        JSON.stringify({ error: 'Profile not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Construct profile data for the AI (no email - privacy)
     const profileData = {
       name: profile.full_name || 'Unknown',
       headline: profile.headline || '',
@@ -185,7 +159,43 @@ CRITICAL RULES:
       throw new Error('AI gateway error');
     }
 
-    return new Response(response.body, {
+    // Clone the stream: one for client, one for logging
+    const [clientStream, logStream] = response.body!.tee();
+
+    // Log chat query asynchronously (don't block response)
+    (async () => {
+      try {
+        const decoder = new TextDecoder();
+        const reader = logStream.getReader();
+        let fullResponse = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          for (const line of chunk.split('\n')) {
+            if (!line.startsWith('data: ')) continue;
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) fullResponse += content;
+            } catch {}
+          }
+        }
+        // Insert into chat_queries using service role
+        await supabaseAdmin.from('chat_queries').insert({
+          profile_user_id: profileId,
+          visitor_company: typeof visitorCompany === 'string' ? visitorCompany.substring(0, 200) : null,
+          visitor_question: userQuery.substring(0, 1000),
+          ai_response: fullResponse.substring(0, 5000),
+        });
+      } catch (logErr) {
+        console.error('Chat log error:', logErr);
+      }
+    })();
+
+    return new Response(clientStream, {
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
 

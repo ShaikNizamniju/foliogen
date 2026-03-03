@@ -70,8 +70,7 @@ function DashboardInner() {
         <PrintableResume profile={profile} />
       </div>
       
-      {/* Onboarding Tour */}
-      <OnboardingTour />
+      {/* Onboarding Tour disabled for production */}
       
       {/* Domain Questionnaire */}
       <OnboardingQuestionnaire />

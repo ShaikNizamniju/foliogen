@@ -5,6 +5,7 @@ import { TemplatesSection } from './sections/TemplatesSection';
 import { SettingsSection } from './sections/SettingsSection';
 import { JobMatchSection } from './sections/JobMatchSection';
 import { JobsSection } from './sections/JobsSection';
+import { ChatLogSection } from './sections/ChatLogSection';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const pageTransition = {
@@ -34,6 +35,7 @@ export function DashboardContent() {
       case 'job-match': return <JobMatchSection />;
       case 'jobs': return <JobsSection />;
       case 'templates': return <TemplatesSection />;
+      case 'chat-log': return <ChatLogSection />;
       case 'settings': return <SettingsSection />;
       default: return <OverviewSection />;
     }
