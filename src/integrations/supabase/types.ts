@@ -419,7 +419,7 @@ export type Database = {
           linkedin_url?: string | null
           location?: string | null
           photo_url?: string | null
-          projects?: Json | null
+          projects?: never
           resume_url?: string | null
           selected_font?: string | null
           selected_template?: string | null
@@ -445,7 +445,7 @@ export type Database = {
           linkedin_url?: string | null
           location?: string | null
           photo_url?: string | null
-          projects?: Json | null
+          projects?: never
           resume_url?: string | null
           selected_font?: string | null
           selected_template?: string | null
