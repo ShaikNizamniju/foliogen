@@ -46,9 +46,8 @@ serve(async (req) => {
     const payCheck = validateText(paymentId, "Payment ID", 100, 5);
     if (!payCheck.valid) return validationError(payCheck.error!);
 
-    // Verify payment with Razorpay API
-    const RAZORPAY_KEY_ID = Deno.env.get('RAZORPAY_KEY_ID');
-    const RAZORPAY_KEY_SECRET = Deno.env.get('RAZORPAY_KEY_SECRET');
+    const RAZORPAY_KEY_ID = Deno.env.get('razorpay_key_id');
+    const RAZORPAY_KEY_SECRET = Deno.env.get('razorpay_key_secret');
 
     if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
       console.error('Razorpay credentials not configured');

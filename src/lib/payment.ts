@@ -14,7 +14,7 @@ export interface PaymentUser {
   name?: string;
 }
 
-export const RAZORPAY_KEY = "rzp_test_SE6pBwbZL7Xo7T";
+export const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_LIVE_KEY_ID || "";
 
 const PLAN_LABELS: Record<number, string> = {
   19900: "Basic (₹199/mo)",
