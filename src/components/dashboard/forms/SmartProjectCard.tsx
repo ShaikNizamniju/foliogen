@@ -102,6 +102,8 @@ export function SmartProjectCard({
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   // Debounce local changes
   const debouncedProject = useDebounce(localProject, 1000);
@@ -204,7 +206,7 @@ export function SmartProjectCard({
 
       // Auto-fill the docsUrl field
       updateLocalField('docsUrl', publicUrl);
-      
+
       // Immediate update to parent
       onUpdate(project.id, { docsUrl: publicUrl });
 
@@ -217,6 +219,56 @@ export function SmartProjectCard({
       // Reset the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Invalid image type. Please upload PNG, JPG, or WEBP.');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image too large. Maximum size is 2MB.');
+      return;
+    }
+
+    setIsImageUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${project.id}-thumbnail-${Date.now()}.${fileExt}`;
+      const filePath = `thumbnails/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('project-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('project-images')
+        .getPublicUrl(filePath);
+
+      updateLocalField('imageUrl', publicUrl);
+      onUpdate(project.id, { imageUrl: publicUrl });
+
+      toast.success('Project image uploaded successfully!');
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image. Please try again.');
+    } finally {
+      setIsImageUploading(false);
+      if (imageInputRef.current) {
+        imageInputRef.current.value = '';
       }
     }
   };
@@ -474,6 +526,34 @@ export function SmartProjectCard({
               {validationErrors['imageUrl'] && (
                 <p className="text-xs text-destructive">{validationErrors['imageUrl']}</p>
               )}
+
+              {/* File Upload Option for Project Image */}
+              <div className="flex flex-col gap-2 mt-4 mb-4">
+                <Label className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Upload className="h-4 w-4" />
+                  Or Upload Project Image
+                </Label>
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={imageInputRef}
+                    type="file"
+                    accept=".png,.jpg,.jpeg,.webp"
+                    onChange={handleImageUpload}
+                    disabled={isImageUploading}
+                    className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  {isImageUploading && (
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="text-xs">Uploading...</span>
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Upload a custom thumbnail for your project (max 2MB, fallback to AI-generated cover if empty).
+                </p>
+              </div>
+
               {/* Smart Project Image Preview */}
               <div className="mt-2 w-40 rounded-lg overflow-hidden border border-border">
                 <SmartProjectImage
@@ -484,9 +564,9 @@ export function SmartProjectCard({
                   showRefresh={!localProject.imageUrl}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                {localProject.imageUrl 
-                  ? 'Using custom image' 
+              <p className="text-xs text-muted-foreground mt-2">
+                {localProject.imageUrl
+                  ? 'Using custom image'
                   : 'Auto-generated cover based on project title and tags'}
               </p>
             </div>
@@ -695,9 +775,9 @@ export function SmartProjectCard({
                     if (!newProtected) {
                       updateLocalField('password', '');
                     }
-                    onUpdate(project.id, { 
-                      isProtected: newProtected, 
-                      password: newProtected ? localProject.password : '' 
+                    onUpdate(project.id, {
+                      isProtected: newProtected,
+                      password: newProtected ? localProject.password : ''
                     });
                   }}
                   className="gap-2"
