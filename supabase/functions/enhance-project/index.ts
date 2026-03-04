@@ -2,12 +2,16 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   corsHeaders,
-  checkRateLimit,
+  checkTieredRateLimit,
   rateLimitedResponse,
   getClientIP,
   validateText,
   validationError,
   errorResponse,
+  requireProSecrets,
+  requireMinimumTier,
+  resolveTier,
+  sanitize,
 } from "../_shared/security.ts";
 
 serve(async (req) => {
@@ -16,10 +20,9 @@ serve(async (req) => {
   }
 
   try {
-    // Token-bucket rate limit: 100 req / 15 min per IP
-    const ip = getClientIP(req);
-    const { allowed, retryAfterSeconds } = checkRateLimit(`enhance:${ip}`);
-    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+    // Verify Pro secrets are configured before any processing
+    const secretGate = requireProSecrets();
+    if (secretGate) return secretGate;
 
     // Authenticate user
     const authHeader = req.headers.get('Authorization');
@@ -41,16 +44,23 @@ serve(async (req) => {
 
     const userId = claimsData.claims.sub;
 
-    // Check Pro status server-side
+    // Fetch profile and resolve tier
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_pro')
+      .select('is_pro, plan_type')
       .eq('user_id', userId)
       .single();
 
-    if (!profile?.is_pro) {
-      return errorResponse('Pro subscription required', 403);
-    }
+    const tier = resolveTier(profile?.is_pro, (profile as any)?.plan_type);
+
+    // Block Free-tier users from this Pro-only endpoint
+    const tierGate = requireMinimumTier(tier, 'PRO');
+    if (tierGate) return tierGate;
+
+    // Tier-based rate limiting
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkTieredRateLimit(`enhance:${userId || ip}`, tier);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds, tier);
 
     const { description, title } = await req.json();
 
@@ -65,10 +75,7 @@ serve(async (req) => {
 
     console.log('Enhancing project description:', title || 'Untitled');
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
-    }
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
 
     const systemPrompt = `You are a professional copywriter who specializes in writing impactful project case studies for portfolios and resumes.
 
