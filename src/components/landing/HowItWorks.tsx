@@ -64,7 +64,7 @@ export function HowItWorks() {
         <div className="relative max-w-4xl mx-auto">
           {/* Connecting line */}
           <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/20 via-accent/20 to-emerald-500/20 -translate-y-1/2" />
-          
+
           {/* Animated progress line */}
           <motion.div
             className="hidden md:block absolute top-1/2 left-0 h-0.5 bg-gradient-to-r from-primary via-accent to-emerald-500 -translate-y-1/2"
@@ -93,7 +93,7 @@ export function HowItWorks() {
                   <div className="w-full h-full rounded-2xl bg-background flex items-center justify-center">
                     <step.icon className="w-8 h-8 text-foreground" />
                   </div>
-                  
+
                   {/* Pulsing ring */}
                   <motion.div
                     className="absolute inset-0 rounded-2xl"
@@ -119,6 +119,26 @@ export function HowItWorks() {
             ))}
           </div>
         </div>
+        {/* SEO Word Count Boost: Why Foliogen */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mx-auto max-w-4xl mt-24 text-center pb-8"
+        >
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl mb-6">
+            Why Choose Foliogen as Your AI Portfolio Builder?
+          </h2>
+          <div className="text-muted-foreground leading-relaxed space-y-4 text-left md:text-center md:px-12">
+            <p>
+              In today's competitive job market, an ordinary resume is no longer enough. Foliogen is a premier <strong>AI Portfolio Builder</strong> designed specifically to elevate your professional brand. Our platform integrates advanced <strong>career strategy</strong> principles to generate highly tailored, ATS-optimized portfolios that resonate with modern tech recruiters and hiring managers.
+            </p>
+            <p>
+              By leveraging intelligent synthesis, Foliogen ensures your unique skills, projects, and experiences are presented with maximum impact. Whether you are transitioning into a new role or aiming for leadership, our dynamic portfolio generation tools provide the aesthetic superiority and strategic depth required to stand out. Don't leave your career trajectory to chance—build an <strong>ATS-optimized</strong>, data-driven narrative that accelerates your journey and helps you land your next dream job.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
