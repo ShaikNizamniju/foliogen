@@ -1,10 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import {
+  corsHeaders,
+  checkRateLimit,
+  rateLimitedResponse,
+  getClientIP,
+  validateText,
+  validationError,
+  errorResponse,
+} from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -12,13 +16,15 @@ serve(async (req) => {
   }
 
   try {
+    // Token-bucket rate limit: 100 req / 15 min per IP
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkRateLimit(`enhance:${ip}`);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+
     // Authenticate user
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Authorization required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Authorization required', 401);
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -30,10 +36,7 @@ serve(async (req) => {
     const token = authHeader.replace('Bearer ', '');
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
     if (claimsError || !claimsData?.claims) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Invalid token', 401);
     }
 
     const userId = claimsData.claims.sub;
@@ -46,19 +49,18 @@ serve(async (req) => {
       .single();
 
     if (!profile?.is_pro) {
-      return new Response(
-        JSON.stringify({ error: 'Pro subscription required' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Pro subscription required', 403);
     }
 
     const { description, title } = await req.json();
 
-    if (!description) {
-      return new Response(
-        JSON.stringify({ error: 'description is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // ── Allow-list validation ────────────────────────────────────────────
+    const descCheck = validateText(description, "Project description", 5000, 10);
+    if (!descCheck.valid) return validationError(descCheck.error!);
+
+    if (title) {
+      const titleCheck = validateText(title, "Project title", 300);
+      if (!titleCheck.valid) return validationError(titleCheck.error!);
     }
 
     console.log('Enhancing project description:', title || 'Untitled');
@@ -87,7 +89,7 @@ Guidelines:
 
 Do NOT include any preamble or explanation. Just output the rewritten description.`;
 
-    const userPrompt = title 
+    const userPrompt = title
       ? `Project Title: ${title}\n\nOriginal Description: ${description}`
       : `Original Description: ${description}`;
 
@@ -111,14 +113,11 @@ Do NOT include any preamble or explanation. Just output the rewritten descriptio
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
         );
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI service temporarily unavailable.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI service temporarily unavailable.', 402);
       }
       const errorText = await response.text();
       console.error('AI gateway error:', response.status, errorText);
@@ -131,9 +130,6 @@ Do NOT include any preamble or explanation. Just output the rewritten descriptio
 
   } catch (error) {
     console.error('Enhance project error:', error);
-    return new Response(
-      JSON.stringify({ error: 'An unexpected error occurred' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return errorResponse('An unexpected error occurred', 500);
   }
 });
