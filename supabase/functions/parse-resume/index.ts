@@ -2,12 +2,14 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   corsHeaders,
-  checkRateLimit,
+  checkTieredRateLimit,
   rateLimitedResponse,
   getClientIP,
   validateText,
   validationError,
   errorResponse,
+  requireMinimumTier,
+  resolveTier,
 } from "../_shared/security.ts";
 
 serve(async (req) => {
@@ -16,11 +18,6 @@ serve(async (req) => {
   }
 
   try {
-    // Token-bucket rate limit: 100 req / 15 min per IP
-    const ip = getClientIP(req);
-    const { allowed, retryAfterSeconds } = checkRateLimit(`resume:${ip}`);
-    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
-
     // Authenticate user
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
@@ -38,6 +35,23 @@ serve(async (req) => {
     if (claimsError || !claimsData?.claims) {
       return errorResponse('Invalid token', 401);
     }
+
+    const userId = claimsData.claims.sub;
+
+    // Fetch profile and resolve tier — parse-resume requires at least BASIC
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_pro, plan_type')
+      .eq('user_id', userId)
+      .single();
+
+    const tier = resolveTier(profile?.is_pro, (profile as any)?.plan_type);
+
+    // Resume parsing is available to Basic and Pro tiers
+    // Free tier gets basic parsing (we allow it but rate-limit heavily)
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkTieredRateLimit(`resume:${userId || ip}`, tier);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds, tier);
 
     const body = await req.json();
     const resumeText = body?.resumeText;

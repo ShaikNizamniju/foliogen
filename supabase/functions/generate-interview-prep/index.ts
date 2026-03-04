@@ -2,12 +2,15 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   corsHeaders,
-  checkRateLimit,
+  checkTieredRateLimit,
   rateLimitedResponse,
   getClientIP,
   validateText,
   validationError,
   errorResponse,
+  requireProSecrets,
+  requireMinimumTier,
+  resolveTier,
 } from "../_shared/security.ts";
 
 serve(async (req) => {
@@ -16,10 +19,9 @@ serve(async (req) => {
   }
 
   try {
-    // Token-bucket rate limit: 100 req / 15 min per IP
-    const ip = getClientIP(req);
-    const { allowed, retryAfterSeconds } = checkRateLimit(`interview:${ip}`);
-    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+    // Verify Pro secrets are configured
+    const secretGate = requireProSecrets();
+    if (secretGate) return secretGate;
 
     // Authenticate user
     const authHeader = req.headers.get("Authorization");
@@ -41,16 +43,23 @@ serve(async (req) => {
 
     const userId = claimsData.claims.sub;
 
-    // Check Pro status server-side
+    // Fetch profile and resolve tier
     const { data: proProfile } = await supabase
       .from('profiles')
-      .select('is_pro')
+      .select('is_pro, plan_type')
       .eq('user_id', userId)
       .single();
 
-    if (!proProfile?.is_pro) {
-      return errorResponse('Pro subscription required', 403);
-    }
+    const tier = resolveTier(proProfile?.is_pro, (proProfile as any)?.plan_type);
+
+    // Block Free-tier users
+    const tierGate = requireMinimumTier(tier, 'PRO');
+    if (tierGate) return tierGate;
+
+    // Tier-based rate limiting
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkTieredRateLimit(`interview:${userId || ip}`, tier);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds, tier);
 
     const { company, role } = await req.json();
 
@@ -63,11 +72,7 @@ serve(async (req) => {
 
     console.log(`[generate-interview-prep] Generating prep for ${role} at ${company}`);
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("[generate-interview-prep] LOVABLE_API_KEY is not configured");
-      return errorResponse("AI service not configured", 500);
-    }
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
     const systemPrompt = `You are an expert career coach and interview preparation specialist. Your job is to help candidates prepare for job interviews by providing insightful company research, likely interview questions, and smart questions for the candidate to ask.
 

@@ -1,9 +1,17 @@
 /**
  * Shared security utilities for all edge functions.
- * - Token-bucket rate limiter with Retry-After headers
- * - Allow-list input validation
+ * - Tier-aware token-bucket rate limiter with Retry-After headers
+ * - Allow-list input validation (portfolio names, custom domains, etc.)
+ * - Pro-tier secret gate
  * - Consistent error responses
  */
+
+import {
+  SUBSCRIPTION_TIERS,
+  SECURITY_CONFIG,
+  type TierKey,
+  type TierConfig,
+} from './constants.ts';
 
 // ─── CORS ──────────────────────────────────────────────────────────────────────
 export const corsHeaders = {
@@ -19,19 +27,17 @@ interface TokenBucket {
 }
 
 const buckets = new Map<string, TokenBucket>();
-const DEFAULT_MAX_TOKENS = 100;
-const DEFAULT_REFILL_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
 /**
  * Token-bucket rate limiter. Returns { allowed, retryAfterSeconds }.
- * @param key   Unique identifier (e.g. "endpoint:ip")
- * @param max   Max tokens in the bucket (default 100)
- * @param windowMs  Refill window in ms (default 15 min)
+ * @param key       Unique identifier (e.g. "endpoint:ip")
+ * @param max       Max tokens in the bucket
+ * @param windowMs  Refill window in ms
  */
 export function checkRateLimit(
   key: string,
-  max = DEFAULT_MAX_TOKENS,
-  windowMs = DEFAULT_REFILL_WINDOW_MS,
+  max = SUBSCRIPTION_TIERS.PRO.rateLimitMax,
+  windowMs = SUBSCRIPTION_TIERS.PRO.rateLimitWindowMs,
 ): { allowed: boolean; retryAfterSeconds: number } {
   const now = Date.now();
   let bucket = buckets.get(key);
@@ -61,13 +67,37 @@ export function checkRateLimit(
 }
 
 /**
+ * Tier-aware rate limiter. Resolves the user's tier and applies the correct limits.
+ * @param key    Unique identifier (e.g. "endpoint:ip" or "endpoint:userId")
+ * @param tier   The user's subscription tier key
+ */
+export function checkTieredRateLimit(
+  key: string,
+  tier: TierKey,
+): { allowed: boolean; retryAfterSeconds: number } {
+  const config: TierConfig = SUBSCRIPTION_TIERS[tier];
+  return checkRateLimit(key, config.rateLimitMax, config.rateLimitWindowMs);
+}
+
+/**
+ * Resolve a user's tier from their profile flags.
+ */
+export function resolveTier(isPro: boolean | null, planType?: string | null): TierKey {
+  if (isPro) {
+    return planType === 'basic' ? 'BASIC' : 'PRO';
+  }
+  return 'FREE';
+}
+
+/**
  * Returns a 429 response with Retry-After header and actionable JSON message.
  */
-export function rateLimitedResponse(retryAfterSeconds: number): Response {
+export function rateLimitedResponse(retryAfterSeconds: number, tierName?: string): Response {
+  const tierMsg = tierName ? ` Your ${tierName} plan allows limited requests.` : '';
   return new Response(
     JSON.stringify({
       error: 'Too many requests',
-      message: `You have exceeded the rate limit. Please wait ${retryAfterSeconds} seconds before retrying.`,
+      message: `You have exceeded the rate limit.${tierMsg} Please wait ${retryAfterSeconds} seconds before retrying.`,
       retryAfterSeconds,
     }),
     {
@@ -81,10 +111,46 @@ export function rateLimitedResponse(retryAfterSeconds: number): Response {
   );
 }
 
-// ─── ALLOW-LIST INPUT VALIDATION ───────────────────────────────────────────────
+// ─── PRO SECRET GATE ───────────────────────────────────────────────────────────
 
-/** Allow-list regex: letters, digits, spaces, basic punctuation. No angle brackets or SQL keywords. */
-const SAFE_TEXT_RE = /^[\p{L}\p{N}\s.,;:!?'"\-()@#&+/=%_*~\[\]{}$^|\\`\n\r\t]+$/u;
+/**
+ * Verifies that all required secrets for Pro features are present.
+ * Returns null if all secrets are available, or an error Response if any are missing.
+ */
+export function requireProSecrets(): Response | null {
+  for (const secretName of SECURITY_CONFIG.PRO_REQUIRED_SECRETS) {
+    if (!Deno.env.get(secretName)) {
+      console.error(`Missing required secret for Pro feature: ${secretName}`);
+      return errorResponse('This feature is temporarily unavailable. Please contact support.', 503);
+    }
+  }
+  return null;
+}
+
+/**
+ * Gate that blocks Free-tier users from Pro-only endpoints.
+ * Returns null if access is allowed, or a 403 Response if denied.
+ */
+export function requireMinimumTier(
+  userTier: TierKey,
+  minimumTier: 'BASIC' | 'PRO',
+): Response | null {
+  const tierOrder: Record<TierKey, number> = { FREE: 0, BASIC: 1, PRO: 2 };
+  if (tierOrder[userTier] < tierOrder[minimumTier]) {
+    const tierConfig = SUBSCRIPTION_TIERS[minimumTier];
+    return new Response(
+      JSON.stringify({
+        error: 'Upgrade required',
+        message: `This feature requires the ${tierConfig.name} plan (₹${tierConfig.price}). Please upgrade to continue.`,
+        requiredTier: minimumTier,
+      }),
+      { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+  return null;
+}
+
+// ─── ALLOW-LIST INPUT VALIDATION ───────────────────────────────────────────────
 
 /** Strict email regex (RFC 5322 simplified) */
 const EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -96,13 +162,13 @@ const URL_RE = /^https?:\/\/[a-zA-Z0-9][-a-zA-Z0-9.]*[a-zA-Z0-9](?:\/[^\s<>]*)?$
 const INJECTION_PATTERNS = [
   /<script[\s>]/i,
   /javascript:/i,
-  /on\w+\s*=/i,           // onclick=, onerror=, etc.
+  /on\w+\s*=/i,
   /data:\s*text\/html/i,
   /\bUNION\s+SELECT\b/i,
   /\bDROP\s+TABLE\b/i,
   /\bINSERT\s+INTO\b/i,
   /\bDELETE\s+FROM\b/i,
-  /--\s/,                 // SQL comment
+  /--\s/,
   /;\s*(DROP|ALTER|TRUNCATE|EXEC)/i,
 ];
 
@@ -113,10 +179,6 @@ export interface ValidationResult {
 
 /**
  * Validates a text field against the allow-list.
- * @param value     The input string
- * @param fieldName Human-readable field name for error messages
- * @param maxLen    Maximum allowed length
- * @param minLen    Minimum required length (default 1)
  */
 export function validateText(
   value: unknown,
@@ -138,6 +200,41 @@ export function validateText(
     if (pattern.test(trimmed)) {
       return { valid: false, error: `${fieldName} contains disallowed content.` };
     }
+  }
+  return { valid: true };
+}
+
+/**
+ * Validates a portfolio name using a strict allow-list (alphanumeric, spaces, hyphens).
+ */
+export function validatePortfolioName(value: unknown): ValidationResult {
+  if (typeof value !== 'string' || !value.trim()) {
+    return { valid: false, error: 'Portfolio name is required.' };
+  }
+  const trimmed = value.trim();
+  if (trimmed.length > 100) {
+    return { valid: false, error: 'Portfolio name must be 100 characters or fewer.' };
+  }
+  if (!SECURITY_CONFIG.PORTFOLIO_NAME_RE.test(trimmed)) {
+    return { valid: false, error: 'Portfolio name must contain only letters, numbers, spaces, and hyphens.' };
+  }
+  return { valid: true };
+}
+
+/**
+ * Validates a custom domain (Pro tier only).
+ * Must follow standard domain format: subdomain.domain.tld
+ */
+export function validateCustomDomain(value: unknown): ValidationResult {
+  if (typeof value !== 'string' || !value.trim()) {
+    return { valid: false, error: 'Custom domain is required.' };
+  }
+  const trimmed = value.trim().toLowerCase();
+  if (trimmed.length > 253) {
+    return { valid: false, error: 'Domain must be 253 characters or fewer.' };
+  }
+  if (!SECURITY_CONFIG.CUSTOM_DOMAIN_RE.test(trimmed)) {
+    return { valid: false, error: 'Custom domain format is invalid. Expected: example.com or sub.example.com' };
   }
   return { valid: true };
 }

@@ -2,19 +2,15 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   corsHeaders,
-  checkRateLimit,
+  checkTieredRateLimit,
   rateLimitedResponse,
   getClientIP,
   validateText,
   validationError,
   errorResponse,
+  resolveTier,
 } from "../_shared/security.ts";
-
-// Plan configuration
-const PLAN_CONFIG: Record<number, { planType: string; renewalDays: number }> = {
-  19900: { planType: 'basic', renewalDays: 30 },   // ₹199 monthly
-  99900: { planType: 'pro', renewalDays: 365 },     // ₹999 yearly
-};
+import { PLAN_AMOUNT_CONFIG } from "../_shared/constants.ts";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -22,9 +18,9 @@ serve(async (req) => {
   }
 
   try {
-    // Token-bucket rate limit: 100 req / 15 min per IP
+    // Tier-based rate limit (conservative for payment endpoint)
     const ip = getClientIP(req);
-    const { allowed, retryAfterSeconds } = checkRateLimit(`activate:${ip}`, 20, 15 * 60 * 1000);
+    const { allowed, retryAfterSeconds } = checkTieredRateLimit(`activate:${ip}`, 'FREE');
     if (!allowed) return rateLimitedResponse(retryAfterSeconds);
 
     const authHeader = req.headers.get('Authorization');
@@ -75,13 +71,13 @@ serve(async (req) => {
 
     const payment = await verifyResponse.json();
 
-    const validAmounts = Object.keys(PLAN_CONFIG).map(Number);
+    const validAmounts = Object.keys(PLAN_AMOUNT_CONFIG).map(Number);
     if (payment.status !== 'captured' || !validAmounts.includes(payment.amount) || payment.currency !== 'INR') {
       console.error('Payment verification failed:', payment.status, payment.amount, payment.currency);
       return errorResponse('Payment verification failed', 400);
     }
 
-    const config = PLAN_CONFIG[payment.amount];
+    const config = PLAN_AMOUNT_CONFIG[payment.amount];
     const now = new Date();
     const renewalDate = new Date(now);
     renewalDate.setDate(renewalDate.getDate() + config.renewalDays);

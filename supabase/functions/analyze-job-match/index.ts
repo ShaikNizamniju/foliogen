@@ -2,12 +2,15 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   corsHeaders,
-  checkRateLimit,
+  checkTieredRateLimit,
   rateLimitedResponse,
   getClientIP,
   validateText,
   validationError,
   errorResponse,
+  requireProSecrets,
+  requireMinimumTier,
+  resolveTier,
 } from "../_shared/security.ts";
 
 serve(async (req) => {
@@ -16,10 +19,9 @@ serve(async (req) => {
   }
 
   try {
-    // Token-bucket rate limit: 100 req / 15 min per IP
-    const ip = getClientIP(req);
-    const { allowed, retryAfterSeconds } = checkRateLimit(`jobmatch:${ip}`);
-    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+    // Verify Pro secrets are configured
+    const secretGate = requireProSecrets();
+    if (secretGate) return secretGate;
 
     const { jobDescription } = await req.json();
 
@@ -50,13 +52,19 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .single();
 
-    if (!profileError && profile && !profile.is_pro) {
-      return errorResponse("Pro subscription required", 403);
-    }
-
     if (profileError || !profile) {
       return errorResponse("Profile not found. Please complete your profile first.", 404);
     }
+
+    // Resolve tier and enforce Pro minimum
+    const tier = resolveTier(profile.is_pro, (profile as any).plan_type);
+    const tierGate = requireMinimumTier(tier, 'PRO');
+    if (tierGate) return tierGate;
+
+    // Tier-based rate limiting
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkTieredRateLimit(`jobmatch:${user.id || ip}`, tier);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds, tier);
 
     const profileData = {
       name: profile.full_name || "Candidate",
@@ -68,11 +76,7 @@ serve(async (req) => {
       location: profile.location || "",
     };
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY is not configured");
-      return errorResponse("AI service not configured", 500);
-    }
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
     const systemPrompt = `You are an elite Career Strategist Agent. Your goal is to maximize the user's chance of getting hired.
 
@@ -114,23 +118,23 @@ Be strategic and specific. Reference actual details from both the profile and jo
                 properties: {
                   matchScore: {
                     type: "number",
-                    description: "Match score from 0-100 representing how well the candidate fits the job",
+                    description: "Match score from 0-100",
                   },
                   missingKeywords: {
                     type: "array",
                     items: { type: "string" },
-                    description: "Exactly 3 critical skills or keywords missing from the candidate's profile",
+                    description: "Exactly 3 critical skills or keywords missing",
                   },
                   tailoredPitch: {
                     type: "string",
-                    description: "A compelling 1-paragraph 'Why Me?' pitch connecting candidate experience to job requirements",
+                    description: "A compelling 1-paragraph 'Why Me?' pitch",
                   },
                   scoreBreakdown: {
                     type: "object",
                     properties: {
-                      skillsMatch: { type: "number", description: "Skills match percentage 0-100" },
-                      experienceMatch: { type: "number", description: "Experience match percentage 0-100" },
-                      overallFit: { type: "string", description: "Brief overall fit assessment" },
+                      skillsMatch: { type: "number" },
+                      experienceMatch: { type: "number" },
+                      overallFit: { type: "string" },
                     },
                     required: ["skillsMatch", "experienceMatch", "overallFit"],
                   },
