@@ -21,7 +21,6 @@ export default defineConfig(async ({ mode }) => {
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
 
-      // Fetch distinct usernames
       const { data, error } = await supabase
         .from('profiles')
         .select('username')
@@ -29,8 +28,12 @@ export default defineConfig(async ({ mode }) => {
         .neq('username', '');
 
       if (!error && data) {
-        dynamicRoutes = data.map(profile => `/${profile.username}`);
+        dynamicRoutes = ['/', '/pricing', '/about', ...data.map(profile => `/${profile.username}`)];
+      } else {
+        dynamicRoutes = ['/', '/pricing', '/about'];
       }
+    } else {
+      dynamicRoutes = ['/', '/pricing', '/about'];
     }
   } catch (error) {
     console.error("Failed to fetch dynamic routes for sitemap:", error);
@@ -49,6 +52,7 @@ export default defineConfig(async ({ mode }) => {
       mode === "development" && componentTagger(),
       Sitemap({
         hostname: "https://www.foliogen.in",
+        outDir: "public",
         dynamicRoutes,
         exclude: ["/404"],
       }),
