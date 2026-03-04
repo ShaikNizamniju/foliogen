@@ -1,10 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import {
+  corsHeaders,
+  checkRateLimit,
+  rateLimitedResponse,
+  getClientIP,
+  validateText,
+  validationError,
+  errorResponse,
+} from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -12,13 +16,15 @@ serve(async (req) => {
   }
 
   try {
+    // Token-bucket rate limit: 100 req / 15 min per IP
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkRateLimit(`interview:${ip}`);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+
     // Authenticate user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Authorization required" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("Authorization required", 401);
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -30,10 +36,7 @@ serve(async (req) => {
     const token = authHeader.replace("Bearer ", "");
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
     if (claimsError || !claimsData?.claims) {
-      return new Response(
-        JSON.stringify({ error: "Invalid token" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("Invalid token", 401);
     }
 
     const userId = claimsData.claims.sub;
@@ -46,30 +49,24 @@ serve(async (req) => {
       .single();
 
     if (!proProfile?.is_pro) {
-      return new Response(
-        JSON.stringify({ error: 'Pro subscription required' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Pro subscription required', 403);
     }
 
     const { company, role } = await req.json();
-    
-    console.log(`[generate-interview-prep] Generating prep for ${role} at ${company}`);
 
-    if (!company || !role) {
-      return new Response(
-        JSON.stringify({ error: "Company and role are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // ── Allow-list validation ────────────────────────────────────────────
+    const companyCheck = validateText(company, "Company name", 200, 2);
+    if (!companyCheck.valid) return validationError(companyCheck.error!);
+
+    const roleCheck = validateText(role, "Role", 200, 2);
+    if (!roleCheck.valid) return validationError(roleCheck.error!);
+
+    console.log(`[generate-interview-prep] Generating prep for ${role} at ${company}`);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       console.error("[generate-interview-prep] LOVABLE_API_KEY is not configured");
-      return new Response(
-        JSON.stringify({ error: "AI service not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("AI service not configured", 500);
     }
 
     const systemPrompt = `You are an expert career coach and interview preparation specialist. Your job is to help candidates prepare for job interviews by providing insightful company research, likely interview questions, and smart questions for the candidate to ask.
@@ -110,21 +107,15 @@ Format your response as JSON with this exact structure:
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json", "Retry-After": "60" } }
         );
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add credits to continue." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        return errorResponse("AI credits exhausted. Please add credits to continue.", 402);
       }
       const errorText = await response.text();
       console.error("[generate-interview-prep] AI gateway error:", response.status, errorText);
-      return new Response(
-        JSON.stringify({ error: "Failed to generate interview prep" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("Failed to generate interview prep", 500);
     }
 
     const aiResponse = await response.json();
@@ -132,10 +123,7 @@ Format your response as JSON with this exact structure:
 
     if (!content) {
       console.error("[generate-interview-prep] No content in AI response");
-      return new Response(
-        JSON.stringify({ error: "No response from AI" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("No response from AI", 500);
     }
 
     let prepData;
@@ -171,9 +159,6 @@ Format your response as JSON with this exact structure:
     );
   } catch (error) {
     console.error("[generate-interview-prep] Error:", error);
-    return new Response(
-      JSON.stringify({ error: "An unexpected error occurred" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse("An unexpected error occurred", 500);
   }
 });

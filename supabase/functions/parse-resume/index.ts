@@ -1,64 +1,60 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-}
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  corsHeaders,
+  checkRateLimit,
+  rateLimitedResponse,
+  getClientIP,
+  validateText,
+  validationError,
+  errorResponse,
+} from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
+    // Token-bucket rate limit: 100 req / 15 min per IP
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkRateLimit(`resume:${ip}`);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+
     // Authenticate user
-    const authHeader = req.headers.get('Authorization')
+    const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Authorization required' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 401
-      })
+      return errorResponse('Authorization required', 401);
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
-    })
+    });
 
-    const token = authHeader.replace('Bearer ', '')
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token)
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
     if (claimsError || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 401
-      })
+      return errorResponse('Invalid token', 401);
     }
 
-    const body = await req.json()
-    const resumeText = body?.resumeText
+    const body = await req.json();
+    const resumeText = body?.resumeText;
 
-    if (!resumeText || typeof resumeText !== 'string' || resumeText.trim().length < 50) {
-      return new Response(JSON.stringify({ error: "Resume text is too short or missing. The PDF may be image-based." }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400
-      })
-    }
+    // ── Allow-list validation ────────────────────────────────────────────
+    const textCheck = validateText(resumeText, "Resume text", 30000, 50);
+    if (!textCheck.valid) return validationError(textCheck.error!);
 
-    const apiKey = Deno.env.get('LOVABLE_API_KEY')
-
+    const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
-      console.error("Missing LOVABLE_API_KEY")
-      return new Response(JSON.stringify({ error: "Server configuration error: Missing API Key" }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500
-      })
+      console.error("Missing LOVABLE_API_KEY");
+      return errorResponse("Server configuration error", 500);
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
@@ -89,78 +85,58 @@ ${resumeText.substring(0, 30000)}`
           }
         ]
       })
-    })
+    });
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error("AI Gateway Error:", response.status, errorText)
+      const errorText = await response.text();
+      console.error("AI Gateway Error:", response.status, errorText);
       if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Please try again later." }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 429
-        })
+        return new Response(
+          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
+        );
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 502
-        })
+        return errorResponse("AI credits exhausted. Please add funds.", 502);
       }
-      return new Response(JSON.stringify({ error: "AI service error" }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 502
-      })
+      return errorResponse("AI service error", 502);
     }
 
-    const data = await response.json()
+    const data = await response.json();
 
-    let rawText = data.choices?.[0]?.message?.content
+    let rawText = data.choices?.[0]?.message?.content;
     if (!rawText || typeof rawText !== 'string' || rawText.trim().length === 0) {
-      console.error("AI returned empty content:", JSON.stringify(data))
-      return new Response(JSON.stringify({ error: "AI returned an empty response. Please try again." }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 502
-      })
+      console.error("AI returned empty content:", JSON.stringify(data));
+      return errorResponse("AI returned an empty response. Please try again.", 502);
     }
 
-    // Strip markdown code fences if AI included them
-    rawText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
+    rawText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
 
-    let parsedProfile
+    let parsedProfile;
     try {
-      parsedProfile = JSON.parse(rawText)
+      parsedProfile = JSON.parse(rawText);
     } catch (parseError) {
-      console.error("JSON Parse Error. Raw AI output:", rawText.substring(0, 500))
-      return new Response(JSON.stringify({ error: "AI response was not valid JSON. Please try again." }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 502
-      })
+      console.error("JSON Parse Error. Raw AI output:", rawText.substring(0, 500));
+      return errorResponse("AI response was not valid JSON. Please try again.", 502);
     }
 
-    // Validate that we got meaningful data
-    const skillsCount = Array.isArray(parsedProfile.skills) ? parsedProfile.skills.length : 0
-    const projectsCount = Array.isArray(parsedProfile.projects) ? parsedProfile.projects.length : 0
-    const workCount = Array.isArray(parsedProfile.workExperience) ? parsedProfile.workExperience.length : 0
+    const skillsCount = Array.isArray(parsedProfile.skills) ? parsedProfile.skills.length : 0;
+    const projectsCount = Array.isArray(parsedProfile.projects) ? parsedProfile.projects.length : 0;
+    const workCount = Array.isArray(parsedProfile.workExperience) ? parsedProfile.workExperience.length : 0;
 
-    console.log(`✅ Parse complete — Name: "${parsedProfile.fullName || 'N/A'}", Skills: ${skillsCount}, Projects: ${projectsCount}, Work: ${workCount}, Domain: ${parsedProfile.predictedDomain || 'N/A'}`)
+    console.log(`✅ Parse complete — Name: "${parsedProfile.fullName || 'N/A'}", Skills: ${skillsCount}, Projects: ${projectsCount}, Work: ${workCount}, Domain: ${parsedProfile.predictedDomain || 'N/A'}`);
 
     if (!parsedProfile.fullName && skillsCount === 0 && workCount === 0) {
-      return new Response(JSON.stringify({ error: "Could not extract meaningful data from this PDF. It may be image-based or in an unsupported format." }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 422
-      })
+      return errorResponse("Could not extract meaningful data from this PDF. It may be image-based or in an unsupported format.", 422);
     }
 
     return new Response(JSON.stringify(parsedProfile), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200
-    })
+    });
 
   } catch (error) {
-    console.error("Unexpected Error:", error)
-    return new Response(JSON.stringify({ error: "An unexpected error occurred" }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500
-    })
+    console.error("Unexpected Error:", error);
+    return errorResponse("An unexpected error occurred", 500);
   }
-})
+});

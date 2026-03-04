@@ -1,10 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import {
+  corsHeaders,
+  checkRateLimit,
+  rateLimitedResponse,
+  getClientIP,
+  validateText,
+  validationError,
+  errorResponse,
+} from "../_shared/security.ts";
 
 // Plan configuration
 const PLAN_CONFIG: Record<number, { planType: string; renewalDays: number }> = {
@@ -18,12 +22,14 @@ serve(async (req) => {
   }
 
   try {
+    // Token-bucket rate limit: 100 req / 15 min per IP
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkRateLimit(`activate:${ip}`, 20, 15 * 60 * 1000);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'Authorization required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Authorization required', 401);
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -34,21 +40,15 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Invalid token', 401);
     }
 
     const userId = user.id;
     const { paymentId } = await req.json();
 
-    if (!paymentId || typeof paymentId !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Payment ID is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // ── Allow-list validation ────────────────────────────────────────────
+    const payCheck = validateText(paymentId, "Payment ID", 100, 5);
+    if (!payCheck.valid) return validationError(payCheck.error!);
 
     // Verify payment with Razorpay API
     const RAZORPAY_KEY_ID = Deno.env.get('RAZORPAY_KEY_ID');
@@ -56,10 +56,7 @@ serve(async (req) => {
 
     if (!RAZORPAY_KEY_ID || !RAZORPAY_KEY_SECRET) {
       console.error('Razorpay credentials not configured');
-      return new Response(
-        JSON.stringify({ error: 'Payment verification not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Payment verification not configured', 500);
     }
 
     const verifyResponse = await fetch(
@@ -73,22 +70,15 @@ serve(async (req) => {
 
     if (!verifyResponse.ok) {
       console.error('Razorpay verification failed:', verifyResponse.status);
-      return new Response(
-        JSON.stringify({ error: 'Invalid payment' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Invalid payment', 400);
     }
 
     const payment = await verifyResponse.json();
 
-    // Verify payment is captured and matches expected amounts
     const validAmounts = Object.keys(PLAN_CONFIG).map(Number);
     if (payment.status !== 'captured' || !validAmounts.includes(payment.amount) || payment.currency !== 'INR') {
       console.error('Payment verification failed:', payment.status, payment.amount, payment.currency);
-      return new Response(
-        JSON.stringify({ error: 'Payment verification failed' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Payment verification failed', 400);
     }
 
     const config = PLAN_CONFIG[payment.amount];
@@ -96,7 +86,6 @@ serve(async (req) => {
     const renewalDate = new Date(now);
     renewalDate.setDate(renewalDate.getDate() + config.renewalDays);
 
-    // Use service role to update pro fields
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
@@ -108,10 +97,7 @@ serve(async (req) => {
       .maybeSingle();
 
     if (existingProfile) {
-      return new Response(
-        JSON.stringify({ error: 'Payment already used' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Payment already used', 400);
     }
 
     const { error: updateError } = await adminClient
@@ -128,13 +114,10 @@ serve(async (req) => {
 
     if (updateError) {
       console.error('Error updating pro status:', updateError);
-      return new Response(
-        JSON.stringify({ error: 'Failed to activate Pro' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return errorResponse('Failed to activate Pro', 500);
     }
 
-    // Send confirmation email via EmailJS
+    // Send confirmation email via EmailJS (non-blocking)
     try {
       const EMAILJS_SERVICE_ID = Deno.env.get('EMAILJS_SERVICE_ID');
       const EMAILJS_TEMPLATE_ID = Deno.env.get('EMAILJS_TEMPLATE_ID');
@@ -172,9 +155,6 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Activate pro error:', error);
-    return new Response(
-      JSON.stringify({ error: 'An unexpected error occurred' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return errorResponse('An unexpected error occurred', 500);
   }
 });

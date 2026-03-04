@@ -1,10 +1,13 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import {
+  corsHeaders,
+  checkRateLimit,
+  rateLimitedResponse,
+  getClientIP,
+  validateText,
+  validationError,
+  errorResponse,
+} from "../_shared/security.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -12,24 +15,27 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Token-bucket rate limit: 100 req / 15 min per IP
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkRateLimit(`verify-pw:${ip}`, 20, 15 * 60 * 1000);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
+
     const { profileUserId, projectId, password } = await req.json();
 
-    if (!profileUserId || !projectId || !password) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // ── Allow-list validation ────────────────────────────────────────────
+    const userIdCheck = validateText(profileUserId, "Profile User ID", 100);
+    if (!userIdCheck.valid) return validationError(userIdCheck.error!);
+
+    const projIdCheck = validateText(projectId, "Project ID", 100);
+    if (!projIdCheck.valid) return validationError(projIdCheck.error!);
+
+    if (typeof password !== "string" || password.length === 0) {
+      return validationError("Password is required.");
+    }
+    if (password.length > 200) {
+      return validationError("Password must be 200 characters or fewer.");
     }
 
-    // Validate input lengths
-    if (typeof password !== "string" || password.length > 200) {
-      return new Response(
-        JSON.stringify({ error: "Invalid password" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Use service role to read the actual password from the profiles table (not the public view)
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -42,29 +48,20 @@ Deno.serve(async (req) => {
       .single();
 
     if (error || !profile) {
-      return new Response(
-        JSON.stringify({ error: "Profile not found" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("Profile not found", 404);
     }
 
     const projects = profile.projects as any[];
     if (!Array.isArray(projects)) {
-      return new Response(
-        JSON.stringify({ error: "Project not found" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("Project not found", 404);
     }
 
     const project = projects.find((p: any) => p.id === projectId);
     if (!project || !project.isProtected) {
-      return new Response(
-        JSON.stringify({ error: "Project not found or not protected" }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return errorResponse("Project not found or not protected", 404);
     }
 
-    // Constant-time comparison using Deno's crypto.subtle.timingSafeEqual
+    // Constant-time comparison
     const encoder = new TextEncoder();
     const expectedBytes = encoder.encode(project.password.padEnd(256, '\0'));
     const providedBytes = encoder.encode(password.padEnd(256, '\0'));
@@ -84,9 +81,6 @@ Deno.serve(async (req) => {
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch {
-    return new Response(
-      JSON.stringify({ error: "Internal error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return errorResponse("Internal error", 500);
   }
 });

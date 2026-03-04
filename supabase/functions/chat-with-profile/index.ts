@@ -1,25 +1,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
-
-const rateLimitMap = new Map<string, { count: number; windowStart: number }>();
-const RATE_LIMIT_MAX = 20;
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-
-function isRateLimited(key: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(key);
-  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    rateLimitMap.set(key, { count: 1, windowStart: now });
-    return false;
-  }
-  entry.count++;
-  return entry.count > RATE_LIMIT_MAX;
-}
+import {
+  corsHeaders,
+  checkRateLimit,
+  rateLimitedResponse,
+  getClientIP,
+  validateText,
+  validationError,
+  sanitize,
+  errorResponse,
+} from "../_shared/security.ts";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -27,39 +17,28 @@ serve(async (req) => {
   }
 
   try {
-    const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
-    if (isRateLimited(`chat:${clientIP}`)) {
-      return new Response(
-        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Token-bucket rate limit: 100 req / 15 min per IP
+    const ip = getClientIP(req);
+    const { allowed, retryAfterSeconds } = checkRateLimit(`chat:${ip}`);
+    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
 
     const body = await req.json();
     const { profileId } = body;
     let { userQuery, conversationHistory, visitorCompany } = body;
 
-    if (!userQuery || typeof userQuery !== 'string' || !profileId || typeof profileId !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'userQuery and profileId are required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // ── Allow-list validation ────────────────────────────────────────────
+    const queryCheck = validateText(userQuery, "Question", 1000, 2);
+    if (!queryCheck.valid) return validationError(queryCheck.error!);
 
-    userQuery = userQuery.replace(/<[^>]*>/g, '').trim().substring(0, 1000);
-    if (!userQuery) {
-      return new Response(
-        JSON.stringify({ error: 'Query cannot be empty' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const idCheck = validateText(profileId, "Profile ID", 100);
+    if (!idCheck.valid) return validationError(idCheck.error!);
+
+    userQuery = sanitize(userQuery, 1000);
+    if (!userQuery) return validationError("Question cannot be empty after sanitization.");
 
     if (!Array.isArray(conversationHistory)) conversationHistory = [];
     if (conversationHistory.length > 20) {
-      return new Response(
-        JSON.stringify({ error: 'Conversation too long. Please start a new chat.' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      return validationError("Conversation too long. Please start a new chat.");
     }
 
     const validRoles = ['user', 'assistant'];
@@ -69,7 +48,7 @@ serve(async (req) => {
         typeof msg.content === 'string' && msg.content.length <= 2000
     ).map((msg: any) => ({
       role: msg.role,
-      content: msg.content.replace(/<[^>]*>/g, '').trim(),
+      content: sanitize(msg.content, 2000),
     }));
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -85,9 +64,9 @@ serve(async (req) => {
       .maybeSingle();
 
     if (profileError || !profile) {
-      return new Response(
-        JSON.stringify({ error: profileError ? 'Failed to fetch profile data' : 'Profile not found' }),
-        { status: profileError ? 500 : 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      return errorResponse(
+        profileError ? 'Failed to fetch profile data' : 'Profile not found',
+        profileError ? 500 : 404,
       );
     }
 
@@ -144,25 +123,21 @@ CRITICAL RULES:
     if (!response.ok) {
       if (response.status === 429) {
         return new Response(
-          JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ error: 'AI rate limit exceeded. Please try again later.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' } }
         );
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: 'AI service temporarily unavailable.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return errorResponse('AI service temporarily unavailable.', 402);
       }
       const errorText = await response.text();
       console.error('AI gateway error:', response.status, errorText);
       throw new Error('AI gateway error');
     }
 
-    // Clone the stream: one for client, one for logging
     const [clientStream, logStream] = response.body!.tee();
 
-    // Log chat query asynchronously (don't block response)
+    // Log chat query asynchronously
     (async () => {
       try {
         const decoder = new TextDecoder();
@@ -183,10 +158,9 @@ CRITICAL RULES:
             } catch {}
           }
         }
-        // Insert into chat_queries using service role
         await supabaseAdmin.from('chat_queries').insert({
           profile_user_id: profileId,
-          visitor_company: typeof visitorCompany === 'string' ? visitorCompany.substring(0, 200) : null,
+          visitor_company: typeof visitorCompany === 'string' ? sanitize(visitorCompany, 200) : null,
           visitor_question: userQuery.substring(0, 1000),
           ai_response: fullResponse.substring(0, 5000),
         });
@@ -201,9 +175,6 @@ CRITICAL RULES:
 
   } catch (error) {
     console.error('Chat error:', error);
-    return new Response(
-      JSON.stringify({ error: 'An unexpected error occurred' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    return errorResponse('An unexpected error occurred', 500);
   }
 });
