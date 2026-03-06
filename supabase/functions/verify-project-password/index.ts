@@ -61,13 +61,15 @@ Deno.serve(async (req) => {
       return errorResponse("Project not found or not protected", 404);
     }
 
-    // Constant-time comparison
+    // Constant-time comparison using manual loop (Deno-compatible)
     const encoder = new TextEncoder();
     const expectedBytes = encoder.encode(project.password.padEnd(256, '\0'));
     const providedBytes = encoder.encode(password.padEnd(256, '\0'));
-    const lengthMatch = project.password.length === password.length;
-    const bytesMatch = crypto.subtle.timingSafeEqual(expectedBytes, providedBytes);
-    const isValid = lengthMatch && bytesMatch;
+    let diff = project.password.length ^ password.length;
+    for (let i = 0; i < expectedBytes.length; i++) {
+      diff |= expectedBytes[i] ^ providedBytes[i];
+    }
+    const isValid = diff === 0;
 
     if (!isValid) {
       return new Response(
