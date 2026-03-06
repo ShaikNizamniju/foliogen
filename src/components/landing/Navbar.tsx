@@ -30,7 +30,7 @@ export function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-canvas/80 backdrop-blur-2xl"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-canvas/80 backdrop-blur-xl"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center">
