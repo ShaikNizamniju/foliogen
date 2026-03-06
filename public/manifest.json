@@ -2,7 +2,7 @@
   "name": "Foliogen | AI Portfolio Engine",
   "short_name": "Foliogen",
   "description": "Automated high-end portfolios with AI Scoring.",
-  "start_url": ".",
+  "start_url": "",
   "display": "standalone",
   "theme_color": "#0A0A0A",
   "background_color": "#FFFFFF",

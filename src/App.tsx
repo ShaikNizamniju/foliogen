@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ProProvider } from "@/contexts/ProContext";
@@ -23,10 +23,12 @@ const queryClient = new QueryClient();
 
 function AppRoutes() {
   const { initializing } = useAuth();
+  const location = useLocation();
+  const isPublicRoute = location.pathname.startsWith('/p/') || location.pathname.startsWith('/u/');
 
   return (
     <>
-      <AuthLoadingOverlay show={initializing} />
+      {!isPublicRoute && <AuthLoadingOverlay show={initializing} />}
       <Routes>
         <Route path="/p/:id" element={<PublicPortfolio />} />
         <Route path="/u/:id" element={<PublicPortfolio />} />
