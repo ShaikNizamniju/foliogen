@@ -19,13 +19,13 @@ export function DashboardHeader() {
   const { user } = useAuth();
 
   const getPublicUrl = () => {
-    const baseUrl = window.location.origin;
+    const baseUrl = "https://www.foliogen.in";
     const slug = profile.username || user?.id;
     return slug ? `${baseUrl}/u/${slug}` : '';
   };
 
   const getPortfolioUrl = () => {
-    const baseUrl = window.location.origin;
+    const baseUrl = "https://www.foliogen.in";
     return user ? `${baseUrl}/p/${user.id}` : '';
   };
 
@@ -64,7 +64,7 @@ export function DashboardHeader() {
 
   return (
     <>
-      <motion.header 
+      <motion.header
         className="h-16 border-b border-border/50 bg-card/80 backdrop-blur-xl flex items-center justify-between px-6 shrink-0 print:hidden"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}

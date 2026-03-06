@@ -40,7 +40,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   const portfolioUrl = useMemo(() => {
     if (!user?.id) return '';
     const slug = username.trim() || user.id;
-    return `${window.location.origin}/p/${slug}`;
+    return `https://www.foliogen.in/p/${slug}`;
   }, [user?.id, username]);
 
   // Check if profile has minimum required content
@@ -50,9 +50,9 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
 
   const checkUsernameAvailability = async (value: string): Promise<boolean> => {
     if (!value.trim()) return true; // Empty is allowed (uses user ID)
-    
+
     const normalized = value.toLowerCase().trim();
-    
+
     if (!isValidUsername(normalized)) {
       setUsernameError('Username must be 3-30 characters, lowercase letters, numbers, hyphens, or underscores only');
       return false;
@@ -112,8 +112,8 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     // Update username in database
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ 
-        username: normalizedUsername || null 
+      .update({
+        username: normalizedUsername || null
       })
       .eq('user_id', user.id);
 
@@ -121,8 +121,8 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       setIsPublishing(false);
       toast({
         title: 'Error',
-        description: updateError.message.includes('unique') 
-          ? 'This username is already taken' 
+        description: updateError.message.includes('unique')
+          ? 'This username is already taken'
           : 'Failed to save username. Please try again.',
         variant: 'destructive',
       });
@@ -146,8 +146,8 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     triggerCelebration();
     toast({
       title: 'Portfolio published! 🚀',
-      description: normalizedUsername 
-        ? `Your portfolio is live at foliogen.app/p/${normalizedUsername}` 
+      description: normalizedUsername
+        ? `Your portfolio is live at https://www.foliogen.in/p/${normalizedUsername}`
         : 'Your portfolio is now live and shareable.',
     });
   };
@@ -229,7 +229,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
               <Label htmlFor="username">Choose your unique link</Label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground whitespace-nowrap">
-                  foliogen.app/p/
+                  foliogen.in/p/
                 </span>
                 <Input
                   id="username"
