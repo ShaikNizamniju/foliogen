@@ -3,8 +3,8 @@ import { usePro } from '@/contexts/ProContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Crown, Check, Sparkles, Target, Wand2, Users, 
+import {
+  Crown, Check, Sparkles, Target, Wand2, Users,
   Calendar, Loader2, ShieldCheck, CreditCard, RefreshCw
 } from 'lucide-react';
 import { handlePayment } from '@/lib/payment';
@@ -30,17 +30,17 @@ export function BillingSection() {
   const { user } = useAuth();
   const [paying, setPaying] = useState(false);
 
-  const handleUpgrade = async (amount: number) => {
+  const handleUpgrade = async (planKey: 'BASIC' | 'PRO') => {
     if (!user) return;
-    
+
     setPaying(true);
     try {
       await handlePayment(
         { id: user.id, email: user.email, name: user.user_metadata?.full_name },
+        planKey,
         () => {
           refreshProStatus();
-        },
-        amount
+        }
       );
     } catch (error) {
       console.error('Payment error:', error);
@@ -84,7 +84,7 @@ export function BillingSection() {
             >
               {isActivePlan ? "Active" : subscriptionStatus === 'past_due' ? "Past Due" : "Inactive"}
             </Badge>
-            <Badge 
+            <Badge
               variant={isPro ? "default" : "secondary"}
               className={planType === 'pro' ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white" : planType === 'basic' ? "bg-primary text-primary-foreground" : ""}
             >
@@ -122,7 +122,7 @@ export function BillingSection() {
                 </div>
               </div>
             )}
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {(planType === 'pro' ? PRO_FEATURES : BASIC_FEATURES).map((feature, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
@@ -139,7 +139,7 @@ export function BillingSection() {
                   Upgrade to Pro to unlock all 19+ templates, Priority AI, and SpyGlass Analytics.
                 </p>
                 <Button
-                  onClick={() => handleUpgrade(99900)}
+                  onClick={() => handleUpgrade('PRO')}
                   disabled={paying}
                   className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
                 >
@@ -172,7 +172,7 @@ export function BillingSection() {
               </div>
             </div>
             <Button
-              onClick={() => handleUpgrade(19900)}
+              onClick={() => handleUpgrade('BASIC')}
               disabled={paying}
               size="lg"
               className="w-full"
@@ -226,7 +226,7 @@ export function BillingSection() {
                 </div>
 
                 <Button
-                  onClick={() => handleUpgrade(19900)}
+                  onClick={() => handleUpgrade('BASIC')}
                   disabled={paying}
                   size="lg"
                   variant="outline"
@@ -253,7 +253,7 @@ export function BillingSection() {
             className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-orange-500/5 to-red-500/5 p-8 relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-amber-500/10 to-transparent rounded-full blur-3xl" />
-            
+
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500">
@@ -299,7 +299,7 @@ export function BillingSection() {
               </div>
 
               <Button
-                onClick={() => handleUpgrade(99900)}
+                onClick={() => handleUpgrade('PRO')}
                 disabled={paying}
                 size="lg"
                 className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25 h-12 text-lg"

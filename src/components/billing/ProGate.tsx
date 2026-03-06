@@ -13,11 +13,11 @@ interface ProGateProps {
   className?: string;
 }
 
-export function ProGate({ 
-  children, 
-  featureName, 
+export function ProGate({
+  children,
+  featureName,
   variant = 'overlay',
-  className = '' 
+  className = ''
 }: ProGateProps) {
   const { isPro, loading, refreshProStatus } = usePro();
   const { user } = useAuth();
@@ -25,15 +25,15 @@ export function ProGate({
 
   const handleUpgrade = async () => {
     if (!user) return;
-    
+
     setPaying(true);
     try {
       await handlePayment(
         { id: user.id, email: user.email, name: user.user_metadata?.full_name },
+        'PRO',
         () => {
           refreshProStatus();
-        },
-        99900
+        }
       );
     } catch (error) {
       console.error('Payment error:', error);
@@ -75,7 +75,7 @@ export function ProGate({
   // Inline variant - simpler locked state
   if (variant === 'inline') {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className={`rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-orange-500/5 p-6 text-center ${className}`}
@@ -117,9 +117,9 @@ export function ProGate({
       <div className="blur-sm opacity-50 pointer-events-none select-none">
         {children}
       </div>
-      
+
       {/* Lock overlay */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-xl"

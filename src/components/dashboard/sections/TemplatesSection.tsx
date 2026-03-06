@@ -35,15 +35,19 @@ export function TemplatesSection() {
 
   const handleTemplateSelect = (templateId: string) => {
     const isLocked = !isPro && templateId !== FREE_TEMPLATE_ID;
-    
+
     if (isLocked) {
       // Trigger payment modal for locked templates
       if (user) {
-        handlePayment(user, refreshProStatus);
+        handlePayment(
+          { id: user.id, email: user.email, name: user.user_metadata?.full_name },
+          'PRO',
+          () => refreshProStatus()
+        );
       }
       return;
     }
-    
+
     updateProfile({ selectedTemplate: templateId as any });
   };
 
@@ -79,10 +83,10 @@ export function TemplatesSection() {
         {templates.map((template) => {
           const isLocked = !isPro && template.id !== FREE_TEMPLATE_ID;
           const isSelected = profile.selectedTemplate === template.id;
-          
+
           return (
-            <motion.div 
-              key={template.id} 
+            <motion.div
+              key={template.id}
               variants={itemVariants}
               className="relative"
             >
@@ -93,7 +97,7 @@ export function TemplatesSection() {
                   <span className="text-xs font-medium text-muted-foreground">Pro Only</span>
                 </div>
               )}
-              
+
               <div className={cn(
                 "transition-all duration-200",
                 isLocked && "grayscale opacity-60"
