@@ -1,17 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navbar } from '@/components/landing/Navbar';
-import { Hero } from '@/components/landing/Hero';
-import { HowItWorks } from '@/components/landing/HowItWorks';
-import { Features } from '@/components/landing/Features';
-import { TemplateGallery } from '@/components/landing/TemplateGallery';
-import { Pricing } from '@/components/landing/Pricing';
-import { CompanyMarquee } from '@/components/landing/CompanyMarquee';
-import { FAQ } from '@/components/landing/FAQ';
-import { Footer } from '@/components/landing/Footer';
-import { Testimonials } from '@/components/landing/Testimonials';
 import { JobMatchDemo } from '@/components/landing/JobMatchDemo';
+import { LandingV2 } from '@/components/landing/LandingV2';
+import { Navbar } from '@/components/landing/Navbar';
+import { Footer } from '@/components/landing/Footer';
 
 const Index = () => {
   const { user, loading } = useAuth();
@@ -39,20 +32,8 @@ const Index = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-canvas">
-      <Navbar />
-      <Hero />
-      <CompanyMarquee />
-      <Features />
-      <HowItWorks />
-      <TemplateGallery />
-      <Pricing />
-      <Testimonials />
-      <FAQ />
-      <Footer />
-    </div>
-  );
+  // Use the new monolithic Landing Design System
+  return <LandingV2 />;
 };
 
 export default Index;
