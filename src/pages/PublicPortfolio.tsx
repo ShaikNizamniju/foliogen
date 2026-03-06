@@ -146,17 +146,59 @@ export default function PublicPortfolio() {
   }
 
   // Generate SEO metadata
-  const pageTitle = profile.fullName 
-    ? `${profile.fullName}${profile.headline ? ` - ${profile.headline}` : ''}`
-    : 'Portfolio';
-  const pageDescription = profile.bio || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
-  const pageImage = profile.photoUrl || '';
+  const pageTitle = profile.fullName
+    ? `${profile.fullName} | AI Portfolio`
+    : 'AI Portfolio';
+  const pageDescription = profile.bio || profile.headline || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
+  const pageImage = profile.photoUrl || 'https://foliogen.lovable.app/og-image.png';
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  // Vanilla JS fallback to mutate meta tags for crawlers that struggle with Helmet
+  useEffect(() => {
+    if (!profile) return;
+
+    document.title = pageTitle;
+
+    const updateMetaTag = (property: string, content: string) => {
+      let tag = document.querySelector(`meta[property="${property}"]`);
+      if (!tag) {
+        tag = document.querySelector(`meta[name="${property}"]`);
+      }
+      if (tag) {
+        tag.setAttribute('content', content);
+      } else {
+        const newTag = document.createElement('meta');
+        newTag.setAttribute(property.startsWith('og:') ? 'property' : 'name', property);
+        newTag.setAttribute('content', content);
+        document.head.appendChild(newTag);
+      }
+    };
+
+    updateMetaTag('og:title', pageTitle);
+    updateMetaTag('og:description', pageDescription);
+    updateMetaTag('og:image', pageImage);
+    updateMetaTag('og:url', pageUrl);
+
+    updateMetaTag('twitter:title', pageTitle);
+    updateMetaTag('twitter:description', pageDescription);
+    updateMetaTag('twitter:image', pageImage);
+    updateMetaTag('twitter:url', pageUrl);
+
+    let canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (canonicalTag) {
+      canonicalTag.setAttribute('href', pageUrl);
+    } else {
+      canonicalTag = document.createElement('link');
+      canonicalTag.setAttribute('rel', 'canonical');
+      canonicalTag.setAttribute('href', pageUrl);
+      document.head.appendChild(canonicalTag);
+    }
+  }, [profile, pageTitle, pageDescription, pageImage, pageUrl]);
 
   // Render the selected template directly - no editing controls
   const renderTemplate = () => {
     const templateProps = { profile, onContactClick: () => setContactOpen(true) };
-    
+
     switch (profile.selectedTemplate) {
       case 'minimalist':
         return <MinimalistTemplate {...templateProps} />;
@@ -206,14 +248,14 @@ export default function PublicPortfolio() {
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        
+
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={pageUrl} />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDescription} />
         {pageImage && <meta property="og:image" content={pageImage} />}
-        
+
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={pageUrl} />
@@ -223,7 +265,7 @@ export default function PublicPortfolio() {
       </Helmet>
       {/* Chameleon Mode: Recruiter-specific welcome banner (Pro feature) */}
       {id && <ProRecruiterBanner profileUserId={id} />}
-      
+
       {/* Load selected Google Font */}
       {profile.selectedFont && profile.selectedFont !== 'default' && (() => {
         const fontOption = FONT_OPTIONS.find(f => f.id === profile.selectedFont);
@@ -237,7 +279,7 @@ export default function PublicPortfolio() {
           </Helmet>
         );
       })()}
-      
+
       <div
         className="min-h-screen"
         style={{
@@ -255,10 +297,10 @@ export default function PublicPortfolio() {
           </ErrorBoundary>
         </div>
       </div>
-      
+
       {/* Off-screen ATS-friendly resume for PDF export */}
-      <div 
-        id="printable-resume-container" 
+      <div
+        id="printable-resume-container"
         className="fixed -left-[9999px] top-0 bg-white"
         style={{ width: '210mm' }}
       >
