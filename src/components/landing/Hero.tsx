@@ -1,268 +1,111 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
-import { AntigravityStars } from '@/components/ui/AntigravityStars';
-
-function TypewriterText({ text, className }: { text: string; className?: string }) {
-  const [displayedText, setDisplayedText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 80);
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, text]);
-
-  return (
-    <span className={className}>
-      {displayedText}
-      <motion.span
-        animate={{ opacity: [1, 0] }}
-        transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-        className="inline-block w-1 h-[1em] bg-primary ml-1 align-middle"
-      />
-    </span>
-  );
-}
-
-function Document3DAnimation() {
-  return (
-    <div className="relative w-full max-w-xs sm:max-w-lg mx-auto mt-8 sm:mt-16">
-      {/* Document transforming into website */}
-      <motion.div
-        className="relative"
-        initial={{ rotateY: 0 }}
-        animate={{ rotateY: [0, -15, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        style={{ perspective: "1000px", transformStyle: "preserve-3d" }}
-      >
-        {/* Resume/Document */}
-        <motion.div
-          className="absolute left-0 top-0 w-24 h-32 sm:w-40 sm:h-52 bg-card border border-border rounded-lg shadow-xl p-2 sm:p-4"
-          initial={{ x: 0, opacity: 1 }}
-          animate={{ x: [-10, 0, -10], opacity: [0.8, 1, 0.8] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <div className="space-y-1.5 sm:space-y-2">
-            <div className="h-1.5 sm:h-2 w-10 sm:w-12 bg-muted-foreground/30 rounded" />
-            <div className="h-1 sm:h-1.5 w-full bg-muted-foreground/20 rounded" />
-            <div className="h-1 sm:h-1.5 w-3/4 bg-muted-foreground/20 rounded" />
-            <div className="h-1 sm:h-1.5 w-5/6 bg-muted-foreground/20 rounded" />
-            <div className="mt-2 sm:mt-3 h-1 sm:h-1.5 w-1/2 bg-muted-foreground/20 rounded" />
-            <div className="h-1 sm:h-1.5 w-full bg-muted-foreground/20 rounded" />
-            <div className="h-1 sm:h-1.5 w-2/3 bg-muted-foreground/20 rounded" />
-          </div>
-          <div className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-[10px] sm:text-xs text-primary-foreground font-bold">📄</span>
-          </div>
-        </motion.div>
-
-        {/* Arrow animation */}
-        <motion.div
-          className="absolute left-28 sm:left-44 top-14 sm:top-24"
-          animate={{ x: [0, 10, 0], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <div className="flex items-center gap-1">
-            <div className="w-8 sm:w-16 h-0.5 bg-gradient-to-r from-primary to-accent" />
-            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
-          </div>
-        </motion.div>
-
-        {/* Website/Portfolio */}
-        <motion.div
-          className="absolute right-0 top-0 w-32 h-36 sm:w-52 sm:h-56 bg-gradient-to-br from-card to-muted border border-border rounded-xl shadow-2xl overflow-hidden"
-          initial={{ x: 0, scale: 1 }}
-          animate={{ x: [10, 0, 10], scale: [0.95, 1, 0.95] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          {/* Browser bar */}
-          <div className="h-5 sm:h-6 bg-muted flex items-center px-1.5 sm:px-2 gap-1 sm:gap-1.5">
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-destructive/60" />
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-yellow-500/60" />
-            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500/60" />
-            <div className="ml-1 sm:ml-2 flex-1 h-2.5 sm:h-3 bg-background/50 rounded text-[5px] sm:text-[6px] flex items-center px-1 sm:px-1.5 text-muted-foreground">
-              foliogen.app/you
-            </div>
-          </div>
-          {/* Website content */}
-          <div className="p-2 sm:p-3">
-            <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-primary to-accent" />
-              <div className="space-y-0.5 sm:space-y-1">
-                <div className="h-1.5 sm:h-2 w-12 sm:w-16 bg-foreground/20 rounded" />
-                <div className="h-1 sm:h-1.5 w-8 sm:w-12 bg-muted-foreground/20 rounded" />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
-              <div className="h-8 sm:h-12 bg-primary/10 rounded-lg" />
-              <div className="h-8 sm:h-12 bg-accent/20 rounded-lg" />
-            </div>
-            <div className="mt-1.5 sm:mt-2 space-y-0.5 sm:space-y-1">
-              <div className="h-1 sm:h-1.5 w-full bg-muted-foreground/20 rounded" />
-              <div className="h-1 sm:h-1.5 w-2/3 bg-muted-foreground/20 rounded" />
-            </div>
-          </div>
-          <div className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-accent rounded-full flex items-center justify-center">
-            <span className="text-[10px] sm:text-xs font-bold">🌐</span>
-          </div>
-        </motion.div>
-      </motion.div>
-
-      {/* Glow effects */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-primary/20 rounded-full blur-3xl -z-10" />
-      <div className="absolute top-1/2 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-accent/20 rounded-full blur-2xl -z-10" />
-    </div>
-  );
-}
-
-const heroContainerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.18,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const heroItemVariants = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(10px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      type: 'spring' as const,
-      stiffness: 80,
-      damping: 20,
-      mass: 1,
-    },
-  },
-};
+import { motion, useInView, Variants } from 'framer-motion';
+import { useRef } from 'react';
 
 export function Hero() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  const fadeUp: Variants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const stagger: Variants = {
+    visible: { transition: { staggerChildren: 0.1 } }
+  };
+
   return (
-    <section className="relative min-h-fit overflow-hidden pt-24 pb-6 md:py-32">
-      {/* Antigravity Stars Background */}
-      <AntigravityStars 
-        starCount={150} 
-        showConnections={true} 
-        repulsionRadius={300}
-        repulsionForce={60}
-      />
-
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 overflow-hidden">
+    <section className="relative min-h-[90vh] bg-canvas flex items-center overflow-hidden pt-24 pb-16">
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <motion.div
-          className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px]"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/15 rounded-full blur-[128px]"
-          animate={{
-            x: [0, -50, 0],
-            y: [0, -30, 0],
-            scale: [1.1, 1, 1.1],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px]"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-        />
-        
-        {/* Grid overlay */}
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(hsl(var(--foreground) / 0.1) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground) / 0.1) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px'
-          }}
-        />
-      </div>
-
-      <div className="container relative mx-auto px-4">
-        <motion.div 
-          className="mx-auto max-w-5xl text-center"
-          variants={heroContainerVariants}
+          ref={ref}
+          className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center"
           initial="hidden"
-          animate="visible"
+          animate={isInView ? "visible" : "hidden"}
+          variants={stagger}
         >
-          {/* Badge */}
-          <motion.div
-            variants={heroItemVariants}
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-5 py-2.5 text-sm font-medium text-primary backdrop-blur-sm"
-          >
-            <motion.span
-              animate={{ rotate: [0, 15, -15, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
+          {/* Left Column: Copy */}
+          <div className="flex flex-col items-start text-left max-w-2xl">
+            <motion.h1
+              variants={fadeUp}
+              className="font-instrument text-5xl md:text-7xl lg:text-8xl leading-[1.05] text-ink mb-6"
             >
-              ✨
-            </motion.span>
-            AI-Powered Portfolio Builder
-          </motion.div>
+              Your Professional Identity, <span className="text-cobalt italic">Engineered.</span>
+            </motion.h1>
 
-          {/* Headline with typewriter */}
-          <motion.h1
-            variants={heroItemVariants}
-            className="mb-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
-          >
-            <TypewriterText text="Your Professional Identity, Engineered." />
-          </motion.h1>
-
-          {/* Subheadline */}
-          <motion.p
-            variants={heroItemVariants}
-            className="mx-auto mb-12 max-w-2xl text-lg text-muted-foreground sm:text-xl"
-          >
-            Transform your Resume into a World-Class Portfolio in seconds using AI.
-          </motion.p>
-
-          {/* Glowing CTA Button */}
-          <motion.div variants={heroItemVariants}>
-            <Button
-              asChild
-              size="lg"
-              className="relative h-16 px-12 text-lg font-bold shadow-[0_0_40px_8px_rgba(59,130,246,0.3)] hover:shadow-[0_0_60px_12px_rgba(59,130,246,0.4)] transition-all duration-300 bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
+            <motion.p
+              variants={fadeUp}
+              className="font-outfit text-xl md:text-2xl text-ink/70 font-light mb-10 max-w-xl leading-relaxed"
             >
-              <Link to="/auth">
-                <motion.span
-                  className="flex items-center gap-3"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Build My Portfolio
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <ArrowRight className="h-5 w-5" />
-                  </motion.span>
-                </motion.span>
-              </Link>
-            </Button>
-          </motion.div>
+              Upload your resume. Our AI builds a world-class portfolio in minutes—no design skills, no code, no compromise.
+            </motion.p>
 
-          {/* 3D Document Animation */}
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 items-center mb-12">
+              <Button asChild size="lg" className="bg-cobalt hover:bg-cobalt/90 text-white font-outfit px-8 py-6 text-lg rounded-xl shadow-lg transition-transform hover:scale-105 w-full sm:w-auto">
+                <Link to="/auth">
+                  Get Started <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </Button>
+            </motion.div>
+
+            {/* Social Proof */}
+            <motion.div variants={fadeUp} className="flex items-center gap-4">
+              <div className="flex -space-x-3">
+                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=1" alt="Avatar" /></div>
+                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-300 overflow-hidden"><img src="https://i.pravatar.cc/100?img=2" alt="Avatar" /></div>
+                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-400 overflow-hidden"><img src="https://i.pravatar.cc/100?img=3" alt="Avatar" /></div>
+                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-100 overflow-hidden flex items-center justify-center text-xs font-bold font-outfit text-ink">+</div>
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1 text-yellow-500">
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                </div>
+                <p className="font-outfit text-sm text-ink/70 mt-1">
+                  <span className="font-semibold text-ink">340+</span> Hired
+                </p>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Column: Visual */}
           <motion.div
-            variants={heroItemVariants}
-            className="mt-4 sm:mt-8 h-48 sm:h-72"
+            variants={fadeUp}
+            className="relative lg:h-[600px] flex items-center justify-center lg:justify-end"
           >
-            <Document3DAnimation />
+            {/* Browser Mockup */}
+            <div className="relative w-full max-w-[500px] rounded-2xl border border-ink/10 bg-white shadow-2xl overflow-hidden translate-x-0 lg:translate-x-8">
+              <div className="h-10 border-b border-ink/10 bg-canvas/50 flex items-center px-4 gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-400"></div>
+                <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                <div className="w-3 h-3 rounded-full bg-green-400"></div>
+              </div>
+              <div className="p-0 select-none pointer-events-none">
+                <img src="/assets/logo-DY04JMdn.png" alt="Portfolio Preview" className="w-full h-auto object-cover opacity-80" />
+                <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white to-transparent"></div>
+              </div>
+            </div>
+
+            {/* Floating Analytics Card */}
+            <motion.div
+              animate={{ y: [-10, 10, -10] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="absolute -left-8 md:-left-16 bottom-16 bg-white p-4 rounded-xl shadow-xl border border-ink/5 flex items-center gap-4 z-20"
+            >
+              <div className="w-12 h-12 rounded-full bg-cobalt/10 flex items-center justify-center text-cobalt font-bold text-xl">
+                📈
+              </div>
+              <div>
+                <p className="font-outfit text-sm text-ink/50">Total Views</p>
+                <p className="font-outfit text-2xl font-semibold text-ink">12,492</p>
+              </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>

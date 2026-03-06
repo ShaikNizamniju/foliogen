@@ -30,7 +30,7 @@ export function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl"
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-canvas/80 backdrop-blur-2xl"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center">
@@ -58,16 +58,16 @@ export function Navbar() {
             </Button>
           ) : (
             <>
-              <Button 
-                asChild 
-                variant="ghost" 
-                className="hidden sm:inline-flex text-muted-foreground hover:text-foreground hover:bg-muted"
+              <Button
+                asChild
+                variant="ghost"
+                className="hidden sm:inline-flex text-ink/70 hover:text-ink hover:bg-ink/5 font-outfit"
               >
                 <Link to="/auth">Sign In</Link>
               </Button>
-              <Button 
-                asChild 
-                className="hidden sm:inline-flex bg-gradient-to-r from-primary to-blue-500 hover:from-primary hover:to-blue-400 border-0"
+              <Button
+                asChild
+                className="hidden sm:inline-flex bg-cobalt hover:bg-cobalt/90 text-white font-outfit shadow-md border-0"
               >
                 <Link to="/auth">Get Started</Link>
               </Button>
