@@ -24,6 +24,17 @@
   <meta name="twitter:site" content="@Foliogen" />
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <meta name="twitter:image" content="https://www.foliogen.in/assets/logo-DY04JMdn.png" />
+  <script>
+    // This script reads the URL to find the user's name for LinkedIn
+    const path = window.location.pathname;
+    if (path.startsWith('/p/')) {
+      const username = path.split('/p/')[1].replace(/-/g, ' ');
+      const formattedName = username.charAt(0).toUpperCase() + username.slice(1);
+      document.title = formattedName + " | AI Portfolio";
+      document.querySelector('meta[property="og:title"]').setAttribute("content", formattedName + " | AI Portfolio");
+      document.querySelector('link[rel="canonical"]').setAttribute("href", window.location.href);
+    }
+  </script>
 </head>
 
 <body>
