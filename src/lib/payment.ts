@@ -46,6 +46,7 @@ export async function handlePayment(
       name: "Foliogen",
       description: `Foliogen ${planLabel}`,
       image: "/og-image.png",
+      callback_url: "https://www.foliogen.in/api/webhook",
       prefill: {
         email: user.email || "",
         name: user.name || "",
