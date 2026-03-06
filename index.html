@@ -4,17 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shaik Nizamuddin | AI Product Manager Portfolio</title>
+  <title>Foliogen | AI Portfolio</title>
   <meta name="description"
     content="Build an ATS-optimized professional portfolio with Foliogen. Use AI-driven career strategies to land your next job. Create, customize, and share today." />
-  <link rel="canonical" href="https://www.foliogen.in/p/shaiknizamuddin" />
+  <link rel="canonical" href="https://www.foliogen.in/" />
   <meta name="author" content="Foliogen" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.json" />
 
-  <meta property="og:title" content="Shaik Nizamuddin | AI Product Manager Portfolio" />
-  <meta property="og:url" content="https://www.foliogen.in/p/shaiknizamuddin" />
+  <meta property="og:title" content="Foliogen | AI Portfolio" />
+  <meta property="og:url" content="https://www.foliogen.in/" />
   <meta property="og:description"
     content="Build an ATS-optimized professional portfolio with Foliogen. Use AI-driven career strategies to land your next job. Create, customize, and share today." />
   <meta property="og:type" content="website" />
@@ -25,14 +25,16 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <meta name="twitter:image" content="https://www.foliogen.in/assets/logo-DY04JMdn.png" />
   <script>
-    // This script reads the URL to find the user's name for LinkedIn
     const path = window.location.pathname;
     if (path.startsWith('/p/')) {
-      const username = path.split('/p/')[1].replace(/-/g, ' ');
-      const formattedName = username.charAt(0).toUpperCase() + username.slice(1);
-      document.title = formattedName + " | AI Portfolio";
-      document.querySelector('meta[property="og:title"]').setAttribute("content", formattedName + " | AI Portfolio");
-      document.querySelector('link[rel="canonical"]').setAttribute("href", window.location.href);
+      const rawName = path.split('/p/')[1].split('/')[0];
+      const formattedName = rawName.replace(/-/g, ' ')
+        .split(' ')
+        .map(function(word) { return word.charAt(0).toUpperCase() + word.slice(1); })
+        .join(' ');
+      document.title = formattedName + ' | AI Portfolio';
+      document.querySelector('meta[property="og:title"]').setAttribute('content', formattedName + ' | AI Portfolio');
+      document.querySelector('link[rel="canonical"]').setAttribute('href', window.location.href);
     }
   </script>
 </head>
