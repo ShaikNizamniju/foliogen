@@ -37,7 +37,7 @@ serve(async (req) => {
         }
 
         // 2. Validate HMAC Signature
-        const secret = Deno.env.get('RAZORPAY_KEY_SECRET');
+        const secret = Deno.env.get('RAZORPAY_KEY_SECRET') || Deno.env.get('RAZORPAY_SECRET_KEY');
         if (!secret) {
             throw new Error("Server configuration missing");
         }

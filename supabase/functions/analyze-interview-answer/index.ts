@@ -57,20 +57,21 @@ serve(async (req) => {
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
-    const systemPrompt = `You are an elite Interview Coach. Evaluate the candidate's answer for the role of ${role} at ${company}.
+    const systemPrompt = `You are an elite Interview Coach (Copilot mode). Evaluate the candidate's answer for the role of ${role} at ${company}.
     
 QUESTION: ${question}
 
 CANDIDATE ANSWER: 
 ${answer}
 
-Your task is to analyze the candidate's answer and provide:
-1. A score from 0 to 100 on the quality of their answer.
-2. What they did well (2 specific points).
-3. How they can improve (2 specific points).
-4. An ideal response framework.
+Your task is to comprehensively analyze the candidate's answer, acting as a highly experienced, critical hiring manager. Do not sugarcoat your feedback.
+Provide:
+1. A strict score from 0 to 100 on the quality, depth, and relevance of their answer.
+2. What they did well (2 highly specific, actionable points citing their exact words).
+3. How they MUST improve (2 highly specific, actionable critiques citing exact gaps in their answer compared to best practices).
+4. An ideal, rewritten response framework leveraging the STAR method (Situation, Task, Action, Result) specifically tailored to the ${role} position at ${company}.
 
-Be highly critical but constructive, acting like a top-tier hiring manager.`;
+Format strictly as requested by the tool call.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

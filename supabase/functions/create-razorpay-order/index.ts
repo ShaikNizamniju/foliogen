@@ -45,8 +45,8 @@ serve(async (req) => {
         const amount = planId === 'basic' ? 19900 : 99900; // in paise
 
         // 3. Setup Razorpay credentials
-        const rzpKeyId = Deno.env.get('RAZORPAY_LIVE_KEY_ID');
-        const rzpKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET');
+        const rzpKeyId = Deno.env.get('RAZORPAY_LIVE_KEY_ID') || Deno.env.get('VITE_RAZORPAY_LIVE_KEY_ID');
+        const rzpKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET') || Deno.env.get('RAZORPAY_SECRET_KEY');
 
         if (!rzpKeyId || !rzpKeySecret) {
             throw new Error("Razorpay credentials not configured correctly on server.");
