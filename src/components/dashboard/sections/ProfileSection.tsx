@@ -132,28 +132,29 @@ export function ProfileSection() {
         </Button>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex gap-2 overflow-x-auto pb-2" data-tour="profile">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            data-tour={tab.id === 'projects' ? 'projects' : undefined}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-              activeTab === tab.id
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <tab.icon className="h-4 w-4" />
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <div className="flex flex-col md:flex-row gap-6 items-start">
+        {/* Vertical Sub-Navigation */}
+        <div className="w-full md:w-64 shrink-0 flex flex-col gap-1" data-tour="profile">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              data-tour={tab.id === 'projects' ? 'projects' : undefined}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-left ${activeTab === tab.id
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                }`}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-      {/* Form Content */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        {renderForm()}
+        {/* Form Content */}
+        <div className="flex-1 w-full rounded-2xl border border-border bg-card p-6 shadow-sm min-h-[500px]">
+          {renderForm()}
+        </div>
       </div>
     </div>
   );

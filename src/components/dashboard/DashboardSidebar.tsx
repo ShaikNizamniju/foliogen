@@ -8,6 +8,7 @@ import {
   LogOut,
   Sparkles,
   Briefcase,
+  Target,
   MessageSquareText,
   ChevronLeft,
 } from 'lucide-react';
@@ -35,6 +36,7 @@ const menuItems = [
   { title: 'Profile', icon: User, section: 'profile' },
   { title: 'Job Match', icon: Sparkles, section: 'job-match' },
   { title: 'Career Hub', icon: Briefcase, section: 'jobs' },
+  { title: 'Interview Prep', icon: Target, section: 'interview-prep' },
   { title: 'Templates', icon: Palette, section: 'templates' },
   { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },
   { title: 'Settings', icon: Settings, section: 'settings' },

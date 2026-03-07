@@ -5,20 +5,21 @@ import { TemplatesSection } from './sections/TemplatesSection';
 import { SettingsSection } from './sections/SettingsSection';
 import { JobMatchSection } from './sections/JobMatchSection';
 import { JobsSection } from './sections/JobsSection';
+import { InterviewPrepSection } from './sections/InterviewPrepSection';
 import { ChatLogSection } from './sections/ChatLogSection';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const pageTransition = {
   initial: { opacity: 0, y: 16, filter: 'blur(6px)' },
-  animate: { 
-    opacity: 1, 
-    y: 0, 
+  animate: {
+    opacity: 1,
+    y: 0,
     filter: 'blur(0px)',
     transition: { type: 'spring' as const, stiffness: 120, damping: 22, mass: 0.8 },
   },
-  exit: { 
-    opacity: 0, 
-    y: -8, 
+  exit: {
+    opacity: 0,
+    y: -8,
     filter: 'blur(4px)',
     transition: { duration: 0.12, ease: 'easeIn' as const },
   },
@@ -34,6 +35,7 @@ export function DashboardContent() {
       case 'profile': return <ProfileSection />;
       case 'job-match': return <JobMatchSection />;
       case 'jobs': return <JobsSection />;
+      case 'interview-prep': return <InterviewPrepSection />;
       case 'templates': return <TemplatesSection />;
       case 'chat-log': return <ChatLogSection />;
       case 'settings': return <SettingsSection />;

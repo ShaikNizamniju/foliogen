@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Check, Copy, ExternalLink, Rocket, Linkedin, Twitter, Mail, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { triggerCelebration } from '@/lib/confetti';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface PublishDialogProps {
   open: boolean;
@@ -277,12 +278,25 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
             </Button>
           </div>
         ) : (
-          <div className="flex flex-col gap-4 py-4">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col items-center gap-4 py-4">
+            <div className="bg-white p-3 rounded-xl shadow-sm border border-border inline-block">
+              <QRCodeSVG
+                value={portfolioUrl}
+                size={160}
+                level="M"
+                includeMargin={false}
+              />
+            </div>
+
+            <p className="text-sm text-center text-muted-foreground w-full">
+              Scan this QR code or copy the link below to share your professional identity.
+            </p>
+
+            <div className="flex items-center gap-2 w-full">
               <Input
                 value={portfolioUrl}
                 readOnly
-                className="flex-1 text-sm"
+                className="flex-1 text-sm bg-muted/30 font-medium"
               />
               <Button
                 size="icon"
@@ -297,7 +311,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
                 )}
               </Button>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full mt-2">
               <Button
                 variant="outline"
                 onClick={handleOpenPortfolio}
@@ -306,13 +320,13 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
                 <ExternalLink className="h-4 w-4 mr-2" />
                 Open Portfolio
               </Button>
-              <Button onClick={handleCopy} className="flex-1">
+              <Button onClick={handleCopy} className="flex-1 shadow-glow">
                 <Copy className="h-4 w-4 mr-2" />
                 Copy Link
               </Button>
             </div>
 
-            <div className="border-t border-border pt-4 mt-2">
+            <div className="border-t border-border pt-4 mt-2 w-full">
               <p className="text-sm text-muted-foreground mb-3">Share on social media</p>
               <div className="flex gap-2">
                 <Button
