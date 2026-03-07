@@ -35,7 +35,7 @@ export default function Auth() {
   // Redirect if already authenticated (handles OAuth callback return)
   useEffect(() => {
     if (!authLoading && user) {
-      navigate('/dashboard', { replace: true });
+      navigate('/dashboard?section=overview', { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -48,7 +48,7 @@ export default function Auth() {
       if (result?.error) throw result.error;
       // OAuth typically redirects — if session is set inline, navigate
       if (!result?.redirected) {
-        navigate('/dashboard');
+        navigate('/dashboard?section=overview');
       }
     } catch (error: any) {
       toast.error(error?.message || 'Google login failed');
@@ -92,7 +92,7 @@ export default function Auth() {
           }
         } else {
           toast.success('Welcome back!');
-          navigate('/dashboard');
+          navigate('/dashboard?section=overview');
         }
       } else {
         const { error } = await signUp(email, password, fullName);
@@ -100,7 +100,7 @@ export default function Auth() {
           toast.error(error.message?.includes('already registered') ? 'This email is already registered. Please sign in instead.' : error.message || 'Failed to create account');
         } else {
           toast.success('Account created! Welcome to Foliogen.');
-          navigate('/dashboard');
+          navigate('/dashboard?section=overview');
         }
       }
     } catch (err: any) {

@@ -55,17 +55,19 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
   const name = profile?.fullName || 'ALEX RIVERA';
   const tagline = profile?.headline || 'Crafting stories through design';
   const email = profile?.email || 'hello@alexrivera.design';
+  const bio = profile?.bio || 'I craft visual identities that feel both timeless and alive.';
   const profileProjects = profile?.projects?.length
     ? profile.projects.slice(0, 4).map((p, i) => ({
-        id: i + 1,
-        title: p.title,
-        category: p.techStack?.[0] || 'Design',
-        year: '2024',
-        image: p.imageUrl || `https://picsum.photos/seed/gaspar${i + 1}/600/400`,
-      }))
+      id: i + 1,
+      title: p.title || 'Project',
+      category: p.techStack?.[0] || 'Design',
+      year: new Date().getFullYear().toString(),
+      image: p.imageUrl || `https://picsum.photos/seed/gaspar${i + 1}/600/400`,
+    }))
     : projects;
   const profileSkills = profile?.skills?.length ? profile.skills.slice(0, 8) : marqueeClients;
-  
+  const profileOffices = profile?.location ? [{ city: 'HQ', address: profile.location, phone: email }] : offices;
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F5F0E8', color: '#1A1A1A', fontFamily: "'Inter', sans-serif" }}>
       {/* Navbar */}
@@ -141,12 +143,24 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
         </motion.div>
       </section>
 
-      <ClientMarquee />
+      <div className="overflow-hidden py-16 border-t" style={{ borderColor: '#D4C9B8' }}>
+        <motion.div
+          className="flex whitespace-nowrap gap-16"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+        >
+          {[...profileSkills, ...profileSkills].map((c, i) => (
+            <span key={i} className="text-2xl md:text-3xl font-light tracking-[0.2em] select-none" style={{ fontFamily: "'Playfair Display', serif", color: '#8B7355' }}>
+              {c}
+            </span>
+          ))}
+        </motion.div>
+      </div>
 
       {/* Contact Footer */}
       <motion.footer initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="px-8 md:px-16 py-20 md:py-28 border-t" style={{ borderColor: '#D4C9B8' }}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
-          {offices.map((o) => (
+          {profileOffices.map((o) => (
             <div key={o.city}>
               <span className="text-xs tracking-[0.3em] uppercase block mb-4" style={{ color: '#8B7355' }}>{o.city}</span>
               <p className="text-sm leading-relaxed">{o.address}</p>

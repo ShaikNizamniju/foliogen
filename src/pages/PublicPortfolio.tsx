@@ -116,6 +116,7 @@ export default function PublicPortfolio() {
       projects: proj,
       skills: payload.skills || [],
       keyHighlights: keyHighlights,
+      hidePhoto: payload.hide_photo || false,
       views: data.views || 0,
       resumeUrl: (payload as any).resume_url || '',
       calendlyUrl: (payload as any).calendly_url || '',
@@ -199,7 +200,8 @@ export default function PublicPortfolio() {
 
   // Render the selected template directly - no editing controls
   const renderTemplate = () => {
-    const templateProps = { profile, onContactClick: () => setContactOpen(true) };
+    const displayProfile = { ...profile, photoUrl: profile.hidePhoto ? "" : profile.photoUrl };
+    const templateProps = { profile: displayProfile, onContactClick: () => setContactOpen(true) };
 
     switch (profile.selectedTemplate) {
       case 'minimalist':

@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Plus, Trash2 } from 'lucide-react';
+import { AiRewriteButton } from './AiRewriteButton';
 
 export function WorkExperienceForm() {
   const { profile, updateProfile } = useProfile();
@@ -73,7 +74,7 @@ export function WorkExperienceForm() {
                     onChange={(e) => updateExperience(exp.id, { jobTitle: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label>Company</Label>
                   <Input
@@ -93,7 +94,7 @@ export function WorkExperienceForm() {
                     onChange={(e) => updateExperience(exp.id, { startDate: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label>End Date</Label>
                   <Input
@@ -114,7 +115,13 @@ export function WorkExperienceForm() {
               </div>
 
               <div className="space-y-2">
-                <Label>Description</Label>
+                <div className="flex items-center justify-between">
+                  <Label>Description</Label>
+                  <AiRewriteButton
+                    text={exp.description}
+                    onResult={(res) => updateExperience(exp.id, { description: res })}
+                  />
+                </div>
                 <Textarea
                   placeholder="Describe your responsibilities and achievements..."
                   rows={3}

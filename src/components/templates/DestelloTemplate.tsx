@@ -108,13 +108,36 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
   const nextTestim = () => setTestimIdx((i) => (i + 1) % testimonials.length);
   const prevTestim = () => setTestimIdx((i) => (i - 1 + testimonials.length) % testimonials.length);
 
+  const name = profile?.fullName || 'destello';
+  const tagline = profile?.headline || 'Creative Digital Studio';
+  const bio = profile?.bio || 'We build brands that move culture forward. Strategy, design, and content — all under one roof.';
+
+  const profileWorks = profile?.projects?.length ? profile.projects.map((p, i) => ({
+    num: `0${i + 1}`.slice(-2),
+    title: p.title || 'Project',
+    category: p.techStack?.[0] || 'Design',
+    image: p.imageUrl || `https://picsum.photos/seed/dest${i + 1}/1200/600`
+  })) : works;
+
+  const profileExpertise = profile?.skills?.length ? profile.skills.map((s, i) => ({
+    num: `0${i + 1}`.slice(-2),
+    title: s,
+    desc: 'Specialized expertise driving impact and scale.'
+  })) : expertise;
+
+  const profileProcess = profile?.workExperience?.length ? profile.workExperience.map((w, i) => ({
+    title: w.jobTitle || 'Role',
+    desc: w.company || '',
+    image: `https://picsum.photos/seed/proc${i + 1}/800/400`
+  })) : processSteps;
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FFFFFF', color: '#0A0A0A', fontFamily: "'Inter', sans-serif" }}>
       {/* Navbar */}
       <motion.nav initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="sticky top-0 z-30 flex items-center justify-between px-6 md:px-14 py-5 backdrop-blur-md bg-white/90 border-b" style={{ borderColor: '#F0F0F0' }}>
         <div>
-          <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "'Syne', sans-serif" }}>destello</span>
-          <span className="text-[10px] tracking-widest uppercase block -mt-0.5" style={{ color: '#999' }}>Creative Digital Studio</span>
+          <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "'Syne', sans-serif" }}>{name.split(' ')[0]?.toLowerCase()}</span>
+          <span className="text-[10px] tracking-widest uppercase block -mt-0.5" style={{ color: '#999' }}>{tagline}</span>
         </div>
         <div className="hidden md:flex gap-7 text-xs tracking-widest uppercase" style={{ color: '#666' }}>
           {['Work', 'Services', 'Process', 'Contact'].map((l) => (
@@ -128,10 +151,10 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
           <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }} className="flex-1">
             <h1 className="text-6xl md:text-8xl lg:text-[120px] font-bold leading-[0.9] tracking-tighter" style={{ fontFamily: "'Syne', sans-serif" }}>
-              des<span style={{ color: '#FF4444' }}>t</span>ello
+              {name.split(' ')[0]?.toLowerCase()}
             </h1>
             <p className="mt-6 text-base md:text-lg max-w-md" style={{ color: '#555' }}>
-              We build brands that move culture forward. Strategy, design, and content — all under one roof.
+              {bio}
             </p>
             <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="mt-8 px-8 py-3.5 text-sm font-semibold tracking-wider uppercase text-white rounded-full" style={{ backgroundColor: '#FF4444' }}>
               Start a Project
@@ -154,7 +177,7 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
 
         {/* Numbered list */}
         <div className="border-t" style={{ borderColor: '#E5E5E5' }}>
-          {works.map((w, i) => (
+          {profileWorks.map((w, i) => (
             <motion.button key={w.num} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} onClick={() => setActiveWork(activeWork === i ? null : i)} className="w-full flex items-center gap-4 md:gap-8 py-5 border-b text-left group hover:bg-[#FAFAFA] transition-colors px-2" style={{ borderColor: '#E5E5E5' }}>
               <span className="text-sm font-bold" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{w.num}</span>
               <span className="text-lg md:text-2xl font-semibold flex-1 group-hover:text-[#FF4444] transition-colors" style={{ fontFamily: "'Syne', sans-serif" }}>{w.title}</span>
@@ -169,11 +192,11 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
           {activeWork !== null && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.4 }} className="overflow-hidden mt-8">
               <div className="rounded-2xl overflow-hidden relative">
-                <img src={works[activeWork].image} alt={works[activeWork].title} className="w-full aspect-[2/1] object-cover" />
+                <img src={profileWorks[activeWork].image} alt={profileWorks[activeWork].title} className="w-full aspect-[2/1] object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/60 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 md:p-10">
-                  <span className="text-xs tracking-widest uppercase text-white/70">{works[activeWork].category}</span>
-                  <h3 className="text-2xl md:text-4xl font-bold text-white mt-1" style={{ fontFamily: "'Syne', sans-serif" }}>{works[activeWork].title}</h3>
+                  <span className="text-xs tracking-widest uppercase text-white/70">{profileWorks[activeWork].category}</span>
+                  <h3 className="text-2xl md:text-4xl font-bold text-white mt-1" style={{ fontFamily: "'Syne', sans-serif" }}>{profileWorks[activeWork].title}</h3>
                 </div>
               </div>
             </motion.div>
@@ -187,7 +210,7 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
           Our Expertise
         </motion.h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {expertise.map((e, i) => (
+          {profileExpertise.map((e, i) => (
             <motion.div key={e.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="p-6 bg-white rounded-xl border group cursor-pointer hover:border-[#FF4444]/30 transition-colors" style={{ borderColor: '#E5E5E5' }}>
               <span className="text-xs font-bold block mb-3" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{e.num}</span>
               <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>{e.title}</h3>
@@ -204,7 +227,7 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
           Our Process
         </motion.h2>
         <div>
-          {processSteps.map((s, i) => (
+          {profileProcess.map((s, i) => (
             <ProcessAccordion key={i} step={s} index={i} />
           ))}
         </div>

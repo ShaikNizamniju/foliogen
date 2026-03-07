@@ -6,10 +6,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Upload, Loader2, User, Trash2 } from 'lucide-react';
 import { ImageCropDialog } from './ImageCropDialog';
+import { AiRewriteButton } from './AiRewriteButton';
 
 export function BasicInfoForm() {
   const { profile, updateProfile } = useProfile();
@@ -66,7 +68,7 @@ export function BasicInfoForm() {
       // Upload cropped image to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('profile_photos')
-        .upload(fileName, croppedBlob, { 
+        .upload(fileName, croppedBlob, {
           upsert: true,
           contentType: 'image/jpeg'
         });
@@ -130,7 +132,7 @@ export function BasicInfoForm() {
 
     // Clear the photo URL from profile
     updateProfile({ photoUrl: '' });
-    
+
     toast({
       title: "Photo removed",
       description: "Your profile photo has been removed.",
@@ -149,7 +151,7 @@ export function BasicInfoForm() {
             onChange={(e) => updateProfile({ fullName: e.target.value })}
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="headline">Professional Headline</Label>
           <Input
@@ -170,7 +172,7 @@ export function BasicInfoForm() {
               <User className="h-8 w-8 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
-          
+
           <div className="flex flex-col gap-2">
             <input
               ref={fileInputRef}
@@ -218,10 +220,26 @@ export function BasicInfoForm() {
             </p>
           </div>
         </div>
+        <div className="flex items-center gap-2 mt-4">
+          <Switch
+            id="hide-photo"
+            checked={profile.hidePhoto}
+            onCheckedChange={(checked) => updateProfile({ hidePhoto: checked })}
+          />
+          <Label htmlFor="hide-photo" className="text-sm font-medium cursor-pointer">
+            Hide Profile Photo on Portfolio
+          </Label>
+        </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bio">Bio</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="bio">Bio</Label>
+          <AiRewriteButton
+            text={profile.bio}
+            onResult={(res) => updateProfile({ bio: res })}
+          />
+        </div>
         <Textarea
           id="bio"
           placeholder="Tell us about yourself..."
@@ -241,7 +259,7 @@ export function BasicInfoForm() {
             onChange={(e) => updateProfile({ location: e.target.value })}
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -264,7 +282,7 @@ export function BasicInfoForm() {
             onChange={(e) => updateProfile({ website: e.target.value })}
           />
         </div>
-        
+
         <div className="space-y-2">
           <Label htmlFor="calendly" className="flex items-center gap-2">
             📅 Calendly / Cal.com Link
@@ -293,7 +311,7 @@ export function BasicInfoForm() {
               onChange={(e) => updateProfile({ linkedinUrl: e.target.value })}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="github">GitHub</Label>
             <Input
@@ -303,7 +321,7 @@ export function BasicInfoForm() {
               onChange={(e) => updateProfile({ githubUrl: e.target.value })}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="twitter">Twitter</Label>
             <Input

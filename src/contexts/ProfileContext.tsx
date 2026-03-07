@@ -83,6 +83,7 @@ export interface ProfileData {
   username?: string;
   isPro?: boolean;
   predictedDomain?: string;
+  hidePhoto?: boolean;
   selectedTemplate:
   | "minimalist"
   | "creative"
@@ -137,6 +138,7 @@ const defaultProfile: ProfileData = {
   selectedTemplate: "modern-dark",
   full_profile: null,
   resume_data: null,
+  hidePhoto: false,
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -194,6 +196,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         username: (data as any).username || "",
         isPro: (data as any).is_pro || false,
         predictedDomain: (data as any).predicted_domain || "",
+        hidePhoto: (data as any).hide_photo || false,
         full_profile: (data as any).full_profile || null,
         resume_data: (data as any).resume_data || null,
       });
@@ -233,6 +236,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         key_highlights: data.keyHighlights,
         resume_url: data.resumeUrl,
         calendly_url: data.calendlyUrl,
+        hide_photo: data.hidePhoto,
         selected_font: data.selectedFont,
         selected_template: data.selectedTemplate,
       } as any)

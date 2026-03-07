@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SmartTagInput } from './SmartTagInput';
 import { SmartProjectImage } from '@/components/ui/SmartProjectImage';
+import { AiRewriteButton } from './AiRewriteButton';
 import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/use-debounce';
 import { toast } from 'sonner';
@@ -575,26 +576,32 @@ export function SmartProjectCard({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor={`description-${project.id}`}>Description</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onEnhance(localProject)}
-                  disabled={isEnhancing || !localProject.description?.trim()}
-                  className="gap-1.5"
-                >
-                  {isEnhancing ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      Enhancing...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-3.5 w-3.5" />
-                      Enhance with AI
-                    </>
-                  )}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <AiRewriteButton
+                    text={localProject.description || ''}
+                    onResult={(res) => { updateLocalField('description', res); onUpdate(project.id, { description: res }); }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onEnhance(localProject)}
+                    disabled={isEnhancing || !localProject.description?.trim()}
+                    className="gap-1.5"
+                  >
+                    {isEnhancing ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Enhancing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Enhance with AI
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
               <Textarea
                 id={`description-${project.id}`}
