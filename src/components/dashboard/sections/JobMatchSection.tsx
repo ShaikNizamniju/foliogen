@@ -181,15 +181,15 @@ export function JobMatchSection() {
       {result && (
         <div className="grid gap-4 md:grid-cols-3">
           {/* Match Score Card */}
-          <Card className="p-6 border-border/50 bg-gradient-to-br from-card via-card to-primary/5 backdrop-blur-sm relative overflow-hidden">
+          <Card className="p-6 border-border/50 bg-gradient-to-br from-card via-card to-indigo-500/5 backdrop-blur-sm relative overflow-hidden">
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-50" />
             <div className="relative">
               <div className="flex items-center gap-2 mb-4">
-                <Target className="h-5 w-5 text-primary" />
+                <Target className="h-5 w-5 text-indigo-500" />
                 <h3 className="font-semibold">Match Score</h3>
               </div>
               <RadialGauge score={result.matchScore} />
-              <p className="text-center mt-3 text-sm font-medium">
+              <p className="text-center mt-4 text-sm font-medium">
                 {getScoreLabel(result.matchScore)}
               </p>
               <div className="mt-4 space-y-2 text-xs text-muted-foreground">
@@ -252,7 +252,7 @@ export function JobMatchSection() {
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mb-3">
+              <p className="text-xs text-muted-foreground mb-4">
                 Copy this "Why Me?" snippet for your application
               </p>
               <div className="flex-1 p-4 rounded-lg bg-background/50 border border-border/50">
@@ -266,9 +266,9 @@ export function JobMatchSection() {
       {/* Overall Fit Summary */}
       {result && (
         <Card className="p-4 border-border/50 bg-muted/30 backdrop-blur-sm">
-          <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Target className="h-4 w-4 text-primary" />
+          <div className="flex items-start gap-4">
+            <div className="p-2 rounded-lg bg-indigo-500/10">
+              <Target className="h-4 w-4 text-indigo-500" />
             </div>
             <div>
               <p className="font-medium text-sm">Strategic Assessment</p>

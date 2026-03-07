@@ -29,10 +29,13 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         run: npm run build
+
+      - name: Setup Custom Domain (CNAME)
+        run: echo "www.foliogen.in" > dist/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

@@ -89,8 +89,8 @@ export function InterviewPrepSection() {
 
     if (jobsLoading) {
         return (
-            <div className="flex items-center justify-center py-20">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="flex items-center justify-center py-24">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
             </div>
         );
     }
@@ -128,9 +128,9 @@ export function InterviewPrepSection() {
 
             {selectedJob && !selectedJob.ai_prep && (
                 <Card className="p-8 text-center bg-card/50 border-border/50 border-dashed">
-                    <BrainCircuit className="h-10 w-10 mx-auto text-primary mb-3" />
+                    <BrainCircuit className="h-10 w-10 mx-auto text-indigo-500 mb-4" />
                     <h3 className="font-semibold text-lg">Generate Interview Strategy</h3>
-                    <p className="text-muted-foreground text-sm max-w-md mx-auto mb-5">
+                    <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
                         Our AI will analyze {selectedJob.company} and the {selectedJob.role} position to generate likely technical and behavioral questions based on your profile.
                     </p>
                     <Button
@@ -145,7 +145,7 @@ export function InterviewPrepSection() {
                         )}
                     </Button>
                     {!profile.isPro && (
-                        <p className="text-xs text-amber-500 mt-3 font-medium">
+                        <p className="text-xs text-amber-500 mt-4 font-medium">
                             Interview Prep is a Pro feature. Upgrade to unlock.
                         </p>
                     )}
@@ -156,7 +156,7 @@ export function InterviewPrepSection() {
                 <div className="grid md:grid-cols-12 gap-6">
                     <div className="md:col-span-4 space-y-4">
                         <h3 className="font-semibold flex items-center gap-2">
-                            <Target className="h-4 w-4 text-primary" />
+                            <Target className="h-4 w-4 text-indigo-500" />
                             Practice Questions
                         </h3>
                         <div className="space-y-2">
@@ -164,9 +164,9 @@ export function InterviewPrepSection() {
                                 <button
                                     key={idx}
                                     onClick={() => selectQuestion(q)}
-                                    className={`w-full text-left p-3 rounded-xl text-sm transition-all border ${activeQuestion === q
-                                            ? 'bg-primary/10 border-primary/30 text-primary-foreground font-medium shadow-sm'
-                                            : 'bg-card border-border/50 text-muted-foreground hover:bg-muted'
+                                    className={`w-full text-left p-4 rounded-xl text-sm transition-all border ${activeQuestion === q
+                                        ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-600 font-medium shadow-sm'
+                                        : 'bg-card border-border/50 text-muted-foreground hover:bg-muted'
                                         }`}
                                 >
                                     <p className="line-clamp-2">{q}</p>
@@ -178,9 +178,9 @@ export function InterviewPrepSection() {
                     <div className="md:col-span-8">
                         {activeQuestion ? (
                             <Card className="p-6 bg-card border-border/50 h-full flex flex-col">
-                                <div className="flex items-start gap-3 mb-4">
-                                    <div className="p-2 rounded-lg bg-primary/10 shrink-0">
-                                        <MessageSquareText className="h-4 w-4 text-primary" />
+                                <div className="flex items-start gap-4 mb-4">
+                                    <div className="p-2 rounded-lg bg-indigo-500/10 shrink-0">
+                                        <MessageSquareText className="h-4 w-4 text-indigo-500" />
                                     </div>
                                     <h4 className="font-semibold text-foreground text-lg leading-snug">{activeQuestion}</h4>
                                 </div>
@@ -212,7 +212,7 @@ export function InterviewPrepSection() {
                                             <span className="font-semibold">Answer Score</span>
                                             <div className="flex items-center gap-2">
                                                 <span className={`text-2xl font-bold ${feedback.score >= 80 ? 'text-emerald-500' :
-                                                        feedback.score >= 50 ? 'text-amber-500' : 'text-red-500'
+                                                    feedback.score >= 50 ? 'text-amber-500' : 'text-red-500'
                                                     }`}>
                                                     {feedback.score}/100
                                                 </span>
@@ -238,8 +238,8 @@ export function InterviewPrepSection() {
                                             </div>
                                         </div>
 
-                                        <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-                                            <h5 className="font-medium text-primary text-sm mb-2 flex items-center gap-2">
+                                        <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
+                                            <h5 className="font-medium text-indigo-600 text-sm mb-2 flex items-center gap-2">
                                                 <Sparkles className="h-4 w-4" /> Ideal Framework
                                             </h5>
                                             <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
@@ -251,7 +251,7 @@ export function InterviewPrepSection() {
                             </Card>
                         ) : (
                             <Card className="h-full min-h-[400px] flex flex-col items-center justify-center p-6 text-center border-dashed border-border/50 text-muted-foreground bg-card/30">
-                                <Target className="h-10 w-10 mb-3 opacity-20" />
+                                <Target className="h-10 w-10 mb-4 opacity-20" />
                                 <p>Select a question from the left to start practicing</p>
                             </Card>
                         )}
