@@ -246,22 +246,11 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       selectedTemplate: recommendedTemplate as typeof profile.selectedTemplate,
     };
 
+    toast.loading('Saving...', { id: 'auto-save' });
     updateProfile(updates);
 
     if (onTemplateChange) {
       onTemplateChange(recommendedTemplate);
-    }
-
-    // Auto-save to database so data persists
-    try {
-      const { error: saveError } = await saveProfile(updates);
-      if (saveError) {
-        toast.error('Profile updated locally but failed to save. Please click "Save Changes".');
-      } else {
-        toast.success('Profile updated & saved!');
-      }
-    } catch {
-      toast.error('Profile updated locally. Please save manually.');
     }
 
     // Scroll to preview

@@ -42,7 +42,7 @@ function getDomainBenchmarks(domain: ProfessionalDomain | null): DomainBenchmark
     case 'creative': return { projectTarget: 5, skillTarget: 10, contactTarget: 3 };
     case 'corporate': return { projectTarget: 3, skillTarget: 12, contactTarget: 5 };
     case 'luxury': return { projectTarget: 4, skillTarget: 10, contactTarget: 3 };
-    default: return { projectTarget: 5, skillTarget: 12, contactTarget: 4 };
+    default: return { projectTarget: 3, skillTarget: 15, contactTarget: 4 }; // Founder-level default
   }
 }
 
@@ -87,7 +87,7 @@ function getSkillMappingScore(skills: string[], projects: ProfileData["projects"
 
 function getRecommendations(profile: ProfileData, domain: ProfessionalDomain | null, benchmarks: DomainBenchmarks): Recommendation[] {
   const recs: Recommendation[] = [];
-  const domainLabel = domain ? domain.charAt(0).toUpperCase() + domain.slice(1) : 'Your field';
+  const domainLabel = domain ? domain.charAt(0).toUpperCase() + domain.slice(1) : 'Founder-level';
 
   // Dynamic project recommendation
   if (profile.projects.length < benchmarks.projectTarget) {

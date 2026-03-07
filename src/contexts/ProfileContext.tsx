@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { useAuth } from "./AuthContext";
 import { Json } from "@/integrations/supabase/types";
 
@@ -204,8 +205,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   };
 
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const debouncedAutoSave = useCallback((dataToSave: ProfileData) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      const { error } = await saveProfile(dataToSave);
+      if (error) {
+        toast.error('Auto-save failed: ' + error.message, { id: 'auto-save' });
+      } else {
+        toast.success('All changes saved', { id: 'auto-save', duration: 2000 });
+      }
+    }, 1500);
+  }, [user]);
+
   const updateProfile = (updates: Partial<ProfileData>) => {
-    setProfile((prev) => ({ ...prev, ...updates }));
+    setProfile((prev) => {
+      const newData = { ...prev, ...updates };
+      debouncedAutoSave(newData);
+      return newData;
+    });
   };
 
   const saveProfile = async (overrides?: Partial<ProfileData>) => {

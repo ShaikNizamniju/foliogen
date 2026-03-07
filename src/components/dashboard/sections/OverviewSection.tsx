@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { calculatePortfolioStrength } from '@/utils/scoringEngine';
+import { ResumeInsights } from '@/components/dashboard/ResumeInsights';
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -426,6 +427,11 @@ export function OverviewSection() {
             Settings
           </Button>
         </Link>
+      </motion.div>
+
+      {/* Professional ATS Scoring Section */}
+      <motion.div variants={fadeUp}>
+        <ResumeInsights />
       </motion.div>
     </motion.div>
   );
