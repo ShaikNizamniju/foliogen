@@ -218,16 +218,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     setSaving(true);
 
     // Strip nulls from JSON array fields so Supabase never rejects the row
-    const sanitizeWorkExp = (we: WorkExperience[]) =>
-      we.map((w) => ({
+    const sanitizeWorkExp = (we: WorkExperience[]) => {
+      const safeDate = (d: any): string => {
+        if (!d || typeof d !== 'string') return '';
+        const trimmed = d.trim();
+        try {
+          const date = new Date(trimmed);
+          if (!isNaN(date.getTime()) && trimmed.length > 3) {
+            return date.toISOString().split('T')[0];
+          }
+        } catch (e) { }
+        return trimmed;
+      };
+
+      return we.map((w) => ({
         id: w.id || crypto.randomUUID(),
         jobTitle: w.jobTitle || '',
         company: w.company || '',
-        startDate: w.startDate || '',
-        endDate: w.endDate || '',
+        startDate: safeDate(w.startDate),
+        endDate: safeDate(w.endDate),
         current: typeof w.current === 'boolean' ? w.current : false,
         description: w.description || '',
       }));
+    };
 
     const sanitizeProjects = (ps: Project[]) =>
       ps.map((p) => ({

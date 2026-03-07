@@ -7,7 +7,7 @@ import {
   Crown, Check, Sparkles, Target, Wand2, Users,
   Calendar, Loader2, ShieldCheck, CreditCard, RefreshCw
 } from 'lucide-react';
-import { handlePayment } from '@/lib/payment';
+import { handleLsPayment as handlePayment } from '@/lib/payment-lemonsqueezy';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 
@@ -318,7 +318,7 @@ export function BillingSection() {
               </Button>
 
               <p className="text-xs text-center text-muted-foreground mt-4">
-                Secure payment via Razorpay • Instant activation
+                Secure payment via LemonSqueezy • Instant activation
               </p>
             </div>
           </motion.div>

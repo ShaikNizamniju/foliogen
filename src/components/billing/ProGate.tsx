@@ -3,7 +3,7 @@ import { Lock, Sparkles, Crown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePro } from '@/contexts/ProContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { handlePayment } from '@/lib/payment';
+import { handleLsPayment as handlePayment } from '@/lib/payment-lemonsqueezy';
 import { motion } from 'framer-motion';
 
 interface ProGateProps {
@@ -102,7 +102,7 @@ export function ProGate({
           ) : (
             <>
               <Sparkles className="h-4 w-4 mr-2" />
-              Get Pro for ₹199
+              Get Pro for ₹999
             </>
           )}
         </Button>
@@ -148,7 +148,7 @@ export function ProGate({
             ) : (
               <>
                 <Sparkles className="h-4 w-4 mr-2" />
-                Get Pro for ₹199
+                Get Pro for ₹999
               </>
             )}
           </Button>
