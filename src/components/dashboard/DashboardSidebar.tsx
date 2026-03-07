@@ -58,14 +58,14 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
-      <SidebarHeader className="p-4">
+      <SidebarHeader className={cn("p-4", collapsed && "flex items-center justify-center p-2")}>
         <Link to="/" className="flex items-center gap-2">
           <motion.div
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl overflow-hidden"
+            className={cn("flex shrink-0 items-center justify-center rounded-xl overflow-hidden", collapsed ? "h-10 w-10 border border-border" : "h-8 w-8")}
             whileHover={{ scale: 1.1, rotate: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
-            <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain" />
+            <img src={logoImg} alt="Foliogen" className="h-full w-full object-contain mix-blend-multiply" />
           </motion.div>
           {!collapsed && (
             <motion.span
@@ -105,6 +105,7 @@ export function DashboardSidebar() {
                       <Link
                         to={`/dashboard?section=${item.section}`}
                         data-tour={item.section === 'profile' ? 'profile' : undefined}
+                        className={cn("flex flex-1 items-center gap-2", collapsed && "justify-center")}
                       >
                         {isActive && (
                           <motion.div
@@ -113,9 +114,9 @@ export function DashboardSidebar() {
                             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                           />
                         )}
-                        <span className="relative z-10 flex items-center gap-2">
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
+                        <span className="relative z-10 flex items-center justify-center">
+                          <item.icon className={cn("h-4 w-4", collapsed && "scale-110")} />
+                          {!collapsed && <span className="ml-2">{item.title}</span>}
                         </span>
                       </Link>
                     </SidebarMenuButton>
@@ -127,21 +128,39 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-sidebar-border">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground" />
-          {!collapsed && (
+      <SidebarFooter className={cn("p-4 border-t border-sidebar-border", collapsed && "flex-col items-center gap-4 px-2")}>
+        {!collapsed ? (
+          <div className="flex items-center gap-2 w-full">
+            <SidebarTrigger className="h-8 w-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground" />
             <Button
               variant="ghost"
               size="sm"
               onClick={handleSignOut}
               className="flex-1 justify-start text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-xl"
             >
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="h-4 w-4 mr-2 shrink-0" />
               Sign Out
             </Button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-4 w-full">
+            <SidebarTrigger className="h-8 w-8 mx-auto text-sidebar-foreground/60 hover:text-sidebar-foreground flex items-center justify-center shrink-0" />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSignOut}
+              className="h-10 w-10 mx-auto text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-xl shrink-0"
+              title="Sign Out"
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+            <div className="h-10 w-10 overflow-hidden rounded-full border border-border mt-1">
+              <div className="flex items-center justify-center w-full h-full bg-primary/10 text-primary font-bold">
+                <User className="h-5 w-5" />
+              </div>
+            </div>
+          </div>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

@@ -73,7 +73,9 @@ serve(async (req) => {
 
         if (!rzpResponse.ok) {
             console.error("Razorpay order creation failed:", orderData);
-            throw new Error("Failed connecting to Razorpay");
+            return new Response(JSON.stringify({ error: "RAZORPAY_API_ERROR", message: "Failed connecting to Razorpay. Please try again in 2 minutes." }), {
+                status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
 
         // 5. Insert pending payment record via Database (Using Service Role for inserts)

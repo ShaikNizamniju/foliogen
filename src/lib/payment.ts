@@ -90,7 +90,7 @@ export async function handlePayment(
 
       if (orderError || !orderData?.orderId) {
         console.error("Order creation failed:", orderError);
-        toast({ title: "Payment Error", description: "Failed to initialize payment order. Please try again.", variant: "destructive" });
+        toast({ title: "Payment Error", description: "Failed to initialize payment order. Please try again in 2 minutes.", variant: "destructive" });
         reject(new Error("Failed to create order"));
         return;
       }
