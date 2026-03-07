@@ -110,15 +110,14 @@ export function Pricing() {
                 hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
                 visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 120, damping: 22 } },
               }}
-              className={`relative rounded-2xl border bg-card p-8 transition-all ${
-                plan.popular
+              className={`relative rounded-2xl border bg-card p-8 transition-all ${plan.popular
                   ? 'border-primary shadow-glow'
                   : 'border-border hover:border-primary/20 hover:shadow-lg'
-              }`}
+                }`}
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-primary px-4 py-1 text-sm font-medium text-primary-foreground">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-max text-center">
+                  <span className="rounded-full bg-primary px-4 py-1 text-sm font-medium text-primary-foreground whitespace-nowrap">
                     Most Popular
                   </span>
                 </div>
@@ -154,11 +153,10 @@ export function Pricing() {
 
               <Button
                 asChild
-                className={`w-full ${
-                  plan.popular
+                className={`w-full ${plan.popular
                     ? 'shadow-glow transition-all hover:shadow-glow-lg'
                     : ''
-                }`}
+                  }`}
                 variant={plan.popular ? 'default' : 'outline'}
                 size="lg"
               >

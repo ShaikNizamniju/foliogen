@@ -8,6 +8,7 @@ import { Lock, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { handlePayment } from '@/lib/payment';
 import { useAuth } from '@/contexts/AuthContext';
+import { ProUpsellBanner } from './ProUpsellBanner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -65,12 +66,7 @@ export function TemplatesSection() {
             <span className="text-muted-foreground">Changing templates may reduce your portfolio's effectiveness for this domain.</span>
           </div>
         )}
-        {!isPro && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
-            <Crown className="h-4 w-4" />
-            <span>Unlock all premium templates with Pro for just ₹199</span>
-          </div>
-        )}
+        {!isPro && <ProUpsellBanner />}
       </div>
 
       {/* Template Grid */}

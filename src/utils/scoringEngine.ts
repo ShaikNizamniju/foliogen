@@ -94,7 +94,7 @@ function getRecommendations(profile: ProfileData, domain: ProfessionalDomain | n
     const needed = benchmarks.projectTarget - profile.projects.length;
     const currentPct = Math.round((profile.projects.length / benchmarks.projectTarget) * 30);
     const pts = 30 - currentPct;
-    recs.push({ id: 'more-projects', label: `Current: ${profile.projects.length} / Required for ${domainLabel}: ${benchmarks.projectTarget} projects (+${pts} pts)`, completed: false, points: pts });
+    recs.push({ id: 'more-projects', label: `Current: ${currentPct}/30 Projects — Add more projects to boost your credibility`, completed: false, points: pts });
   }
 
   // Contact recommendations with dynamic target
@@ -108,19 +108,23 @@ function getRecommendations(profile: ProfileData, domain: ProfessionalDomain | n
   const missingContacts = contactFields.filter(f => !f.value);
   if (filledContacts < benchmarks.contactTarget && missingContacts.length > 0) {
     const top = missingContacts[0];
-    const ptsPerContact = Math.round(20 / benchmarks.contactTarget);
-    recs.push({ id: `add-${top.key}`, label: `Current: ${filledContacts} / Required for ${domainLabel}: ${benchmarks.contactTarget} links — Add ${top.label} (+${ptsPerContact} pts)`, completed: false, points: ptsPerContact });
+    const currentPct = Math.round((filledContacts / benchmarks.contactTarget) * 20);
+    const pts = 20 - currentPct;
+    recs.push({ id: `add-${top.key}`, label: `Current: ${currentPct}/20 Contact — Add ${top.label} to increase reach`, completed: false, points: pts });
   }
 
   // Skill mapping tip with dynamic target
   if (profile.skills.length > 0 && profile.projects.length > 0) {
     const allTech = new Set(profile.projects.flatMap((p) => (p.techStack ?? []).map((t) => t.toLowerCase())));
     const unmatched = profile.skills.filter((s) => !allTech.has(s.toLowerCase()));
+    const matched = profile.skills.length - unmatched.length;
+    const currentPct = Math.round((matched / Math.min(profile.skills.length, benchmarks.skillTarget)) * 50);
+
     if (unmatched.length > 0) {
-      recs.push({ id: 'match-skills', label: `Add "${unmatched[0]}" to a project's tech stack to boost mapping score`, completed: false, points: Math.round(50 / Math.min(profile.skills.length, benchmarks.skillTarget)) });
+      recs.push({ id: 'match-skills', label: `Current: ${currentPct}/50 Skill Map — Add "${unmatched[0]}" to a project to boost score`, completed: false, points: Math.round(50 / Math.min(profile.skills.length, benchmarks.skillTarget)) });
     }
   } else if (profile.skills.length === 0) {
-    recs.push({ id: 'add-skills', label: `Current: 0 / Required for ${domainLabel}: ${benchmarks.skillTarget} skills (+50 pts potential)`, completed: false, points: 50 });
+    recs.push({ id: 'add-skills', label: `Current: 0/50 Skill Map — Add tech stack skills to your profile`, completed: false, points: 50 });
   }
 
   // Domain-specific tips
