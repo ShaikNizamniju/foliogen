@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
@@ -54,12 +54,19 @@ function GlobalDataProvider({ children }: { children: ReactNode }) {
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
+      return;
     }
-  }, [user, loading, navigate]);
+
+    // Enforce overview as default route
+    if (user && !loading && !location.search.includes('section=')) {
+      navigate('/dashboard?section=overview', { replace: true });
+    }
+  }, [user, loading, navigate, location]);
 
   if (loading) {
     return (

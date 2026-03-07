@@ -219,6 +219,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
     // Strip nulls from JSON array fields so Supabase never rejects the row
     const sanitizeWorkExp = (we: WorkExperience[]) => {
+      if (!Array.isArray(we)) return [];
       const safeDate = (d: any): string => {
         if (!d || typeof d !== 'string') return '';
         const trimmed = d.trim();
@@ -242,8 +243,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       }));
     };
 
-    const sanitizeProjects = (ps: Project[]) =>
-      ps.map((p) => ({
+    const sanitizeProjects = (ps: Project[]) => {
+      if (!Array.isArray(ps)) return [];
+      return ps.map((p) => ({
         id: p.id || crypto.randomUUID(),
         title: p.title || '',
         description: p.description || '',
@@ -258,6 +260,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         password: p.password || '',
         references: Array.isArray(p.references) ? p.references : [],
       }));
+    };
 
     const { error } = await supabase
       .from("profiles")
@@ -274,8 +277,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         twitter_url: data.twitterUrl,
         work_experience: sanitizeWorkExp(data.workExperience) as unknown as Json,
         projects: sanitizeProjects(data.projects) as unknown as Json,
-        skills: data.skills,
-        key_highlights: data.keyHighlights,
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        key_highlights: Array.isArray(data.keyHighlights) ? data.keyHighlights : [],
         resume_url: data.resumeUrl,
         calendly_url: data.calendlyUrl,
         hide_photo: data.hidePhoto,
