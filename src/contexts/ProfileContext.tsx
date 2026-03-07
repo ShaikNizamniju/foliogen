@@ -217,6 +217,35 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
     setSaving(true);
 
+    // Strip nulls from JSON array fields so Supabase never rejects the row
+    const sanitizeWorkExp = (we: WorkExperience[]) =>
+      we.map((w) => ({
+        id: w.id || crypto.randomUUID(),
+        jobTitle: w.jobTitle || '',
+        company: w.company || '',
+        startDate: w.startDate || '',
+        endDate: w.endDate || '',
+        current: typeof w.current === 'boolean' ? w.current : false,
+        description: w.description || '',
+      }));
+
+    const sanitizeProjects = (ps: Project[]) =>
+      ps.map((p) => ({
+        id: p.id || crypto.randomUUID(),
+        title: p.title || '',
+        description: p.description || '',
+        link: p.link || '',
+        imageUrl: p.imageUrl || '',
+        visualPrompt: p.visualPrompt || '',
+        techStack: Array.isArray(p.techStack) ? p.techStack : [],
+        targetKeywords: Array.isArray(p.targetKeywords) ? p.targetKeywords : [],
+        visible: typeof p.visible === 'boolean' ? p.visible : true,
+        docsUrl: p.docsUrl || '',
+        isProtected: p.isProtected || false,
+        password: p.password || '',
+        references: Array.isArray(p.references) ? p.references : [],
+      }));
+
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -230,8 +259,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         linkedin_url: data.linkedinUrl,
         github_url: data.githubUrl,
         twitter_url: data.twitterUrl,
-        work_experience: data.workExperience as unknown as Json,
-        projects: data.projects as unknown as Json,
+        work_experience: sanitizeWorkExp(data.workExperience) as unknown as Json,
+        projects: sanitizeProjects(data.projects) as unknown as Json,
         skills: data.skills,
         key_highlights: data.keyHighlights,
         resume_url: data.resumeUrl,

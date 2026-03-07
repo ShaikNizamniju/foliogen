@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { 
-  UploadCloud, FileText, CheckCircle2, Loader2, AlertCircle, 
+import {
+  UploadCloud, FileText, CheckCircle2, Loader2, AlertCircle,
   Briefcase, GraduationCap, Sparkles, X, ArrowRight, Merge
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -54,7 +54,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [uploadedResumeUrl, setUploadedResumeUrl] = useState<string>('');
   const [currentFile, setCurrentFile] = useState<File | null>(null);
-  
+
   const { profile, updateProfile, saveProfile } = useProfile();
   const { user } = useAuth();
 
@@ -92,7 +92,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
       let fullText = '';
       const totalPages = pdf.numPages;
-      
+
       for (let i = 1; i <= totalPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
@@ -151,7 +151,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       try {
         const fileExt = currentFile.name.split('.').pop();
         const filePath = `${user.id}/resume-${Date.now()}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from('resumes')
           .upload(filePath, currentFile, { upsert: true });
@@ -160,7 +160,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
           const { data: urlData } = supabase.storage
             .from('resumes')
             .getPublicUrl(filePath);
-          
+
           resumeUrl = urlData.publicUrl;
           setUploadedResumeUrl(resumeUrl);
         }
@@ -177,21 +177,38 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       finalSkills = [...profile.skills, ...newSkills];
     }
 
-    // Ensure work experience entries have IDs
-    const safeWorkExperience = (parsedData.workExperience || []).map((w, i) => ({
-      ...w,
-      id: w.id || crypto.randomUUID(),
+    // ── Normalize a date string to a safe value (empty string if null/garbage)
+    const safeDate = (d: any): string => {
+      if (!d || typeof d !== 'string') return '';
+      return d.trim();
+    };
+
+    // Ensure work experience entries have all required fields with safe fallbacks.
+    // IMPORTANT: spread `w` FIRST then apply fallbacks, so nulls from AI are overridden.
+    const safeWorkExperience: WorkExperience[] = (parsedData.workExperience || []).map((w) => ({
+      ...w,                                       // raw AI data (may contain nulls)
+      id: w.id || crypto.randomUUID(),   // always a valid UUID
+      jobTitle: w.jobTitle || '',
+      company: w.company || '',
+      startDate: safeDate(w.startDate),
+      endDate: safeDate(w.endDate),
+      current: typeof w.current === 'boolean' ? w.current : false,
+      description: w.description || '',
     }));
 
-    // Ensure project entries have IDs
-    const safeProjects = (parsedData.projects || []).map((p) => ({
+    // Ensure project entries have all their required fields with safe fallbacks.
+    // IMPORTANT: spread `p` FIRST, then apply fallbacks, so nulls from AI are overridden.
+    const safeProjects: Project[] = (parsedData.projects || []).map((p) => ({
+      ...p,                                             // raw AI data (may contain nulls)
+      id: p.id || crypto.randomUUID(),
       title: p.title || '',
       description: p.description || '',
       link: p.link || '',
       imageUrl: p.imageUrl || '',
       visualPrompt: p.visualPrompt || '',
-      ...p,
-      id: p.id || crypto.randomUUID(),
+      techStack: Array.isArray(p.techStack) ? p.techStack : [],
+      targetKeywords: Array.isArray(p.targetKeywords) ? p.targetKeywords : [],
+      visible: typeof p.visible === 'boolean' ? p.visible : true,
     }));
 
     // Determine template
@@ -247,13 +264,13 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   }, [parsedData, profile, updateProfile, saveProfile, resetParser, onTemplateChange, currentFile, user]);
 
   // Drag handlers
-  const handleDragOver = (e: React.DragEvent) => { 
-    e.preventDefault(); 
-    setIsDragging(true); 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
   };
-  
+
   const handleDragLeave = () => setIsDragging(false);
-  
+
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
@@ -261,7 +278,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       processFile(e.dataTransfer.files[0]);
     }
   };
-  
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       processFile(e.target.files[0]);
@@ -288,20 +305,20 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               className={`
                 relative border-2 border-dashed rounded-2xl p-12 text-center transition-colors duration-300
-                ${isDragging 
-                  ? 'border-primary bg-primary/5' 
+                ${isDragging
+                  ? 'border-primary bg-primary/5'
                   : 'border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30'
                 }
               `}
             >
-              <input 
-                type="file" 
-                accept=".pdf" 
-                onChange={handleFileSelect} 
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileSelect}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div className="flex flex-col items-center gap-5">
-                <motion.div 
+                <motion.div
                   className={`p-5 rounded-2xl transition-colors duration-300 ${isDragging ? 'bg-primary/20' : 'bg-primary/10'}`}
                   animate={isDragging ? { scale: 1.1, rotate: [0, -5, 5, 0] } : { scale: 1, rotate: 0 }}
                   transition={{ type: 'spring', stiffness: 300 }}
@@ -309,12 +326,12 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                   <UploadCloud className={`w-10 h-10 transition-colors ${isDragging ? 'text-primary' : 'text-primary/70'}`} />
                 </motion.div>
                 <div className="space-y-2">
-                   <h3 className="text-xl font-semibold text-foreground">
-                     Drop your Resume or LinkedIn PDF
-                   </h3>
-                   <p className="text-sm text-muted-foreground max-w-md">
-                     Supports standard resumes and LinkedIn PDF exports — AI maps everything automatically
-                   </p>
+                  <h3 className="text-xl font-semibold text-foreground">
+                    Drop your Resume or LinkedIn PDF
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    Supports standard resumes and LinkedIn PDF exports — AI maps everything automatically
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <FileText className="w-4 h-4" />
@@ -348,12 +365,12 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                 }}
               />
             )}
-            
+
             <div className="flex flex-col items-center gap-6 relative z-10">
               <div className="relative">
-                <motion.div 
+                <motion.div
                   className="p-5 rounded-2xl bg-primary/10"
-                  animate={{ 
+                  animate={{
                     boxShadow: [
                       '0 0 0 0 rgba(59,130,246,0)',
                       '0 0 20px 5px rgba(59,130,246,0.3)',
@@ -364,7 +381,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                 >
                   <Loader2 className="w-10 h-10 text-primary animate-spin" />
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-card border border-border"
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 1, repeat: Infinity }}
@@ -372,9 +389,9 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                   <Sparkles className="w-4 h-4 text-primary" />
                 </motion.div>
               </div>
-              
+
               <div className="text-center space-y-2">
-                <motion.h3 
+                <motion.h3
                   className="text-lg font-semibold text-foreground"
                   animate={{ opacity: [1, 0.7, 1] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
@@ -462,14 +479,14 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 w-full">
-                <Button 
+                <Button
                   onClick={() => applyToProfile(true)}
                   className="flex-1 shadow-glow"
                 >
                   <Merge className="w-4 h-4 mr-2" />
                   Merge with Profile
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => applyToProfile(false)}
                   className="flex-1"
@@ -477,7 +494,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                   <ArrowRight className="w-4 h-4 mr-2" />
                   Replace Profile
                 </Button>
-                <Button 
+                <Button
                   variant="ghost"
                   onClick={resetParser}
                   size="icon"
