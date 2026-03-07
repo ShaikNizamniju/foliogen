@@ -85,11 +85,12 @@ You will analyze a candidate's profile against a job description and provide str
 CANDIDATE PROFILE:
 ${JSON.stringify(profileData, null, 2)}
 
-JOB DESCRIPTION:
+JOB DESCRIPTION OR URL:
 ${jobDescription}
 
 Your task is to:
-1. Calculate a match score (0-100) based on how well the candidate's skills, experience, and background align with the job requirements.
+1. If the input is a URL, you should try to infer the requirements from it if you can fetch it, OR provide a generic functional framework.
+2. Calculate a match score (0-100) based on how well the candidate's skills, experience, and background align with the job requirements.
 2. Identify exactly 3 critical keywords or skills from the job description that are missing from the candidate's profile.
 3. Write a compelling 1-paragraph "Why Me?" pitch (3-4 sentences) that bridges the candidate's specific experience to the job's biggest pain points.
 

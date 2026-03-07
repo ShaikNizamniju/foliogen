@@ -72,20 +72,30 @@ export function KanbanBoard() {
     if (!over) return;
 
     const jobId = active.id as string;
-    const targetStatus = over.id as JobStatus;
+    let targetStatus = over.id as JobStatus;
 
-    // Check if dropping on a column
-    if (COLUMNS.some((col) => col.status === targetStatus)) {
-      const job = jobs.find((j) => j.id === jobId);
-      if (job && job.status !== targetStatus) {
-        const previousStatus = job.status;
-        await updateJobStatus(jobId, targetStatus);
+    // Check if dropping directly on a column
+    const isOverColumn = COLUMNS.some((col) => col.status === targetStatus);
 
-        // 🎉 Celebration when moving to Offer!
-        if (targetStatus === 'offer' && previousStatus !== 'offer') {
-          triggerCelebration();
-          toast.success('🎉 Congratulations on the offer!');
-        }
+    // If dropping on a card, figure out its column
+    if (!isOverColumn) {
+      const overJob = jobs.find((j) => j.id === over.id);
+      if (overJob) {
+        targetStatus = overJob.status;
+      } else {
+        return; // Dropped on nothing recognized
+      }
+    }
+
+    const job = jobs.find((j) => j.id === jobId);
+    if (job && job.status !== targetStatus) {
+      const previousStatus = job.status;
+      await updateJobStatus(jobId, targetStatus);
+
+      // 🎉 Celebration when moving to Offer!
+      if (targetStatus === 'offer' && previousStatus !== 'offer') {
+        triggerCelebration();
+        toast.success('🎉 Congratulations on the offer!');
       }
     }
   };

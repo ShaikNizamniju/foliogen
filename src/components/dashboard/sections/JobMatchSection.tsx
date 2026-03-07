@@ -22,7 +22,7 @@ interface JobMatchResult {
 function RadialGauge({ score }: { score: number }) {
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference - (score / 100) * circumference;
-  
+
   const getScoreColor = (score: number) => {
     if (score >= 75) return { stroke: 'stroke-emerald-500', text: 'text-emerald-500', bg: 'bg-emerald-500/10' };
     if (score >= 50) return { stroke: 'stroke-amber-500', text: 'text-amber-500', bg: 'bg-amber-500/10' };
@@ -79,11 +79,8 @@ export function JobMatchSection() {
       return;
     }
 
-    // Detect URLs and guide user
-    if (/^https?:\/\//i.test(trimmed)) {
-      toast.error('URL fetching is not supported yet. Please paste the job description text directly.');
-      return;
-    }
+    // Allow URLs to be passed to the AI engine for scraping
+    // (Removed the block that prevented URLs)
 
     if (!profile.isPro) {
       toast.error('Job Match Agent is a Pro feature. Upgrade to Pro for ₹199 to unlock.');
@@ -130,8 +127,8 @@ export function JobMatchSection() {
 
   const getScoreLabel = (score: number) => {
     if (score >= 75) return 'Strong Match';
-    if (score >= 50) return 'Moderate Match';
-    return 'Needs Work';
+    if (score >= 50) return 'Partial Match';
+    return 'Low Match';
   };
 
   return (

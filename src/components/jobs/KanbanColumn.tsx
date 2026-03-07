@@ -79,8 +79,18 @@ export function KanbanColumn({
         </SortableContext>
 
         {jobs.length === 0 && (
-          <div className="flex items-center justify-center py-8 text-muted-foreground text-sm">
-            No jobs here
+          <div className="flex flex-col items-center justify-center py-8 text-center px-4">
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3">
+              <span className="text-xl opacity-50">{emoji}</span>
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              {status === 'saved' ? 'Add your first application' : `No ${status} jobs`}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {status === 'saved'
+                ? 'Track your next career move here.'
+                : 'Drag and drop a job card here.'}
+            </p>
           </div>
         )}
       </div>
