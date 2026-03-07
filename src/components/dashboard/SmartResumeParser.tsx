@@ -177,10 +177,22 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       finalSkills = [...profile.skills, ...newSkills];
     }
 
-    // ── Normalize a date string to a safe value (empty string if null/garbage)
+    // ── Standardize date to ISO string if possible, fallback to trimmed string
     const safeDate = (d: any): string => {
       if (!d || typeof d !== 'string') return '';
-      return d.trim();
+      const trimmed = d.trim();
+
+      // Attempt to parse and format as ISO (YYYY-MM-DD)
+      // This handles "Jan 2020", "2020-01", etc.
+      try {
+        const date = new Date(trimmed);
+        if (!isNaN(date.getTime()) && trimmed.length > 3) {
+          return date.toISOString().split('T')[0];
+        }
+      } catch (e) {
+        // Silently fallback to raw trimmed string if parsing fails
+      }
+      return trimmed;
     };
 
     // Ensure work experience entries have all required fields with safe fallbacks.
