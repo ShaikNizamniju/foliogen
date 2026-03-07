@@ -1,10 +1,10 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  LayoutDashboard, 
-  User, 
-  Palette, 
-  Settings, 
+import {
+  LayoutDashboard,
+  User,
+  Palette,
+  Settings,
   LogOut,
   Sparkles,
   Briefcase,
@@ -56,17 +56,17 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
-      <SidebarHeader className="p-5">
-        <Link to="/" className="flex items-center gap-3">
-          <motion.div 
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl overflow-hidden"
+      <SidebarHeader className="p-4">
+        <Link to="/" className="flex items-center gap-2">
+          <motion.div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl overflow-hidden"
             whileHover={{ scale: 1.1, rotate: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
-            <img src={logoImg} alt="Foliogen" className="h-9 w-9 object-contain" />
+            <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain" />
           </motion.div>
           {!collapsed && (
-            <motion.span 
+            <motion.span
               className="font-semibold text-lg text-sidebar-foreground tracking-tight"
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
@@ -78,10 +78,10 @@ export function DashboardSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarContent className="px-3">
+      <SidebarContent className="px-4">
         <SidebarGroup>
           {!collapsed && (
-            <p className="px-3 mb-2 text-[11px] font-medium uppercase tracking-widest text-sidebar-foreground/40">
+            <p className="px-2 mb-2 text-[11px] font-medium uppercase tracking-widest text-sidebar-foreground/40">
               Navigation
             </p>
           )}
@@ -91,8 +91,8 @@ export function DashboardSidebar() {
                 const isActive = currentSection === item.section;
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild 
+                    <SidebarMenuButton
+                      asChild
                       isActive={isActive}
                       tooltip={item.title}
                       className={cn(
@@ -100,7 +100,7 @@ export function DashboardSidebar() {
                         isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                       )}
                     >
-                      <Link 
+                      <Link
                         to={`/dashboard?section=${item.section}`}
                         data-tour={item.section === 'profile' ? 'profile' : undefined}
                       >
@@ -111,7 +111,7 @@ export function DashboardSidebar() {
                             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                           />
                         )}
-                        <span className="relative z-10 flex items-center gap-3">
+                        <span className="relative z-10 flex items-center gap-2">
                           <item.icon className="h-4 w-4" />
                           <span>{item.title}</span>
                         </span>
@@ -129,9 +129,9 @@ export function DashboardSidebar() {
         <div className="flex items-center gap-2">
           <SidebarTrigger className="h-8 w-8 text-sidebar-foreground/60 hover:text-sidebar-foreground" />
           {!collapsed && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleSignOut}
               className="flex-1 justify-start text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-xl"
             >

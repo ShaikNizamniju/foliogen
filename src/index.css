@@ -20,8 +20,8 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary - Ocean Blue */
-    --primary: 220 90% 56%;
+    /* Primary - Indigo */
+    --primary: 239 84% 67%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - soft gray */
@@ -51,16 +51,16 @@
     /* Sidebar - Dark Slate */
     --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 220 90% 56%;
+    --sidebar-primary: 239 84% 67%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 186 76% 20%;
-    --sidebar-accent-foreground: 186 76% 85%;
+    --sidebar-accent: 239 84% 96%;
+    --sidebar-accent-foreground: 239 84% 10%;
     --sidebar-border: 215 28% 17%;
     --sidebar-ring: 186 76% 50%;
 
     /* Custom gradient tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(220 90% 56%) 0%, hsl(186 76% 50%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(220 90% 97%) 0%, hsl(186 76% 95%) 50%, hsl(0 0% 100%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%) 0%, hsl(239 84% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(239 84% 97%) 0%, hsl(239 84% 95%) 50%, hsl(0 0% 100%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 14% 98%) 100%);
     --gradient-creative: linear-gradient(135deg, hsl(220 90% 56%) 0%, hsl(186 76% 50%) 50%, hsl(25 95% 55%) 100%);
 
@@ -82,7 +82,7 @@
     --popover: 222 47% 8%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 220 90% 56%;
+    --primary: 239 84% 67%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 215 28% 17%;
@@ -104,10 +104,10 @@
     /* Sidebar - Dark Slate */
     --sidebar-background: 222 47% 6%;
     --sidebar-foreground: 210 20% 98%;
-    --sidebar-primary: 220 90% 56%;
+    --sidebar-primary: 239 84% 67%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 186 76% 20%;
-    --sidebar-accent-foreground: 186 76% 85%;
+    --sidebar-accent: 239 84% 10%;
+    --sidebar-accent-foreground: 239 84% 90%;
     --sidebar-border: 215 28% 17%;
     --sidebar-ring: 186 76% 50%;
   }
@@ -131,6 +131,7 @@
 }
 
 @layer utilities {
+
   /* Gradient utilities */
   .bg-gradient-primary {
     background: var(--gradient-primary);
@@ -175,18 +176,37 @@
 
   /* Animation keyframes */
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
 
   @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+
+    100% {
+      background-position: 200% 0;
+    }
   }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px -5px hsl(220 90% 56% / 0.4); }
-    50% { box-shadow: 0 0 30px -5px hsl(220 90% 56% / 0.6); }
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px -5px hsl(220 90% 56% / 0.4);
+    }
+
+    50% {
+      box-shadow: 0 0 30px -5px hsl(220 90% 56% / 0.6);
+    }
   }
 
   .animate-float {
@@ -206,6 +226,7 @@
 
 /* Print styles for PDF export */
 @media print {
+
   /* Hide all UI elements */
   aside,
   [data-sidebar],
@@ -281,7 +302,12 @@
     page-break-inside: avoid !important;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     break-after: avoid !important;
     page-break-after: avoid !important;
   }
@@ -321,7 +347,10 @@
   }
 
   /* Ensure text is readable */
-  p, li, span, div {
+  p,
+  li,
+  span,
+  div {
     orphans: 3;
     widows: 3;
   }

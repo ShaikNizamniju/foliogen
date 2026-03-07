@@ -30,32 +30,26 @@ const fadeUp = {
   },
 };
 
-// Radial progress ring component
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
+// Using react-circular-progressbar for Radial progress
 function RadialProgress({ score, size = 120, strokeWidth = 8 }: { score: number; size?: number; strokeWidth?: number }) {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? 'text-emerald-500' : score >= 50 ? 'text-amber-500' : 'text-red-400';
+  const color = score >= 80 ? '#10b981' : score >= 50 ? '#f59e0b' : '#f87171'; // emerald-500, amber-500, red-400
 
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" strokeWidth={strokeWidth} className="stroke-muted/40" />
-        <motion.circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-          className={`stroke-current ${color}`}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
-          style={{ strokeDasharray: circumference }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
+    <div style={{ width: size, height: size }} className="relative">
+      <CircularProgressbar
+        value={score}
+        strokeWidth={strokeWidth}
+        styles={buildStyles({
+          pathColor: color,
+          trailColor: 'rgba(156, 163, 175, 0.2)', // muted
+          strokeLinecap: 'round',
+          pathTransition: 'stroke-dashoffset 1.2s ease 0s',
+        })}
+      />
+      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
         <motion.span
           className="text-2xl font-bold text-foreground tabular-nums"
           initial={{ opacity: 0, scale: 0.5 }}
@@ -97,7 +91,7 @@ export function OverviewSection() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-8 max-w-4xl"
       initial="hidden"
       animate="visible"
@@ -195,7 +189,7 @@ export function OverviewSection() {
               </div>
               <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Views</span>
             </div>
-            <motion.p 
+            <motion.p
               className="text-4xl font-bold text-foreground tabular-nums"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -257,7 +251,7 @@ export function OverviewSection() {
               </div>
               <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Score</span>
             </div>
-            <motion.p 
+            <motion.p
               className="text-4xl font-bold text-foreground"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -279,7 +273,7 @@ export function OverviewSection() {
             <CollapsibleTrigger asChild>
               <button className="w-full p-5 flex items-center justify-between hover:bg-muted/30 transition-colors">
                 <div className="flex items-center gap-4">
-                  <motion.div 
+                  <motion.div
                     className="p-3 rounded-xl bg-primary/10"
                     whileHover={{ scale: 1.1 }}
                     transition={{ type: 'spring', stiffness: 400 }}
@@ -291,14 +285,14 @@ export function OverviewSection() {
                       {isProfileEmpty ? 'Get Started — Import Resume' : 'Update from Resume'}
                     </h3>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      {isProfileEmpty 
+                      {isProfileEmpty
                         ? 'Drop your resume PDF to build your portfolio instantly'
                         : 'Import new data from a resume or LinkedIn PDF'
                       }
                     </p>
                   </div>
                 </div>
-                <motion.div 
+                <motion.div
                   animate={{ rotate: isParserOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                   className="p-2 rounded-lg text-muted-foreground"
@@ -307,7 +301,7 @@ export function OverviewSection() {
                 </motion.div>
               </button>
             </CollapsibleTrigger>
-            
+
             <AnimatePresence>
               {isParserOpen && (
                 <CollapsibleContent forceMount>
@@ -319,7 +313,7 @@ export function OverviewSection() {
                     className="border-t border-border/50"
                   >
                     <div className="p-6">
-                      <SmartResumeParser onTemplateChange={() => {}} />
+                      <SmartResumeParser onTemplateChange={() => { }} />
                     </div>
                   </motion.div>
                 </CollapsibleContent>
@@ -347,7 +341,7 @@ export function OverviewSection() {
                 </Link>
               </Button>
             </div>
-            
+
             <div className="flex items-center gap-5 p-4 rounded-xl bg-muted/40 border border-border/40 group-hover:border-primary/20 transition-colors">
               <div className="relative">
                 <Avatar className="h-16 w-16 border-2 border-border ring-2 ring-primary/10 ring-offset-2 ring-offset-card">
@@ -399,7 +393,7 @@ export function OverviewSection() {
               </div>
               <span className="text-xs text-muted-foreground">{stat.label}</span>
             </div>
-            <motion.p 
+            <motion.p
               className="text-2xl font-bold text-foreground tabular-nums"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
