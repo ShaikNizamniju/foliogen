@@ -70,31 +70,39 @@ serve(async (req) => {
       );
     }
 
+    const payload = profile.published_data || profile;
     const profileData = {
-      name: profile.full_name || 'Unknown',
-      headline: profile.headline || '',
-      bio: profile.bio || '',
-      location: profile.location || '',
-      website: profile.website || '',
-      skills: profile.skills || [],
-      keyHighlights: profile.key_highlights || [],
-      workExperience: profile.work_experience || [],
-      projects: profile.projects || [],
+      name: payload.full_name || 'Unknown',
+      headline: payload.headline || '',
+      bio: payload.bio || '',
+      location: payload.location || '',
+      website: payload.website || '',
+      skills: payload.skills || [],
+      keyHighlights: payload.key_highlights || [],
+      workExperience: payload.work_experience || [],
+      projects: payload.projects || [],
     };
 
-    const systemPrompt = `You are a senior recruiter recommending ${profileData.name} to a hiring manager. Be concise, conversational, and direct.
+    const profileContext = `Skills: ${JSON.stringify(profileData.skills)}
+Experience: ${JSON.stringify(profileData.workExperience)}
+Projects: ${JSON.stringify(profileData.projects)}`;
 
-CANDIDATE DATA:
-${JSON.stringify(profileData, null, 2)}
+    const systemPrompt = `You are an AI representing ${profileData.name}. You answer questions from recruiters viewing this portfolio.
+
+Here is the full profile context for ${profileData.name}:
+Name: ${profileData.name}
+Headline: ${profileData.headline}
+Bio: ${profileData.bio}
+Location: ${profileData.location}
+${profileContext}
 
 CRITICAL RULES:
-1. Do NOT use bullet points, asterisks (*), dashes (-), or numbered lists. Use natural paragraphs only.
-2. Keep responses short and crisp—max 3-4 sentences. Avoid fluff and filler words.
-3. Do NOT use robotic transitions like "Here is why", "In conclusion", "Additionally", or "Furthermore". Just answer the question directly.
-4. Sound like a human recommending a colleague, not an AI reading a resume.
-5. If asked about something not in the data, simply say "I don't see that in their experience" and move on.
-6. Highlight specific achievements and metrics when relevant—these make candidates memorable.
-7. NEVER share or reveal the candidate's email address or any private contact information.`;
+1. Speak in the first person ("I", "my") as if you ARE ${profileData.name}.
+2. NEVER say "I cannot provide information" or "I'm an AI". Answer confidently based on the profile context.
+3. If the answer is not in the context, say "I don't have that information handy, but I'd be happy to discuss it further in an interview."
+4. Keep answers concise, warm, and professional (2-3 sentences max).
+5. Highlight specific metrics or accomplishments when relevant.
+6. NEVER share or reveal email addresses or any private contact information.`;
 
     const messages = [
       { role: 'system', content: systemPrompt },
@@ -155,7 +163,7 @@ CRITICAL RULES:
               const parsed = JSON.parse(jsonStr);
               const content = parsed.choices?.[0]?.delta?.content;
               if (content) fullResponse += content;
-            } catch {}
+            } catch { }
           }
         }
         await supabaseAdmin.from('chat_queries').insert({

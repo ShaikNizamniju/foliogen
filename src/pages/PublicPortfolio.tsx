@@ -88,37 +88,39 @@ export default function PublicPortfolio() {
       return;
     }
 
-    const workExp = Array.isArray(data.work_experience)
-      ? (data.work_experience as unknown as WorkExperience[])
+    const payload = data.published_data || data;
+
+    const workExp = Array.isArray(payload.work_experience)
+      ? (payload.work_experience as unknown as WorkExperience[])
       : [];
-    const proj = Array.isArray(data.projects)
-      ? (data.projects as unknown as Project[])
+    const proj = Array.isArray(payload.projects)
+      ? (payload.projects as unknown as Project[])
       : [];
-    const keyHighlights = Array.isArray((data as any).key_highlights)
-      ? ((data as any).key_highlights as string[])
+    const keyHighlights = Array.isArray((payload as any).key_highlights)
+      ? ((payload as any).key_highlights as string[])
       : [];
 
     setProfile({
       id: data.id || '',
-      fullName: data.full_name || '',
-      photoUrl: data.photo_url || '',
-      bio: data.bio || '',
-      headline: data.headline || '',
-      location: data.location || '',
+      fullName: payload.full_name || '',
+      photoUrl: payload.photo_url || '',
+      bio: payload.bio || '',
+      headline: payload.headline || '',
+      location: payload.location || '',
       email: '', // Not exposed in public view for privacy
-      website: data.website || '',
-      linkedinUrl: data.linkedin_url || '',
-      githubUrl: data.github_url || '',
-      twitterUrl: data.twitter_url || '',
+      website: payload.website || '',
+      linkedinUrl: payload.linkedin_url || '',
+      githubUrl: payload.github_url || '',
+      twitterUrl: payload.twitter_url || '',
       workExperience: workExp,
       projects: proj,
-      skills: data.skills || [],
+      skills: payload.skills || [],
       keyHighlights: keyHighlights,
       views: data.views || 0,
-      resumeUrl: (data as any).resume_url || '',
-      calendlyUrl: (data as any).calendly_url || '',
-      selectedFont: ((data as any).selected_font as FontChoice) || 'default',
-      selectedTemplate: (data.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
+      resumeUrl: (payload as any).resume_url || '',
+      calendlyUrl: (payload as any).calendly_url || '',
+      selectedFont: ((payload as any).selected_font as FontChoice) || 'default',
+      selectedTemplate: (payload.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
     });
     setLoading(false);
   };
