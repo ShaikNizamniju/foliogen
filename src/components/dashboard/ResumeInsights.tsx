@@ -10,7 +10,7 @@ export function ResumeInsights() {
                     How Resume Scoring Works
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                    Understanding the algorithms and human behaviors that determine whether you get an interview.
+                    An Application Tracking System (ATS) is software that scans, parses, and ranks incoming resumes. Nearly 75% of resumes are rejected by an ATS before a human ever sees them. Here is how to ensure yours gets through.
                 </p>
             </div>
 
@@ -85,7 +85,7 @@ export function ResumeInsights() {
                         <div className="flex-1">
                             <div className="flex items-center gap-2 font-medium text-foreground mb-1">
                                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                                Strong Match
+                                Strong Match — Likely reviewed by human.
                             </div>
                             <p className="text-sm text-muted-foreground">Routed immediately to a human recruiter. High chance of interview.</p>
                         </div>
@@ -95,17 +95,17 @@ export function ResumeInsights() {
                         <div className="flex-1">
                             <div className="flex items-center gap-2 font-medium text-foreground mb-1">
                                 <AlertTriangle className="h-4 w-4 text-amber-500" />
-                                Possible Match
+                                Possible Match — May be reviewed.
                             </div>
                             <p className="text-sm text-muted-foreground">Kept in the system for manual review if the top candidate pool is thin.</p>
                         </div>
                     </div>
                     <div className="flex items-center p-4 hover:bg-muted/10 transition-colors">
-                        <div className="w-[120px] sm:w-[150px] shrink-0 font-bold text-red-500 text-lg">&lt;60%</div>
+                        <div className="w-[120px] sm:w-[150px] shrink-0 font-bold text-red-500 text-lg">Below 60%</div>
                         <div className="flex-1">
                             <div className="flex items-center gap-2 font-medium text-foreground mb-1">
                                 <AlertCircle className="h-4 w-4 text-red-500" />
-                                Auto-rejected
+                                Auto-Rejected — Typically screened out.
                             </div>
                             <p className="text-sm text-muted-foreground">Automatically archived by the ATS. Resume is rarely seen by a human.</p>
                         </div>
