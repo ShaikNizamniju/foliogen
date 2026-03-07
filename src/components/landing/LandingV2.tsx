@@ -866,7 +866,7 @@ export function LandingV2() {
                             </h2>
                             <p className="body-base sr sr-d2" style={{ marginTop: 'var(--sp-4)' }}>
                                 Can't find what you need?<br />
-                                <a href="mailto:hello@foliogen.in" style={{ color: 'var(--cobalt)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>hello@foliogen.in</a>
+                                <a href="mailto:foliogen.in@gmail.com" style={{ color: 'var(--cobalt)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>foliogen.in@gmail.com</a>
                             </p>
                         </div>
                         <div className="faq-list sr sr-d1">
