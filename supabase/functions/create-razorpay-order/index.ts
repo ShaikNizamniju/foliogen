@@ -49,7 +49,15 @@ serve(async (req) => {
         const rzpKeySecret = Deno.env.get('RAZORPAY_KEY_SECRET') || Deno.env.get('RAZORPAY_SECRET_KEY');
 
         if (!rzpKeyId || !rzpKeySecret) {
-            throw new Error("Razorpay credentials not configured correctly on server.");
+            // Log exactly which var is missing to help diagnose in Supabase logs
+            const missingVars = [
+                !Deno.env.get('RAZORPAY_LIVE_KEY_ID') && !Deno.env.get('VITE_RAZORPAY_LIVE_KEY_ID') ? 'RAZORPAY_LIVE_KEY_ID' : null,
+                !Deno.env.get('RAZORPAY_KEY_SECRET') && !Deno.env.get('RAZORPAY_SECRET_KEY') ? 'RAZORPAY_KEY_SECRET' : null,
+            ].filter(Boolean);
+            console.error('Missing Razorpay secrets:', missingVars.join(', '));
+            return new Response(JSON.stringify({ error: "MISSING_CREDENTIALS", message: `Missing Supabase secrets: ${missingVars.join(', ')}. Add them in Supabase → Edge Functions → Secrets.` }), {
+                status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
 
         const basicAuth = btoa(`${rzpKeyId}:${rzpKeySecret}`);
@@ -110,8 +118,8 @@ serve(async (req) => {
         });
 
     } catch (error: any) {
-        console.error("create-razorpay-order error:", error);
-        return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+        console.error("create-razorpay-order error:", error?.message || error);
+        return new Response(JSON.stringify({ error: "INTERNAL_ERROR", message: error?.message || "Internal Server Error" }), {
             status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
     }

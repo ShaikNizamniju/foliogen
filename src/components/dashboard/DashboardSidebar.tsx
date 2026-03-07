@@ -49,7 +49,7 @@ export function DashboardSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
 
-  const currentSection = new URLSearchParams(location.search).get('section') || 'jobs';
+  const currentSection = new URLSearchParams(location.search).get('section') || 'overview';
 
   const handleSignOut = async () => {
     await signOut();

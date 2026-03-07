@@ -33,15 +33,7 @@ export const PLANS = {
 
 export type PlanKey = keyof typeof PLANS;
 
-const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_LIVE_KEY_ID;
-
-if (!RAZORPAY_KEY) {
-  throw new Error('[Foliogen] VITE_RAZORPAY_LIVE_KEY_ID is not set. Add your Razorpay LIVE Key ID to .env');
-}
-
-if (RAZORPAY_KEY.startsWith('rzp_test_')) {
-  throw new Error('[Foliogen] Test key detected. This application requires a LIVE Razorpay key (rzp_live_...)');
-}
+const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_LIVE_KEY_ID as string | undefined;
 
 async function loadRazorpayScript(): Promise<void> {
   if (window.Razorpay) return;
@@ -73,6 +65,19 @@ export async function handlePayment(
       if (!window.Razorpay) {
         toast({ title: "Payment Error", description: "Payment system not loaded. Please refresh the page.", variant: "destructive" });
         reject(new Error("Razorpay not loaded"));
+        return;
+      }
+
+      // Runtime key guard — safe to check here instead of module load time
+      if (!RAZORPAY_KEY) {
+        toast({ title: "Payment Not Configured", description: "Payment system is not yet configured. Please contact support@foliogen.in.", variant: "destructive" });
+        reject(new Error("VITE_RAZORPAY_LIVE_KEY_ID is missing"));
+        return;
+      }
+
+      if (RAZORPAY_KEY.startsWith('rzp_test_')) {
+        toast({ title: "Payment Error", description: "Live payment keys are required. Please contact support@foliogen.in.", variant: "destructive" });
+        reject(new Error("Test key detected — use rzp_live_ key"));
         return;
       }
 
