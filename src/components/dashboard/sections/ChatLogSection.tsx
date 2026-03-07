@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { MessageSquareText, Building2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { useGlobalData } from '@/pages/Dashboard';
 
 interface ChatQuery {
   id: string;
@@ -15,24 +16,36 @@ interface ChatQuery {
 
 export function ChatLogSection() {
   const { user } = useAuth();
-  const [queries, setQueries] = useState<ChatQuery[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const globalData = useGlobalData();
+  const [localQueries, setLocalQueries] = useState<ChatQuery[]>([]);
+  const [localLoading, setLocalLoading] = useState(true);
+
+  const queries = globalData ? globalData.chats : localQueries;
+  const loading = globalData ? (globalData.chatStatus !== 'success') : localLoading;
+  const setQueriesState = globalData ? (data: any) => globalData.setGlobalData((prev: any) => ({ ...prev, chats: data })) : setLocalQueries;
 
   useEffect(() => {
-    if (!user) return;
+    // Skip if cached
+    if (globalData && globalData.chatStatus === 'success') return;
+
+    if (!user) {
+      if (!globalData) setLocalLoading(false);
+      return;
+    }
     const fetchQueries = async () => {
-      setLoading(true);
+      if (!globalData) setLocalLoading(true);
       const { data } = await supabase
         .from('chat_queries')
         .select('*')
         .eq('profile_user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(100);
-      setQueries((data as ChatQuery[]) || []);
-      setLoading(false);
+      setQueriesState((data as ChatQuery[]) || []);
+      if (!globalData) setLocalLoading(false);
     };
     fetchQueries();
-  }, [user]);
+  }, [user, globalData, setQueriesState]);
 
   return (
     <div className="space-y-6">

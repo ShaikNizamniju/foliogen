@@ -26,7 +26,7 @@ const COLUMNS: { status: JobStatus; title: string; emoji: string }[] = [
   { status: 'saved', title: 'Saved', emoji: '📌' },
   { status: 'applied', title: 'Applied', emoji: '📤' },
   { status: 'interviewing', title: 'Interviewing', emoji: '🎤' },
-  { status: 'offer', title: 'Offer', emoji: '🎉' },
+  { status: 'offer', title: 'Offered', emoji: '🎉' },
   { status: 'rejected', title: 'Rejected', emoji: '❌' },
 ];
 
@@ -45,7 +45,7 @@ export function KanbanBoard() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<JobApplication | null>(null);
   const [activeJob, setActiveJob] = useState<JobApplication | null>(null);
-  
+
   // Interview prep state
   const [prepModalOpen, setPrepModalOpen] = useState(false);
   const [prepJob, setPrepJob] = useState<JobApplication | null>(null);
@@ -80,7 +80,7 @@ export function KanbanBoard() {
       if (job && job.status !== targetStatus) {
         const previousStatus = job.status;
         await updateJobStatus(jobId, targetStatus);
-        
+
         // 🎉 Celebration when moving to Offer!
         if (targetStatus === 'offer' && previousStatus !== 'offer') {
           triggerCelebration();
@@ -108,9 +108,9 @@ export function KanbanBoard() {
   const handleMoveStatus = async (id: string, newStatus: JobStatus) => {
     const job = jobs.find((j) => j.id === id);
     const previousStatus = job?.status;
-    
+
     await updateJobStatus(id, newStatus);
-    
+
     // 🎉 Celebration when moving to Offer!
     if (newStatus === 'offer' && previousStatus !== 'offer') {
       triggerCelebration();
@@ -128,7 +128,7 @@ export function KanbanBoard() {
 
     // Generate AI prep
     setGeneratingPrepId(job.id);
-    
+
     try {
       const { data, error } = await supabase.functions.invoke('generate-interview-prep', {
         body: { company: job.company, role: job.role },
@@ -153,7 +153,7 @@ export function KanbanBoard() {
       };
 
       await saveAiPrep(job.id, aiPrep);
-      
+
       // Update local job and open modal
       const updatedJob = { ...job, ai_prep: aiPrep };
       setPrepJob(updatedJob);
@@ -207,7 +207,7 @@ export function KanbanBoard() {
         onDragEnd={handleDragEnd}
         onDragOver={handleDragOver}
       >
-        <motion.div 
+        <motion.div
           className="flex gap-4 overflow-x-auto pb-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -233,9 +233,9 @@ export function KanbanBoard() {
             <div className="w-[260px]">
               <JobCard
                 job={activeJob}
-                onEdit={() => {}}
-                onDelete={() => {}}
-                onMoveStatus={() => {}}
+                onEdit={() => { }}
+                onDelete={() => { }}
+                onMoveStatus={() => { }}
                 isDragging
               />
             </div>

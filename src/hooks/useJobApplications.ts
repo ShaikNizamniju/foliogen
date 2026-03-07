@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { useGlobalData } from '@/pages/Dashboard';
 
 export type JobStatus = 'saved' | 'applied' | 'interviewing' | 'offer' | 'rejected';
 
@@ -36,12 +37,28 @@ export type JobApplicationInput = {
 
 export function useJobApplications() {
   const { user } = useAuth();
-  const [jobs, setJobs] = useState<JobApplication[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // Try to use the global cache from Dashboard if it exists
+  const globalData = useGlobalData();
+  const [localJobs, setLocalJobs] = useState<JobApplication[]>([]);
+  const [localLoading, setLocalLoading] = useState(true);
+
+  const jobs = globalData ? globalData.jobs : localJobs;
+  const loading = globalData ? (globalData.jobsStatus !== 'success') : localLoading;
+  const setJobsState = globalData ? (updater: any) => {
+    if (typeof updater === 'function') {
+      globalData.setGlobalData((prev: any) => ({ ...prev, jobs: updater(prev.jobs) }));
+    } else {
+      globalData.setGlobalData((prev: any) => ({ ...prev, jobs: updater }));
+    }
+  } : setLocalJobs;
 
   const fetchJobs = useCallback(async () => {
+    // Skip if global data already handles it and we have loaded
+    if (globalData && globalData.jobsStatus === 'success') return;
+
     if (!user?.id) {
-      setLoading(false);
+      if (!globalData) setLocalLoading(false);
       return;
     }
 
@@ -55,10 +72,10 @@ export function useJobApplications() {
       console.error('[JobApplications] Error fetching:', error);
       toast.error('Failed to load job applications');
     } else {
-      setJobs((data as unknown as JobApplication[]) || []);
+      setJobsState((data as unknown as JobApplication[]) || []);
     }
-    setLoading(false);
-  }, [user?.id]);
+    if (!globalData) setLocalLoading(false);
+  }, [user?.id, globalData, setJobsState]);
 
   useEffect(() => {
     fetchJobs();
@@ -87,7 +104,7 @@ export function useJobApplications() {
       return null;
     }
 
-    setJobs((prev) => [data as unknown as JobApplication, ...prev]);
+    setJobsState((prev: JobApplication[]) => [data as unknown as JobApplication, ...prev]);
     toast.success('Job application added!');
     return data as unknown as JobApplication;
   };
@@ -110,7 +127,7 @@ export function useJobApplications() {
       return false;
     }
 
-    setJobs((prev) =>
+    setJobsState((prev: JobApplication[]) =>
       prev.map((job) => (job.id === id ? { ...job, ...updates } as JobApplication : job))
     );
     return true;
@@ -132,7 +149,7 @@ export function useJobApplications() {
       return false;
     }
 
-    setJobs((prev) =>
+    setJobsState((prev: JobApplication[]) =>
       prev.map((job) => (job.id === id ? { ...job, ai_prep: aiPrep } : job))
     );
     return true;
@@ -150,7 +167,7 @@ export function useJobApplications() {
       return false;
     }
 
-    setJobs((prev) => prev.filter((job) => job.id !== id));
+    setJobsState((prev: JobApplication[]) => prev.filter((job) => job.id !== id));
     toast.success('Job application deleted');
     return true;
   };

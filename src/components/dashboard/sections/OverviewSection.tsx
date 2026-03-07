@@ -152,7 +152,8 @@ export function OverviewSection() {
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 8, height: 0 }}
-                        className="flex items-start gap-2 text-xs text-muted-foreground"
+                        onClick={() => navigate('/dashboard?section=profile')}
+                        className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer hover:text-primary transition-colors cursor-pointer"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0 mt-0.5" />
                         <span>{rec.label}</span>

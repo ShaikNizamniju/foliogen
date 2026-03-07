@@ -11,6 +11,46 @@ import { PrintableResume } from '@/components/dashboard/templates/PrintableResum
 import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
 import { OnboardingQuestionnaire } from '@/components/dashboard/OnboardingQuestionnaire';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { supabase } from '@/integrations/supabase/client';
+import { createContext, useContext, useState, ReactNode } from 'react';
+
+// Global Data Context to avoid loading spinners on tab switch
+export const GlobalDataContext = createContext<any>(null);
+
+export const useGlobalData = () => useContext(GlobalDataContext);
+
+function GlobalDataProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const [globalData, setGlobalData] = useState({
+    jobsStatus: 'idle', // idle, loading, success
+    jobs: [],
+    chatStatus: 'idle',
+    chats: [],
+  });
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchGlobalData = async () => {
+      // Fetch Jobs
+      setGlobalData(prev => ({ ...prev, jobsStatus: 'loading' }));
+      const { data: jobs } = await supabase.from('job_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+
+      // Fetch Chats
+      setGlobalData(prev => ({ ...prev, jobsStatus: 'success', jobs: jobs || [], chatStatus: 'loading' }));
+      const { data: chats } = await supabase.from('chat_queries').select('*').eq('profile_user_id', user.id).order('created_at', { ascending: false }).limit(100);
+
+      setGlobalData(prev => ({ ...prev, chatStatus: 'success', chats: chats || [] }));
+    };
+    fetchGlobalData();
+  }, [user]);
+
+  return (
+    <GlobalDataContext.Provider value={{ ...globalData, setGlobalData }}>
+      {children}
+    </GlobalDataContext.Provider>
+  );
+}
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -37,20 +77,22 @@ export default function Dashboard() {
   }
 
   return (
-    <ProfileProvider>
-      <ErrorBoundary fallbackMessage="Dashboard encountered an error">
-        <DashboardInner />
-      </ErrorBoundary>
-    </ProfileProvider>
+    <GlobalDataProvider>
+      <ProfileProvider>
+        <ErrorBoundary fallbackMessage="Dashboard encountered an error">
+          <DashboardInner />
+        </ErrorBoundary>
+      </ProfileProvider>
+    </GlobalDataProvider>
   );
 }
 
 function DashboardInner() {
   const { profile } = useProfile();
-  
+
   return (
     <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-muted/30">
+      <div className="min-h-screen flex w-full bg-muted/30">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col">
           <DashboardHeader />
@@ -60,18 +102,18 @@ function DashboardInner() {
           </div>
         </div>
       </div>
-      
+
       {/* Off-screen ATS-friendly resume for PDF export */}
-      <div 
-        id="printable-resume-container" 
+      <div
+        id="printable-resume-container"
         className="fixed -left-[9999px] top-0 bg-white"
         style={{ width: '210mm' }}
       >
         <PrintableResume profile={profile} />
       </div>
-      
+
       {/* Onboarding Tour disabled for production */}
-      
+
       {/* Domain Questionnaire */}
       <OnboardingQuestionnaire />
     </SidebarProvider>

@@ -84,25 +84,27 @@ export interface ProfileData {
   isPro?: boolean;
   predictedDomain?: string;
   selectedTemplate:
-    | "minimalist"
-    | "creative"
-    | "saas"
-    | "dev"
-    | "brutalist"
-    | "academic"
-    | "studio"
-    | "executive"
-    | "influencer"
-    | "swiss"
-    | "noir"
-    | "modern-dark"
-    | "gaspar"
-    | "destello"
-    | "frqncy"
-    | "arpeggio"
-    | "nakula"
-    | "niju-bold"
-    | "minimal-saas";
+  | "minimalist"
+  | "creative"
+  | "saas"
+  | "dev"
+  | "brutalist"
+  | "academic"
+  | "studio"
+  | "executive"
+  | "influencer"
+  | "swiss"
+  | "noir"
+  | "modern-dark"
+  | "gaspar"
+  | "destello"
+  | "frqncy"
+  | "arpeggio"
+  | "nakula"
+  | "niju-bold"
+  | "minimal-saas";
+  full_profile?: any;
+  resume_data?: any;
 }
 
 interface ProfileContextType {
@@ -133,6 +135,8 @@ const defaultProfile: ProfileData = {
   calendlyUrl: "",
   selectedFont: "default",
   selectedTemplate: "modern-dark",
+  full_profile: null,
+  resume_data: null,
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -190,6 +194,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         username: (data as any).username || "",
         isPro: (data as any).is_pro || false,
         predictedDomain: (data as any).predicted_domain || "",
+        full_profile: (data as any).full_profile || null,
+        resume_data: (data as any).resume_data || null,
       });
     }
     setLoading(false);
