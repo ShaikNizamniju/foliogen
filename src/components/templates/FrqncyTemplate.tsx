@@ -71,8 +71,28 @@ function ProjectMarquee() {
   );
 }
 
+const bg_palettes = ['#CDFF64', '#FF6B6B', '#64BFFF', '#111111', '#E8E0FF', '#FFE4B5'];
+const text_palettes = ['#111111', '#FFFFFF', '#111111', '#FFFFFF', '#111111', '#111111'];
+
 /* ── Main Template ── */
 export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
+  const name = profile?.fullName || 'Alex Rivera';
+  const role = profile?.headline || 'Creative Director';
+  const bio = profile?.bio || "I don't just design. I create experiences people actually feel.";
+  const photoUrl = profile?.photoUrl || 'https://picsum.photos/seed/frq-profile/400/400';
+  const email = profile?.email || '';
+  const profileSkills = profile?.skills?.length ? profile.skills : tags;
+
+  const dynamicProjectCards = profile?.projects?.length
+    ? profile.projects.slice(0, 6).map((p, i) => ({
+      title: p.title || 'Project',
+      category: p.techStack?.[0] || 'Design',
+      bg: bg_palettes[i % bg_palettes.length],
+      text: text_palettes[i % text_palettes.length],
+      image: p.imageUrl || `https://picsum.photos/seed/frq${i + 1}/600/400`,
+    }))
+    : projectCards;
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#F0F0F0', color: '#111111', fontFamily: "'Inter', sans-serif" }}>
       {/* Navbar */}
@@ -83,7 +103,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
         className="sticky top-0 z-30 flex items-center justify-between px-6 md:px-14 py-4"
         style={{ backgroundColor: '#FFFFFF', borderBottom: '3px solid #111111' }}
       >
-        <span className="text-base tracking-wider" style={{ fontFamily: mono }}>frqncy.studio</span>
+        <span className="text-base tracking-wider" style={{ fontFamily: mono }}>{name.split(' ')[0]?.toLowerCase() || 'frqncy'}.studio</span>
         <div className="hidden md:flex gap-6 text-sm" style={{ fontFamily: mono }}>
           {['wOrk', 'abOut', 'cOntact'].map((l) => (
             <span key={l} className="cursor-pointer hover:text-[#CDFF64] transition-colors">{l}</span>
@@ -103,10 +123,10 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
             style={{ backgroundColor: '#FFFFFF' }}
           >
             <h1 className="text-5xl md:text-7xl lg:text-[80px] font-bold leading-[0.95] tracking-tighter" style={{ fontFamily: heading }}>
-              Alex<br />Rivera
+              {name.split(' ')[0] || 'Alex'}<br />{name.split(' ')[1] || 'Rivera'}
             </h1>
             <span className="mt-4 text-xs tracking-widest uppercase px-3 py-1.5 rounded-full border w-fit" style={{ fontFamily: mono, borderColor: '#CDFF64', backgroundColor: '#CDFF64' }}>
-              Creative Director
+              {role}
             </span>
           </motion.div>
 
@@ -117,7 +137,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="rounded-2xl overflow-hidden relative"
           >
-            <img src="https://picsum.photos/seed/frq-profile/400/400" alt="Profile" className="w-full h-full object-cover min-h-[280px]" />
+            <img src={photoUrl || 'https://picsum.photos/seed/frq-profile/400/400'} alt={name} className="w-full h-full object-cover min-h-[280px]" />
             <div className="absolute inset-0" style={{ backgroundColor: '#CDFF64', mixBlendMode: 'multiply', opacity: 0.45 }} />
           </motion.div>
 
@@ -163,7 +183,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
           Selected Work
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {projectCards.map((p, i) => (
+          {dynamicProjectCards.map((p, i) => (
             <motion.div
               key={p.title}
               initial={{ opacity: 0, y: 30 }}
@@ -193,8 +213,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
           className="text-3xl md:text-5xl font-bold text-center max-w-4xl mx-auto leading-tight tracking-tight"
           style={{ fontFamily: heading }}
         >
-          "I don't just design. I create experiences people actually{' '}
-          <span style={{ color: '#CDFF64', backgroundColor: '#111111', padding: '0 8px', borderRadius: '6px' }}>feel</span>."
+          &ldquo;{bio}&rdquo;
         </motion.p>
 
         {/* Polaroids */}
@@ -215,13 +234,13 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
         </div>
       </section>
 
-      {/* Collaborations */}
+      {/* Collaborations / Skills */}
       <section className="px-6 md:px-14 py-14 md:py-20">
         <h2 className="text-2xl md:text-4xl font-bold mb-10 tracking-tight text-center" style={{ fontFamily: heading }}>
-          Brands I've Worked With
+          Skills &amp; Expertise
         </h2>
         <div className="flex flex-wrap justify-center gap-4">
-          {brands.map((b) => (
+          {profileSkills.slice(0, 12).map((b) => (
             <div
               key={b}
               className="px-8 py-4 rounded-xl text-sm font-medium tracking-wider uppercase cursor-pointer transition-all duration-300 grayscale hover:grayscale-0"
@@ -289,7 +308,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
           </form>
 
           <p className="mt-8 text-center text-xs tracking-widest" style={{ fontFamily: mono, color: '#666' }}>
-            @alexrivera
+            {email || `@${name.toLowerCase().replace(' ', '')}`}
           </p>
         </div>
       </section>
