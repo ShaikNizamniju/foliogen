@@ -73,6 +73,16 @@ export function ProProvider({ children }: { children: ReactNode }) {
     fetchProStatus();
   }, [fetchProStatus]);
 
+  // Force refresh on token refresh or sign-in (catches mid-session upgrades)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+        fetchProStatus();
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [fetchProStatus]);
+
   const refreshProStatus = async () => {
     await fetchProStatus();
   };
