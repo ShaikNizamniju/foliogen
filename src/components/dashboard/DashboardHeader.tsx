@@ -4,6 +4,7 @@ import { Rocket, FileDown, Share2, Eye, Copy, Check } from 'lucide-react';
 import { PublishDialog } from './PublishDialog';
 import { ShareDialog } from './ShareDialog';
 import { ModeToggle } from '@/components/ModeToggle';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -71,6 +72,7 @@ export function DashboardHeader() {
         transition={{ duration: 0.3 }}
       >
         <div className="flex items-center gap-4">
+          <SidebarTrigger className="md:hidden mr-2" />
           <h1 className="text-lg font-semibold text-foreground tracking-tight">Dashboard</h1>
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg border border-border/50">
             <Eye className="h-3.5 w-3.5 text-muted-foreground" />
