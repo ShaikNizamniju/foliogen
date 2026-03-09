@@ -12,6 +12,7 @@ import {
   MessageSquareText,
   ChevronLeft,
   ChevronRight,
+  ArrowLeftRight,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import {
@@ -47,8 +48,8 @@ export function DashboardSidebar() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { state, setOpen, isMobile } = useSidebar();
-  const collapsed = state === 'collapsed';
+  const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
+  const collapsed = isMobile ? isMobileCollapsed : state === 'collapsed';
 
   const currentSection = location.pathname === '/profile'
     ? 'profile'
@@ -81,14 +82,25 @@ export function DashboardSidebar() {
             </motion.span>
           )}
         </Link>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setOpen(!collapsed)}
-          className={cn("h-7 w-7 text-sidebar-foreground/60 transition-transform duration-300", collapsed && "rotate-180 absolute right-1.5")}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
+        {isMobile ? (
+          <Button
+            variant="default"
+            size="icon"
+            onClick={() => setIsMobileCollapsed(!isMobileCollapsed)}
+            className="h-8 w-8 ml-auto shrink-0 bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-transform duration-300"
+          >
+            <ArrowLeftRight className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setOpen(!collapsed)}
+            className={cn("h-7 w-7 text-sidebar-foreground/60 transition-transform duration-300", collapsed && "rotate-180 absolute right-1.5")}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        )}
       </SidebarHeader>
 
       <SidebarContent className="px-4">

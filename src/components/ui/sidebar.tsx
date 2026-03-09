@@ -26,6 +26,8 @@ type SidebarContext = {
   openMobile: boolean;
   setOpenMobile: (open: boolean) => void;
   isMobile: boolean;
+  isMobileCollapsed: boolean;
+  setIsMobileCollapsed: (val: boolean) => void;
   toggleSidebar: () => void;
 };
 
@@ -50,6 +52,7 @@ const SidebarProvider = React.forwardRef<
 >(({ defaultOpen = true, open: openProp, onOpenChange: setOpenProp, className, style, children, ...props }, ref) => {
   const isMobile = useIsMobile();
   const [openMobile, setOpenMobile] = React.useState(false);
+  const [isMobileCollapsed, setIsMobileCollapsed] = React.useState(false);
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
@@ -100,9 +103,11 @@ const SidebarProvider = React.forwardRef<
       isMobile,
       openMobile,
       setOpenMobile,
+      isMobileCollapsed,
+      setIsMobileCollapsed,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, isMobileCollapsed, setIsMobileCollapsed, toggleSidebar],
   );
 
   return (
@@ -136,7 +141,7 @@ const Sidebar = React.forwardRef<
     collapsible?: "offcanvas" | "icon" | "none";
   }
 >(({ side = "left", variant = "sidebar", collapsible = "offcanvas", className, children, ...props }, ref) => {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const { isMobile, state, openMobile, setOpenMobile, isMobileCollapsed } = useSidebar();
 
   if (collapsible === "none") {
     return (
@@ -158,7 +163,7 @@ const Sidebar = React.forwardRef<
           data-mobile="true"
           className={cn(
             "bg-sidebar/95 backdrop-blur-md p-0 text-sidebar-foreground [&>button]:hidden transition-[width] duration-300 ease-in-out",
-            state === "collapsed" ? "w-[--sidebar-width-icon]" : "w-[--sidebar-width-mobile]"
+            isMobileCollapsed ? "w-[--sidebar-width-icon]" : "w-[--sidebar-width-mobile]"
           )}
           style={
             {
