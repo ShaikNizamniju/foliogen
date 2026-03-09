@@ -28,38 +28,52 @@ serve(async (req) => {
             });
         }
 
+        console.log(`[Stripe Checkout] Authenticated user: ${user.id}`);
         const { planId, userId } = await req.json();
+        console.log(`[Stripe Checkout] Payload received: planId=${planId}, userId=${userId}`);
 
         if (user.id !== userId) {
+            console.error(`[Stripe Checkout] User mismatch! JWT: ${user.id}, Payload: ${userId}`);
             return new Response(JSON.stringify({ error: "Unauthorized - User mismatch" }), {
                 status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
         if (planId !== 'basic' && planId !== 'pro') {
+            console.error(`[Stripe Checkout] Invalid plan ID provided: ${planId}`);
             return new Response(JSON.stringify({ error: "Invalid plan ID" }), {
                 status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        const amount = planId === 'basic' ? 19900 : 99900; // in paise
-
         const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
         if (!stripeKey) {
+            console.error('[Stripe Checkout] STRIPE_SECRET_KEY is missing from environment variables');
             throw new Error('STRIPE_SECRET_KEY is missing');
         }
 
+        // Fetch Price IDs securely from the environment
+        const priceBasic = Deno.env.get('STRIPE_PRICE_BASIC');
+        const pricePro = Deno.env.get('STRIPE_PRICE_PRO');
+
+        if (!priceBasic || !pricePro) {
+            console.error(`[Stripe Checkout] Missing Price IDs. STRIPE_PRICE_BASIC: ${!!priceBasic}, STRIPE_PRICE_PRO: ${!!pricePro}`);
+            throw new Error('STRIPE_PRICE_BASIC or STRIPE_PRICE_PRO is missing from environment variables. Please add them in Supabase Edge Function Secrets.');
+        }
+
+        const selectedPriceId = planId === 'pro' ? pricePro : priceBasic;
+        console.log(`[Stripe Checkout] Resolved Price ID for plan ${planId}`);
+
+        console.log('[Stripe Checkout] Initializing Stripe client...');
         const stripe = new Stripe(stripeKey, {
             apiVersion: '2023-10-16',
             httpClient: Stripe.createFetchHttpClient(),
         });
 
-        // 4. Create Stripe Checkout Session
-        // Note: The frontend base URL must be dynamic. We can infer it from Origin or referer.
         const origin = req.headers.get('origin') || 'https://foliogen.in';
         const dashboardUrl = `${origin}/dashboard`;
 
-        let productName = planId === 'pro' ? 'Foliogen Pro - 1 Year' : 'Foliogen Basic - 1 Month';
+        console.log('[Stripe Checkout] Creating Stripe Session...');
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -67,15 +81,7 @@ serve(async (req) => {
             customer_email: user.email,
             line_items: [
                 {
-                    price_data: {
-                        currency: 'inr',
-                        product_data: {
-                            name: productName,
-                            description: planId === 'pro' ? 'Unlimited Portfolios, Features unlocked' : '4 Portfolio Templates, Features unlocked',
-                            images: ['https://www.foliogen.in/og-image.png'],
-                        },
-                        unit_amount: amount,
-                    },
+                    price: selectedPriceId,
                     quantity: 1,
                 },
             ],
@@ -89,21 +95,25 @@ serve(async (req) => {
             },
         });
 
+        console.log(`[Stripe Checkout] Session created successfully: ${session.id}`);
+
         // 5. Insert pending payment record via Database (Using Service Role for inserts)
         const serviceClient = createClient(
             Deno.env.get('SUPABASE_URL') ?? '',
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
+        console.log('[Stripe Checkout] Inserting pending payment into Supabase...');
         await serviceClient
             .from('payments')
             .insert({
                 user_id: userId,
                 razorpay_order_id: session.id, // we hijack the column for Stripe session ID
-                amount: amount,
                 plan_id: planId,
                 status: 'pending',
             });
+
+        console.log('[Stripe Checkout] Database insert complete. Returning URL.');
 
         return new Response(JSON.stringify({ url: session.url }), {
             status: 200,

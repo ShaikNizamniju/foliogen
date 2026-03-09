@@ -716,7 +716,7 @@ export function LandingV2() {
                                 <span className="price-currency">₹</span>
                                 <span className="price-number">199</span>
                             </div>
-                            <div className="price-period">per month, billed annually</div>
+                            <div className="price-period">per month</div>
                             <div className="price-divider"></div>
                             <ul className="price-feature-list">
                                 <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> 3 portfolios</li>
