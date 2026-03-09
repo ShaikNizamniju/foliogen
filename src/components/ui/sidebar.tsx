@@ -156,10 +156,14 @@ const Sidebar = React.forwardRef<
         <SheetContent
           data-sidebar="sidebar"
           data-mobile="true"
-          className="w-[--sidebar-width] bg-sidebar/95 backdrop-blur-md p-0 text-sidebar-foreground [&>button]:hidden"
+          className={cn(
+            "bg-sidebar/95 backdrop-blur-md p-0 text-sidebar-foreground [&>button]:hidden transition-[width] duration-300 ease-in-out",
+            state === "collapsed" ? "w-[--sidebar-width-icon]" : "w-[--sidebar-width-mobile]"
+          )}
           style={
             {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+              "--sidebar-width-mobile": SIDEBAR_WIDTH_MOBILE,
+              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
             } as React.CSSProperties
           }
           side={side}

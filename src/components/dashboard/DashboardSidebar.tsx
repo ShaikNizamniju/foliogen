@@ -11,6 +11,7 @@ import {
   Target,
   MessageSquareText,
   ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import {
@@ -46,7 +47,7 @@ export function DashboardSidebar() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { state } = useSidebar();
+  const { state, setOpen, isMobile } = useSidebar();
   const collapsed = state === 'collapsed';
 
   const currentSection = location.pathname === '/profile'
@@ -61,7 +62,7 @@ export function DashboardSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
       <SidebarHeader className={cn("p-4", collapsed && "flex items-center justify-center p-2")}>
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 overflow-hidden">
           <motion.div
             className={cn("flex shrink-0 items-center justify-center rounded-xl overflow-hidden", collapsed ? "h-10 w-10 border border-border" : "h-8 w-8")}
             whileHover={{ scale: 1.1, rotate: -5 }}
@@ -71,7 +72,7 @@ export function DashboardSidebar() {
           </motion.div>
           {!collapsed && (
             <motion.span
-              className="font-semibold text-lg text-sidebar-foreground tracking-tight"
+              className="font-semibold text-lg text-sidebar-foreground tracking-tight whitespace-nowrap"
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
@@ -80,6 +81,14 @@ export function DashboardSidebar() {
             </motion.span>
           )}
         </Link>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setOpen(!collapsed)}
+          className={cn("h-7 w-7 text-sidebar-foreground/60 transition-transform duration-300", collapsed && "rotate-180 absolute right-1.5")}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
       </SidebarHeader>
 
       <SidebarContent className="px-4">
@@ -134,19 +143,28 @@ export function DashboardSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className={cn("p-4 border-t border-sidebar-border", collapsed && "flex-col items-center gap-4 px-2")}>
+      <SidebarFooter className={cn("p-4 border-t border-sidebar-border transition-all duration-300", collapsed && "flex-col items-center gap-4 px-2")}>
         {!collapsed ? (
-          <div className="flex items-center gap-2 w-full">
-            <SidebarTrigger className="h-8 w-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground" />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="flex-1 justify-start text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-xl"
-            >
-              <LogOut className="h-4 w-4 mr-2 shrink-0" />
-              Sign Out
-            </Button>
+          <div className="flex flex-col gap-3 w-full">
+            <div className="flex items-center gap-2 px-2 pb-2 border-b border-sidebar-border/50">
+              <span className="text-[11px] font-medium text-sidebar-foreground/50">Support: </span>
+              <a href="mailto:admin@foliogen.in" className="text-[11px] font-semibold text-primary hover:underline truncate">
+                admin@foliogen.in
+              </a>
+            </div>
+            <div className="flex items-center gap-2 w-full pt-1">
+              {/* Desktop handles sidebar toggles with SidebarTrigger normally */}
+              {!isMobile && <SidebarTrigger className="h-8 w-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground" />}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="flex-1 justify-start text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-xl px-2"
+              >
+                <LogOut className="h-4 w-4 mr-2 shrink-0" />
+                Sign Out
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4 w-full">
