@@ -49,7 +49,21 @@ const Terms = () => {
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">4. Termination</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">4. Paid Services & Branding</h2>
+                        <p className="text-slate-400 leading-relaxed">
+                            Users on the Basic and Pro tiers are entitled to the "No-Foliogen Branding" clause. This guarantees that no Foliogen watermarks, logos, or promotional links will be appended to your published portfolio. You own your brand presentation unconditionally.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold text-white mb-4">5. Data Retention & Privacy</h2>
+                        <p className="text-slate-400 leading-relaxed">
+                            Following the cancellation of a paid subscription, your published portfolio and underlying data will remain securely hosted and live for a grace period of 30 days. After 30 days, your portfolio will be taken offline, but your data is retained securely for 90 days before permanent deletion. Foliogen employs 256-bit encryption for all connected accounts.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold text-white mb-4">6. Termination</h2>
                         <p className="text-slate-400 leading-relaxed">
                             We may terminate or suspend access to our service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
                         </p>

@@ -872,28 +872,16 @@ export function LandingV2() {
                         <div className="faq-list sr sr-d1">
                             {[
                                 {
-                                    q: "What exactly is Foliogen?",
-                                    a: "Foliogen is an AI-powered portfolio builder that transforms your resume into a professional portfolio website in minutes. Upload a resume, choose a design, and publish — no coding or design experience required."
+                                    q: "What is the difference between Basic and Pro?",
+                                    a: "Basic (₹199/mo) provides standard cinematic templates and essential analytics. Pro (₹999/yr, less than ₹84/mo) unlocks our entire 19+ exclusive template suite, full AI writing features, and advanced portfolio tracking analytics."
                                 },
                                 {
-                                    q: "Is there a free plan?",
-                                    a: "Yes. The free plan lets you create one portfolio with 3 basic templates and a Foliogen subdomain. No credit card required. Upgrade anytime to unlock custom domains, AI writing, and analytics."
+                                    q: "Is my payment secure?",
+                                    a: "Yes. All transactions are securely processed via Stripe with 256-bit AES encryption. Foliogen never stores your credit card details directly."
                                 },
                                 {
-                                    q: "Who is Foliogen built for?",
-                                    a: "Any professional who wants to present themselves online — developers, designers, product managers, consultants, marketing professionals, freelancers, and fresh graduates. If you have a resume, Foliogen can build your portfolio."
-                                },
-                                {
-                                    q: "Does Foliogen train on my data?",
-                                    a: "Never. Your resume, projects, and personal information are never used to train our AI models. All data is encrypted at rest and in transit. You can export or delete your data at any time."
-                                },
-                                {
-                                    q: "Can I connect a custom domain?",
-                                    a: "Yes — custom domains are available on the Basic and Pro plans. Connect any domain you own via a simple CNAME record. HTTPS is automatically provisioned. Takes about 2 minutes to set up."
-                                },
-                                {
-                                    q: "How accurate is the AI content generation?",
-                                    a: "Our AI is trained on thousands of successful portfolios across industries. It adapts to your specific role, seniority, and sector. You always review and approve all generated content before publishing — you remain in full control."
+                                    q: "Can I cancel anytime?",
+                                    a: "Absolutely. You can flexibly cancel your monthly or yearly subscription at any time directly through your billing dashboard. Your portfolio will remain active for the remainder of your billing cycle."
                                 }
                             ].map((faq, i) => (
                                 <div key={i} className={`faq-item ${faqStates[i] ? 'open' : ''}`}>
