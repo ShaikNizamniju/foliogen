@@ -60,6 +60,7 @@ export function BillingSection() {
   const displayPlanName = planType === 'pro' ? 'Pro' : planType === 'basic' ? 'Basic' : 'Free';
   const isFree = planType === 'free' || (!planType || planType === '');
   const isActivePlan = subscriptionStatus === 'active';
+  const portfolioLimit = planType === 'pro' ? 'Unlimited' : planType === 'basic' ? '3' : '1';
 
   return (
     <div className="space-y-6">
@@ -194,6 +195,20 @@ export function BillingSection() {
             </Button>
           </div>
         )}
+      </div>
+
+      {/* Portfolio Slots Counter */}
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-foreground">Portfolio Slots</h3>
+            <p className="text-sm text-muted-foreground mt-1">Create and publish multiple portfolios</p>
+          </div>
+          <div className="text-right">
+            <span className="text-3xl font-bold text-foreground">1</span>
+            <span className="text-lg text-muted-foreground"> / {portfolioLimit}</span>
+          </div>
+        </div>
       </div>
 
       {/* Upgrade Cards (only show if not Pro) */}

@@ -9,10 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BrainCircuit, Loader2, Target, CheckCircle2, AlertTriangle, MessageSquareText, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePro } from '@/contexts/ProContext';
 
 export function InterviewPrepSection() {
     const { user } = useAuth();
     const { profile } = useProfile();
+    const { isPro: isProUser } = usePro();
     const { jobs, saveAiPrep, loading: jobsLoading } = useJobApplications();
 
     const appliedJobs = jobs.filter(j => ['applied', 'interviewing', 'offer'].includes(j.status));
@@ -135,7 +137,7 @@ export function InterviewPrepSection() {
                     </p>
                     <Button
                         onClick={() => handleGeneratePrep(selectedJob)}
-                        disabled={isGenerating || !profile.isPro}
+                        disabled={isGenerating || !isProUser}
                         className="shadow-glow"
                     >
                         {isGenerating ? (
@@ -144,7 +146,7 @@ export function InterviewPrepSection() {
                             <><Sparkles className="h-4 w-4 mr-2" /> Generate Interview Prep</>
                         )}
                     </Button>
-                    {!profile.isPro && (
+                    {!isProUser && (
                         <p className="text-xs text-amber-500 mt-4 font-medium">
                             Interview Prep is a Pro feature. Upgrade to unlock.
                         </p>

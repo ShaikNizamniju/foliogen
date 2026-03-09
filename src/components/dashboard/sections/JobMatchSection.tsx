@@ -6,6 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Sparkles, Copy, Check, AlertTriangle, Target, FileText, Zap } from 'lucide-react';
 import { toast } from 'sonner';
+import { usePro } from '@/contexts/ProContext';
 import { cn } from '@/lib/utils';
 
 interface JobMatchResult {
@@ -67,6 +68,7 @@ function RadialGauge({ score }: { score: number }) {
 
 export function JobMatchSection() {
   const { profile } = useProfile();
+  const { isPro } = usePro();
   const [jobDescription, setJobDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<JobMatchResult | null>(null);
@@ -82,8 +84,8 @@ export function JobMatchSection() {
     // Allow URLs to be passed to the AI engine for scraping
     // (Removed the block that prevented URLs)
 
-    if (!profile.isPro) {
-      toast.error('Job Match Agent is a Pro feature. Upgrade to Pro for ₹199 to unlock.');
+    if (!isPro) {
+      toast.error('Job Match Agent is a Pro feature. Upgrade to Pro to unlock.');
       return;
     }
 

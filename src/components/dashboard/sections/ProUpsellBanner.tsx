@@ -39,7 +39,7 @@ export function ProUpsellBanner() {
         <div className="relative overflow-hidden rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-500/10 via-background to-amber-500/10 p-6 md:p-8 mt-6 mb-8 w-full max-w-5xl mx-auto shadow-xl">
             {/* Red Ribbon Badge */}
             <div className="absolute top-5 -right-14 rotate-45 bg-red-600 text-white text-[10px] font-bold py-1 px-14 shadow-lg z-10 hidden sm:block">
-                SAVE $1,188
+                SAVE ₹800
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 items-center">
@@ -62,9 +62,9 @@ export function ProUpsellBanner() {
 
                 <div className="flex flex-col items-center md:items-end justify-center space-y-4">
                     <div className="flex flex-col items-center md:items-end">
-                        <span className="text-sm font-medium text-muted-foreground line-through decoration-red-500/50">$499/year</span>
+                        <span className="text-sm font-medium text-muted-foreground line-through decoration-red-500/50">₹999/year</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-extrabold text-foreground">$199</span>
+                            <span className="text-4xl font-extrabold text-foreground">₹199</span>
                             <span className="text-sm text-muted-foreground font-medium">/ year</span>
                         </div>
                         <p className="text-emerald-500 text-xs font-bold mt-1">60% OFF Launch Promo</p>

@@ -31,11 +31,11 @@ const FREE_TEMPLATE_ID = 'creative';
 export function TemplatesSection() {
   const { profile, updateProfile } = useProfile();
   const { toggleFavorite, isFavorite } = useFavorites();
-  const { isPro, refreshProStatus } = usePro();
+  const { isPro, isBasicOrAbove, refreshProStatus } = usePro();
   const { user } = useAuth();
 
   const handleTemplateSelect = (templateId: string) => {
-    const isLocked = !isPro && templateId !== FREE_TEMPLATE_ID;
+    const isLocked = !isBasicOrAbove && templateId !== FREE_TEMPLATE_ID;
 
     if (isLocked) {
       // Trigger payment modal for locked templates
@@ -66,7 +66,7 @@ export function TemplatesSection() {
             <span className="text-muted-foreground">Changing templates may reduce your portfolio's effectiveness for this domain.</span>
           </div>
         )}
-        {!isPro && <ProUpsellBanner />}
+        {!isBasicOrAbove && <ProUpsellBanner />}
       </div>
 
       {/* Template Grid */}
@@ -77,7 +77,7 @@ export function TemplatesSection() {
         className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
       >
         {templates.map((template) => {
-          const isLocked = !isPro && template.id !== FREE_TEMPLATE_ID;
+          const isLocked = !isBasicOrAbove && template.id !== FREE_TEMPLATE_ID;
           const isSelected = profile.selectedTemplate === template.id;
 
           return (
@@ -101,7 +101,7 @@ export function TemplatesSection() {
                 <TemplateCard
                   id={template.id}
                   name={template.name}
-                  description={isLocked ? 'Unlock for ₹199' : template.description}
+                  description={isLocked ? 'Upgrade to unlock' : template.description}
                   isSelected={isSelected && !isLocked}
                   onSelect={() => handleTemplateSelect(template.id)}
                   isFavorite={isFavorite(template.id)}

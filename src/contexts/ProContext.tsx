@@ -4,6 +4,7 @@ import { useAuth } from "./AuthContext";
 
 interface ProContextType {
   isPro: boolean;
+  isBasicOrAbove: boolean;
   loading: boolean;
   subscriptionId: string | null;
   proSince: Date | null;
@@ -76,8 +77,10 @@ export function ProProvider({ children }: { children: ReactNode }) {
     await fetchProStatus();
   };
 
+  const isBasicOrAbove = isPro || planType === 'basic';
+
   return (
-    <ProContext.Provider value={{ isPro, loading, subscriptionId, proSince, planType, subscriptionStatus, nextRenewalDate, refreshProStatus }}>
+    <ProContext.Provider value={{ isPro, isBasicOrAbove, loading, subscriptionId, proSince, planType, subscriptionStatus, nextRenewalDate, refreshProStatus }}>
       {children}
     </ProContext.Provider>
   );
