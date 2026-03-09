@@ -161,7 +161,7 @@ export function LandingV2() {
                     <div className="hero-badge">
                         <span className="badge">
                             <span className="badge-dot" aria-hidden="true"></span>
-                            AI-powered · 12,000+ portfolios built
+                            AI-powered · 12,400+ narratives engineered
                         </span>
                     </div>
                     <h1 className="headline hero-headline">
@@ -708,15 +708,15 @@ export function LandingV2() {
                             </ul>
                             <Link to="/auth" className="btn btn-outline price-cta">Get started free</Link>
                         </div>
-                        {/* Basic / Recommended */}
-                        <div className="price-card recommended sr sr-d1">
-                            <div className="price-popular">Most Popular</div>
+                        {/* Basic */}
+                        <div className="price-card sr sr-d1">
                             <div className="price-plan">Basic</div>
                             <div className="price-amount">
                                 <span className="price-currency">₹</span>
                                 <span className="price-number">199</span>
                             </div>
                             <div className="price-period">per month</div>
+                            <div style={{ marginTop: '12px', background: 'rgba(79,70,229,0.1)', padding: '8px 12px', borderRadius: '4px', fontSize: '13px', color: '#818cf8', textAlign: 'center', fontWeight: 500, letterSpacing: '0.02em' }}>Enter <strong className="text-indigo-400">LAUNCH60</strong> for 60% off your first month</div>
                             <div className="price-divider"></div>
                             <ul className="price-feature-list">
                                 <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> 3 portfolios</li>
@@ -726,16 +726,20 @@ export function LandingV2() {
                                 <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> AI content generation</li>
                                 <li className="price-feature"><span className="price-feature-check"><span className="check-no">✗</span></span> White-label & API</li>
                             </ul>
-                            <Link to="/auth" className="btn btn-cobalt price-cta" style={{ width: '100%', justifyContent: 'center' }}>Start building →</Link>
+                            <Link to="/auth" className="btn btn-outline price-cta" style={{ width: '100%', justifyContent: 'center' }}>Start building →</Link>
                         </div>
                         {/* Pro */}
-                        <div className="price-card sr sr-d2">
+                        <div className="price-card recommended sr sr-d2" style={{ boxShadow: '0 0 30px rgba(79,70,229,0.15)', borderColor: '#4f46e5' }}>
+                            <div className="price-popular" style={{ background: '#4f46e5' }}>Best Value</div>
                             <div className="price-plan">Pro</div>
                             <div className="price-amount">
                                 <span className="price-currency">₹</span>
                                 <span className="price-number">999</span>
                             </div>
-                            <div className="price-period">per month, billed annually</div>
+                            <div className="price-period" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>₹2,388 / year</span>
+                                <span>per year</span>
+                            </div>
                             <div className="price-divider"></div>
                             <ul className="price-feature-list">
                                 <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Unlimited portfolios</li>
@@ -745,7 +749,7 @@ export function LandingV2() {
                                 <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Team collaboration</li>
                                 <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> API access</li>
                             </ul>
-                            <Link to="/auth" className="btn btn-outline price-cta" style={{ width: '100%', justifyContent: 'center' }}>Go Pro →</Link>
+                            <Link to="/auth" className="btn btn-cobalt price-cta" style={{ width: '100%', justifyContent: 'center' }}>Go Pro →</Link>
                         </div>
                     </div>
                     {/* Compare table */}

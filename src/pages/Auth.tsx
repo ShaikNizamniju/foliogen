@@ -23,7 +23,7 @@ const passwordSchema = z
 
 /* ── Stat Counter data ───────────────────────────────────────────────── */
 const STATS = [
-  { value: '12,400+', label: 'Portfolios Created', icon: Users },
+  { value: '12,400+', label: 'Portfolios Generated', icon: Users },
   { value: '3.2×', label: 'More Recruiter Views', icon: Star },
   { value: '89%', label: 'Interview Rate Boost', icon: Briefcase },
 ];
@@ -246,7 +246,7 @@ export default function Auth() {
             <p className="text-muted-foreground text-sm">
               {isLogin
                 ? 'Sign in to continue building your portfolio.'
-                : 'Join 12,400+ professionals on Foliogen.'}
+                : 'Join 12,400+ narrative architects engineering their professional legacy.'}
             </p>
           </div>
 

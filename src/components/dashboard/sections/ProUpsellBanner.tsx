@@ -36,10 +36,10 @@ export function ProUpsellBanner() {
     };
 
     return (
-        <div className="relative overflow-hidden rounded-2xl border border-red-500/30 bg-gradient-to-br from-red-500/10 via-background to-amber-500/10 p-6 md:p-8 mt-6 mb-8 w-full max-w-5xl mx-auto shadow-xl">
-            {/* Red Ribbon Badge */}
-            <div className="absolute top-5 -right-14 rotate-45 bg-red-600 text-white text-[10px] font-bold py-1 px-14 shadow-lg z-10 hidden sm:block">
-                SAVE ₹800
+        <div className="relative overflow-hidden rounded-2xl border border-[#4f46e5]/30 bg-gradient-to-br from-[#4f46e5]/10 via-background to-[#4f46e5]/5 p-6 md:p-8 mt-6 mb-8 w-full max-w-5xl mx-auto shadow-[0_0_30px_rgba(79,70,229,0.15)]">
+            {/* Ribbon Badge */}
+            <div className="absolute top-5 -right-14 rotate-45 bg-[#4f46e5] text-white text-[10px] font-bold py-1 px-14 shadow-lg z-10 hidden sm:block">
+                SAVE ₹1,389
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 items-center">
@@ -52,6 +52,9 @@ export function ProUpsellBanner() {
                     <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
                         Unlock the Professional AI Suite
                     </h2>
+                    <p className="text-sm text-muted-foreground mt-2 mb-4">
+                        Join 12,400+ narrative architects engineering their professional legacy.
+                    </p>
 
                     <ul className="space-y-2 text-sm text-muted-foreground">
                         <li className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> All Premium & Domain-Specific Templates</li>
@@ -62,21 +65,20 @@ export function ProUpsellBanner() {
 
                 <div className="flex flex-col items-center md:items-end justify-center space-y-4">
                     <div className="flex flex-col items-center md:items-end">
-                        <span className="text-sm font-medium text-muted-foreground line-through decoration-red-500/50">₹999/year</span>
+                        <span className="text-sm font-medium text-muted-foreground line-through decoration-[#4f46e5]/50">₹2,388/year</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-extrabold text-foreground">₹199</span>
+                            <span className="text-4xl font-extrabold text-foreground">₹999</span>
                             <span className="text-sm text-muted-foreground font-medium">/ year</span>
                         </div>
-                        <p className="text-emerald-500 text-xs font-bold mt-1">60% OFF Launch Promo</p>
                     </div>
 
                     <Button
                         onClick={handleUpgrade}
                         size="lg"
-                        className="w-full sm:w-auto bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white shadow-[0_0_20px_rgba(220,38,38,0.3)] transition-all hover:scale-105 rounded-xl px-8"
+                        className="w-full sm:w-auto bg-gradient-to-r from-[#4f46e5] to-indigo-600 hover:from-[#4338ca] hover:to-indigo-700 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] transition-all hover:scale-105 rounded-xl px-8"
                     >
                         <Sparkles className="h-4 w-4 mr-2" />
-                        Claim 60% OFF Now
+                        Claim Full AI Suite
                     </Button>
                     <p className="text-[10px] text-muted-foreground text-center">Secure 256-bit automated processing</p>
                 </div>
