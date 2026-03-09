@@ -96,21 +96,21 @@ const JobCommandCenter = () => {
                                     key={job.id}
                                     onClick={() => setSelectedJob(job)}
                                     className={`
-                                        w-full p-4 rounded-lg border-2 transition-all text-left
+                                        w-full p-4 rounded-lg border-2 transition-all text-left overflow-hidden flex flex-col justify-start
                                         ${selectedJob?.id === job.id
                                             ? 'bg-yellow-500/10 border-yellow-500 shadow-lg shadow-yellow-500/20'
                                             : 'bg-slate-900 border-slate-800 hover:border-slate-600'}
                                     `}
                                 >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className={`font-semibold ${selectedJob?.id === job.id ? 'text-yellow-400' : 'text-white'}`}>
+                                    <div className="flex justify-between items-start mb-2 gap-2 w-full">
+                                        <h3 className={`font-semibold truncate w-full ${selectedJob?.id === job.id ? 'text-yellow-400' : 'text-white'}`}>
                                             {job.role}
                                         </h3>
-                                        <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300 font-bold">
+                                        <span className="shrink-0 text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300 font-bold whitespace-nowrap">
                                             {job.score}
                                         </span>
                                     </div>
-                                    <p className="text-slate-400 text-sm">{job.company}</p>
+                                    <p className="text-slate-400 text-sm w-full truncate">{job.company}</p>
                                     <p className="text-slate-500 text-xs mt-1 capitalize">{job.status}</p>
                                 </button>
                             ))
