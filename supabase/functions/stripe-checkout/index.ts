@@ -80,7 +80,7 @@ serve(async (req) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${origin}/success?checkout_status=success&plan=${planId}&session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `${origin}/?success=true&plan=${planId}&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${dashboardUrl}?checkout_status=cancelled`,
             client_reference_id: userId,
             metadata: {

@@ -9,8 +9,12 @@ import { Footer } from "@/components/landing/Footer";
 // Emergency Success Overlay component defined outside the main Index
 const SuccessOverlay = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const planFromUrl = searchParams.get("plan") || "pro";
+
   return (
     <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-700">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#4f46e5]/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 animate-pulse" />
       <div className="relative mb-8 flex justify-center">
         <div className="absolute inset-0 rounded-full bg-[#4f46e5] opacity-20 blur-2xl animate-pulse" />
         <svg className="w-24 h-24 text-[#4f46e5] relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,16 +28,24 @@ const SuccessOverlay = () => {
       </div>
       <h1 className="text-4xl md:text-6xl font-serif text-white mb-4 tracking-tight">Identity, Engineered.</h1>
       <p className="text-muted-foreground text-lg mb-12 max-w-md mx-auto">
-        Your narrative is now unlocked. Welcome to the elite tier of professional storytelling.
+        {planFromUrl === "pro" ? "Welcome to the Pro Tier" : "Welcome to the Basic Tier"}
       </p>
-      <button
-        onClick={() => navigate("/dashboard")}
-        className="px-8 py-4 bg-[#4f46e5] text-white rounded-lg font-medium hover:brightness-110 transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)]"
-      >
-        Go to Dashboard →
-      </button>
-      <p className="mt-16 text-xs text-muted-foreground">
-        Need help? Contact <span className="text-[#4f46e5]">admin@foliogen.in</span>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-2">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="px-8 py-4 bg-[#4f46e5] text-white rounded-full font-medium hover:bg-[#4f46e5]/90 transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)]"
+        >
+          Start Building Your Story →
+        </button>
+        <button
+          onClick={() => navigate("/dashboard?tab=templates")}
+          className="text-muted-foreground hover:text-white transition-colors underline-offset-4 hover:underline"
+        >
+          View Templates
+        </button>
+      </div>
+      <p className="mt-16 text-sm text-muted-foreground font-light tracking-wide">
+        Having trouble? Reach our engineering lead at <a href="mailto:admin@foliogen.in" className="text-white hover:text-[#4f46e5] transition-colors">admin@foliogen.in</a>
       </p>
     </div>
   );
