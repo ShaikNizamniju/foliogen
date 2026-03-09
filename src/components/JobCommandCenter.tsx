@@ -87,7 +87,7 @@ const JobCommandCenter = () => {
                         Active Applications
                     </h2>
 
-                    <div className="space-y-3 max-h-[calc(100vh-300px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-700">
+                    <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 max-h-[calc(100vh-300px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-700">
                         {jobs.length === 0 ? (
                             <p className="text-slate-500 text-sm">No applications found.</p>
                         ) : (

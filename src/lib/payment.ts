@@ -70,13 +70,13 @@ export async function handlePayment(
 
       // Runtime key guard — safe to check here instead of module load time
       if (!RAZORPAY_KEY) {
-        toast({ title: "Payment Not Configured", description: "Payment system is not yet configured. Please contact support@foliogen.in.", variant: "destructive" });
+        toast({ title: "Payment Not Configured", description: "Payment system is not yet configured. Please contact admin@foliogen.in.", variant: "destructive" });
         reject(new Error("VITE_RAZORPAY_LIVE_KEY_ID is missing"));
         return;
       }
 
       if (RAZORPAY_KEY.startsWith('rzp_test_')) {
-        toast({ title: "Payment Error", description: "Live payment keys are required. Please contact support@foliogen.in.", variant: "destructive" });
+        toast({ title: "Payment Error", description: "Live payment keys are required. Please contact admin@foliogen.in.", variant: "destructive" });
         reject(new Error("Test key detected — use rzp_live_ key"));
         return;
       }
@@ -171,7 +171,7 @@ async function verifyAndActivate(
     console.error("Verification failed:", error || data);
     toast({
       title: "Verification Failed",
-      description: "Your payment was received but could not be verified. Please contact support@foliogen.in with your payment ID: " + response.razorpay_payment_id,
+      description: "Your payment was received but could not be verified. Please contact admin@foliogen.in with your payment ID: " + response.razorpay_payment_id,
       variant: "destructive",
     });
     return;

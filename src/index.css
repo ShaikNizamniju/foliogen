@@ -59,6 +59,14 @@ body {
     --accent: 186 76% 95%;
     --accent-foreground: 186 76% 30%;
 
+    /* Branding */
+    --gold: 43 46% 60%;
+    /* #c8a96e */
+    --gold-light: 40 70% 78%;
+    /* #f0d5a0 */
+    --cobalt: 226 58% 51%;
+    /* #3b5998 or similar, used #13163b as dark cobalt */
+
     /* Destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -116,6 +124,10 @@ body {
 
     --accent: 186 76% 20%;
     --accent-foreground: 186 76% 85%;
+
+    --gold: 43 46% 60%;
+    --gold-light: 40 70% 78%;
+    --cobalt: 226 58% 51%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 210 20% 98%;

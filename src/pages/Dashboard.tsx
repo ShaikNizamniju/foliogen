@@ -62,9 +62,13 @@ export default function Dashboard() {
       return;
     }
 
-    // Enforce overview as default route
-    if (user && !loading && !location.search.includes('section=')) {
-      navigate('/dashboard?section=overview', { replace: true });
+    // Enforce overview as default route if accessing base dashboard
+    if (user && !loading) {
+      if (location.pathname === '/profile') {
+        return; // Allow direct profile route
+      } else if (!location.search.includes('section=')) {
+        navigate('/dashboard?section=overview', { replace: true });
+      }
     }
   }, [user, loading, navigate, location]);
 

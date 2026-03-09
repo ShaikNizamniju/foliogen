@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,15 +10,19 @@ import { ProProvider } from "@/contexts/ProContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingThemeToggle } from "@/components/FloatingThemeToggle";
 import { AuthLoadingOverlay } from "@/components/AuthLoadingOverlay";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import ResetPassword from "./pages/ResetPassword";
-import Dashboard from "./pages/Dashboard";
-import PublicPortfolio from "./pages/PublicPortfolio";
-import Privacy from "./pages/Privacy";
-import SocialKit from "./pages/SocialKit";
-import TemplatesGallery from "./pages/TemplatesGallery";
-import NotFound from "./pages/NotFound";
+
+const Index = lazy(() => import("./pages/Index"));
+const Auth = lazy(() => import("./pages/Auth"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const PublicPortfolio = lazy(() => import("./pages/PublicPortfolio"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const SocialKit = lazy(() => import("./pages/SocialKit"));
+const TemplatesGallery = lazy(() => import("./pages/TemplatesGallery"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Refunds = lazy(() => import("./pages/Refunds"));
+const ContactPage = lazy(() => import("./pages/Contact"));
 
 const queryClient = new QueryClient();
 
@@ -29,19 +34,25 @@ function AppRoutes() {
   return (
     <>
       {!isPublicRoute && <AuthLoadingOverlay show={initializing} />}
-      <Routes>
-        <Route path="/p/:id" element={<PublicPortfolio />} />
-        <Route path="/u/:id" element={<PublicPortfolio />} />
-        <Route path="/" element={<Index />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/social-kit" element={<SocialKit />} />
-        <Route path="/templates" element={<TemplatesGallery />} />
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<AuthLoadingOverlay show={true} />}>
+        <Routes>
+          <Route path="/p/:id" element={<PublicPortfolio />} />
+          <Route path="/u/:id" element={<PublicPortfolio />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Dashboard />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/social-kit" element={<SocialKit />} />
+          <Route path="/templates" element={<TemplatesGallery />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/refunds" element={<Refunds />} />
+          <Route path="/contact" element={<ContactPage />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
       <FloatingThemeToggle />
     </>
   );

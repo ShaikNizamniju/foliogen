@@ -866,7 +866,7 @@ export function LandingV2() {
                             </h2>
                             <p className="body-base sr sr-d2" style={{ marginTop: 'var(--sp-4)' }}>
                                 Can't find what you need?<br />
-                                <a href="mailto:foliogen.in@gmail.com" style={{ color: 'var(--cobalt)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>foliogen.in@gmail.com</a>
+                                <a href="mailto:admin@foliogen.in" style={{ color: 'var(--cobalt)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>admin@foliogen.in</a>
                             </p>
                         </div>
                         <div className="faq-list sr sr-d1">
@@ -974,9 +974,10 @@ export function LandingV2() {
                         <nav className="footer-nav" aria-label="Footer navigation">
                             <a href="#features">Features</a>
                             <a href="#templates">Templates</a>
-                            <a href="#pricing">Pricing</a>
+                            <Link to="/contact">Contact</Link>
                             <Link to="/privacy">Privacy</Link>
-                            <Link to="/">Terms</Link>
+                            <Link to="/terms">Terms</Link>
+                            <Link to="/refunds">Refunds</Link>
                         </nav>
                         <div className="footer-copy">© 2026 Foliogen</div>
                     </div>

@@ -7,9 +7,9 @@ import {
   Crown, Check, Sparkles, Target, Wand2, Users,
   Calendar, Loader2, ShieldCheck, CreditCard, RefreshCw
 } from 'lucide-react';
-import { handleLsPayment as handlePayment } from '@/lib/payment-lemonsqueezy';
+import { handlePayment } from '@/lib/payment';
 import { motion } from 'framer-motion';
-import { format } from 'date-fns';
+import { format, differenceInDays } from 'date-fns';
 
 const PRO_FEATURES = [
   { icon: Target, label: "SpyGlass Analytics", description: "See who's viewing your portfolio" },
@@ -108,17 +108,23 @@ export function BillingSection() {
               </div>
             </div>
 
-            {/* Renewal Info */}
             {nextRenewalDate && (
-              <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-border">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <RefreshCw className="h-5 w-5 text-primary" />
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <RefreshCw className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">Next Renewal</p>
+                    <p className="text-sm text-muted-foreground">
+                      {format(new Date(nextRenewalDate), 'MMMM d, yyyy')} • {planType === 'pro' ? '₹999/year' : '₹199/mo'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium text-foreground">Next Renewal</p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(nextRenewalDate, 'MMMM d, yyyy')} • {planType === 'pro' ? '₹999/year' : '₹199/mo'}
-                  </p>
+                <div className="text-right">
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">
+                    Pro expires in {differenceInDays(new Date(nextRenewalDate), new Date())} days
+                  </Badge>
                 </div>
               </div>
             )}
@@ -318,7 +324,7 @@ export function BillingSection() {
               </Button>
 
               <p className="text-xs text-center text-muted-foreground mt-4">
-                Secure payment via LemonSqueezy • Instant activation
+                Secure payment via GoKwik • Instant activation
               </p>
             </div>
           </motion.div>

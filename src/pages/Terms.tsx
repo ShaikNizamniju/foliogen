@@ -1,0 +1,71 @@
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import logo from '@/assets/logo.png';
+
+const Terms = () => {
+    return (
+        <div className="min-h-screen bg-slate-950">
+            <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+                <div className="container mx-auto flex h-16 items-center justify-between px-4">
+                    <Link to="/" className="flex items-center">
+                        <img src={logo} alt="Foliogen" className="h-10 w-auto" />
+                    </Link>
+                    <Link
+                        to="/"
+                        className="flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-white">
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Home
+                    </Link>
+                </div>
+            </header>
+
+            <main className="container mx-auto px-4 py-16 max-w-3xl">
+                <h1 className="text-4xl font-bold text-white mb-8">Terms of Service</h1>
+
+                <div className="prose prose-invert prose-slate max-w-none">
+                    <p className="text-slate-300 text-lg mb-8">
+                        Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </p>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
+                        <p className="text-slate-400 leading-relaxed">
+                            By accessing and using Foliogen, you accept and agree to be bound by the terms and provision of this agreement.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold text-white mb-4">2. Description of Service</h2>
+                        <p className="text-slate-400 leading-relaxed">
+                            Foliogen provides users with tools to generate, host, and manage digital portfolios. You are responsible for the content you upload and display on your portfolio.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold text-white mb-4">3. User Conduct</h2>
+                        <p className="text-slate-400 leading-relaxed">
+                            You agree to use our services only for lawful purposes. You must not violate any laws in your jurisdiction, including but not limited to copyright laws.
+                        </p>
+                    </section>
+
+                    <section className="mb-10">
+                        <h2 className="text-2xl font-semibold text-white mb-4">4. Termination</h2>
+                        <p className="text-slate-400 leading-relaxed">
+                            We may terminate or suspend access to our service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
+                        </p>
+                    </section>
+                </div>
+            </main>
+
+            <footer className="border-t border-white/10 bg-slate-950 py-8">
+                <div className="container mx-auto px-4 text-center">
+                    <p className="text-sm text-slate-500">
+                        © {new Date().getFullYear()} Foliogen. All rights reserved.
+                    </p>
+                </div>
+            </footer>
+        </div>
+    );
+};
+
+export default Terms;

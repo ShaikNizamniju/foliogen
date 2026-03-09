@@ -31,7 +31,7 @@ export function Footer() {
           email: email.trim(),
           message: message.trim(),
           location: location.trim(),
-          recipientEmail: 'hello@foliogen.in',
+          recipientEmail: 'admin@foliogen.in',
           recipientName: 'Foliogen Team',
         },
       });
@@ -94,6 +94,30 @@ export function Footer() {
           </form>
         </div>
 
+        {/* Business Identity */}
+        <div className="max-w-4xl mx-auto mb-16 border-t border-border/50 pt-12">
+          <h3 className="text-lg font-semibold text-foreground text-center mb-8">Business Identity</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center sm:text-left text-sm text-muted-foreground">
+            <div>
+              <p className="font-medium text-foreground mb-2">Registered Address</p>
+              <p>123 Tech Park, 4th Floor</p>
+              <p>HSR Layout, Sector 2</p>
+              <p>Bengaluru, Karnataka 560102, India</p>
+            </div>
+            <div>
+              <p className="font-medium text-foreground mb-2">Contact</p>
+              <p>Email: admin@foliogen.in</p>
+              <p>Phone: +91 98765 43210</p>
+            </div>
+            <div>
+              <p className="font-medium text-foreground mb-2">Legal</p>
+              <p>Foliogen is compliant with</p>
+              <p>Indian Consumer Law standards</p>
+              <p>for transparent billing.</p>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-8 sm:flex-row border-t border-border pt-8">
           {/* Logo */}
@@ -102,24 +126,24 @@ export function Footer() {
           </Link>
 
           {/* Navigation */}
-          <nav className="flex items-center gap-8">
-            <Link 
-              to="/auth" 
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
+          <nav className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            <Link to="/auth" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               Login
             </Link>
-            <Link 
-              to="/auth" 
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
+            <Link to="/auth" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               Sign Up
             </Link>
-            <Link 
-              to="/privacy" 
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
+            <Link to="/contact" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Contact
+            </Link>
+            <Link to="/privacy" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
               Privacy
+            </Link>
+            <Link to="/terms" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Terms
+            </Link>
+            <Link to="/refunds" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Refunds
             </Link>
           </nav>
 

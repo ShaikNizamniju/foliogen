@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { handleLsPayment as handlePayment } from '@/lib/payment-lemonsqueezy';
+import { handlePayment } from '@/lib/payment';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePro } from '@/contexts/ProContext';
 import { Timer, Sparkles, CheckCircle2 } from 'lucide-react';

@@ -27,7 +27,9 @@ const pageTransition = {
 
 export function DashboardContent() {
   const location = useLocation();
-  const section = new URLSearchParams(location.search).get('section') || 'overview';
+  const section = location.pathname === '/profile'
+    ? 'profile'
+    : (new URLSearchParams(location.search).get('section') || 'overview');
 
   const renderSection = () => {
     switch (section) {

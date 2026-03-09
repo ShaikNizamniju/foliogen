@@ -3,7 +3,7 @@ import { Lock, Sparkles, Crown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePro } from '@/contexts/ProContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { handleLsPayment as handlePayment } from '@/lib/payment-lemonsqueezy';
+import { handlePayment } from '@/lib/payment';
 import { motion } from 'framer-motion';
 
 interface ProGateProps {

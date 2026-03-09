@@ -14,7 +14,7 @@ const Privacy = () => {
           <Link
             to="/"
             className="flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-white">
-            
+
             <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
@@ -24,7 +24,7 @@ const Privacy = () => {
       {/* Content */}
       <main className="container mx-auto px-4 py-16 max-w-3xl">
         <h1 className="text-4xl font-bold text-white mb-8">Privacy Policy</h1>
-        
+
         <div className="prose prose-invert prose-slate max-w-none">
           <p className="text-slate-300 text-lg mb-8">
             Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -33,9 +33,9 @@ const Privacy = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold text-white mb-4">1. Data Collection</h2>
             <p className="text-slate-400 leading-relaxed">
-              We collect resumes and professional data solely for the purpose of generating your portfolio. 
-              This includes your name, work experience, skills, projects, and any other information you 
-              voluntarily provide through our platform. We do not collect data beyond what is necessary 
+              We collect resumes and professional data solely for the purpose of generating your portfolio.
+              This includes your name, work experience, skills, projects, and any other information you
+              voluntarily provide through our platform. We do not collect data beyond what is necessary
               to deliver our core service.
             </p>
           </section>
@@ -43,13 +43,13 @@ const Privacy = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold text-white mb-4">2. AI Usage & Data Processing</h2>
             <p className="text-slate-400 leading-relaxed mb-4">
-              Your data is processed by Google Gemini AI to generate portfolio content, enhance project 
+              Your data is processed by Google Gemini AI to generate portfolio content, enhance project
               descriptions, and power the RAG-based chatbot on your public profile.
             </p>
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 my-4">
               <p className="text-slate-300 font-medium mb-2">Important:</p>
               <p className="text-slate-400 text-sm">
-                We do not use your data to train public AI models. Your professional information is 
+                We do not use your data to train public AI models. Your professional information is
                 processed in real-time and is not retained by AI providers for model improvement purposes.
               </p>
             </div>
@@ -58,8 +58,8 @@ const Privacy = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold text-white mb-4">3. Cookies & Local Storage</h2>
             <p className="text-slate-400 leading-relaxed">
-              We use local storage to save your session preferences, theme settings, and authentication 
-              state. We do not use third-party tracking cookies. Essential cookies are used only to 
+              We use local storage to save your session preferences, theme settings, and authentication
+              state. We do not use third-party tracking cookies. Essential cookies are used only to
               maintain your logged-in session and remember your UI preferences.
             </p>
           </section>
@@ -67,8 +67,8 @@ const Privacy = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold text-white mb-4">4. Data Security</h2>
             <p className="text-slate-400 leading-relaxed">
-              Your data is stored securely using industry-standard encryption. All data transmission 
-              is protected via HTTPS. We implement Row Level Security (RLS) policies to ensure users 
+              Your data is stored securely using industry-standard encryption. All data transmission
+              is protected via HTTPS. We implement Row Level Security (RLS) policies to ensure users
               can only access their own data.
             </p>
           </section>
@@ -92,8 +92,8 @@ const Privacy = () => {
               For any privacy inquiries or data deletion requests, please contact us:
             </p>
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-              <p className="text-slate-300">Email:foliogen.in@gmail.com
-                <a href="mailto:privacy@foliogen.com" className="text-primary hover:underline"></a>
+              <p className="text-slate-300">Email:
+                <a href="mailto:admin@foliogen.in" className="text-primary hover:underline ml-2">admin@foliogen.in</a>
               </p>
               <p className="text-slate-400 text-sm mt-2">
                 We will respond to all requests within 30 days.
@@ -104,8 +104,8 @@ const Privacy = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold text-white mb-4">7. Terms of Service</h2>
             <p className="text-slate-400 leading-relaxed">
-              By using Foliogen, you agree to use the service for lawful purposes only. You retain 
-              ownership of all content you upload. We reserve the right to terminate accounts that 
+              By using Foliogen, you agree to use the service for lawful purposes only. You retain
+              ownership of all content you upload. We reserve the right to terminate accounts that
               violate these terms or engage in abusive behavior.
             </p>
           </section>

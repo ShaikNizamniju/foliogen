@@ -49,7 +49,9 @@ export function DashboardSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
 
-  const currentSection = new URLSearchParams(location.search).get('section') || 'overview';
+  const currentSection = location.pathname === '/profile'
+    ? 'profile'
+    : (new URLSearchParams(location.search).get('section') || 'overview');
 
   const handleSignOut = async () => {
     await signOut();
@@ -98,24 +100,28 @@ export function DashboardSidebar() {
                       isActive={isActive}
                       tooltip={item.title}
                       className={cn(
-                        "relative rounded-xl h-10 transition-all duration-200",
-                        isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                        "relative rounded-xl h-10 transition-all duration-200 bg-transparent hover:bg-transparent"
                       )}
                     >
                       <Link
-                        to={`/dashboard?section=${item.section}`}
+                        to={item.section === 'profile' ? '/profile' : `/dashboard?section=${item.section}`}
                         data-tour={item.section === 'profile' ? 'profile' : undefined}
-                        className={cn("flex flex-1 items-center gap-2", collapsed && "justify-center")}
+                        className={cn(
+                          "flex flex-1 items-center gap-2",
+                          collapsed && "justify-center",
+                          "transition-all duration-200 ease-in-out hover:bg-primary/5 rounded-xl h-full w-full",
+                          isActive ? "text-[hsl(239,84%,67%)] font-medium" : "text-sidebar-foreground"
+                        )}
                       >
                         {isActive && (
                           <motion.div
-                            layoutId="sidebar-active"
-                            className="absolute inset-0 rounded-xl bg-sidebar-accent"
+                            layoutId="sidebar-active-border"
+                            className="absolute left-0 top-[10%] bottom-[10%] w-[3px] bg-[hsl(239,84%,67%)] rounded-r-md"
                             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                           />
                         )}
-                        <span className="relative z-10 flex items-center justify-center">
-                          <item.icon className={cn("h-4 w-4", collapsed && "scale-110")} />
+                        <span className="relative z-10 flex items-center justify-center pl-2">
+                          <item.icon className={cn("h-4 w-4", collapsed && "scale-110", isActive && "text-[hsl(239,84%,67%)]")} />
                           {!collapsed && <span className="ml-2">{item.title}</span>}
                         </span>
                       </Link>

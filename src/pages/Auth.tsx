@@ -138,7 +138,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-[#0d0f14]">
+    <div className="min-h-screen flex w-full bg-background">
       {/* ── LEFT PANEL ────────────────────────────────────────────── */}
       <div className="hidden lg:flex flex-col justify-between w-[52%] relative overflow-hidden p-12 xl:p-16">
         {/* Noise + gradient backdrop */}
@@ -146,14 +146,14 @@ export default function Auth() {
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(135deg, #0d0f14 0%, #13163b 40%, #1a0d2e 70%, #0d0f14 100%)',
+              'linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--cobalt)) 40%, hsl(var(--sidebar-background)) 70%, hsl(var(--background)) 100%)',
           }}
         />
         {/* Decorative glow blobs */}
         <div className="absolute top-1/4 left-1/3 w-72 h-72 rounded-full blur-3xl opacity-20"
-          style={{ background: 'radial-gradient(circle, #6366f1 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%)' }} />
         <div className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full blur-3xl opacity-15"
-          style={{ background: 'radial-gradient(circle, #c8a96e 0%, transparent 70%)' }} />
+          style={{ background: 'radial-gradient(circle, hsl(var(--gold)) 0%, transparent 70%)' }} />
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
@@ -172,13 +172,13 @@ export default function Auth() {
               <span
                 className="bg-clip-text text-transparent"
                 style={{
-                  backgroundImage: 'linear-gradient(90deg, #c8a96e 0%, #f0d5a0 50%, #c8a96e 100%)',
+                  backgroundImage: 'linear-gradient(90deg, hsl(var(--gold)) 0%, hsl(var(--gold-light)) 50%, hsl(var(--gold)) 100%)',
                 }}
               >
                 beautifully told.
               </span>
             </h1>
-            <p className="text-[#8b9ab5] text-lg max-w-sm leading-relaxed">
+            <p className="text-muted-foreground text-lg max-w-sm leading-relaxed">
               Turn your career into a compelling story that makes recruiters stop scrolling and start calling.
             </p>
           </div>
@@ -193,7 +193,7 @@ export default function Auth() {
               >
                 <Icon className="h-5 w-5 text-indigo-400 mb-2" />
                 <p className="text-white font-bold text-xl">{value}</p>
-                <p className="text-[#8b9ab5] text-xs mt-0.5 leading-snug">{label}</p>
+                <p className="text-muted-foreground text-xs mt-0.5 leading-snug">{label}</p>
               </div>
             ))}
           </div>
@@ -205,7 +205,7 @@ export default function Auth() {
           >
             <div className="flex items-center gap-1 mb-3">
               {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className="h-3.5 w-3.5 fill-[#c8a96e] text-[#c8a96e]" />
+                <Star key={s} className="h-3.5 w-3.5" style={{ fill: 'hsl(var(--gold))', color: 'hsl(var(--gold))' }} />
               ))}
             </div>
             <p className="text-white/80 text-sm leading-relaxed italic">
@@ -217,7 +217,7 @@ export default function Auth() {
               </div>
               <div>
                 <p className="text-white text-sm font-medium">Rahul S.</p>
-                <p className="text-[#8b9ab5] text-xs">Product Designer @ Swiggy</p>
+                <p className="text-muted-foreground text-xs">Product Designer @ Swiggy</p>
               </div>
             </div>
           </div>
@@ -229,8 +229,7 @@ export default function Auth() {
       </div>
 
       {/* ── RIGHT PANEL ────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 min-h-screen"
-        style={{ background: '#111318' }}>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 min-h-screen bg-card">
 
         {/* Mobile logo */}
         <div className="flex lg:hidden items-center gap-2 mb-8">
@@ -244,7 +243,7 @@ export default function Auth() {
             <h2 className="text-2xl font-bold text-white">
               {isLogin ? 'Welcome back' : 'Create your account'}
             </h2>
-            <p className="text-[#8b9ab5] text-sm">
+            <p className="text-muted-foreground text-sm">
               {isLogin
                 ? 'Sign in to continue building your portfolio.'
                 : 'Join 12,400+ professionals on Foliogen.'}
@@ -278,7 +277,7 @@ export default function Auth() {
           {/* Divider */}
           <div className="relative flex items-center gap-4">
             <div className="flex-1 h-px bg-white/10" />
-            <span className="text-[#4a5568] text-xs shrink-0">or with email</span>
+            <span className="text-muted-foreground text-xs shrink-0">or with email</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
@@ -286,7 +285,7 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-[#8b9ab5] text-sm">Full Name</Label>
+                <Label htmlFor="fullName" className="text-muted-foreground text-sm">Full Name</Label>
                 <Input
                   id="fullName"
                   type="text"
@@ -303,7 +302,7 @@ export default function Auth() {
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-[#8b9ab5] text-sm">Email address</Label>
+              <Label htmlFor="email" className="text-muted-foreground text-sm">Email address</Label>
               <Input
                 id="email"
                 type="email"
@@ -354,7 +353,7 @@ export default function Auth() {
                 </button>
               </div>
               {!isLogin && (
-                <p className="text-[#4a5568] text-xs">Must be 6–16 chars with uppercase, number & symbol.</p>
+                <p className="text-muted-foreground text-xs">Must be 6–16 chars with uppercase, number & symbol.</p>
               )}
             </div>
 
@@ -384,7 +383,7 @@ export default function Auth() {
 
           {/* Footer links */}
           <div className="space-y-3 text-center">
-            <p className="text-sm text-[#4a5568]">
+            <p className="text-sm text-muted-foreground">
               {isLogin ? "Don't have an account? " : 'Already have an account? '}
               <button
                 type="button"
@@ -394,7 +393,7 @@ export default function Auth() {
                 {isLogin ? 'Create account' : 'Sign in'}
               </button>
             </p>
-            <p className="text-xs text-[#4a5568]">
+            <p className="text-xs text-muted-foreground">
               By continuing, you agree to our{' '}
               <Link to="/privacy" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
                 Terms
@@ -409,7 +408,7 @@ export default function Auth() {
                 href="https://forms.gle/placeholder"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#4a5568] hover:text-indigo-400 transition-colors"
+                className="text-muted-foreground hover:text-indigo-400 transition-colors"
               >
                 Found a bug? Help us improve. →
               </a>
