@@ -79,6 +79,7 @@ serve(async (req) => {
             payment_method_types: ['card'],
             billing_address_collection: 'required',
             customer_email: user.email,
+            allow_promotion_codes: true,
             line_items: [
                 {
                     price: selectedPriceId,
