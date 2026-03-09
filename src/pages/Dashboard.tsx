@@ -13,6 +13,8 @@ import { OnboardingQuestionnaire } from '@/components/dashboard/OnboardingQuesti
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { supabase } from '@/integrations/supabase/client';
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { usePro } from '@/contexts/ProContext';
+import { ProVaultWaitlistModal } from '@/components/dashboard/ProVaultWaitlistModal';
 
 // Global Data Context to avoid loading spinners on tab switch
 export const GlobalDataContext = createContext<any>(null);
@@ -100,6 +102,35 @@ export default function Dashboard() {
 
 function DashboardInner() {
   const { profile } = useProfile();
+  const { user } = useAuth();
+  const { isBasicOrAbove } = usePro();
+  const [waitlistOpen, setWaitlistOpen] = useState(false);
+
+  // 60-second activity timer
+  useEffect(() => {
+    if (isBasicOrAbove) return;
+
+    const hasSeen = localStorage.getItem('pro_vault_waitlist_seen');
+    if (!hasSeen) {
+      const timer = setTimeout(() => {
+        setWaitlistOpen(true);
+        localStorage.setItem('pro_vault_waitlist_seen', 'true');
+      }, 60000);
+      return () => clearTimeout(timer);
+    }
+  }, [isBasicOrAbove]);
+
+  // Listen for custom trigger event
+  useEffect(() => {
+    const handleOpen = () => {
+      if (!isBasicOrAbove) {
+        setWaitlistOpen(true);
+        localStorage.setItem('pro_vault_waitlist_seen', 'true');
+      }
+    };
+    window.addEventListener('trigger-waitlist-modal', handleOpen);
+    return () => window.removeEventListener('trigger-waitlist-modal', handleOpen);
+  }, [isBasicOrAbove]);
 
   return (
     <SidebarProvider>
@@ -127,6 +158,13 @@ function DashboardInner() {
 
       {/* Domain Questionnaire */}
       <OnboardingQuestionnaire />
+
+      {/* Waitlist Modal for Free/Basic users */}
+      <ProVaultWaitlistModal
+        isOpen={waitlistOpen}
+        onClose={() => setWaitlistOpen(false)}
+        userEmail={user?.email}
+      />
     </SidebarProvider>
   );
 }

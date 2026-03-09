@@ -38,14 +38,8 @@ export function TemplatesSection() {
     const isLocked = !isBasicOrAbove && templateId !== FREE_TEMPLATE_ID;
 
     if (isLocked) {
-      // Trigger payment modal for locked templates
-      if (user) {
-        handlePayment(
-          { id: user.id, email: user.email, name: user.user_metadata?.full_name },
-          'PRO',
-          () => refreshProStatus()
-        );
-      }
+      // Trigger waitlist modal for locked templates
+      window.dispatchEvent(new Event('trigger-waitlist-modal'));
       return;
     }
 
