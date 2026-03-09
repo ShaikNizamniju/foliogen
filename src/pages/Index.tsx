@@ -10,7 +10,7 @@ const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
+  const isSuccess = searchParams.has("success");
   // Check for Job Match parameters
   const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
 
