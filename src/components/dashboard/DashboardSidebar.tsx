@@ -62,45 +62,47 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
-      <SidebarHeader className={cn("p-4", collapsed && "flex items-center justify-center p-2")}>
-        <Link to="/" className="flex items-center gap-2 overflow-hidden">
-          <motion.div
-            className={cn("flex shrink-0 items-center justify-center rounded-xl overflow-hidden", collapsed ? "h-10 w-10 border border-border" : "h-8 w-8")}
-            whileHover={{ scale: 1.1, rotate: -5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+      <SidebarHeader className={cn("p-0 flex flex-col", !collapsed && "gap-0")}>
+        {/* Mobile: Dark high-contrast toggle bar */}
+        {isMobile && (
+          <button
+            onClick={() => setIsMobileCollapsed(!isMobileCollapsed)}
+            className="flex items-center justify-center w-full h-12 bg-sidebar-foreground/10 hover:bg-sidebar-foreground/15 border-b border-sidebar-border transition-colors duration-200"
           >
-            <img src={logoImg} alt="Foliogen" className="h-full w-full object-contain mix-blend-multiply" />
-          </motion.div>
-          {!collapsed && (
-            <motion.span
-              className="font-semibold text-lg text-sidebar-foreground tracking-tight whitespace-nowrap"
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
+            <ArrowLeftRight className="h-5 w-5 text-primary" />
+          </button>
+        )}
+        {/* Logo row */}
+        <div className={cn("flex items-center p-4", collapsed && "justify-center p-3")}>
+          <Link to="/" className="flex items-center gap-2 overflow-hidden">
+            <motion.div
+              className={cn("flex shrink-0 items-center justify-center rounded-xl overflow-hidden", collapsed ? "h-9 w-9" : "h-8 w-8")}
+              whileHover={{ scale: 1.1, rotate: -5 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            >
+              <img src={logoImg} alt="Foliogen" className="h-full w-full object-contain mix-blend-multiply" />
+            </motion.div>
+            <span
+              className={cn(
+                "font-semibold text-lg text-sidebar-foreground tracking-tight whitespace-nowrap transition-all duration-300 ease-in-out",
+                collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
+              )}
             >
               Foliogen
-            </motion.span>
+            </span>
+          </Link>
+          {/* Desktop: ChevronLeft toggle */}
+          {!isMobile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setOpen(!collapsed)}
+              className={cn("h-7 w-7 ml-auto text-sidebar-foreground/60 transition-transform duration-300", collapsed && "rotate-180")}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
           )}
-        </Link>
-        {isMobile ? (
-          <Button
-            variant="default"
-            size="icon"
-            onClick={() => setIsMobileCollapsed(!isMobileCollapsed)}
-            className="h-8 w-8 ml-auto shrink-0 bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-transform duration-300"
-          >
-            <ArrowLeftRight className="h-4 w-4" />
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setOpen(!collapsed)}
-            className={cn("h-7 w-7 text-sidebar-foreground/60 transition-transform duration-300", collapsed && "rotate-180 absolute right-1.5")}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-        )}
+        </div>
       </SidebarHeader>
 
       <SidebarContent className="px-4">
@@ -141,9 +143,19 @@ export function DashboardSidebar() {
                             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                           />
                         )}
-                        <span className="relative z-10 flex items-center justify-center pl-2">
-                          <item.icon className={cn("h-4 w-4", collapsed && "scale-110", isActive && "text-primary")} />
-                          {!collapsed && <span className="ml-2">{item.title}</span>}
+                        <span className={cn(
+                          "relative z-10 flex items-center transition-all duration-300 ease-in-out",
+                          collapsed ? "justify-center w-full" : "pl-2"
+                        )}>
+                          <item.icon className={cn("h-4 w-4 shrink-0", collapsed && "scale-110", isActive && "text-primary")} />
+                          <span
+                            className={cn(
+                              "ml-2 whitespace-nowrap transition-all duration-300 ease-in-out",
+                              collapsed ? "opacity-0 w-0 overflow-hidden ml-0" : "opacity-100"
+                            )}
+                          >
+                            {item.title}
+                          </span>
                         </span>
                       </Link>
                     </SidebarMenuButton>
