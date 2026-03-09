@@ -6,46 +6,8 @@ import { LandingV2 } from "@/components/landing/LandingV2";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 
-const Index = () => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const isSuccess = searchParams.has("success");
-  
-  // Check for Job Match parameters
-  const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");const hasJobMatchParams = const isSuccess = searchParams.has('success');searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
-
-  // Redirect logged-in users to dashboard UNLESS they have Job Match params
-  useEffect(() => {
-    if (!loading && user && !hasJobMatchParams) {
-      navigate("/dashboard");
-    }
-  }, [user, loading, navigate, hasJobMatchParams]);
-
-  // If Job Match mode is active, show the demo experience
-  if (hasJobMatchParams) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <JobMatchDemo />
-        <Footer />
-      </div>
-    );
-  }
-
-  // Use the new monolithic Landing Design System
-  // This logic shows the Success Screen if the URL has ?success=true
-return (
-  <>
-    {isSuccess && <SuccessOverlay />}
-    <LandingV2 />
-  </>
-);
-};
-
-export default Index;
-// Emergency Success Component - Nested to bypass file creation limits
-export const SuccessOverlay = () => {
+// Emergency Success Overlay - Nested to bypass file creation limits
+const SuccessOverlay = () => {
   const navigate = useNavigate();
   return (
     <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-700">
@@ -76,3 +38,37 @@ export const SuccessOverlay = () => {
     </div>
   );
 };
+
+const Index = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const isSuccess = searchParams.has("success");
+  const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
+
+  useEffect(() => {
+    if (!loading && user && !hasJobMatchParams) {
+      navigate("/dashboard");
+    }
+  }, [user, loading, navigate, hasJobMatchParams]);
+
+  if (hasJobMatchParams) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <JobMatchDemo />
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {isSuccess && <SuccessOverlay />}
+      <LandingV2 />
+    </>
+  );
+};
+
+export default Index;
