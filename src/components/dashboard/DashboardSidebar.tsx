@@ -110,18 +110,18 @@ export function DashboardSidebar() {
                           "flex flex-1 items-center gap-2",
                           collapsed && "justify-center",
                           "transition-all duration-200 ease-in-out hover:bg-primary/5 rounded-xl h-full w-full",
-                          isActive ? "text-[hsl(239,84%,67%)] font-medium" : "text-sidebar-foreground"
+                          isActive ? "text-primary font-medium" : "text-sidebar-foreground"
                         )}
                       >
                         {isActive && (
                           <motion.div
                             layoutId="sidebar-active-border"
-                            className="absolute left-0 top-[10%] bottom-[10%] w-[3px] bg-[hsl(239,84%,67%)] rounded-r-md"
+                            className="absolute left-0 top-[10%] bottom-[10%] w-[3px] bg-primary rounded-r-md"
                             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                           />
                         )}
                         <span className="relative z-10 flex items-center justify-center pl-2">
-                          <item.icon className={cn("h-4 w-4", collapsed && "scale-110", isActive && "text-[hsl(239,84%,67%)]")} />
+                          <item.icon className={cn("h-4 w-4", collapsed && "scale-110", isActive && "text-primary")} />
                           {!collapsed && <span className="ml-2">{item.title}</span>}
                         </span>
                       </Link>
