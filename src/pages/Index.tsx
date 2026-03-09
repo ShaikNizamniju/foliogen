@@ -11,8 +11,9 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isSuccess = searchParams.has("success");
+  
   // Check for Job Match parameters
-  const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
+  const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");const hasJobMatchParams = const isSuccess = searchParams.has('success');searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
 
   // Redirect logged-in users to dashboard UNLESS they have Job Match params
   useEffect(() => {
@@ -33,7 +34,13 @@ const Index = () => {
   }
 
   // Use the new monolithic Landing Design System
-  return <LandingV2 />;
+  // This logic shows the Success Screen if the URL has ?success=true
+return (
+  <>
+    {isSuccess && <SuccessOverlay />}
+    <LandingV2 />
+  </>
+);
 };
 
 export default Index;
