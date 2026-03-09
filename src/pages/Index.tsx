@@ -6,7 +6,7 @@ import { LandingV2 } from "@/components/landing/LandingV2";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 
-// Emergency Success Overlay - Nested to bypass file creation limits
+// Emergency Success Overlay component defined outside the main Index
 const SuccessOverlay = () => {
   const navigate = useNavigate();
   return (
@@ -44,10 +44,12 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Logic checks
   const isSuccess = searchParams.has("success");
   const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
 
   useEffect(() => {
+    // Redirect logic
     if (!loading && user && !hasJobMatchParams) {
       navigate("/dashboard");
     }
