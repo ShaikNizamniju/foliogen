@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Loader2, Send } from 'lucide-react';
 import logo from '@/assets/logo.png';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 const Contact = () => {
     const [name, setName] = useState('');

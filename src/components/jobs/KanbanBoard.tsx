@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { triggerCelebration } from '@/lib/confetti';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 const COLUMNS: { status: JobStatus; title: string; emoji: string }[] = [

@@ -4,7 +4,7 @@ import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell
 } from 'recharts';
 import { TrendingUp, Calendar, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SessionRow {

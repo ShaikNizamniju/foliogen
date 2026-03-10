@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface SectionEvent {
     section_id: string;

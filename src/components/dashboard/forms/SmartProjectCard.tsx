@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
 import { useDebounce } from '@/hooks/use-debounce';
 import { toast } from 'sonner';
 import { ensureProtocol } from '@/lib/urlUtils';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 // Zod schema for project validation
 export const projectSchema = z.object({

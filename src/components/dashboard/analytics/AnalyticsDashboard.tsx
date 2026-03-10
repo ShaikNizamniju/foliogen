@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart2, Eye, TrendingUp, Users } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { RecruiterRadar } from './RecruiterRadar';
 import { SessionDepthChart } from './SessionDepthChart';

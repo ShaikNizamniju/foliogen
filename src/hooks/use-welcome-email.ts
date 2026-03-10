@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 /**
  * Hook to fire the on-auth-success edge function after a user signs up or first logs in.

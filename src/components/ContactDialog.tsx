@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Send, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 // Validation schema
 const contactSchema = z.object({

@@ -11,7 +11,7 @@ import { PrintableResume } from '@/components/dashboard/templates/PrintableResum
 import { OnboardingTour } from '@/components/dashboard/OnboardingTour';
 import { OnboardingQuestionnaire } from '@/components/dashboard/OnboardingQuestionnaire';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { usePro } from '@/contexts/ProContext';
 import { ProVaultWaitlistModal } from '@/components/dashboard/ProVaultWaitlistModal';

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
