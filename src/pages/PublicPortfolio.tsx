@@ -355,8 +355,9 @@ export default function PublicPortfolio() {
       />
       {id && (
         <ProfileChatBot
-          profileId={id}
+          profileId={profile.id || id}
           profileName={profile.fullName}
+          slug={slug}
         />
       )}
     </>

@@ -16,6 +16,7 @@ interface Message {
 interface ProfileChatBotProps {
   profileId: string;
   profileName: string;
+  slug?: string;
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-with-profile`;
@@ -26,7 +27,7 @@ const QUALIFYING_QUESTIONS = [
   "And what's your timeline for this hire?",
 ];
 
-export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) {
+export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [qualificationStep, setQualificationStep] = useState(0);
   const [visitorCompany, setVisitorCompany] = useState('');
@@ -129,6 +130,7 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
         body: JSON.stringify({
           userQuery: userMessage.content,
           profileId,
+          portfolioSlug: slug || 'default',
           conversationHistory,
           visitorCompany,
         }),
@@ -201,7 +203,7 @@ export function ProfileChatBot({ profileId, profileName }: ProfileChatBotProps) 
                 )
               );
             }
-          } catch {}
+          } catch { }
         }
       }
     } catch (error) {

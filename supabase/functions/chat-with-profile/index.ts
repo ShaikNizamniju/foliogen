@@ -23,7 +23,7 @@ serve(async (req) => {
     if (!allowed) return rateLimitedResponse(retryAfterSeconds);
 
     const body = await req.json();
-    const { profileId } = body;
+    const { profileId, portfolioSlug = 'default' } = body;
     let { userQuery, conversationHistory, visitorCompany } = body;
 
     // ── Allow-list validation ────────────────────────────────────────────
@@ -57,20 +57,35 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles_public')
+    // Fetch specific contextual instance from portfolios
+    const { data: portfolio, error: portfolioError } = await supabase
+      .from('portfolios')
       .select('*')
       .eq('user_id', profileId)
+      .eq('slug', portfolioSlug)
       .maybeSingle();
 
-    if (profileError || !profile) {
-      return errorResponse(
-        profileError ? 'Failed to fetch profile data' : 'Profile not found',
-        profileError ? 500 : 404,
-      );
+    let payload: any = null;
+
+    if (portfolioError || !portfolio) {
+      // Fallback for legacy URL compatibility
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles_public')
+        .select('*')
+        .eq('user_id', profileId)
+        .maybeSingle();
+
+      if (profileError || !profile) {
+        return errorResponse(
+          profileError ? 'Failed to fetch profile data' : 'Profile not found',
+          profileError ? 500 : 404,
+        );
+      }
+      payload = profile.published_data || profile;
+    } else {
+      payload = portfolio.data_json || {};
     }
 
-    const payload = profile.published_data || profile;
     const profileData = {
       name: payload.full_name || 'Unknown',
       headline: payload.headline || '',
@@ -168,6 +183,7 @@ CRITICAL RULES:
         }
         await supabaseAdmin.from('chat_queries').insert({
           profile_user_id: profileId,
+          portfolio_slug: portfolioSlug, // Inject the context slug for message persistence
           visitor_company: typeof visitorCompany === 'string' ? sanitize(visitorCompany, 200) : null,
           visitor_question: userQuery.substring(0, 1000),
           ai_response: fullResponse.substring(0, 5000),
