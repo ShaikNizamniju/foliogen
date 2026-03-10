@@ -9,6 +9,8 @@ import { InterviewPrepSection } from './sections/InterviewPrepSection';
 import { ChatLogSection } from './sections/ChatLogSection';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { IdentityVaultSection } from './sections/IdentityVaultSection';
+
 const pageTransition = {
   initial: { opacity: 0, y: 16, filter: 'blur(6px)' },
   animate: {
@@ -40,6 +42,7 @@ export function DashboardContent() {
       case 'interview-prep': return <InterviewPrepSection />;
       case 'templates': return <TemplatesSection />;
       case 'chat-log': return <ChatLogSection />;
+      case 'identity-vault': return <IdentityVaultSection />;
       case 'settings': return <SettingsSection />;
       default: return <OverviewSection />;
     }

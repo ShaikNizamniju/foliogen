@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowLeftRight,
+  Vault,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import {
@@ -40,6 +41,7 @@ const menuItems = [
   { title: 'Career Hub', icon: Briefcase, section: 'jobs' },
   { title: 'Interview Prep', icon: Target, section: 'interview-prep' },
   { title: 'Templates', icon: Palette, section: 'templates' },
+  { title: 'Identity Vault', icon: Vault, section: 'identity-vault' },
   { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },
   { title: 'Settings', icon: Settings, section: 'settings' },
 ];

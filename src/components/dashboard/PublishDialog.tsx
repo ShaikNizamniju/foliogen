@@ -16,79 +16,85 @@ import { Check, Copy, ExternalLink, Rocket, Linkedin, Twitter, Mail, AlertCircle
 import { toast } from '@/hooks/use-toast';
 import { triggerCelebration } from '@/lib/confetti';
 import { QRCodeSVG } from 'qrcode.react';
+import { usePro } from '@/contexts/ProContext';
 
 interface PublishDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Validate username format
-const isValidUsername = (username: string): boolean => {
-  return /^[a-z0-9_-]{3,30}$/.test(username);
+// Validate slug format
+const isValidSlug = (slug: string): boolean => {
+  return /^[a-z0-9_-]{3,30}$/.test(slug);
 };
 
 export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   const { user } = useAuth();
+  const { isPro } = usePro();
   const { profile, saveProfile, saving } = useProfile();
   const [copied, setCopied] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
-  const [username, setUsername] = useState('');
-  const [usernameError, setUsernameError] = useState<string | null>(null);
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [slug, setSlug] = useState('');
+  const [slugError, setSlugError] = useState<string | null>(null);
+  const [isCheckingSlug, setIsCheckingSlug] = useState(false);
 
-  // Generate portfolio URL based on username or user ID
+  // Determine base identifier (username or user id)
+  const identifier = profile?.username || user?.id || '';
+
+  // Generate portfolio URL based on slug
   const portfolioUrl = useMemo(() => {
     if (!user?.id) return '';
-    const slug = username.trim() || user.id;
-    return `https://www.foliogen.in/p/${slug}`;
-  }, [user?.id, username]);
+    const finalSlug = slug.trim() || 'default';
+    return `https://www.foliogen.in/p/${identifier}/${finalSlug}`;
+  }, [user?.id, identifier, slug]);
 
   // Check if profile has minimum required content
   const hasMinimumContent = useMemo(() => {
     return profile?.fullName?.trim() || profile?.headline?.trim();
   }, [profile?.fullName, profile?.headline]);
 
-  const checkUsernameAvailability = async (value: string): Promise<boolean> => {
-    if (!value.trim()) return true; // Empty is allowed (uses user ID)
+  const checkSlugAvailability = async (value: string): Promise<boolean> => {
+    if (!value.trim()) return true; // Empty is allowed (uses default)
 
     const normalized = value.toLowerCase().trim();
 
-    if (!isValidUsername(normalized)) {
-      setUsernameError('Username must be 3-30 characters, lowercase letters, numbers, hyphens, or underscores only');
+    if (!isValidSlug(normalized)) {
+      setSlugError('Slug must be 3-30 characters, lowercase letters, numbers, hyphens, or underscores only');
       return false;
     }
 
-    setIsCheckingUsername(true);
-    setUsernameError(null);
+    setIsCheckingSlug(true);
+    setSlugError(null);
 
     const { data, error } = await supabase
-      .from('profiles')
+      .from('portfolios')
       .select('user_id')
-      .eq('username', normalized)
+      .eq('slug', normalized)
+      .eq('user_id', user?.id)
       .maybeSingle();
 
-    setIsCheckingUsername(false);
+    setIsCheckingSlug(false);
 
     if (error) {
-      setUsernameError('Failed to check availability');
+      setSlugError('Failed to check availability');
       return false;
     }
 
-    // Available if no result OR if it's the current user's username
-    if (data && data.user_id !== user?.id) {
-      setUsernameError('This username is already taken');
+    // Available if no result for THIS user. Since slug is unique per user, this checks their own namespace
+    if (data) {
+      setSlugError('You already have a portfolio with this slug');
       return false;
     }
 
-    setUsernameError(null);
+    setSlugError(null);
     return true;
   };
 
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
-    setUsername(value);
-    setUsernameError(null);
+    setSlug(value);
+    setSlugError(null);
   };
 
   const handlePublish = async () => {
@@ -101,55 +107,108 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       return;
     }
 
-    // Check username availability if provided
-    const normalizedUsername = username.trim().toLowerCase();
-    if (normalizedUsername) {
-      const isAvailable = await checkUsernameAvailability(normalizedUsername);
+    // Check slug availability if provided
+    const normalizedSlug = slug.trim().toLowerCase() || 'default';
+    if (normalizedSlug !== 'default') {
+      const isAvailable = await checkSlugAvailability(normalizedSlug);
       if (!isAvailable) return;
     }
 
     setIsPublishing(true);
 
-    // Update username in database
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({
-        username: normalizedUsername || null
-      })
-      .eq('user_id', user.id);
+    // First save the profile edits globally
+    const { error: saveError } = await saveProfile();
 
-    if (updateError) {
+    if (saveError) {
       setIsPublishing(false);
       toast({
         title: 'Error',
-        description: updateError.message.includes('unique')
-          ? 'This username is already taken'
-          : 'Failed to save username. Please try again.',
+        description: 'Failed to save profile. Please try again.',
         variant: 'destructive',
       });
       return;
     }
 
-    // Save profile
-    const { error } = await saveProfile();
+    // Now create/update the portfolio instance in the portfolios table
+    // ProfileContext data is ready
+    const dataJson = {
+      full_name: profile.fullName,
+      photo_url: profile.photoUrl,
+      bio: profile.bio,
+      headline: profile.headline,
+      location: profile.location,
+      email: profile.email,
+      website: profile.website,
+      linkedin_url: profile.linkedinUrl,
+      github_url: profile.githubUrl,
+      twitter_url: profile.twitterUrl,
+      work_experience: profile.workExperience,
+      projects: profile.projects,
+      skills: profile.skills,
+      key_highlights: profile.keyHighlights,
+      calendly_url: profile.calendlyUrl,
+      resume_url: profile.resumeUrl,
+      selected_font: profile.selectedFont,
+      hide_photo: profile.hidePhoto
+    };
+
+    if (isPro) {
+      // Pro: Insert directly (with conflict resolution if they typed an existing slug)
+      const { error: portError } = await supabase.from('portfolios').upsert({
+        user_id: user.id,
+        slug: normalizedSlug,
+        template_name: profile.selectedTemplate || 'minimalist',
+        data_json: dataJson
+      }, { onConflict: 'user_id,slug' });
+
+      if (portError) {
+        setIsPublishing(false);
+        toast({ title: 'Error', description: 'Failed to deploy identity.', variant: 'destructive' });
+        return;
+      }
+    } else {
+      // Free: Overwrite existing logic. Need to find their existing portfolio (if any) and overwrite.
+      const { data: existing } = await supabase.from('portfolios').select('id, slug').eq('user_id', user.id).limit(1);
+
+      if (existing && existing.length > 0) {
+        // Upsert on their existing slug
+        const targetSlug = existing[0].slug;
+        const { error: portError } = await supabase.from('portfolios').update({
+          template_name: profile.selectedTemplate || 'minimalist',
+          data_json: dataJson
+        }).eq('id', existing[0].id);
+
+        if (portError) {
+          setIsPublishing(false);
+          toast({ title: 'Error', description: 'Failed to deploy identity.', variant: 'destructive' });
+          return;
+        }
+
+        // Ensure the slug input visually updates if we ignored it
+        setSlug(targetSlug);
+      } else {
+        // No existing, insert
+        const { error: portError } = await supabase.from('portfolios').insert({
+          user_id: user.id,
+          slug: normalizedSlug,
+          template_name: profile.selectedTemplate || 'minimalist',
+          data_json: dataJson
+        });
+
+        if (portError) {
+          setIsPublishing(false);
+          toast({ title: 'Error', description: 'Failed to deploy identity.', variant: 'destructive' });
+          return;
+        }
+      }
+    }
+
     setIsPublishing(false);
-
-    if (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to publish portfolio. Please try again.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setIsPublished(true);
     triggerCelebration();
     toast({
-      title: 'Portfolio published! 🚀',
-      description: normalizedUsername
-        ? `Your portfolio is live at https://www.foliogen.in/p/${normalizedUsername}`
-        : 'Your portfolio is now live and shareable.',
+      title: 'Identity Deployed 🚀',
+      description: `Your portfolio is live at https://www.foliogen.in/p/${identifier}/${normalizedSlug}`,
     });
   };
 
@@ -195,7 +254,8 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       setIsPublished(false);
-      setUsernameError(null);
+      setSlugError(null);
+      setSlug('');
     }
     onOpenChange(newOpen);
   };
@@ -227,44 +287,49 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
         {!isPublished ? (
           <div className="flex flex-col gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Choose your unique link</Label>
+              <Label htmlFor="slug">Choose a unique URL slug</Label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground whitespace-nowrap">
-                  foliogen.in/p/
+                  foliogen.in/p/{identifier}/
                 </span>
                 <Input
-                  id="username"
-                  value={username}
-                  onChange={handleUsernameChange}
-                  placeholder="yourname"
-                  className="flex-1"
-                  disabled={isPublishing}
+                  id="slug"
+                  value={slug}
+                  onChange={handleSlugChange}
+                  placeholder="e.g. design-v1"
+                  className="flex-1 font-mono"
+                  disabled={isPublishing || !isPro}
                 />
               </div>
-              {usernameError && (
-                <p className="text-sm text-destructive flex items-center gap-1">
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  {usernameError}
+              {!isPro && (
+                <p className="text-[11px] text-amber-500 font-medium">
+                  Free users are limited to 1 default portfolio. Any publish will overwrite your active identity.
                 </p>
               )}
-              {!usernameError && username && (
+              {slugError && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  {slugError}
+                </p>
+              )}
+              {!slugError && slug && isPro && (
                 <p className="text-sm text-muted-foreground">
-                  Leave empty to use your default ID-based link
+                  Leave empty to use 'default'
                 </p>
               )}
             </div>
 
             <Button
               onClick={handlePublish}
-              disabled={isPublishing || saving || isCheckingUsername || !!usernameError}
-              className="w-full"
+              disabled={isPublishing || saving || isCheckingSlug || !!slugError}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               {isPublishing || saving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   Publishing...
                 </>
-              ) : isCheckingUsername ? (
+              ) : isCheckingSlug ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   Checking availability...
@@ -272,7 +337,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
               ) : (
                 <>
                   <Rocket className="h-4 w-4 mr-2" />
-                  Publish Portfolio
+                  Deploy Identity
                 </>
               )}
             </Button>

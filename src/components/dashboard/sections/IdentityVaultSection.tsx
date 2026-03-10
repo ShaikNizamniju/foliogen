@@ -1,0 +1,295 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { usePro } from '@/contexts/ProContext';
+import { supabase } from '@/lib/supabase_v2';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Copy, Plus, Trash2, ExternalLink, ShieldAlert, Loader2, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+const fadeUp = {
+    hidden: { opacity: 0, y: 16, filter: 'blur(8px)' },
+    visible: {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: { type: 'spring' as const, stiffness: 120, damping: 20 },
+    },
+};
+
+export function IdentityVaultSection() {
+    const { user } = useAuth();
+    const { isPro } = usePro();
+    const navigate = useNavigate();
+
+    const [portfolios, setPortfolios] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // Modals
+    const [freeWarningOpen, setFreeWarningOpen] = useState(false);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [portfolioToDelete, setPortfolioToDelete] = useState<any>(null);
+    const [deleteConfirmText, setDeleteConfirmText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    useEffect(() => {
+        fetchPortfolios();
+    }, [user]);
+
+    const fetchPortfolios = async () => {
+        if (!user) return;
+        setLoading(true);
+        const { data, error } = await supabase
+            .from('portfolios')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+        if (data) {
+            setPortfolios(data);
+        }
+        setLoading(false);
+    };
+
+    const handleCopyLink = async (slug: string) => {
+        // If it's the exact string 'default', route to /p/:id (legacy) or /p/:username (if username exists)
+        // Actually, App.tsx will route /p/:username/:slug. We will build the full URL.
+        // For now, let's assume foliogen.in/p/username/slug.
+        // We need the user's username or id.
+        const { data: profile } = await supabase.from('profiles').select('username').eq('user_id', user?.id).single();
+        const identifier = profile?.username || user?.id;
+
+        // Legacy route if slug is default
+        const url = slug === 'default'
+            ? `https://www.foliogen.in/p/${identifier}`
+            : `https://www.foliogen.in/p/${identifier}/${slug}`;
+
+        await navigator.clipboard.writeText(url);
+        toast({
+            title: 'Link Copied',
+            description: 'Portfolio link copied to clipboard.',
+        });
+    };
+
+    const handleGenerateClick = () => {
+        if (!isPro && portfolios.length >= 1) {
+            setFreeWarningOpen(true);
+        } else {
+            // Pro user (or Free with 0 portfolios) -> go to profile editor
+            navigate('/dashboard?section=profile');
+            toast({
+                title: 'New Identity',
+                description: 'Update your data and click Publish to create a new portfolio slug.',
+            });
+        }
+    };
+
+    const confirmDelete = (portfolio: any) => {
+        setPortfolioToDelete(portfolio);
+        setDeleteConfirmText('');
+        setDeleteModalOpen(true);
+    };
+
+    const executeDelete = async () => {
+        if (!portfolioToDelete || deleteConfirmText !== portfolioToDelete.slug) return;
+        setIsDeleting(true);
+
+        const { error } = await supabase
+            .from('portfolios')
+            .delete()
+            .eq('id', portfolioToDelete.id);
+
+        setIsDeleting(false);
+
+        if (error) {
+            toast({ title: 'Error', description: 'Failed to delete portfolio', variant: 'destructive' });
+        } else {
+            toast({ title: 'Deleted', description: 'Portfolio identity destroyed.' });
+            setDeleteModalOpen(false);
+            setPortfolios(p => p.filter(x => x.id !== portfolioToDelete.id));
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center p-12">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-8 max-w-5xl mx-auto pb-12">
+            <motion.div variants={fadeUp} initial="hidden" animate="visible">
+                <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-4xl font-instrument text-foreground tracking-tight">Identity Vault</h1>
+                    <Button
+                        onClick={handleGenerateClick}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-glow transition-all"
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Generate New Identity
+                    </Button>
+                </div>
+                <p className="text-muted-foreground">Manage your deployed portfolio instances and custom links.</p>
+            </motion.div>
+
+            {portfolios.length === 0 ? (
+                <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center py-20 border border-[#333] rounded-2xl bg-black/40">
+                    <ShieldAlert className="h-10 w-10 text-muted-foreground mx-auto mb-4 opacity-50" />
+                    <h3 className="text-xl font-instrument text-white mb-2">No active identities found</h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">You haven't published any portfolios yet. Head over to the Profile section to build and deploy your first identity.</p>
+                    <Button onClick={handleGenerateClick} variant="outline" className="border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-400">
+                        Create Portfolio
+                    </Button>
+                </motion.div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <AnimatePresence>
+                        {portfolios.map((portfolio, i) => (
+                            <motion.div
+                                key={portfolio.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ delay: i * 0.1 }}
+                                className="group relative overflow-hidden rounded-2xl border border-[#333] bg-black hover:border-indigo-500/50 transition-all duration-300"
+                            >
+                                <div className="p-6">
+                                    <div className="flex items-start justify-between mb-6">
+                                        <div>
+                                            <h3 className="text-xl font-instrument text-white capitalize mb-1">
+                                                {portfolio.template_name.replace('-', ' ')}
+                                            </h3>
+                                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-widest">
+                                                <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                Live
+                                            </div>
+                                        </div>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => confirmDelete(portfolio)}
+                                            className="text-muted-foreground hover:text-red-400 hover:bg-red-400/10 -mr-2 -mt-2"
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div>
+                                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">Slug / URL Path</div>
+                                            <div className="font-mono text-sm text-indigo-300 bg-indigo-500/5 px-3 py-2 rounded-lg border border-indigo-500/10 truncate">
+                                                /{portfolio.slug}
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-2 pt-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleCopyLink(portfolio.slug)}
+                                                className="w-full bg-[#111] border-[#333] text-zinc-300 hover:bg-[#222] hover:text-white"
+                                            >
+                                                <Copy className="h-3.5 w-3.5 mr-2" />
+                                                Copy Link
+                                            </Button>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                asChild
+                                                className="w-full bg-[#111] border-[#333] text-zinc-300 hover:bg-[#222] hover:text-white"
+                                            >
+                                                <a href={`/p/${user?.id}/${portfolio.slug}`} target="_blank" rel="noopener noreferrer">
+                                                    <ExternalLink className="h-3.5 w-3.5 mr-2" />
+                                                    View Site
+                                                </a>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Decorative glow */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+            )}
+
+            {/* Free User Warning Modal */}
+            <Dialog open={freeWarningOpen} onOpenChange={setFreeWarningOpen}>
+                <DialogContent className="border-[#333] bg-black text-white sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="font-instrument text-2xl flex items-center gap-2 text-white">
+                            <ShieldAlert className="h-6 w-6 text-amber-500" />
+                            Overwrite Warning
+                        </DialogTitle>
+                        <DialogDescription className="text-zinc-400 pt-3 text-base">
+                            Your existing portfolio will be <strong>overwritten</strong>. Upgrade to Pro to host multiple unique links simultaneously without losing your current identity.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-3 pt-4">
+                        <Button
+                            onClick={() => { setFreeWarningOpen(false); navigate('/dashboard?section=profile'); }}
+                            variant="outline"
+                            className="w-full bg-[#111] border-[#333] text-white hover:bg-[#222]"
+                        >
+                            Continue & Overwrite
+                        </Button>
+                        <Button
+                            onClick={() => { setFreeWarningOpen(false); navigate('/dashboard#pricing'); }}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-glow"
+                        >
+                            <Sparkles className="h-4 w-4 mr-2" />
+                            Upgrade to Pro
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Delete Confirmation Modal */}
+            <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+                <DialogContent className="border-red-900/30 bg-[#0a0a0a] text-white sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="font-instrument text-2xl text-red-500">Destroy Identity</DialogTitle>
+                        <DialogDescription className="text-zinc-400">
+                            This action cannot be undone. This will permanently delete the portfolio instance at <strong className="text-zinc-200 uppercase font-mono tracking-wider px-1 bg-white/10 rounded">{portfolioToDelete?.slug}</strong>.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-3">
+                        <Label className="text-zinc-400">Type the slug name to confirm</Label>
+                        <Input
+                            value={deleteConfirmText}
+                            onChange={(e) => setDeleteConfirmText(e.target.value)}
+                            placeholder={portfolioToDelete?.slug}
+                            className="bg-black/50 border-[#333] focus-visible:ring-red-500 font-mono"
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" className="text-zinc-400 hover:text-white" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+                        <Button
+                            variant="destructive"
+                            onClick={executeDelete}
+                            disabled={deleteConfirmText !== portfolioToDelete?.slug || isDeleting}
+                            className="bg-red-600 hover:bg-red-700 font-medium"
+                        >
+                            {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Permanently Delete'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+}

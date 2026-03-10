@@ -38,7 +38,9 @@ function AppRoutes() {
       <Suspense fallback={<AuthLoadingOverlay show={true} />}>
         <Routes>
           <Route path="/p/:id" element={<PublicPortfolio />} />
+          <Route path="/p/:id/:slug" element={<PublicPortfolio />} />
           <Route path="/u/:id" element={<PublicPortfolio />} />
+          <Route path="/u/:id/:slug" element={<PublicPortfolio />} />
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/reset-password" element={<ResetPassword />} />

@@ -30,7 +30,7 @@ import { PrintableResume } from '@/components/dashboard/templates/PrintableResum
 import { useViewTracker } from '@/hooks/useViewTracker';
 
 export default function PublicPortfolio() {
-  const { id } = useParams<{ id: string }>();
+  const { id, slug } = useParams<{ id: string, slug?: string }>();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,31 +49,68 @@ export default function PublicPortfolio() {
     setLoading(true);
     setError(null);
 
-    // Try to fetch by username first, then by user_id (supports both custom and legacy URLs)
+    // Try to fetch by username first, then by user_id
     let data = null;
     let fetchError = null;
 
-    // Check if identifier looks like a UUID (legacy format)
-    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+    if (slug) {
+      // 1. Resolve identifier to user_id
+      let userId = identifier;
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier || '');
 
-    if (isUUID) {
-      // Legacy URL: fetch by user_id
+      if (!isUUID) {
+        // Find user_id from username
+        const { data: prof } = await supabase
+          .from('profiles_public')
+          .select('user_id')
+          .eq('username', (identifier || '').toLowerCase())
+          .maybeSingle();
+        if (prof) userId = prof.user_id;
+      }
+
+      // 2. Fetch specific instance from portfolios
       const result = await supabase
-        .from('profiles_public')
+        .from('portfolios')
         .select('*')
-        .eq('user_id', identifier)
+        .eq('user_id', userId)
+        .eq('slug', slug.toLowerCase())
         .maybeSingle();
-      data = result.data;
+
+      if (result.data) {
+        // Map to match the existing payload structure
+        data = {
+          id: result.data.user_id,
+          views: result.data.views,
+          published_data: {
+            ...result.data.data_json,
+            selected_template: result.data.template_name
+          }
+        };
+      }
       fetchError = result.error;
     } else {
-      // Custom username URL: fetch by username
-      const result = await supabase
-        .from('profiles_public')
-        .select('*')
-        .eq('username', identifier.toLowerCase())
-        .maybeSingle();
-      data = result.data;
-      fetchError = result.error;
+      // Legacy URL handling (single default profile)
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
+
+      if (isUUID) {
+        // Legacy URL: fetch by user_id
+        const result = await supabase
+          .from('profiles_public')
+          .select('*')
+          .eq('user_id', identifier)
+          .maybeSingle();
+        data = result.data;
+        fetchError = result.error;
+      } else {
+        // Custom username URL: fetch by username
+        const result = await supabase
+          .from('profiles_public')
+          .select('*')
+          .eq('username', identifier.toLowerCase())
+          .maybeSingle();
+        data = result.data;
+        fetchError = result.error;
+      }
     }
 
     if (fetchError) {
