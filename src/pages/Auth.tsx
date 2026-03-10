@@ -162,17 +162,17 @@ export default function Auth() {
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <img src={logoImg} alt="Foliogen" className="h-9 w-9 object-contain" loading="eager" />
-          <span className="text-white font-semibold text-xl tracking-tight">Foliogen</span>
+          <img src={logoImg} alt="Foliogen" className="h-9 w-9 object-contain dark:invert" loading="eager" />
+          <span className="text-foreground font-semibold text-xl tracking-tight">Foliogen</span>
         </div>
 
         {/* Hero copy */}
         <div className="relative z-10 space-y-8">
           <div className="space-y-4">
-            <p className="text-indigo-400 font-medium text-sm uppercase tracking-widest">
+            <p className="text-indigo-600 dark:text-indigo-400 font-medium text-sm uppercase tracking-widest">
               AI-Powered Portfolios
             </p>
-            <h1 className="text-5xl xl:text-6xl font-bold leading-tight text-white">
+            <h1 className="text-5xl xl:text-6xl font-bold leading-tight text-foreground">
               Your work,<br />
               <span
                 className="bg-clip-text text-transparent"
@@ -193,11 +193,10 @@ export default function Auth() {
             {STATS.map(({ value, label, icon: Icon }) => (
               <div
                 key={label}
-                className="rounded-2xl p-4 border border-white/10 backdrop-blur-sm"
-                style={{ background: 'rgba(255,255,255,0.04)' }}
+                className="rounded-2xl p-4 border border-border backdrop-blur-sm bg-background/40"
               >
-                <Icon className="h-5 w-5 text-indigo-400 mb-2" />
-                <p className="text-white font-bold text-xl">{value}</p>
+                <Icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mb-2" />
+                <p className="text-foreground font-bold text-xl">{value}</p>
                 <p className="text-muted-foreground text-xs mt-0.5 leading-snug">{label}</p>
               </div>
             ))}
@@ -205,23 +204,22 @@ export default function Auth() {
 
           {/* Floating testimonial card */}
           <div
-            className="rounded-2xl p-5 border border-white/10 max-w-sm"
-            style={{ background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(16px)' }}
+            className="rounded-2xl p-5 border border-border max-w-sm bg-background/60 backdrop-blur-[16px]"
           >
             <div className="flex items-center gap-1 mb-3">
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star key={s} className="h-3.5 w-3.5" style={{ fill: 'hsl(var(--gold))', color: 'hsl(var(--gold))' }} />
               ))}
             </div>
-            <p className="text-white/80 text-sm leading-relaxed italic">
+            <p className="text-foreground/80 text-sm leading-relaxed italic">
               "Landed 4 interviews in 2 weeks after switching to my Foliogen portfolio. The AI descriptions are next-level."
             </p>
             <div className="flex items-center gap-3 mt-4">
-              <div className="h-8 w-8 rounded-full bg-indigo-500/30 flex items-center justify-center text-indigo-300 text-sm font-bold">
+              <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-300 text-sm font-bold">
                 R
               </div>
               <div>
-                <p className="text-white text-sm font-medium">Rahul S.</p>
+                <p className="text-foreground text-sm font-medium">Rahul S.</p>
                 <p className="text-muted-foreground text-xs">Product Designer @ Swiggy</p>
               </div>
             </div>
@@ -237,18 +235,21 @@ export default function Auth() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 min-h-screen bg-card">
 
         {/* Mobile logo */}
-        <div className="flex lg:hidden items-center gap-2 mb-8">
-          <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain" loading="eager" />
-          <span className="text-white font-semibold text-lg">Foliogen</span>
+        <div className="flex lg:hidden items-center justify-center gap-2 mb-8 mx-auto w-full text-center">
+          <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain dark:invert" loading="eager" />
+          <span className="text-foreground font-semibold text-lg">Foliogen</span>
         </div>
 
-        <div className="w-full max-w-[420px] space-y-6">
+        <div className="w-full max-w-[420px] space-y-6 mx-auto">
           {/* Heading */}
-          <div className="space-y-1 text-center lg:text-left">
-            <h2 className="text-2xl font-bold text-white">
+          <div className="space-y-2 text-center flex flex-col items-center">
+            <h2 className="text-sub px-4 py-1.5 rounded-full border border-border bg-background/50 font-mono text-[10px] tracking-widest uppercase text-indigo-500 mb-2">
+              AI-Powered Portfolios
+            </h2>
+            <h2 className="text-2xl font-bold text-foreground">
               {isLogin ? 'Welcome back' : 'Create your account'}
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm max-w-xs text-center">
               {isLogin
                 ? 'Sign in to continue building your portfolio.'
                 : 'Join 12,400+ narrative architects engineering their professional legacy.'}
@@ -262,7 +263,7 @@ export default function Auth() {
             disabled={googleLoading || loading}
             className={cn(
               'w-full flex items-center justify-center gap-3 h-12 rounded-xl text-sm font-semibold border transition-all duration-200',
-              'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20',
+              'bg-background border-border text-foreground hover:bg-muted',
               (googleLoading || loading) && 'opacity-60 cursor-not-allowed'
             )}
           >
@@ -281,9 +282,9 @@ export default function Auth() {
 
           {/* Divider */}
           <div className="relative flex items-center gap-4">
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-border" />
             <span className="text-muted-foreground text-xs shrink-0">or with email</span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Form */}
@@ -300,7 +301,7 @@ export default function Auth() {
             />
             {!isLogin && (
               <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-muted-foreground text-sm">Full Name</Label>
+                <Label htmlFor="fullName" className="text-muted-foreground text-sm font-medium">Full Name</Label>
                 <Input
                   id="fullName"
                   type="text"
@@ -308,7 +309,7 @@ export default function Auth() {
                   value={fullName}
                   onChange={(e) => { setFullName(e.target.value); setErrors((p) => ({ ...p, fullName: false })); }}
                   className={cn(
-                    'h-12 bg-white/5 border-white/10 text-white placeholder:text-white/25 focus:border-indigo-500 focus:ring-indigo-500/20',
+                    'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20',
                     errors.fullName && 'border-red-500'
                   )}
                   required
@@ -317,7 +318,7 @@ export default function Auth() {
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-muted-foreground text-sm">Email address</Label>
+              <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
               <Input
                 id="email"
                 type="email"
@@ -325,7 +326,7 @@ export default function Auth() {
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: false })); }}
                 className={cn(
-                  'h-12 bg-white/5 border-white/10 text-white placeholder:text-white/25 focus:border-indigo-500 focus:ring-indigo-500/20',
+                  'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20',
                   errors.email && 'border-red-500'
                 )}
                 required
@@ -334,7 +335,7 @@ export default function Auth() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-[#8b9ab5] text-sm">Password</Label>
+                <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
                 {isLogin && (
                   <button
                     type="button"
@@ -353,7 +354,7 @@ export default function Auth() {
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: false })); }}
                   className={cn(
-                    'h-12 bg-white/5 border-white/10 text-white placeholder:text-white/25 focus:border-indigo-500 focus:ring-indigo-500/20 pr-10',
+                    'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20 pr-10',
                     errors.password && 'border-red-500'
                   )}
                   required
@@ -361,7 +362,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}

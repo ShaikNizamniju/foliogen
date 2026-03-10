@@ -33,15 +33,15 @@ body {
   :root {
     /* Core surfaces */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 0 0% 0%;
 
     /* Cards & elevated surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 0 0% 0%;
 
     /* Popover & dropdown */
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 0 0% 0%;
 
     /* Primary - Indigo */
     --primary: 239 84% 67%;
@@ -104,14 +104,14 @@ body {
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 20% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 210 20% 98%;
+    --card: 0 0% 4%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 0 0% 100%;
 
     --primary: 239 84% 67%;
     --primary-foreground: 0 0% 100%;
