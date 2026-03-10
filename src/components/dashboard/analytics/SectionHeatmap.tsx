@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Flame, Loader2, Map } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { useAuth } from '@/contexts/AuthContext';
 
 const SECTIONS = [

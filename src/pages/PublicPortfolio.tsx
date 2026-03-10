@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { ProfileData, WorkExperience, Project, FontChoice, FONT_OPTIONS } from '@/contexts/ProfileContext';
 import { ContactDialog } from '@/components/ContactDialog';
 import { ProfileChatBot } from '@/components/public/ProfileChatBot';

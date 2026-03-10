@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from "react";
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { toast } from "sonner";
 import { useAuth } from "./AuthContext";
 import { Json } from "@/integrations/supabase/types";

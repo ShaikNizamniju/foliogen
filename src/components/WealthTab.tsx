@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { useVoice } from '@/hooks/useVoice';
 import { Volume2, TrendingDown, TrendingUp, Laptop, ShoppingBag, Coffee, Home, Car, Zap } from 'lucide-react';
 

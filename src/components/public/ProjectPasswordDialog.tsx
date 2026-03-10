@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, Unlock, Loader2 } from 'lucide-react';
 import { Project } from '@/contexts/ProfileContext';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 
 interface ProjectPasswordDialogProps {
   open: boolean;

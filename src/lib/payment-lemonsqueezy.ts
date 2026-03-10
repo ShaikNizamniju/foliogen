@@ -12,7 +12,7 @@
  *  4. Point your webhook at https://<project>.supabase.co/functions/v1/lemonsqueezy-webhook
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { toast } from '@/hooks/use-toast';
 
 export interface LsPaymentUser {

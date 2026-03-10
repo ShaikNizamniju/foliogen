@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { triggerCelebration } from "./confetti";
 import { toast } from "@/hooks/use-toast";
 

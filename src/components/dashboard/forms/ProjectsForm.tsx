@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { SmartProjectCard, SmartProject, projectSchema } from './SmartProjectCard';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { useAuth } from '@/contexts/AuthContext';
 import { Json } from '@/integrations/supabase/types';
 

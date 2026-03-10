@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { prioritizeJobs, JobApplication } from '@/lib/agents/scout';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { ExternalLink, Trophy, Target, Sparkles, TrendingUp } from 'lucide-react';
 
 const JobCommandCenter = () => {

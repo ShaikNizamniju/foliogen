@@ -124,7 +124,7 @@ export default function Auth() {
   const handleForgotPassword = async () => {
     if (!email) { toast.error('Please enter your email first.'); return; }
     try { emailSchema.parse(email); } catch { toast.error('Please enter a valid email.'); return; }
-    const { supabase } = await import('@/lib/supabase');
+    const { supabase } = await import('@/lib/supabase_v2');
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });

@@ -4,7 +4,7 @@ import {
     Wand2, Link2, Loader2, CheckCircle2, AlertTriangle,
     Briefcase, Brain, ArrowRight
 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { toast } from 'sonner';

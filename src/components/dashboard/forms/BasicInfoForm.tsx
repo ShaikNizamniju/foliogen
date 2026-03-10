@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { toast } from '@/hooks/use-toast';
 import { Upload, Loader2, User, Trash2 } from 'lucide-react';
 import { ImageCropDialog } from './ImageCropDialog';

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useProfile } from '@/contexts/ProfileContext';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';

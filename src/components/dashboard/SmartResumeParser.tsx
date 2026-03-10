@@ -4,7 +4,7 @@ import {
   Briefcase, GraduationCap, Sparkles, X, ArrowRight, Merge
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { useProfile, WorkExperience, Project, ProfileData } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';

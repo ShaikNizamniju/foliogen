@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Upload, Loader2, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { useProfile } from '@/contexts/ProfileContext';
 import { toast } from 'sonner';
 import * as pdfjsLib from 'pdfjs-dist';

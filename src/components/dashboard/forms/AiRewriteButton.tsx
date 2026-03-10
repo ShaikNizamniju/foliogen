@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase_v2';
 import { toast } from '@/hooks/use-toast';
 import { Sparkles, Loader2, Check, ExternalLink } from 'lucide-react';
 import {

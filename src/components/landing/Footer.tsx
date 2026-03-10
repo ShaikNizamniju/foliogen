@@ -24,7 +24,7 @@ export function Footer() {
     setSending(true);
     // Simulate send (uses the existing contact edge function pattern)
     try {
-      const { supabase } = await import('@/lib/supabase');
+      const { supabase } = await import('@/lib/supabase_v2');
       const { error } = await supabase.functions.invoke('send-contact-email', {
         body: {
           name: name.trim(),
