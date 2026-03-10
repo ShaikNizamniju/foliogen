@@ -2,19 +2,14 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '[PASTE YOUR SUPABASE PROJECT URL HERE]';
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '[PASTE YOUR ANON PUBLIC KEY HERE]';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://fjmcjsffeycwygicflfk.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_yzi4UYRXIdUg0ANPxexWGg_T5Ccg9wK';
 
-if (!import.meta.env.VITE_SUPABASE_URL) {
-  console.error('Supabase initialization failed: VITE_SUPABASE_URL is undefined.');
-}
-
-export const supabase = import.meta.env.VITE_SUPABASE_URL
-  ? createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    auth: {
-      storage: localStorage,
-      persistSession: true,
-      autoRefreshToken: true,
-    }
-  })
-  : null as any;
+// Even if VITE_SUPABASE_URL is undefined in env, we now have a hardcoded fallback.
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+});

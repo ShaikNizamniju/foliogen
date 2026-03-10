@@ -22,6 +22,7 @@ const plans = [
     name: 'Basic',
     price: '₹199',
     period: 'mo',
+    promo: 'Use code LAUNCH60 for 60% off your first month',
     description: 'Unlock professional templates & better AI tips',
     features: [
       '4 Portfolio Templates',
@@ -37,6 +38,8 @@ const plans = [
   {
     name: 'Pro',
     price: '₹999',
+    originalPrice: '₹2,388',
+    ribbon: 'SAVE ₹1,389',
     period: 'year',
     description: 'Best value — everything unlimited',
     features: [
@@ -111,14 +114,14 @@ export function Pricing() {
                 visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 120, damping: 22 } },
               }}
               className={`relative rounded-2xl border bg-card p-8 transition-all ${plan.popular
-                  ? 'border-primary shadow-glow'
-                  : 'border-border hover:border-primary/20 hover:shadow-lg'
+                ? 'border-primary shadow-glow'
+                : 'border-border hover:border-primary/20 hover:shadow-lg'
                 }`}
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-max text-center">
-                  <span className="rounded-full bg-primary px-4 py-1 text-sm font-medium text-primary-foreground whitespace-nowrap">
-                    Most Popular
+                  <span className="rounded-full bg-indigo-600 px-4 py-1 text-sm font-bold text-white shadow-lg whitespace-nowrap">
+                    {plan.ribbon || 'Most Popular'}
                   </span>
                 </div>
               )}
@@ -129,8 +132,20 @@ export function Pricing() {
               </div>
 
               <div className="mb-6">
-                <span className="text-4xl font-bold text-foreground">{plan.price}</span>
-                <span className="text-muted-foreground">/{plan.period}</span>
+                {plan.originalPrice && (
+                  <div className="text-sm font-medium text-muted-foreground mb-1 line-through decoration-indigo-500/50">
+                    {plan.originalPrice}/{plan.period}
+                  </div>
+                )}
+                <div>
+                  <span className="text-4xl font-bold text-foreground">{plan.price}</span>
+                  <span className="text-muted-foreground">/{plan.period}</span>
+                </div>
+                {plan.promo && (
+                  <div className="mt-3 bg-indigo-500/10 text-indigo-400 font-medium text-[13px] tracking-wide text-center py-2 px-3 rounded">
+                    {plan.promo}
+                  </div>
+                )}
               </div>
 
               <ul className="mb-8 space-y-3">
@@ -154,8 +169,8 @@ export function Pricing() {
               <Button
                 asChild
                 className={`w-full ${plan.popular
-                    ? 'shadow-glow transition-all hover:shadow-glow-lg'
-                    : ''
+                  ? 'shadow-glow transition-all hover:shadow-glow-lg'
+                  : ''
                   }`}
                 variant={plan.popular ? 'default' : 'outline'}
                 size="lg"
