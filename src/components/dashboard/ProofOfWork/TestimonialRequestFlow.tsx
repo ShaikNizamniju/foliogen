@@ -14,7 +14,7 @@ export function TestimonialRequestFlow() {
     const [showQR, setShowQR] = useState(false);
 
     const username = (profile as any)?.username || user?.id || '';
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://foliogen.app';
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://foliogen.in';
     const link = `${baseUrl}/${username}?testimonial=1${requesterName.trim() ? `&from=${encodeURIComponent(requesterName.trim())}` : ''}`;
 
     const copyLink = async () => {
