@@ -13,6 +13,7 @@ import { AuthLoadingOverlay } from "@/components/AuthLoadingOverlay";
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
+const AuthCallback = lazy(() => import("./pages/auth/Callback"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const PublicPortfolio = lazy(() => import("./pages/PublicPortfolio"));
@@ -30,7 +31,7 @@ const queryClient = new QueryClient();
 function AppRoutes() {
   const { initializing } = useAuth();
   const location = useLocation();
-  const isPublicRoute = location.pathname.startsWith('/p/') || location.pathname.startsWith('/u/');
+  const isPublicRoute = location.pathname.startsWith('/p/') || location.pathname.startsWith('/u/') || location.pathname.startsWith('/auth/callback');
 
   return (
     <>
@@ -43,6 +44,7 @@ function AppRoutes() {
           <Route path="/u/:id/:slug" element={<PublicPortfolio />} />
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Dashboard />} />

@@ -190,7 +190,7 @@ export default function PublicPortfolio() {
     ? `${profile.fullName} | AI Portfolio`
     : 'AI Portfolio';
   const pageDescription = profile.bio || profile.headline || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
-  const pageImage = profile.photoUrl || 'https://foliogen.lovable.app/og-image.png';
+  const pageImage = profile.photoUrl || 'https://foliogen.in/og-image.png';
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   // Vanilla JS fallback to mutate meta tags for crawlers that struggle with Helmet
