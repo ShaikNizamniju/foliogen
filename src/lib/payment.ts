@@ -42,8 +42,7 @@ export async function handlePayment(
 ): Promise<void> {
   try {
     if (!STRIPE_PUBLISHABLE_KEY) {
-      toast({ title: "Payment Not Configured", description: "Payment system is not yet configured. Please contact admin@foliogen.in.", variant: "destructive" });
-      return;
+      throw new Error("STRIPE_NOT_CONFIGURED");
     }
 
     const plan = PLANS[planKey];
