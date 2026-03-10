@@ -36,6 +36,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
   const [errors, setErrors] = useState<{ email?: boolean; password?: boolean; fullName?: boolean }>({});
   const { signIn, signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -65,6 +66,10 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (honeypot) {
+      toast.error('Automated behavior detected. Request blocked.');
+      return;
+    }
     const newErrors: typeof errors = {};
     try { emailSchema.parse(email); } catch { newErrors.email = true; }
     try { passwordSchema.parse(password); } catch { newErrors.password = true; }
@@ -283,6 +288,16 @@ export default function Auth() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Honeypot field for bot protection */}
+            <input
+              type="text"
+              name="b_firstname"
+              tabIndex={-1}
+              autoComplete="off"
+              style={{ position: 'absolute', opacity: 0, height: 0, width: 0, zIndex: -1 }}
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
             {!isLogin && (
               <div className="space-y-1.5">
                 <Label htmlFor="fullName" className="text-muted-foreground text-sm">Full Name</Label>

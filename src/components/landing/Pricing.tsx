@@ -21,6 +21,8 @@ const plans = [
   {
     name: 'Basic',
     price: '₹199',
+    originalPrice: '₹499',
+    ribbon: 'FIRST MONTH ONLY',
     period: 'mo',
     promo: 'Use code LAUNCH60 for 60% off your first month',
     description: 'Unlock professional templates & better AI tips',
@@ -113,7 +115,7 @@ export function Pricing() {
                 hidden: { opacity: 0, y: 24, filter: 'blur(6px)' },
                 visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { type: 'spring', stiffness: 120, damping: 22 } },
               }}
-              className={`relative rounded-2xl border bg-card p-8 transition-all ${plan.popular
+              className={`relative rounded-2xl border bg-card p-8 transition-all flex flex-col h-full ${plan.popular
                 ? 'border-primary shadow-glow'
                 : 'border-border hover:border-primary/20 hover:shadow-lg'
                 }`}
@@ -142,13 +144,13 @@ export function Pricing() {
                   <span className="text-muted-foreground">/{plan.period}</span>
                 </div>
                 {plan.promo && (
-                  <div className="mt-3 bg-indigo-500/10 text-indigo-400 font-medium text-[13px] tracking-wide text-center py-2 px-3 rounded">
+                  <div className="mt-3 bg-black text-white font-medium text-[13px] tracking-wide text-center py-2 px-3 rounded border border-white/10">
                     {plan.promo}
                   </div>
                 )}
               </div>
 
-              <ul className="mb-8 space-y-3">
+              <ul className="mb-8 space-y-3 flex-grow">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-3">
                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
