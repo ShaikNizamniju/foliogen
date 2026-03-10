@@ -62,7 +62,6 @@ function AppRoutes() {
 
 const App = () => (
   <HelmetProvider>
-    <div style={{ background: '#4f46e5', color: 'white', padding: '10px', textAlign: 'center', zIndex: 9999, position: 'fixed', top: 0, left: 0, right: 0 }}>DEPLOYMENT V1.0.3 ACTIVE</div>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="foliogen-ui-theme">
         <AuthProvider>
