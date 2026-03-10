@@ -310,10 +310,8 @@ export function LandingV2() {
                         </p>
                     </div>
                     <div className="steps-layout" role="list">
-                        <svg className="hidden md:block absolute top-[28px] left-[12.5%] w-[75%] h-[2px] z-0 overflow-visible" style={{ pointerEvents: 'none' }}>
-                            <line x1="28" y1="0" x2="calc(100% - 28px)" y2="0" stroke="rgba(26,68,200,0.3)" strokeWidth="2" strokeDasharray="6 6" className="flow-line" />
-                        </svg>
                         <div className="step-item sr" role="listitem">
+                            <div className="process-line hidden md:block" />
                             <div className="step-number-wrap">
                                 <span className="step-icon" aria-hidden="true">📄</span>
                             </div>
@@ -321,6 +319,7 @@ export function LandingV2() {
                             <p className="step-desc">Upload your resume — PDF, DOCX, or paste a LinkedIn URL. We parse it all within seconds.</p>
                         </div>
                         <div className="step-item sr sr-d1" role="listitem">
+                            <div className="process-line hidden md:block" />
                             <div className="step-number-wrap">
                                 <span className="step-icon" aria-hidden="true">⚡</span>
                             </div>
@@ -328,6 +327,7 @@ export function LandingV2() {
                             <p className="step-desc">AI extracts skills, projects, and achievements — then rewrites them in language that resonates with recruiters.</p>
                         </div>
                         <div className="step-item sr sr-d2" role="listitem">
+                            <div className="process-line hidden md:block" />
                             <div className="step-number-wrap">
                                 <span className="step-icon" aria-hidden="true">🎨</span>
                             </div>
