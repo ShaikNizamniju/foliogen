@@ -48,10 +48,14 @@ export function SecureCheckoutModal({
                 variant: 'default'
             });
             onClose();
-        } catch (err) {
+        } catch (err: any) {
+            console.error('Waitlist checkout error:', err);
+            const errorMessage = err?.message || 'Unable to process checkout. Please try again or contact support.';
             toast({
                 title: 'Request Failed',
-                description: 'Unable to process checkout. Please try again or contact support.',
+                description: errorMessage.includes('fetch')
+                    ? 'Database Connection Error. Please verify your network.'
+                    : errorMessage,
                 variant: 'destructive'
             });
         } finally {

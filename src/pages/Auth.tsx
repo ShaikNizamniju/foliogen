@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Eye, EyeOff, ArrowRight, Users, Briefcase, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { lovable } from '@/integrations/lovable';
+import { supabase } from '@/lib/supabase_v2';
 import { cn } from '@/lib/utils';
 import logoImg from '@/assets/logo.png';
 import { useWelcomeEmail } from '@/hooks/use-welcome-email';
@@ -51,18 +51,19 @@ export default function Auth() {
   const handleGoogleLogin = useCallback(async () => {
     setGoogleLoading(true);
     try {
-      const result = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: window.location.origin + '/dashboard?section=overview',
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/auth/callback',
+        },
       });
-      if (result?.error) throw result.error;
-      if (!result?.redirected) {
-        navigate('/dashboard?section=overview');
-      }
+      if (error) throw error;
+      // Note: signInWithOAuth redirects the window, so no navigate is needed here on success
     } catch (error: any) {
       toast.error(error?.message || 'Google login failed');
       setGoogleLoading(false);
     }
-  }, [navigate]);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
