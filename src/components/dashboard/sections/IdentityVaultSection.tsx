@@ -180,8 +180,10 @@ export function IdentityVaultSection() {
                                         <Button
                                             variant="ghost"
                                             size="icon"
+                                            disabled={portfolios.length <= 1}
                                             onClick={() => confirmDelete(portfolio)}
-                                            className="text-muted-foreground hover:text-red-400 hover:bg-red-400/10 -mr-2 -mt-2"
+                                            className="text-muted-foreground hover:text-red-400 hover:bg-red-400/10 -mr-2 -mt-2 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+                                            title={portfolios.length <= 1 ? "Cannot delete the last remaining identity" : "Destroy Identity"}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
