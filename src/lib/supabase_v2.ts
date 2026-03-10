@@ -1,7 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
-// Hardcoding strings as a final-stand production fix
-const URL = "https://fjmcjsffeycwygicflfk.supabase.co";
-const KEY = "sb_publishable_yzi4UYRXIdUg0ANPxexWGg_T5Ccg9wK";
+// Production Supabase REST API connection (env → hardcoded fallback)
+const URL = import.meta.env.VITE_SUPABASE_URL || "https://fjmcjsffeycwygicflfk.supabase.co";
+const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_yzi4UYRXIdUg0ANPxexWGg_T5Ccg9wK";
+
+/**
+ * Transaction Pooler (Port 6543) — server-side only.
+ * Set VITE_SUPABASE_DB_URL in your .env to:
+ *   postgresql://postgres.fjmcjsffeycwygicflfk:<PASSWORD>@aws-0-ap-south-1.pooler.supabase.com:6543/postgres
+ * This value is never hardcoded to prevent password exposure in the client bundle.
+ */
+export const POOLER_CONNECTION_STRING = import.meta.env.VITE_SUPABASE_DB_URL || '';
 
 let clientInstance;
 try {
