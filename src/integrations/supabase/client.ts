@@ -2,16 +2,19 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '[PASTE YOUR SUPABASE PROJECT URL HERE]';
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '[PASTE YOUR ANON PUBLIC KEY HERE]';
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+if (!import.meta.env.VITE_SUPABASE_URL) {
+  console.error('Supabase initialization failed: VITE_SUPABASE_URL is undefined.');
+}
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  }
-});
+export const supabase = import.meta.env.VITE_SUPABASE_URL
+  ? createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      storage: localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+    }
+  })
+  : null as any;

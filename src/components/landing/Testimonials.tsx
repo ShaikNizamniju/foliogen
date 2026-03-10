@@ -20,6 +20,18 @@ const testimonials = [
     role: "Product Lead",
     company: "Fortune 500",
   },
+  {
+    quote: "The visual narratives I can build here are lightyears ahead of basic templates. It feels like editing a high-end magazine feature.",
+    name: "Alex Vance",
+    role: "UX Designer",
+    company: "Global Agency",
+  },
+  {
+    quote: "Finally, a tool that understands modern personal branding. The automated proof-of-work section is an absolute gamechanger.",
+    name: "Samira Tariq",
+    role: "Marketing Director",
+    company: "Tech Unicorn",
+  }
 ];
 
 const stagger = {
@@ -59,20 +71,23 @@ export function Testimonials() {
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
           variants={stagger}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
+          className="columns-1 md:columns-2 lg:columns-3 gap-6 max-w-6xl mx-auto"
         >
           {testimonials.map((t, i) => (
             <motion.div
               key={i}
               variants={fadeUp}
-              className="group relative rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm p-8 hover:border-primary/30 transition-colors duration-300"
+              className="break-inside-avoid mb-6 group relative rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm p-8 hover:border-primary/30 transition-colors duration-300"
             >
               {/* Glassmorphic highlight */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
               <div className="relative z-10">
                 <Quote className="h-5 w-5 text-primary/40 mb-4" />
-                <p className="text-sm leading-relaxed text-muted-foreground mb-6">
+                <p
+                  className="text-xl md:text-2xl leading-relaxed text-foreground/90 mb-6"
+                  style={{ fontFamily: "'Instrument Serif', serif" }}
+                >
                   "{t.quote}"
                 </p>
                 <div className="border-t border-border/40 pt-4">
