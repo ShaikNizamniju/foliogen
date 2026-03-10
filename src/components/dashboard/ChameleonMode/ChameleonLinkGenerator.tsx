@@ -23,7 +23,7 @@ export function ChameleonLinkGenerator({
     const [showQR, setShowQR] = useState(false);
 
     const username = (profile as any)?.username || user?.id || '';
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://foliogen.in';
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://www.foliogen.in';
     const link = `${baseUrl}/${username}?chameleon=${chameleonId}`;
 
     const copy = async () => {

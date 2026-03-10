@@ -54,7 +54,7 @@ export default function Auth() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://foliogen.in/auth/callback',
+          redirectTo: 'https://www.foliogen.in/auth/callback',
         },
       });
       if (error) throw error;
@@ -132,7 +132,7 @@ export default function Auth() {
     try { emailSchema.parse(email); } catch { toast.error('Please enter a valid email.'); return; }
     const { supabase } = await import('@/lib/supabase_v2');
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://foliogen.in/reset-password',
+      redirectTo: 'https://www.foliogen.in/reset-password',
     });
     if (error) toast.error(error.message);
     else toast.success('Password reset email sent! Check your inbox.');

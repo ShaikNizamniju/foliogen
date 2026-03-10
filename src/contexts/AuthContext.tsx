@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    const redirectUrl = 'https://foliogen.in/dashboard?section=overview';
+    const redirectUrl = 'https://www.foliogen.in/dashboard?section=overview';
 
     const { error } = await supabase.auth.signUp({
       email,
