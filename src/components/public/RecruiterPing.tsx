@@ -34,48 +34,41 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
     if (!company.trim() || !contactMethod.trim()) return;
 
     setIsSubmitting(true);
-    try {
-      // Log the ping
-      const { error } = await supabase.from('visit_logs').insert({
-        user_id: portfolioUserId,
-        link_type: linkType,
-        link_id: linkId,
-        industry_context: 'AI_PM_Vertical',
-        device_type: window.innerWidth < 768 ? 'Mobile' : 'Desktop',
-        is_ping: true,
-        company: company.trim(),
-        contact_method: contactMethod.trim(),
+    setIsSubmitting(true);
+    
+    // Fire and forget networking to achieve <200ms perceived latency
+    supabase.from('visit_logs').insert({
+      user_id: portfolioUserId,
+      link_type: linkType,
+      link_id: linkId,
+      industry_context: 'AI_PM_Vertical',
+      device_type: window.innerWidth < 768 ? 'Mobile' : 'Desktop',
+      is_ping: true,
+      company: company.trim(),
+      contact_method: contactMethod.trim(),
+    }).then(({ error }) => {
+      if (error) console.error("Failed to ping:", error);
+    });
+
+    // Trigger Neural Sync Success Animation
+    setIsSuccess(true);
+    setTimeout(() => {
+      setOpen(false);
+      setIsSuccess(false);
+      setCompany('');
+      setContactMethod('');
+      toast.success("Interest Sent", {
+        description: "Encrypted connection established.",
+        style: { 
+          background: '#0a0a0a', 
+          border: '1px solid rgba(59, 130, 246, 0.5)', 
+          color: 'white',
+          boxShadow: '0 0 20px rgba(59, 130, 246, 0.15)'
+        },
+        icon: <Sparkles className="h-4 w-4 text-blue-400" />
       });
-
-      if (error) throw error;
-
-      // Trigger Neural Sync Success Animation
-      setIsSuccess(true);
-      setTimeout(() => {
-        setOpen(false);
-        setIsSuccess(false);
-        setCompany('');
-        setContactMethod('');
-        toast.success("Interest Sent", {
-          description: "Encrypted connection established.",
-          style: { 
-            background: '#0a0a0a', 
-            border: '1px solid rgba(59, 130, 246, 0.5)', 
-            color: 'white',
-            boxShadow: '0 0 20px rgba(59, 130, 246, 0.15)'
-          },
-          icon: <Sparkles className="h-4 w-4 text-blue-400" />
-        });
-      }, 200);
-
-    } catch (err) {
-      console.error("Failed to send ping", err);
-      toast.error("Failed to establish connection", {
-        style: { background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }
-      });
-    } finally {
       setIsSubmitting(false);
-    }
+    }, 150);
   };
 
   return (

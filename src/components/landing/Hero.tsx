@@ -25,7 +25,7 @@ export function Hero() {
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <motion.div
           ref={ref}
-          className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center"
+          className="grid lg:grid-cols-2 gap-16 lg:gap-16 items-center"
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
           variants={stagger}

@@ -73,7 +73,7 @@ serve(async (req) => {
       if (!titleCheck.valid) return validationError(titleCheck.error!);
     }
 
-    console.log(`Enhancing project description: ${title || 'Untitled'} | Context: ${industry_context || 'None'}`);
+    // Removed debug console.log
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
 
@@ -85,16 +85,16 @@ serve(async (req) => {
     } else if (targetIndustry.includes('startup') || targetIndustry.includes('early-stage')) {
       industryLogic = `\nINDUSTRY WEIGHTING (Early-Stage Startup): Heavily weight 'Zero-to-One,' 'Speed-to-Market,' and 'Multi-disciplinary Agility.' Re-order bullet points so these metrics appear first. Adapt vocabulary to rapid execution and high ownership.`;
     } else if (targetIndustry.includes('fintech') || targetIndustry.includes('healthtech')) {
-      industryLogic = `\nINDUSTRY WEIGHTING (Fintech/Healthtech): Emphasize 'Security,' 'Compliance,' and 'Data Integrity' within the STAR framework. Re-order bullet points so these metrics appear first. Adapt vocabulary to reflect strict regulatory environments and high-stakes data.`;
+      industryLogic = `\nINDUSTRY WEIGHTING (Fintech/Healthtech): Emphasize 'Security,' 'Compliance,' and 'Data Integrity' within the RICE framework. Re-order bullet points so these metrics appear first. Adapt vocabulary to reflect strict regulatory environments and high-stakes data.`;
     }
 
     const systemPrompt = `You are The Elite PM Narrative Engine, specializing in high-impact, cinematic professional narratives. Your base tone is 'Noir-Professional'—sophisticated, authoritative, data-driven, and slightly dramatic. Avoid generic corporate jargon.
     ${industryLogic}
 
-Your task is to rewrite project descriptions into a Deep-Dive using the HEART and STAR frameworks, adapted to the target industry if provided.
+Your task is to rewrite project descriptions into a Deep-Dive using the HEART and RICE frameworks, adapted to the target industry if provided.
 
 Structural Requirements:
-1. Deep-Dive Bullet Points: 3-4 bullet points that highlight technical complexity and business impact using HEART/STAR frameworks.
+1. Deep-Dive Bullet Points: 3-4 bullet points that highlight technical complexity and business impact using HEART/RICE frameworks.
 2. The 'Killer' Insight: A short unique 'Contextual Summary' (1-2 sentences max) appended at the end that explains why the user's execution in this project makes them a perfect fit for the target sector.
 
 NEGATIVE PROMPTING (Strictly Prohibited):

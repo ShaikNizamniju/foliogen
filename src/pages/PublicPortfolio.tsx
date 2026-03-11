@@ -399,7 +399,7 @@ export default function PublicPortfolio() {
                 <div className="h-px bg-white/10 flex-1"></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {projects.filter((p) => p.proofOfImpact).map((project, i) => (
+                {projects.filter((p) => p.verifiedImpact).map((project, i) => (
                   <a
                     key={i}
                     href={project.proofOfImpact}
@@ -434,7 +434,7 @@ export default function PublicPortfolio() {
                     </p>
                   </a>
                 ))}
-                {projects.filter((p) => p.proofOfImpact).length === 0 && (
+                {projects.filter((p) => p.verifiedImpact).length === 0 && (
                   <div className="text-sm text-neutral-500 italic flex items-center h-20 col-span-full justify-center border text-center border-dashed border-white/10 rounded-2xl bg-black/20">
                     No verified links available.
                   </div>

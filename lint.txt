@@ -1,0 +1,329 @@
+﻿
+> vite_react_shadcn_ts@1.0.4 lint
+> eslint .
+
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\ChameleonMode\ChameleonLinkGenerator.tsx
+  25:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\ChameleonMode\ChameleonModePanel.tsx
+   87:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\DashboardContent.tsx
+  41:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\OnboardingQuestionnaire.tsx
+  35:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\ProVaultWaitlistModal.tsx
+  37:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\ProofOfWork\GitHubActivityFeed.tsx
+  95:39  warning  React Hook useEffect has a missing dependency: 'fetchData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\ProofOfWork\GitHubConnectCard.tsx
+  42:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  57:77  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\ProofOfWork\TestimonialRequestFlow.tsx
+  16:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\SecureCheckoutModal.tsx
+  39:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\ShareModal.tsx
+  97:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\SmartResumeParser.tsx
+   99:55  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  137:21  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  181:26  error    Unexpected any. Specify a different type                                                                               @typescript-eslint/no-explicit-any
+  265:6   warning  React Hook useCallback has an unnecessary dependency: 'saveProfile'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\TemplatePreview.tsx
+  72:84  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\analytics\AnalyticsDashboard.tsx
+  23:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\analytics\SectionHeatmap.tsx
+  48:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\analytics\SessionDepthChart.tsx
+  34:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:64  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\forms\AiRewriteButton.tsx
+  66:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\forms\BasicInfoForm.tsx
+  102:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\forms\LinkedInPdfUpload.tsx
+  40:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  76:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\forms\ProjectsForm.tsx
+   37:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   38:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  306:19  error  Empty block statement                     no-empty
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\forms\ResumeUpload.tsx
+  33:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  51:70  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  90:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\forms\SmartProjectCard.tsx
+   36:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                   react-refresh/only-export-components
+  146:6   warning  React Hook useEffect has missing dependencies: 'onUpdate' and 'project'. Either include them or remove the dependency array. If 'onUpdate' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\ChatLogSection.tsx
+  26:9   warning  The 'setQueriesState' conditional could make the dependencies of useEffect Hook (at line 48) change on every render. Move it inside the useEffect callback. Alternatively, wrap the initialization of 'setQueriesState' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  26:47  error    Unexpected any. Specify a different type                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+  26:87  error    Unexpected any. Specify a different type                                                                                                                                                                                                           @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\FavoritesSection.tsx
+   10:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  215:82  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\IdentityVaultSection.tsx
+  36:50  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  42:64  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  48:8   warning  React Hook useEffect has a missing dependency: 'fetchPortfolios'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  98:39  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\InterviewPrepSection.tsx
+  27:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  79:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\OverviewSection.tsx
+   91:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   91:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  118:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\ProUpsellBanner.tsx
+  37:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\ProofOfWorkSection.tsx
+  12:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\sections\TemplatesSection.tsx
+  46:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\dashboard\templates\StudioTemplate.tsx
+  79:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\landing\LandingV2.tsx
+  120:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\public\ProRecruiterBanner.tsx
+  103:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\public\ProfileChatBot.tsx
+  206:19  error  Empty block statement  no-empty
+
+C:\Users\shaik\Downloads\foliogen\src\components\public\RecruiterBanner.tsx
+  70:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\templates\ArpeggioTemplate.tsx
+   51:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   64:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   74:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  168:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  210:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\templates\NakulaTemplate.tsx
+   51:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  171:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  208:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\components\theme-provider.tsx
+  66:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\badge.tsx
+  29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\button.tsx
+  47:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\command.tsx
+  24:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\form.tsx
+  129:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\sidebar.tsx
+  645:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\sonner.tsx
+  27:19  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\textarea.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\shaik\Downloads\foliogen\src\components\ui\toggle.tsx
+  37:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\contexts\AuthContext.tsx
+  98:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\contexts\ProContext.tsx
+  62:25  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  63:34  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  64:28  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  64:63  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  65:28  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  66:38  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  67:35  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  67:78  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  99:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\contexts\ProfileContext.tsx
+   46:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  110:18  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  111:17  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  162:6   warning  React Hook useEffect has a missing dependency: 'fetchProfile'. Either include it or remove the dependency array                 react-hooks/exhaustive-deps
+  174:52  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  175:21  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  195:29  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  196:31  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  197:33  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  199:28  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  200:25  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  201:35  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  202:29  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  203:32  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  204:31  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  225:6   warning  React Hook useCallback has a missing dependency: 'saveProfile'. Either include it or remove the dependency array                react-hooks/exhaustive-deps
+  247:28  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  255:21  error    Empty block statement                                                                                                           no-empty
+  313:12  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  327:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\hooks\use-debounce.ts
+  25:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\hooks\useChameleonMode.ts
+  33:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\hooks\useFavorites.ts
+  75:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\hooks\useJobApplications.ts
+  48:9   warning  The 'setJobsState' conditional could make the dependencies of useCallback Hook (at line 78) change on every render. To fix this, wrap the initialization of 'setJobsState' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  48:47  error    Unexpected any. Specify a different type                                                                                                                                                              @typescript-eslint/no-explicit-any
+  50:39  error    Unexpected any. Specify a different type                                                                                                                                                              @typescript-eslint/no-explicit-any
+  52:39  error    Unexpected any. Specify a different type                                                                                                                                                              @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\lib\agents\chronos.ts
+  61:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\lib\agents\scout.ts
+  29:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\lib\payment.ts
+  6:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\lib\portfolio-utils.ts
+  18:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\lib\supabase_v2.ts
+  45:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\pages\Auth.tsx
+   62:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  123:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\pages\Dashboard.tsx
+  20:14  warning  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file                      react-refresh/only-export-components
+  20:48  error    Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  22:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\shaik\Downloads\foliogen\src\pages\PublicPortfolio.tsx
+   48:6   warning  React Hook useEffect has a missing dependency: 'fetchProfile'. Either include it or remove the dependency array                                                                              react-hooks/exhaustive-deps
+  171:53  error    Unexpected any. Specify a different type                                                                                                                                                     @typescript-eslint/no-explicit-any
+  172:22  error    Unexpected any. Specify a different type                                                                                                                                                     @typescript-eslint/no-explicit-any
+  193:30  error    Unexpected any. Specify a different type                                                                                                                                                     @typescript-eslint/no-explicit-any
+  194:32  error    Unexpected any. Specify a different type                                                                                                                                                     @typescript-eslint/no-explicit-any
+  195:34  error    Unexpected any. Specify a different type                                                                                                                                                     @typescript-eslint/no-explicit-any
+  232:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+
+C:\Users\shaik\Downloads\foliogen\src\pages\ResetPassword.tsx
+  69:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\pages\TemplatesGallery.tsx
+  38:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\src\pages\auth\Callback.tsx
+  70:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\analyze-interview-answer\index.ts
+  50:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\analyze-job-match\index.ts
+  60:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\chat-with-profile\index.ts
+   27:43  error  'visitorCompany' is never reassigned. Use 'const' instead  prefer-const
+   46:13  error  Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   49:17  error  Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+   68:18  error  Unexpected any. Specify a different type                   @typescript-eslint/no-explicit-any
+  181:21  error  Empty block statement                                      no-empty
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\create-lemonsqueezy-checkout\index.ts
+  86:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\create-razorpay-order\index.ts
+  120:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\enhance-project\index.ts
+  54:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\generate-interview-prep\index.ts
+  53:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\parse-resume\index.ts
+  48:59  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\rewrite-text\index.ts
+  51:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\stripe-checkout\index.ts
+  124:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\stripe-webhook\index.ts
+   46:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\supabase\functions\verify-project-password\index.ts
+  54:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  59:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\shaik\Downloads\foliogen\tailwind.config.ts
+  132:13  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Γ£û 168 problems (141 errors, 27 warnings)
+
