@@ -136,7 +136,7 @@ serve(async (req) => {
             },
           }),
         });
-        console.log('Confirmation email sent to', user.email);
+        
       }
     } catch (emailErr) {
       console.error('Email send failed (non-blocking):', emailErr);
