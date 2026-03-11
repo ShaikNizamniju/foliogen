@@ -62,7 +62,7 @@ serve(async (req) => {
         }
 
         const selectedPriceId = planId === 'pro' ? pricePro : priceBasic;
-        console.log(`[Stripe Checkout] Resolved Price ID for plan ${planId}`);
+        
 
         console.log('[Stripe Checkout] Initializing Stripe client...');
         const stripe = new Stripe(stripeKey, {
