@@ -508,7 +508,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
           </motion.div>
         )}
 
-        {/* Error State */}
+        {/* Error State — Noir Themed */}
         {state === 'error' && (
           <motion.div
             key="error"
@@ -516,24 +516,32 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="border border-destructive/30 rounded-2xl p-8 bg-destructive/5"
+            className="border border-muted-foreground/20 rounded-2xl p-8 bg-background"
           >
             <div className="flex flex-col items-center gap-6">
-              <div className="p-4 rounded-2xl bg-destructive/20">
-                <AlertCircle className="w-10 h-10 text-destructive" />
+              <div className="p-4 rounded-2xl bg-muted">
+                <AlertCircle className="w-10 h-10 text-muted-foreground" />
               </div>
 
               <div className="text-center space-y-2">
-                <h3 className="text-lg font-semibold text-foreground">
-                  Failed to parse resume
+                <h3 className="text-lg font-semibold text-foreground tracking-tight">
+                  Neural Sync Interrupted
                 </h3>
                 <p className="text-sm text-muted-foreground max-w-md">
-                  {errorMessage || 'Something went wrong. Please try again with a different file.'}
+                  {errorMessage || 'Core connection offline. Investigating...'}
                 </p>
               </div>
 
-              <Button onClick={resetParser} variant="outline">
-                Try Again
+              <Button
+                onClick={() => {
+                  resetParser();
+                  if (currentFile) processFile(currentFile);
+                }}
+                variant="outline"
+                className="min-h-[48px] px-8"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Retry Analysis
               </Button>
             </div>
           </motion.div>
