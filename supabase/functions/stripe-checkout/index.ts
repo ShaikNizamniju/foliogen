@@ -73,7 +73,7 @@ serve(async (req) => {
         const origin = req.headers.get('origin') || 'https://foliogen.in';
         const dashboardUrl = `${origin}/dashboard`;
 
-        console.log('[Stripe Checkout] Creating Stripe Session...');
+        
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
