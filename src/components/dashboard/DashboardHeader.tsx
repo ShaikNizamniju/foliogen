@@ -8,6 +8,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { PersonaSwitcher } from './PersonaSwitcher';
 
 import { motion } from 'framer-motion';
 
@@ -81,6 +82,7 @@ export function DashboardHeader() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <PersonaSwitcher />
           <ModeToggle />
           <Button onClick={handleCopyLink} variant="ghost" size="sm" className="hidden sm:flex text-muted-foreground hover:text-foreground gap-1.5">
             {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}

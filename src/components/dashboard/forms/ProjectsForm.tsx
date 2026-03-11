@@ -228,6 +228,8 @@ export function ProjectsForm() {
         return;
       }
 
+      const targetIndustry = localStorage.getItem("foliogen_target_industry") || "none";
+
       const response = await fetch(ENHANCE_URL, {
         method: 'POST',
         headers: {
@@ -237,6 +239,7 @@ export function ProjectsForm() {
         body: JSON.stringify({
           description: project.description,
           title: project.title,
+          industry_context: targetIndustry === "none" ? undefined : targetIndustry,
         }),
       });
 
