@@ -96,7 +96,7 @@ serve(async (req) => {
             },
         });
 
-        console.log(`[Stripe Checkout] Session created successfully: ${session.id}`);
+        
 
         // 5. Insert pending payment record via Database (Using Service Role for inserts)
         const serviceClient = createClient(
