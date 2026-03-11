@@ -236,6 +236,7 @@ export type Database = {
           full_name: string | null
           github_url: string | null
           headline: string | null
+          hide_photo: boolean | null
           id: string
           is_pro: boolean | null
           key_highlights: string[] | null
@@ -244,15 +245,20 @@ export type Database = {
           meta_description: string | null
           meta_keywords: string[] | null
           meta_title: string | null
+          next_renewal_date: string | null
           photo_url: string | null
+          plan_type: string | null
           predicted_domain: string | null
           pro_since: string | null
           projects: Json | null
+          referral_code: string | null
+          referred_by: string | null
           resume_url: string | null
           selected_font: string | null
           selected_template: string | null
           skills: string[] | null
           subscription_id: string | null
+          subscription_status: string | null
           twitter_url: string | null
           updated_at: string
           user_id: string
@@ -269,6 +275,7 @@ export type Database = {
           full_name?: string | null
           github_url?: string | null
           headline?: string | null
+          hide_photo?: boolean | null
           id?: string
           is_pro?: boolean | null
           key_highlights?: string[] | null
@@ -277,15 +284,20 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string[] | null
           meta_title?: string | null
+          next_renewal_date?: string | null
           photo_url?: string | null
+          plan_type?: string | null
           predicted_domain?: string | null
           pro_since?: string | null
           projects?: Json | null
+          referral_code?: string | null
+          referred_by?: string | null
           resume_url?: string | null
           selected_font?: string | null
           selected_template?: string | null
           skills?: string[] | null
           subscription_id?: string | null
+          subscription_status?: string | null
           twitter_url?: string | null
           updated_at?: string
           user_id: string
@@ -302,6 +314,7 @@ export type Database = {
           full_name?: string | null
           github_url?: string | null
           headline?: string | null
+          hide_photo?: boolean | null
           id?: string
           is_pro?: boolean | null
           key_highlights?: string[] | null
@@ -310,15 +323,20 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string[] | null
           meta_title?: string | null
+          next_renewal_date?: string | null
           photo_url?: string | null
+          plan_type?: string | null
           predicted_domain?: string | null
           pro_since?: string | null
           projects?: Json | null
+          referral_code?: string | null
+          referred_by?: string | null
           resume_url?: string | null
           selected_font?: string | null
           selected_template?: string | null
           skills?: string[] | null
           subscription_id?: string | null
+          subscription_status?: string | null
           twitter_url?: string | null
           updated_at?: string
           user_id?: string
@@ -350,6 +368,39 @@ export type Database = {
           key?: string
           request_count?: number
           window_start?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          referee_user_id: string | null
+          referral_code: string
+          referrer_user_id: string
+          reward_granted: boolean
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referee_user_id?: string | null
+          referral_code: string
+          referrer_user_id: string
+          reward_granted?: boolean
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          referee_user_id?: string | null
+          referral_code?: string
+          referrer_user_id?: string
+          reward_granted?: boolean
+          status?: string
         }
         Relationships: []
       }
