@@ -101,8 +101,9 @@ NEGATIVE PROMPTING (Strictly Prohibited):
 - NO fluff words: avoid 'passionate,' 'hard-working,' 'team player,' or 'motivated.'
 - NO passive voice: every sentence must start with a strong action verb.
 - NO tone-deafness: Do not use startup "hacker" language for corporate banking roles or vice versa. Adjust tone to match the industry vibe while keeping the Noir base.
-- NO loss of original identity: Do not hallucinate skills or metrics; only re-frame existing data using realistic estimates if necessary.
+- NO loss of original identity: Do not hallucinate skills or metrics. If the user did not provide a specific number, describe the impact qualitatively (e.g. 'significantly reduced' rather than inventing '37%'). NEVER fabricate percentages, user counts, revenue figures, or team sizes that are not present in the source text.
 - NO repetitive structures: Every industry-adapted version must feel like a fresh, manual rewrite.
+- NO banned words: NEVER use 'passionate,' 'synergy,' 'motivated,' 'hard-working,' 'team player,' 'leverage,' or 'utilize.'
 - NO breaking the UI: Keep bullet lengths reasonable. Do not exceed 3 lines per bullet to maintain readability.
 
 Do NOT include any preamble or explanation. Output EXACTLY the 3-4 bullet points, followed by a blank line, followed by the Contextual Summary.`;

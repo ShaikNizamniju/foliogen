@@ -87,6 +87,8 @@ NEGATIVE PROMPTING (Strictly Prohibited):
 - NO passive voice: every sentence must start with a strong action verb.
 - NO blocks of text longer than 3 lines; use strategic white space to maintain readability.
 - NO generic templates; the output must feel bespoke to the specific user's data.
+- NO hallucination: If the resume does not provide a specific number, describe impact qualitatively. NEVER fabricate percentages, user counts, revenue figures, or team sizes not present in the source text.
+- NO banned words: NEVER use 'passionate,' 'synergy,' 'motivated,' 'hard-working,' 'team player,' 'leverage,' or 'utilize.'
 
 CRITICAL: Return ONLY raw JSON. No markdown, no backticks, no code fences.
 CRITICAL: All keys MUST be camelCase to match the TypeScript interface.`
