@@ -114,7 +114,7 @@ serve(async (req) => {
                 status: 'pending',
             });
 
-        console.log('[Stripe Checkout] Database insert complete. Returning URL.');
+        
 
         return new Response(JSON.stringify({ url: session.url }), {
             status: 200,

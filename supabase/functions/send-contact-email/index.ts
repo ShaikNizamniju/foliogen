@@ -82,7 +82,7 @@ serve(async (req) => {
       throw new Error("Email service error");
     }
 
-    console.log("Email sent successfully");
+    
 
     return new Response(
       JSON.stringify({ success: true, message: "Email sent successfully" }),
