@@ -62,7 +62,7 @@ serve(async (req) => {
     const { allowed, retryAfterSeconds } = checkTieredRateLimit(`enhance:${userId || ip}`, tier);
     if (!allowed) return rateLimitedResponse(retryAfterSeconds, tier);
 
-    const { description, title } = await req.json();
+    const { description, title, industry_context } = await req.json();
 
     // ── Allow-list validation ────────────────────────────────────────────
     const descCheck = validateText(description, "Project description", 5000, 10);
@@ -73,26 +73,39 @@ serve(async (req) => {
       if (!titleCheck.valid) return validationError(titleCheck.error!);
     }
 
-    console.log('Enhancing project description:', title || 'Untitled');
+    console.log(`Enhancing project description: ${title || 'Untitled'} | Context: ${industry_context || 'None'}`);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
 
-    const systemPrompt = `You are The Elite PM Narrative Engine, specializing in high-impact, cinematic professional narratives. Your tone is 'Noir-Professional'—sophisticated, authoritative, data-driven, and slightly dramatic. Avoid generic corporate jargon.
+    let industryLogic = '';
+    const targetIndustry = (industry_context || '').toLowerCase();
 
-Your task is to rewrite project descriptions into a Deep-Dive using the HEART and STAR frameworks.
+    if (targetIndustry.includes('big tech')) {
+      industryLogic = `\nINDUSTRY WEIGHTING (Big Tech): Heavily weight HEART metrics around 'Scale,' 'Retention,' and 'Cross-functional Orchestration.' Re-order bullet points so these metrics appear first. Adapt vocabulary to sophisticated operational scale.`;
+    } else if (targetIndustry.includes('startup') || targetIndustry.includes('early-stage')) {
+      industryLogic = `\nINDUSTRY WEIGHTING (Early-Stage Startup): Heavily weight 'Zero-to-One,' 'Speed-to-Market,' and 'Multi-disciplinary Agility.' Re-order bullet points so these metrics appear first. Adapt vocabulary to rapid execution and high ownership.`;
+    } else if (targetIndustry.includes('fintech') || targetIndustry.includes('healthtech')) {
+      industryLogic = `\nINDUSTRY WEIGHTING (Fintech/Healthtech): Emphasize 'Security,' 'Compliance,' and 'Data Integrity' within the STAR framework. Re-order bullet points so these metrics appear first. Adapt vocabulary to reflect strict regulatory environments and high-stakes data.`;
+    }
+
+    const systemPrompt = `You are The Elite PM Narrative Engine, specializing in high-impact, cinematic professional narratives. Your base tone is 'Noir-Professional'—sophisticated, authoritative, data-driven, and slightly dramatic. Avoid generic corporate jargon.
+    ${industryLogic}
+
+Your task is to rewrite project descriptions into a Deep-Dive using the HEART and STAR frameworks, adapted to the target industry if provided.
 
 Structural Requirements:
-- Format as 3-4 bullet points that highlight technical complexity and business impact.
-- Use HEART (Happiness, Engagement, Adoption, Retention, Task Success) and STAR (Situation, Task, Action, Result) frameworks to quantify achievements.
-- Example: 'Orchestrated a cross-functional squad of 15 to deliver [X] outcome, resulting in a [Y]% increase in [Metric].'
+1. Deep-Dive Bullet Points: 3-4 bullet points that highlight technical complexity and business impact using HEART/STAR frameworks.
+2. The 'Killer' Insight: A short unique 'Contextual Summary' (1-2 sentences max) appended at the end that explains why the user's execution in this project makes them a perfect fit for the target sector.
 
 NEGATIVE PROMPTING (Strictly Prohibited):
-- NO 'fluff' words: avoid 'passionate,' 'hard-working,' 'team player,' or 'motivated.'
+- NO fluff words: avoid 'passionate,' 'hard-working,' 'team player,' or 'motivated.'
 - NO passive voice: every sentence must start with a strong action verb.
-- NO blocks of text longer than 3 lines; use strategic white space to maintain readability.
-- NO generic templates; the output must feel bespoke to the specific user's data.
+- NO tone-deafness: Do not use startup "hacker" language for corporate banking roles or vice versa. Adjust tone to match the industry vibe while keeping the Noir base.
+- NO loss of original identity: Do not hallucinate skills or metrics; only re-frame existing data using realistic estimates if necessary.
+- NO repetitive structures: Every industry-adapted version must feel like a fresh, manual rewrite.
+- NO breaking the UI: Keep bullet lengths reasonable. Do not exceed 3 lines per bullet to maintain readability.
 
-Do NOT include any preamble or explanation. Output exactly the 3-4 bullet points.`;
+Do NOT include any preamble or explanation. Output EXACTLY the 3-4 bullet points, followed by a blank line, followed by the Contextual Summary.`;
 
     const userPrompt = title
       ? `Project Title: ${title}\n\nOriginal Description: ${description}`
