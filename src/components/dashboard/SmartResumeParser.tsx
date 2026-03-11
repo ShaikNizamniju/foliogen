@@ -118,8 +118,8 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
       setProgress(80);
 
-      if (error) throw new Error("AI analysis failed: " + error.message);
-      if (data.error) throw new Error(data.error);
+      if (error) throw new Error("Neural Sync: Core connection offline. Investigating...");
+      if (data?.error) throw new Error(data.error);
 
       // Step 3: Calculate stats
       const parsedStats: ParseStats = {
