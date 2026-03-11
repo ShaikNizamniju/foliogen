@@ -282,7 +282,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 56px;
 }
 
 .landing-v2 .nav-logo {
@@ -353,7 +353,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
-  padding-top: 64px;
+  padding-top: 56px;
   position: relative;
   overflow: hidden;
 }
@@ -393,7 +393,7 @@ body {
 }
 
 .landing-v2 .hero-left {
-  padding: var(--sp-10) var(--sp-6) var(--sp-10) 0;
+  padding: var(--sp-7) var(--sp-6) var(--sp-10) 0;
   padding-left: max(var(--sp-6), calc((100vw - 1200px) / 2 + var(--sp-6)));
   position: relative;
   z-index: 1;
@@ -485,7 +485,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--sp-8) var(--sp-6);
+  padding: var(--sp-6) var(--sp-6);
   position: relative;
   z-index: 1;
   animation: slideInRight 1s 0.2s var(--ease-out) both;
