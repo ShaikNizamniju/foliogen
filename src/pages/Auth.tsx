@@ -50,6 +50,9 @@ export default function Auth() {
 
   const handleGoogleLogin = useCallback(async () => {
     setGoogleLoading(true);
+    // Pre-fetch intent
+    import('./Dashboard');
+    
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -260,6 +263,7 @@ export default function Auth() {
           {/* Google button */}
           <button
             type="button"
+            onMouseEnter={() => import('./Dashboard')}
             onClick={handleGoogleLogin}
             disabled={googleLoading || loading}
             className={cn(
@@ -377,6 +381,7 @@ export default function Auth() {
             {/* Submit */}
             <button
               type="submit"
+              onMouseEnter={() => import('./Dashboard')}
               disabled={loading || googleLoading}
               className={cn(
                 'w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200',
