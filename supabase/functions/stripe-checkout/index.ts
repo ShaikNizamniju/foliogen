@@ -30,7 +30,7 @@ serve(async (req) => {
 
         
         const { planId, userId } = await req.json();
-        console.log(`[Stripe Checkout] Payload received: planId=${planId}, userId=${userId}`);
+        
 
         if (user.id !== userId) {
             console.error(`[Stripe Checkout] User mismatch! JWT: ${user.id}, Payload: ${userId}`);
