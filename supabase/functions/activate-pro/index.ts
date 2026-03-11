@@ -136,13 +136,13 @@ serve(async (req) => {
             },
           }),
         });
-        console.log('Confirmation email sent to', user.email);
+        
       }
     } catch (emailErr) {
       console.error('Email send failed (non-blocking):', emailErr);
     }
 
-    console.log(`${config.planType} activated for user ${userId} with payment ${paymentId}`);
+    
 
     return new Response(
       JSON.stringify({ success: true, planType: config.planType }),

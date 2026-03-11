@@ -57,7 +57,7 @@ serve(async (req) => {
     const safeMessage = sanitize(body.message, 5000);
     const safeToName = body.toName ? sanitize(body.toName, 200) : "Portfolio Owner";
 
-    console.log(`Sending contact email from ${safeName} to ${body.toEmail}`);
+    
 
     const emailJsResponse = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
       method: "POST",
@@ -82,7 +82,7 @@ serve(async (req) => {
       throw new Error("Email service error");
     }
 
-    console.log("Email sent successfully");
+    
 
     return new Response(
       JSON.stringify({ success: true, message: "Email sent successfully" }),

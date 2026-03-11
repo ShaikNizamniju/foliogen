@@ -28,9 +28,9 @@ serve(async (req) => {
             });
         }
 
-        console.log(`[Stripe Checkout] Authenticated user: ${user.id}`);
+        
         const { planId, userId } = await req.json();
-        console.log(`[Stripe Checkout] Payload received: planId=${planId}, userId=${userId}`);
+        
 
         if (user.id !== userId) {
             console.error(`[Stripe Checkout] User mismatch! JWT: ${user.id}, Payload: ${userId}`);
@@ -62,9 +62,9 @@ serve(async (req) => {
         }
 
         const selectedPriceId = planId === 'pro' ? pricePro : priceBasic;
-        console.log(`[Stripe Checkout] Resolved Price ID for plan ${planId}`);
+        
 
-        console.log('[Stripe Checkout] Initializing Stripe client...');
+        
         const stripe = new Stripe(stripeKey, {
             apiVersion: '2023-10-16',
             httpClient: Stripe.createFetchHttpClient(),
@@ -73,7 +73,7 @@ serve(async (req) => {
         const origin = req.headers.get('origin') || 'https://foliogen.in';
         const dashboardUrl = `${origin}/dashboard`;
 
-        console.log('[Stripe Checkout] Creating Stripe Session...');
+        
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -96,7 +96,7 @@ serve(async (req) => {
             },
         });
 
-        console.log(`[Stripe Checkout] Session created successfully: ${session.id}`);
+        
 
         // 5. Insert pending payment record via Database (Using Service Role for inserts)
         const serviceClient = createClient(
@@ -104,7 +104,7 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        console.log('[Stripe Checkout] Inserting pending payment into Supabase...');
+        
         await serviceClient
             .from('payments')
             .insert({
@@ -114,7 +114,7 @@ serve(async (req) => {
                 status: 'pending',
             });
 
-        console.log('[Stripe Checkout] Database insert complete. Returning URL.');
+        
 
         return new Response(JSON.stringify({ url: session.url }), {
             status: 200,
