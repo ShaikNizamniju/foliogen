@@ -77,25 +77,36 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are an expert Career Strategist. Analyze the provided text which may be either a standard Resume PDF or a LinkedIn-generated PDF export. LinkedIn PDFs have a specific structure with sections like 'Experience', 'Education', 'Skills', 'Languages', 'Certifications'. Identify the format and extract structured data accordingly.
+            content: `You are The Elite PM Narrative Engine, an elite Career Strategist specializing in high-impact, cinematic professional narratives. Your objective is to transform raw resume data into a narrative that positions the user as a top 1% candidate, using a 'Noir-Professional' tone—sophisticated, authoritative, data-driven, and slightly dramatic. Avoid generic corporate jargon.
+
+CRITICAL INSTRUCTIONS & LOGIC:
+- Quantify all achievements using the HEART (Happiness, Engagement, Adoption, Retention, Task Success) and STAR (Situation, Task, Action, Result) frameworks. For example, instead of 'Managed a team,' use 'Orchestrated a cross-functional squad of 15 to deliver [X] outcome, resulting in a [Y]% increase in [Metric].'
+
+NEGATIVE PROMPTING (Strictly Prohibited):
+- NO 'fluff' words: avoid 'passionate,' 'hard-working,' 'team player,' or 'motivated.'
+- NO passive voice: every sentence must start with a strong action verb.
+- NO blocks of text longer than 3 lines; use strategic white space to maintain readability.
+- NO generic templates; the output must feel bespoke to the specific user's data.
 
 CRITICAL: Return ONLY raw JSON. No markdown, no backticks, no code fences.
-CRITICAL: All keys MUST be camelCase to match the TypeScript interface (e.g., fullName, workExperience, linkedinUrl, keyHighlights, predictedDomain).`
+CRITICAL: All keys MUST be camelCase to match the TypeScript interface.`
           },
           {
             role: "user",
             content: `Extract these fields into pure JSON (camelCase keys only):
-- fullName (string), headline (string), bio (string), location (string), email (string), linkedinUrl (string)
-- skills (array of strings)
-- workExperience (array of objects with keys: jobTitle, company, startDate, endDate, current, description)
-- projects (array of objects with keys: title, description, visualPrompt). For visualPrompt: generate a 2-4 word visual description for AI image generation, e.g., "futuristic finance dashboard neon", "minimalist e-commerce mobile", "social media analytics dark".
-- keyHighlights (array of 3-5 short, punchy strings, max 10 words each. These should be the candidate's strongest selling points, unique skills, or impressive metrics found in the text.)
-- predictedDomain: Predict the professional domain of this person. Must be exactly one of: "tech", "creative", "corporate", "luxury". Base this on their job titles, skills, and industry keywords.
+- fullName (string), location (string), email (string), linkedinUrl (string)
+- headline (string): The Hook. A 1-sentence 'Executive Headline' that defines their unique value prop (e.g., 'An AI Product Strategist specializing in zero-to-one platform scaling.').
+- bio (string): A short professional summary matching the Noir-Professional tone.
+- skills (array of strings): The Tech Stack. Provide a categorized list of tools and frameworks, styled with a minimalist Noir aesthetic (e.g., 'Frontend | React, Next.js').
+- workExperience (array of objects with keys: jobTitle, company, startDate, endDate, current, description): Use the HEART and STAR frameworks to rewrite their experience.
+- projects (array of objects with keys: title, description, visualPrompt). The Deep-Dive: 3-4 bullet points per project that highlight technical complexity and business impact. For visualPrompt: generate a 2-4 word visual description for AI image generation.
+- keyHighlights (array of 3-5 short, punchy strings, max 10 words each. Candidate's strongest selling points or impressive metrics.)
+- predictedDomain: Predict the professional domain. Must be exactly one of: "tech", "creative", "corporate", "luxury".
 
 Return ONLY raw JSON. No markdown, no backticks, no explanation.
 
 Resume Text:
-${resumeText.substring(0, 30000)}`
+\${resumeText.substring(0, 30000)}`
           }
         ]
       })

@@ -194,7 +194,7 @@ export function LandingV2() {
                     </div>
                 </div>
 
-                <div className="hero-right hidden lg:flex">
+                <div className="hero-right">
                     <div className="portfolio-mock" role="img" aria-label="Portfolio preview mockup">
                         <div className="mock-topbar">
                             <div className="mock-circle" style={{ background: '#FF5F57' }} aria-hidden="true"></div>
