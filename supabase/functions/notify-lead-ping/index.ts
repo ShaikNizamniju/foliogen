@@ -53,7 +53,7 @@ serve(async (req) => {
       content: null,
       embeds: [
         {
-          title: "◈ TARGET ACQUIRED — New Recruiter Ping",
+          title: "🌑 TARGET ACQUIRED: New Recruiter Ping",
           color: 0x3B82F6, // Neon Blue
           fields: [
             {
@@ -83,7 +83,7 @@ serve(async (req) => {
             },
           ],
           footer: {
-            text: "Identity, Engineered ◈ foliogen.in/dashboard",
+            text: "Return to the Dashboard to engage: foliogen.in/dashboard",
           },
           timestamp: timestamp,
         },
