@@ -3,8 +3,9 @@ import { supabase } from '@/lib/supabase_v2';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -77,9 +78,11 @@ export function OverviewSection() {
   const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
   const [isParserOpen, setIsParserOpen] = useState(isProfileEmpty);
   const [chameleonStats, setChameleonStats] = useState<{industry_context: string, views: number}[]>([]);
+  const [pingCount, setPingCount] = useState(0);
 
   useEffect(() => {
     if (user?.id) {
+      // Fetch chameleon link stats
       supabase.from('chameleon_links')
         .select('industry_context, views')
         .eq('user_id', user.id)
@@ -94,6 +97,42 @@ export function OverviewSection() {
              setChameleonStats(formatted);
           }
         });
+
+      // Fetch total pings
+      supabase.from('visit_logs')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_ping', true)
+        .then(({ count }) => {
+          setPingCount(count || 0);
+        });
+
+      // Real-time subscription for new pings
+      const channel = supabase
+        .channel('recruiter-pings')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'visit_logs',
+          filter: `user_id=eq.${user.id}`,
+        }, (payload: any) => {
+          if (payload.new?.is_ping) {
+            setPingCount(prev => prev + 1);
+            toast.success('New Recruiter Interest', {
+              description: `${payload.new.company || 'A recruiter'} just pinged your portfolio.`,
+              icon: <Sparkles className="h-4 w-4 text-blue-400" />,
+              style: {
+                background: '#0a0a0a',
+                border: '1px solid rgba(59, 130, 246, 0.5)',
+                color: 'white',
+                boxShadow: '0 0 25px rgba(59, 130, 246, 0.2)',
+              },
+            });
+          }
+        })
+        .subscribe();
+
+      return () => { supabase.removeChannel(channel); };
     }
   }, [user]);
 
@@ -243,14 +282,24 @@ export function OverviewSection() {
               </div>
               <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Recruiter Pulse</span>
             </div>
-            <motion.p
-              className="text-2xl font-bold text-foreground tabular-nums flex items-baseline gap-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {chameleonStats.reduce((acc, curr) => acc + curr.views, 0).toLocaleString()}
-              <span className="text-xs text-blue-400 font-normal">Context Views</span>
-            </motion.p>
+            <div className="flex items-baseline gap-4">
+              <motion.p
+                className="text-2xl font-bold text-foreground tabular-nums"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {chameleonStats.reduce((acc, curr) => acc + curr.views, 0).toLocaleString()}
+                <span className="text-xs text-blue-400 font-normal ml-1">Views</span>
+              </motion.p>
+              <motion.p
+                className="text-2xl font-bold text-foreground tabular-nums"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {pingCount}
+                <span className="text-xs text-blue-400 font-normal ml-1">Pings</span>
+              </motion.p>
+            </div>
             <div className="mt-2 space-y-1">
               {chameleonStats.length > 0 ? chameleonStats.slice(0, 2).map((stat) => (
                 <div key={stat.industry_context} className="flex justify-between items-center text-[10px] text-muted-foreground">
@@ -258,7 +307,7 @@ export function OverviewSection() {
                   <span>{stat.views}</span>
                 </div>
               )) : (
-                <p className="text-xs text-muted-foreground mt-1">No contextual link views yet.</p>
+                <p className="text-xs text-muted-foreground mt-1">No activity yet.</p>
               )}
             </div>
           </div>

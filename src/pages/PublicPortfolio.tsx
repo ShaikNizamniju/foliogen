@@ -7,6 +7,7 @@ import { ProfileData, WorkExperience, Project, FontChoice, FONT_OPTIONS } from '
 import { ContactDialog } from '@/components/ContactDialog';
 import { ProfileChatBot } from '@/components/public/ProfileChatBot';
 import { ProRecruiterBanner } from '@/components/public/ProRecruiterBanner';
+import { RecruiterPing } from '@/components/public/RecruiterPing';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
 import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
 import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
@@ -391,6 +392,15 @@ export default function PublicPortfolio() {
           profileId={profile.id || id}
           profileName={profile.fullName}
           slug={slug}
+        />
+      )}
+      {/* Recruiter Interest Portal — Zero Friction Ping */}
+      {id && (
+        <RecruiterPing
+          portfolioUserId={id}
+          linkId={slug || id}
+          linkType={slug ? 'chameleon' : 'portfolio'}
+          industryContext={undefined}
         />
       )}
     </>
