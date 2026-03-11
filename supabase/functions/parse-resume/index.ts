@@ -8,7 +8,6 @@ import {
   validateText,
   validationError,
   errorResponse,
-  requireMinimumTier,
   resolveTier,
 } from "../_shared/security.ts";
 
@@ -18,7 +17,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authenticate user
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return errorResponse('Authorization required', 401);
@@ -30,15 +28,13 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       return errorResponse('Invalid token', 401);
     }
 
-    const userId = claimsData.claims.sub;
+    const userId = user.id;
 
-    // Fetch profile and resolve tier — parse-resume requires at least BASIC
     const { data: profile } = await supabase
       .from('profiles')
       .select('is_pro, plan_type')
@@ -47,8 +43,6 @@ serve(async (req) => {
 
     const tier = resolveTier(profile?.is_pro, (profile as any)?.plan_type);
 
-    // Resume parsing is available to Basic and Pro tiers
-    // Free tier gets basic parsing (we allow it but rate-limit heavily)
     const ip = getClientIP(req);
     const { allowed, retryAfterSeconds } = checkTieredRateLimit(`resume:${userId || ip}`, tier);
     if (!allowed) return rateLimitedResponse(retryAfterSeconds, tier);
@@ -56,13 +50,11 @@ serve(async (req) => {
     const body = await req.json();
     const resumeText = body?.resumeText;
 
-    // ── Allow-list validation ────────────────────────────────────────────
     const textCheck = validateText(resumeText, "Resume text", 30000, 50);
     if (!textCheck.valid) return validationError(textCheck.error!);
 
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
-      console.error("Missing LOVABLE_API_KEY");
       return errorResponse("Server configuration error", 500);
     }
 
@@ -108,7 +100,7 @@ CRITICAL: All keys MUST be camelCase to match the TypeScript interface.`
 Return ONLY raw JSON. No markdown, no backticks, no explanation.
 
 Resume Text:
-\${resumeText.substring(0, 30000)}`
+${resumeText.substring(0, 30000)}`
           }
         ]
       })
@@ -116,7 +108,6 @@ Resume Text:
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI Gateway Error:", response.status, errorText);
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
@@ -124,7 +115,7 @@ Resume Text:
         );
       }
       if (response.status === 402) {
-        return errorResponse("AI credits exhausted. Please add funds.", 502);
+        return errorResponse("AI credits exhausted.", 502);
       }
       return errorResponse("AI service error", 502);
     }
@@ -133,7 +124,6 @@ Resume Text:
 
     let rawText = data.choices?.[0]?.message?.content;
     if (!rawText || typeof rawText !== 'string' || rawText.trim().length === 0) {
-      console.error("AI returned empty content:", JSON.stringify(data));
       return errorResponse("AI returned an empty response. Please try again.", 502);
     }
 
@@ -142,8 +132,7 @@ Resume Text:
     let parsedProfile;
     try {
       parsedProfile = JSON.parse(rawText);
-    } catch (parseError) {
-      console.error("JSON Parse Error. Raw AI output:", rawText.substring(0, 500));
+    } catch {
       return errorResponse("AI response was not valid JSON. Please try again.", 502);
     }
 
@@ -151,10 +140,8 @@ Resume Text:
     const projectsCount = Array.isArray(parsedProfile.projects) ? parsedProfile.projects.length : 0;
     const workCount = Array.isArray(parsedProfile.workExperience) ? parsedProfile.workExperience.length : 0;
 
-    console.log(`✅ Parse complete — Name: "${parsedProfile.fullName || 'N/A'}", Skills: ${skillsCount}, Projects: ${projectsCount}, Work: ${workCount}, Domain: ${parsedProfile.predictedDomain || 'N/A'}`);
-
     if (!parsedProfile.fullName && skillsCount === 0 && workCount === 0) {
-      return errorResponse("Could not extract meaningful data from this PDF. It may be image-based or in an unsupported format.", 422);
+      return errorResponse("Could not extract meaningful data from this PDF.", 422);
     }
 
     return new Response(JSON.stringify(parsedProfile), {
@@ -163,7 +150,6 @@ Resume Text:
     });
 
   } catch (error) {
-    console.error("Unexpected Error:", error);
     return errorResponse("An unexpected error occurred", 500);
   }
 });
