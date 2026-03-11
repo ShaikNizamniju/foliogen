@@ -53,7 +53,7 @@ export default function PublicPortfolio() {
     let data = null;
     let fetchError = null;
 
-    if (slug) {
+      if (slug) {
       // 1. Resolve identifier to user_id
       let userId = identifier;
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier || '');
@@ -89,7 +89,7 @@ export default function PublicPortfolio() {
       }
       fetchError = result.error;
     } else {
-      // Legacy URL handling (single default profile)
+      // Legacy URL handling or new Chameleon Link
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identifier);
 
       if (isUUID) {
@@ -102,14 +102,47 @@ export default function PublicPortfolio() {
         data = result.data;
         fetchError = result.error;
       } else {
-        // Custom username URL: fetch by username
-        const result = await supabase
-          .from('profiles_public')
+        // It's either a username or a Chameleon uniquely generated slug. Check chameleon_links first.
+        const chameleonResult = await supabase
+          .from('chameleon_links')
           .select('*')
-          .eq('username', identifier.toLowerCase())
+          .eq('slug', identifier)
+          .eq('is_active', true)
           .maybeSingle();
-        data = result.data;
-        fetchError = result.error;
+
+        if (chameleonResult.data) {
+          data = {
+            id: chameleonResult.data.user_id,
+            views: chameleonResult.data.views,
+            published_data: {
+              ...chameleonResult.data.data_json,
+              selected_template: chameleonResult.data.template_name
+            }
+          };
+
+          // Background task to log this chameleon visit
+          setTimeout(() => {
+             supabase.from('visit_logs').insert({
+               user_id: chameleonResult.data.user_id,
+               link_type: 'chameleon',
+               link_id: identifier,
+               industry_context: chameleonResult.data.industry_context,
+               device_type: window.innerWidth < 768 ? 'Mobile' : 'Desktop',
+             }).then();
+             
+             // Also increment views quickly
+             supabase.from('chameleon_links').update({ views: (chameleonResult.data.views || 0) + 1 }).eq('slug', identifier).then();
+          }, 500);
+        } else {
+          // Fallback to username URL lookup
+          const result = await supabase
+            .from('profiles_public')
+            .select('*')
+            .eq('username', identifier.toLowerCase())
+            .maybeSingle();
+          data = result.data;
+          fetchError = result.error;
+        }
       }
     }
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Rocket, FileDown, Share2, Eye, Copy, Check } from 'lucide-react';
 import { PublishDialog } from './PublishDialog';
-import { ShareDialog } from './ShareDialog';
+import { ShareModal } from './ShareModal';
 import { ModeToggle } from '@/components/ModeToggle';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { toast } from '@/hooks/use-toast';
@@ -103,7 +103,7 @@ export function DashboardHeader() {
         </div>
       </motion.header>
       <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />
-      <ShareDialog open={shareOpen} onOpenChange={setShareOpen} portfolioUrl={getPortfolioUrl()} />
+      <ShareModal open={shareOpen} onOpenChange={setShareOpen} defaultUrl={getPortfolioUrl()} />
     </>
   );
 }

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase_v2';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -75,6 +76,26 @@ export function OverviewSection() {
   const isLive = !!(profile.fullName && profile.headline && profile.bio);
   const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
   const [isParserOpen, setIsParserOpen] = useState(isProfileEmpty);
+  const [chameleonStats, setChameleonStats] = useState<{industry_context: string, views: number}[]>([]);
+
+  useEffect(() => {
+    if (user?.id) {
+      supabase.from('chameleon_links')
+        .select('industry_context, views')
+        .eq('user_id', user.id)
+        .then(({ data }) => {
+          if (data) {
+             const aggr = data.reduce((acc: any, curr: any) => {
+               const industry = curr.industry_context === 'none' ? 'General' : curr.industry_context;
+               acc[industry] = (acc[industry] || 0) + (curr.views || 0);
+               return acc;
+             }, {});
+             const formatted = Object.entries(aggr).map(([k, v]) => ({ industry_context: k, views: v as number }));
+             setChameleonStats(formatted);
+          }
+        });
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -176,8 +197,8 @@ export function OverviewSection() {
       </motion.div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Views */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {/* Total Views */}
         <motion.div
           variants={fadeUp}
           whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
@@ -189,7 +210,7 @@ export function OverviewSection() {
               <div className="p-2.5 rounded-xl bg-primary/10">
                 <Eye className="h-4 w-4 text-primary" />
               </div>
-              <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Views</span>
+              <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Total Views</span>
             </div>
             <motion.p
               className="text-4xl font-bold text-foreground tabular-nums"
@@ -199,7 +220,47 @@ export function OverviewSection() {
             >
               {profile.views?.toLocaleString() || '0'}
             </motion.p>
-            <p className="text-xs text-muted-foreground mt-1">Total portfolio visitors</p>
+            <p className="text-xs text-muted-foreground mt-1">Main portfolio visitors</p>
+          </div>
+        </motion.div>
+
+        {/* Pulse Chart: Recruiter Views */}
+        <motion.div
+          variants={fadeUp}
+          whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
+          className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-2.5 rounded-xl bg-blue-500/10 relative">
+                <TrendingUp className="h-4 w-4 text-blue-500 relative z-10" />
+                <motion.div 
+                  className="absolute inset-0 bg-blue-500/20 rounded-xl"
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                />
+              </div>
+              <span className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider">Recruiter Pulse</span>
+            </div>
+            <motion.p
+              className="text-2xl font-bold text-foreground tabular-nums flex items-baseline gap-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {chameleonStats.reduce((acc, curr) => acc + curr.views, 0).toLocaleString()}
+              <span className="text-xs text-blue-400 font-normal">Context Views</span>
+            </motion.p>
+            <div className="mt-2 space-y-1">
+              {chameleonStats.length > 0 ? chameleonStats.slice(0, 2).map((stat) => (
+                <div key={stat.industry_context} className="flex justify-between items-center text-[10px] text-muted-foreground">
+                  <span className="truncate max-w-[80px] capitalize">{stat.industry_context.replace('_', ' ')}</span>
+                  <span>{stat.views}</span>
+                </div>
+              )) : (
+                <p className="text-xs text-muted-foreground mt-1">No contextual link views yet.</p>
+              )}
+            </div>
           </div>
         </motion.div>
 
@@ -231,7 +292,7 @@ export function OverviewSection() {
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               {isLive ? (
-                <a href={`/p/${user?.id}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+                <a href={`/u/${profile.username || user?.id}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
                   View portfolio <ArrowUpRight className="h-3 w-3" />
                 </a>
               ) : 'Complete profile to go live'}
@@ -243,7 +304,7 @@ export function OverviewSection() {
         <motion.div
           variants={fadeUp}
           whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
-          className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default"
+          className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default md:col-span-1 col-span-1"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative z-10">
@@ -261,8 +322,9 @@ export function OverviewSection() {
             >
               {completionScore}%
             </motion.p>
-            <div className="mt-2">
-              <Progress value={completionScore} className="h-1.5 bg-muted" />
+            <div className="mt-2 text-xs truncate">
+              <Progress value={completionScore} className="h-1.5 bg-muted mb-1" />
+              <span className="text-muted-foreground">Profile depth</span>
             </div>
           </div>
         </motion.div>
