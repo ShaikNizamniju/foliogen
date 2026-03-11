@@ -818,7 +818,7 @@ export function LandingV2() {
                     <h2 className="section-title sr sr-d1" id="testi-title">
                         What professionals<br /><em>actually say.</em>
                     </h2>
-                    <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 mt-12 sr sr-d2">
+                    <div className="columns-1 sm:columns-1 md:columns-2 lg:columns-3 gap-4 md:gap-6 space-y-4 md:space-y-6 mt-8 md:mt-12 sr sr-d2">
                         {/* Card 1 */}
                         <div className="bg-[#000000] border border-[#4f46e5] p-8 rounded-2xl break-inside-avoid flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(79,70,229,0.25)]">
                             <div className="flex gap-1 text-[#4f46e5]">
