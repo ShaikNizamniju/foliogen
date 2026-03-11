@@ -44,8 +44,13 @@ export function ResumeUpload() {
         body: { resumeText: fullText }
       });
 
-      if (error) throw new Error("Connection failed: " + error.message);
-      if (data.error) throw new Error(data.error);
+      if (error) {
+        if (error.message && error.message.includes('Failed to send a request')) {
+          throw new Error('Neural Parser Offline: Connection to Edge Function timed out or was blocked by CORS.');
+        }
+        throw new Error("Connection failed: " + error.message);
+      }
+      if (data?.error) throw new Error(data.error);
 
       // Ensure IDs on work experience and projects
       const safeWorkExperience = (data.workExperience || []).map((w: any) => ({
@@ -88,7 +93,23 @@ export function ResumeUpload() {
       }
 
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to parse resume');
+      const errorMessage = error?.message || 'Failed to parse resume';
+      if (errorMessage.includes('Neural Parser Offline')) {
+         toast.error("Neural Sync Interrupted", {
+            description: "Connection to processing core timed out. Retrying...",
+            style: { 
+              background: '#0a0a0a', 
+              border: '1px solid rgba(239, 68, 68, 0.5)', 
+              color: 'white',
+              boxShadow: '0 0 20px rgba(239, 68, 68, 0.15)'
+            },
+            icon: <AlertCircle className="h-4 w-4 text-red-400" />
+          });
+      } else {
+         toast.error(errorMessage, {
+            style: { background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }
+         });
+      }
     } finally {
       setIsParsing(false);
     }

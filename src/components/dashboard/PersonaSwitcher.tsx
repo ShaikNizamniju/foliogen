@@ -45,7 +45,7 @@ export function PersonaSwitcher() {
     <div className="relative group mr-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-white/10 rounded-lg bg-black/40 backdrop-blur-md hover:bg-black/60 transition-all text-neutral-300 hover:text-white shadow-[0_0_15px_rgba(255,255,255,0.02)] focus:outline-none focus:ring-1 focus:ring-slate-500/50 outline-none">
+          <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 dark:border-white/10 rounded-lg bg-white/40 dark:bg-black/40 backdrop-blur-md hover:bg-slate-100 dark:hover:bg-black/60 transition-all text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] focus:outline-none focus:ring-1 focus:ring-slate-500/50 outline-none">
             <Icon className="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
             <span>{currentIndustry.label}</span>
             <ChevronDown className="w-3.5 h-3.5 opacity-50 ml-1" />

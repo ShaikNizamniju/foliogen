@@ -63,7 +63,7 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-slate-50 dark:bg-[#0a0a0a]">
       <SidebarHeader className={cn("p-0 flex flex-col", !collapsed && "gap-0")}>
         {/* Mobile: Dark high-contrast toggle bar */}
         {isMobile && (
@@ -149,7 +149,13 @@ export function DashboardSidebar() {
                           "relative z-10 flex items-center transition-all duration-300 ease-in-out",
                           collapsed ? "justify-center w-full" : "pl-2"
                         )}>
-                          <item.icon className={cn("h-4 w-4 shrink-0", collapsed && "scale-110", isActive && "text-primary")} />
+                          <motion.div
+                            whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 8px rgba(59,130,246,0.8))" }}
+                            style={{ willChange: "transform, filter" }}
+                            className="flex items-center justify-center relative"
+                          >
+                            <item.icon className={cn("h-4 w-4 shrink-0 transition-colors", collapsed && "scale-110", isActive && "text-primary")} />
+                          </motion.div>
                           <span
                             className={cn(
                               "ml-2 whitespace-nowrap transition-all duration-300 ease-in-out",
