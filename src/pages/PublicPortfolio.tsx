@@ -36,6 +36,7 @@ export default function PublicPortfolio() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [contactOpen, setContactOpen] = useState(false);
+  const [recruiterMode, setRecruiterMode] = useState(false);
 
   // Track portfolio views (handles owner detection, session/localStorage spam prevention)
   useViewTracker(id);
@@ -318,6 +319,134 @@ export default function PublicPortfolio() {
     }
   };
 
+  const renderRecruiterGrid = () => {
+    const projects = profile.projects?.filter((p) => p.visible !== false) || [];
+    const biggestWin =
+      projects.find((p) => p.description?.includes('%') || p.description?.includes('$')) ||
+      projects[0];
+    const allSkills = profile.skills || [];
+
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] text-white p-8 md:p-16 selection:bg-blue-500/30 font-sans">
+        <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-700">
+          {/* 1. Executive Headline */}
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-8 gap-6">
+            <div>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">
+                {profile.fullName}
+              </h1>
+              <p className="text-lg md:text-xl text-blue-400 font-mono uppercase tracking-widest max-w-2xl">
+                {profile.headline || profile.bio || "AI Product Manager"}
+              </p>
+            </div>
+            {!profile.hidePhoto && profile.photoUrl && (
+              <img
+                src={profile.photoUrl}
+                alt={profile.fullName}
+                className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover grayscale opacity-80 border border-white/10 shadow-2xl"
+              />
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* 2. Biggest Win (Metric-First) */}
+            {biggestWin && (
+              <div className="col-span-1 lg:col-span-2 bg-gradient-to-br from-white/5 to-transparent border border-white/10 p-8 rounded-3xl flex flex-col justify-between group hover:border-white/20 transition-all">
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="text-xs font-bold text-white bg-blue-600 px-3 py-1 rounded-full uppercase tracking-widest">
+                      Biggest Win
+                    </div>
+                    <div className="h-px bg-white/10 flex-1"></div>
+                  </div>
+                  <h3 className="text-3xl font-bold mb-4 text-white group-hover:text-blue-400 transition-colors">
+                    {biggestWin.title}
+                  </h3>
+                  <p className="text-neutral-300 leading-relaxed text-lg font-light">
+                    {biggestWin.description || 'Impact: High-complexity feature orchestration'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* 3. Tech Stack (Categorized) */}
+            <div className="col-span-1 bg-white/5 border border-white/10 p-8 rounded-3xl">
+              <div className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-6">
+                Technical Stack
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {allSkills.length > 0 ? (
+                  allSkills.map((skill, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1.5 bg-black/50 border border-white/5 rounded-lg text-xs font-medium text-neutral-300"
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-neutral-500 italic text-sm">No skills listed.</span>
+                )}
+              </div>
+            </div>
+
+            {/* 4. Verified Links */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-8 rounded-3xl">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="text-xs font-bold text-green-400 uppercase tracking-widest">
+                  Proof of Impact
+                </div>
+                <div className="h-px bg-white/10 flex-1"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {projects.filter((p) => p.proofOfImpact).map((project, i) => (
+                  <a
+                    key={i}
+                    href={project.proofOfImpact}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block p-5 bg-black/40 border border-white/5 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <h4 className="font-semibold text-neutral-200 line-clamp-1 group-hover:text-white">
+                        {project.title}
+                      </h4>
+                      <span className="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-md text-[10px] font-bold tracking-widest flex items-center gap-1">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        VERIFIED
+                      </span>
+                    </div>
+                    <p className="text-xs text-neutral-500 font-mono truncate group-hover:text-blue-400 transition-colors">
+                      {project.proofOfImpact}
+                    </p>
+                  </a>
+                ))}
+                {projects.filter((p) => p.proofOfImpact).length === 0 && (
+                  <div className="text-sm text-neutral-500 italic flex items-center h-20 col-span-full justify-center border text-center border-dashed border-white/10 rounded-2xl bg-black/20">
+                    No verified links available.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <Helmet>
@@ -355,12 +484,28 @@ export default function PublicPortfolio() {
         );
       })()}
 
+        {/* Recruiter Mode Toggle */}
+      <div className="fixed top-6 left-6 z-[60] flex items-center gap-3 bg-black/40 backdrop-blur-md p-2 pl-4 pr-2 rounded-full border border-white/10 shadow-2xl">
+        <span className="text-xs font-bold text-white uppercase tracking-widest">
+          Recruiter Mode
+        </span>
+        <label className="relative inline-flex items-center cursor-pointer group">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={recruiterMode}
+            onChange={(e) => setRecruiterMode(e.target.checked)}
+          />
+          <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 border-none"></div>
+        </label>
+      </div>
+
       <div
         className="min-h-screen"
         style={{
           fontFamily: (() => {
             const fontOption = FONT_OPTIONS.find(f => f.id === profile.selectedFont);
-            return fontOption && profile.selectedFont !== 'default'
+            return fontOption && profile.selectedFont !== 'default' && !recruiterMode
               ? `'${fontOption.preview}', sans-serif`
               : undefined;
           })(),
@@ -368,7 +513,7 @@ export default function PublicPortfolio() {
       >
         <div id="portfolio-export-container" className="print:w-full">
           <ErrorBoundary fallbackMessage="Portfolio template encountered an error">
-            {renderTemplate()}
+            {recruiterMode ? renderRecruiterGrid() : renderTemplate()}
           </ErrorBoundary>
         </div>
       </div>

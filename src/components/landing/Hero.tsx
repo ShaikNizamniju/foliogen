@@ -18,7 +18,10 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-[90vh] bg-canvas flex items-center overflow-hidden pt-24 pb-16">
+    <section 
+      className="relative min-h-[90vh] bg-[#0a0a0a] flex items-center overflow-hidden pt-24 pb-16"
+      style={{ transform: 'translateZ(0)' }}
+    >
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <motion.div
           ref={ref}
@@ -31,21 +34,21 @@ export function Hero() {
           <div className="flex flex-col items-start text-left max-w-2xl">
             <motion.h1
               variants={fadeUp}
-              className="font-instrument text-5xl md:text-7xl lg:text-8xl leading-[1.05] text-ink mb-6"
+              className="font-instrument text-5xl md:text-7xl lg:text-8xl leading-[1.05] text-white mb-6"
             >
               Your Professional Identity, <span className="text-cobalt italic">Engineered.</span>
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
-              className="font-outfit text-xl md:text-2xl text-ink/70 font-light mb-10 max-w-xl leading-relaxed"
+              className="font-outfit text-xl md:text-2xl text-neutral-400 font-light mb-10 max-w-xl leading-relaxed"
             >
               Upload your resume. Our AI builds a world-class portfolio in minutes—no design skills, no code, no compromise.
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 items-center mb-12">
               <Button asChild size="lg" className="bg-cobalt hover:bg-cobalt/90 text-white font-outfit px-8 py-6 text-lg rounded-xl shadow-lg transition-transform hover:scale-105 w-full sm:w-auto">
-                <Link to="/auth">
+                <Link to="/auth?provider=google">
                   Get Started <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -67,8 +70,8 @@ export function Hero() {
                   <Star className="w-4 h-4 fill-current" />
                   <Star className="w-4 h-4 fill-current" />
                 </div>
-                <p className="font-outfit text-sm text-ink/70 mt-1">
-                  <span className="font-semibold text-ink">340+</span> Hired
+                <p className="font-outfit text-sm text-neutral-400 mt-1">
+                  <span className="font-semibold text-white">340+</span> Hired
                 </p>
               </div>
             </motion.div>

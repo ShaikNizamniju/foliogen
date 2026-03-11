@@ -52,8 +52,6 @@ serve(async (req) => {
             event = JSON.parse(body);
         }
 
-        console.log(`Received event type: ${event.type}`);
-
         if (event.type === 'checkout.session.completed') {
             const session = event.data.object;
             const userId = session.client_reference_id || session.metadata?.userId;
@@ -87,9 +85,9 @@ serve(async (req) => {
                     .eq('user_id', userId);
 
                 if (profileError) {
-                    console.error("Failed to update profile", profileError);
+                    // Profile update failed
                 } else {
-                    console.log(`Successfully updated user ${userId} to plan ${planId}`);
+                    // Success logged internally via Supabase logs if needed
                 }
 
                 // Update payment status
@@ -98,7 +96,7 @@ serve(async (req) => {
                     .update({ status: 'completed' })
                     .eq('razorpay_order_id', session.id);
             } else {
-                console.warn("Session missing userId or planId metadata", session);
+                // Ignore missing metadata sessions or handle via silent telemetry
             }
         }
 

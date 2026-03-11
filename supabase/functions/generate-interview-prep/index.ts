@@ -70,8 +70,6 @@ serve(async (req) => {
     const roleCheck = validateText(role, "Role", 200, 2);
     if (!roleCheck.valid) return validationError(roleCheck.error!);
 
-    console.log(`[generate-interview-prep] Generating prep for ${role} at ${company}`);
-
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
     const systemPrompt = `You are an expert career coach and interview preparation specialist. Your job is to help candidates prepare for job interviews by providing insightful company research, likely interview questions, and smart questions for the candidate to ask.
@@ -155,8 +153,6 @@ Format your response as JSON with this exact structure:
         ],
       };
     }
-
-    console.log("[generate-interview-prep] Successfully generated prep data");
 
     return new Response(
       JSON.stringify(prepData),

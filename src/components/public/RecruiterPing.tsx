@@ -40,7 +40,7 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
         user_id: portfolioUserId,
         link_type: linkType,
         link_id: linkId,
-        industry_context: industryContext || 'none',
+        industry_context: 'AI_PM_Vertical',
         device_type: window.innerWidth < 768 ? 'Mobile' : 'Desktop',
         is_ping: true,
         company: company.trim(),
@@ -66,7 +66,7 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
           },
           icon: <Sparkles className="h-4 w-4 text-blue-400" />
         });
-      }, 1500);
+      }, 200);
 
     } catch (err) {
       console.error("Failed to send ping", err);

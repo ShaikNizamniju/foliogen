@@ -37,6 +37,8 @@ export interface Project {
   isProtected?: boolean;
   password?: string;
   references?: ProjectReference[];
+  proofOfImpact?: string;
+  verifiedImpact?: boolean;
 }
 
 export type FontChoice = "default" | "transcity" | "agraham" | "vertensie" | "runiga" | "gafiya" | "king" | "banera" | "sirelia" | "daeling" | "koya" | "oreon" | "remap" | "marietta" | "avinga" | "hanoble" | "wistle";
@@ -281,6 +283,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         isProtected: p.isProtected || false,
         password: p.password || '',
         references: Array.isArray(p.references) ? p.references : [],
+        proofOfImpact: p.proofOfImpact || '',
+        verifiedImpact: typeof p.verifiedImpact === 'boolean' ? p.verifiedImpact : false,
       }));
     };
 

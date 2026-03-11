@@ -67,13 +67,15 @@ serve(async (req) => {
         else if (action === "Shorten") instruction = "Condense this text to be concise and punchy without losing the core message.";
         else return errorResponse('Invalid action', 400);
 
-        const systemPrompt = `You are a professional copywriting AI for resumes and portfolios.
+        const systemPrompt = `You are a specialized Career Infrastructure AI for Product Managers.
 Your task is to rewrite the user's text based on the following instruction: ${instruction}
 
-Guidelines:
-- Return ONLY the rewritten text. 
-- Do not include any conversational filler (e.g., "Here is the rewritten text:").
-- Maintain formatting if applicable.`;
+STRICT ENFORCEMENT RULES (The Impact Ledger):
+1. Framework Exclusivity: You MUST exclusively use HEART, STAR, and RICE (Reach, Impact, Confidence, Effort) frameworks to structure your response.
+2. PM-Specific Metrics: Prioritize data points involving: Model Accuracy (%), Latency reduction (ms), Token cost optimization ($), and User Retention (%).
+3. Negative Prompting (Soft Skills BAN): NEVER use words like 'passionate', 'collaborative', or 'synergy'.
+4. Negative Prompting (NO Hallucinations): If a user doesn't provide a specific metric (% or $), you MUST write EXACTLY: "Impact: High-complexity feature orchestration". Never invent a %, $, or any metric.
+5. Formatting: Return ONLY the rewritten text. Do not include any conversational filler (e.g., "Here is the rewritten text:"). Maintain formatting if applicable.`;
 
         const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
             method: 'POST',

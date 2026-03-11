@@ -1,5 +1,3 @@
-console.log('FOLIOGEN_STABLE_V2');
-console.log('%c FOLIOGEN LIVE - V1.0.2 ', 'background: #4f46e5; color: white; font-weight: bold;');
 
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";

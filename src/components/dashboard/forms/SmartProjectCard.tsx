@@ -67,6 +67,8 @@ export const projectSchema = z.object({
   visualPrompt: z.string().optional(),
   isProtected: z.boolean().default(false),
   password: z.string().optional(),
+  proofOfImpact: z.string().optional().or(z.literal('')),
+  verifiedImpact: z.boolean().default(false),
   references: z.array(z.object({
     id: z.string(),
     type: z.enum(['url', 'testimonial']),
@@ -443,6 +445,37 @@ export function SmartProjectCard({
                   URLs are auto-fixed: "google.com" → "https://google.com"
                 </p>
               </div>
+            </div>
+
+            {/* Proof of Impact */}
+            <div className="space-y-2">
+              <Label htmlFor={`proofOfImpact-${project.id}`} className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                Proof of Impact (Verification)
+              </Label>
+              <Input
+                id={`proofOfImpact-${project.id}`}
+                placeholder="Link to GitHub PR, Figma file, or Loom demo"
+                value={localProject.proofOfImpact || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  updateLocalField('proofOfImpact', val);
+                  updateLocalField('verifiedImpact', !!val);
+                }}
+                onBlur={(e) => {
+                  const sanitized = ensureProtocol(e.target.value);
+                  if (sanitized !== e.target.value) {
+                    updateLocalField('proofOfImpact', sanitized);
+                    updateLocalField('verifiedImpact', !!sanitized);
+                  }
+                }}
+                className={cn(
+                  validationErrors['proofOfImpact'] && 'border-destructive'
+                )}
+              />
+              <p className="text-xs text-muted-foreground">
+                Add a verifiable link to automatically receive the 'VERIFIED' badge on your portfolio.
+              </p>
             </div>
 
             {/* Docs URL - Supporting Document / Case Study */}

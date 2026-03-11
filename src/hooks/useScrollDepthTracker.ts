@@ -92,8 +92,8 @@ export function useScrollDepthTracker(profileUserId: string | undefined, ownerUs
 
             if (rows.length === 0) return;
 
-            console.log('[ScrollDepthTracker] Flushing', rows.length, 'section events');
-            await supabase.from('section_events' as any).insert(rows as any[]);
+            // Flush captured events to DB silently in production
+            supabase.from('visit_logs').insert(rows).then();
         };
 
         window.addEventListener('pagehide', flush);
