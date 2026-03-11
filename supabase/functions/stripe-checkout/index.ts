@@ -64,7 +64,7 @@ serve(async (req) => {
         const selectedPriceId = planId === 'pro' ? pricePro : priceBasic;
         
 
-        console.log('[Stripe Checkout] Initializing Stripe client...');
+        
         const stripe = new Stripe(stripeKey, {
             apiVersion: '2023-10-16',
             httpClient: Stripe.createFetchHttpClient(),
