@@ -28,7 +28,7 @@ serve(async (req) => {
             });
         }
 
-        console.log(`[Stripe Checkout] Authenticated user: ${user.id}`);
+        
         const { planId, userId } = await req.json();
         console.log(`[Stripe Checkout] Payload received: planId=${planId}, userId=${userId}`);
 
