@@ -104,7 +104,7 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
-        console.log('[Stripe Checkout] Inserting pending payment into Supabase...');
+        
         await serviceClient
             .from('payments')
             .insert({
