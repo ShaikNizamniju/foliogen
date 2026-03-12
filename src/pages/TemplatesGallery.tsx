@@ -275,7 +275,7 @@ export default function TemplatesGallery() {
   return (
     <>
       <Helmet>
-        <title>Template Gallery — Foliogen</title>
+        <title>Template Gallery — The AI PM Identity Vault</title>
         <meta name="description" content="Browse premium portfolio templates for professionals. From editorial luxury to minimalist elegance." />
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Helmet>

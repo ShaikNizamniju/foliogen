@@ -222,8 +222,8 @@ export default function PublicPortfolio() {
 
   // Generate SEO metadata
   const pageTitle = profile.fullName
-    ? `${profile.fullName} | AI Portfolio`
-    : 'AI Portfolio';
+    ? `${profile.fullName} | The AI PM Identity Vault`
+    : 'The AI PM Identity Vault';
   const pageDescription = profile.bio || profile.headline || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
   const pageImage = profile.photoUrl || 'https://www.foliogen.in/og-image.png';
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -328,7 +328,7 @@ export default function PublicPortfolio() {
 
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-white p-8 md:p-16 selection:bg-blue-500/30 font-sans">
-        <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-700">
+        <div className="max-w-6xl mx-auto flex flex-col gap-16 animate-in fade-in duration-700">
           {/* 1. Executive Headline */}
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-8 gap-6">
             <div>
@@ -399,10 +399,12 @@ export default function PublicPortfolio() {
                 <div className="h-px bg-white/10 flex-1"></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {projects.filter((p) => p.verifiedImpact).map((project, i) => (
+                {[...projects].sort((a, b) => (b.metricDensityScore || 0) - (a.metricDensityScore || 0)).map((project, i) => {
+                  const isVerified = project.isVerified || project.verifiedImpact || project.proofValidationScore === 50;
+                  return (
                   <a
                     key={i}
-                    href={project.proofOfImpact}
+                    href={project.proofOfImpact || project.link || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group block p-5 bg-black/40 border border-white/5 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all"
@@ -411,32 +413,38 @@ export default function PublicPortfolio() {
                       <h4 className="font-semibold text-neutral-200 line-clamp-1 group-hover:text-white">
                         {project.title}
                       </h4>
-                      <span className="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-md text-[10px] font-bold tracking-widest flex items-center gap-1">
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={3}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        VERIFIED
-                      </span>
+                      {isVerified ? (
+                        <span className="px-2 py-1 bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/20 rounded-md text-[10px] font-bold tracking-widest flex items-center gap-1 shadow-[0_0_8px_rgba(0,229,255,0.3)]">
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={3}
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          VERIFIED IDENTITY
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 bg-neutral-500/10 text-neutral-400 border-dashed border border-neutral-500/20 rounded-md text-[10px] font-bold tracking-widest flex items-center gap-1">
+                          VERIFICATION PENDING
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-neutral-500 font-mono truncate group-hover:text-blue-400 transition-colors">
-                      {project.proofOfImpact}
+                      {project.proofOfImpact || 'No proof link provided'}
                     </p>
                   </a>
-                ))}
-                {projects.filter((p) => p.verifiedImpact).length === 0 && (
+                )})}
+                {projects.length === 0 && (
                   <div className="text-sm text-neutral-500 italic flex items-center h-20 col-span-full justify-center border text-center border-dashed border-white/10 rounded-2xl bg-black/20">
-                    No verified links available.
+                    No projects available.
                   </div>
                 )}
               </div>

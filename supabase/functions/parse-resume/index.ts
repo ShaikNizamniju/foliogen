@@ -72,7 +72,7 @@ serve(async (req) => {
             content: `You are The Elite PM Narrative Engine, an elite Career Strategist specializing in high-impact, cinematic professional narratives. Your objective is to transform raw resume data into a narrative that positions the user as a top 1% candidate, using a 'Noir-Professional' tone—sophisticated, authoritative, data-driven, and slightly dramatic. Avoid generic corporate jargon.
 
 CRITICAL INSTRUCTIONS & LOGIC:
-- Quantify all achievements using the HEART (Happiness, Engagement, Adoption, Retention, Task Success) and STAR (Situation, Task, Action, Result) frameworks. For example, instead of 'Managed a team,' use 'Orchestrated a cross-functional squad of 15 to deliver [X] outcome, resulting in a [Y]% increase in [Metric].'
+- Quantify all achievements using the HEART (Happiness, Engagement, Adoption, Retention, Task Success), RICE (Reach, Impact, Confidence, Effort), and STAR (Situation, Task, Action, Result) frameworks. For example, instead of 'Managed a team,' use 'Orchestrated a cross-functional squad of 15 to deliver [X] outcome, resulting in a [Y]% increase in [Metric].'
 
 NEGATIVE PROMPTING (Strictly Prohibited):
 - NO 'fluff' words: avoid 'passionate,' 'hard-working,' 'team player,' or 'motivated.'
@@ -80,6 +80,7 @@ NEGATIVE PROMPTING (Strictly Prohibited):
 - NO blocks of text longer than 3 lines; use strategic white space to maintain readability.
 - NO generic templates; the output must feel bespoke to the specific user's data.
 - NO hallucination: If the resume does not provide a specific number, describe impact qualitatively. NEVER fabricate percentages, user counts, revenue figures, or team sizes not present in the source text.
+- NO ATS Scores or 'Probability of Hire' metrics. NEVER invent numbers outside of direct user data.
 - NO banned words: NEVER use 'passionate,' 'synergy,' 'motivated,' 'hard-working,' 'team player,' 'leverage,' or 'utilize.'
 
 CRITICAL: Return ONLY raw JSON. No markdown, no backticks, no code fences.
@@ -137,9 +138,46 @@ ${resumeText.substring(0, 30000)}`
     }
 
     const skillsCount = Array.isArray(parsedProfile.skills) ? parsedProfile.skills.length : 0;
-    const projectsCount = Array.isArray(parsedProfile.projects) ? parsedProfile.projects.length : 0;
     const workCount = Array.isArray(parsedProfile.workExperience) ? parsedProfile.workExperience.length : 0;
 
+    const parsedProjects = Array.isArray(parsedProfile.projects) ? parsedProfile.projects : [];
+    
+    // Asynchronous Identity Vault logging for initial audit
+    const vaultEntries: any[] = [];
+    parsedProjects.forEach((p: any) => {
+       p.id = crypto.randomUUID();
+       const desc = p.description || '';
+       // Metric Density: Regex specific for Impact Units ($, %, 50k, 10M, 150ms)
+       const metricRegex = /(?:\$)?\d+(?:,\d{3})*(?:\.\d+)?(?:k|K|m|M|b|B|ms|s|pps|%|\s*ROI|\s*latency|\s*conversion|\s*ARR)?\b/gi;
+       const metricsCount = (desc.match(metricRegex) || []).length;
+       const metricDensityScore = Math.min(30, metricsCount * 10);
+       
+       // Framework Alignment: RICE / HEART / STAR synonyms (case insensitive)
+       const frameworkRegex = /\b(reach|impact|confidence|effort|happiness|engagement|adoption|retention|task success|situation|task|action|result|prioritization|metric|increased|decreased|orchestrated|star method|rice framework)\b/gi;
+       const frameworkCount = (desc.match(frameworkRegex) || []).length;
+       const frameworkAlignmentScore = Math.min(20, frameworkCount * 5);
+       
+       p.metricDensityScore = metricDensityScore;
+       p.frameworkAlignmentScore = frameworkAlignmentScore;
+       p.proofValidationScore = 0;
+       p.isVerified = false;
+
+       vaultEntries.push({
+           user_id: userId,
+           project_id: p.id,
+           proof_validation_score: 0,
+           metric_density_score: metricDensityScore,
+           framework_alignment_score: frameworkAlignmentScore,
+           composite_trust_score: metricDensityScore + frameworkAlignmentScore
+       });
+    });
+
+    // Fire and forget (asynchronously) - DO NOT await to prevent performance degradation
+    if (vaultEntries.length > 0) {
+       supabase.from('identity_vault').insert(vaultEntries).then();
+    }
+    
+    parsedProfile.projects = parsedProjects;
 
     if (!parsedProfile.fullName && skillsCount === 0 && workCount === 0) {
       return errorResponse("Could not extract meaningful data from this PDF.", 422);

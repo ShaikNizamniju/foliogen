@@ -38,7 +38,11 @@ export interface Project {
   password?: string;
   references?: ProjectReference[];
   proofOfImpact?: string;
-  verifiedImpact?: boolean;
+  verifiedImpact?: boolean; // legacy
+  isVerified?: boolean;
+  proofValidationScore?: number;
+  metricDensityScore?: number;
+  frameworkAlignmentScore?: number;
 }
 
 export type FontChoice = "default" | "transcity" | "agraham" | "vertensie" | "runiga" | "gafiya" | "king" | "banera" | "sirelia" | "daeling" | "koya" | "oreon" | "remap" | "marietta" | "avinga" | "hanoble" | "wistle";
@@ -166,10 +170,29 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
     setLoading(true);
     const { data, error } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+    const { data: vaultData } = await supabase.from("identity_vault").select("*").eq("user_id", user.id);
 
     if (data && !error) {
+      const vaultMap = new Map();
+      if (vaultData) {
+        vaultData.forEach((v: any) => vaultMap.set(v.project_id, v));
+      }
+
       const workExp = Array.isArray(data.work_experience) ? (data.work_experience as unknown as WorkExperience[]) : [];
-      const proj = Array.isArray(data.projects) ? (data.projects as unknown as Project[]) : [];
+      let proj = Array.isArray(data.projects) ? (data.projects as unknown as Project[]) : [];
+
+      proj = proj.map(p => {
+        const v = vaultMap.get(p.id);
+        if (v) {
+          p.proofValidationScore = v.proof_validation_score;
+          p.metricDensityScore = v.metric_density_score;
+          p.frameworkAlignmentScore = v.framework_alignment_score;
+          p.isVerified = p.proofValidationScore === 50;
+        } else {
+          p.isVerified = false;
+        }
+        return p;
+      });
 
       const keyHighlights = Array.isArray((data as any).key_highlights)
         ? ((data as any).key_highlights as string[])
@@ -285,8 +308,58 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         references: Array.isArray(p.references) ? p.references : [],
         proofOfImpact: p.proofOfImpact || '',
         verifiedImpact: typeof p.verifiedImpact === 'boolean' ? p.verifiedImpact : false,
+        isVerified: typeof p.isVerified === 'boolean' ? p.isVerified : false,
+        proofValidationScore: p.proofValidationScore || 0,
+        metricDensityScore: p.metricDensityScore || 0,
+        frameworkAlignmentScore: p.frameworkAlignmentScore || 0,
       }));
     };
+
+    const sanitizedProjects = sanitizeProjects(data.projects);
+
+    // Dynamic Centralized Scoring for Identity Vault
+    const vaultPayload = sanitizedProjects.map((p) => {
+      const desc = p.description || '';
+      // Hardened Regex for Metric Density: supports commas, decimals, and impact units
+      const metricRegex = /(?:\$)?\d+(?:,\d{3})*(?:\.\d+)?(?:k|K|m|M|b|B|ms|s|pps|%|\s*ROI|\s*latency|\s*conversion|\s*ARR)?\b/gi;
+      const metricsCount = (desc.match(metricRegex) || []).length;
+      const metricDensityScore = Math.min(30, metricsCount * 10);
+      
+      // Hardened Framework Check: synonyms for RICE, HEART, STAR
+      const frameworkRegex = /\b(reach|impact|confidence|effort|happiness|engagement|adoption|retention|task success|situation|task|action|result|prioritization|metric|increased|decreased|orchestrated|star method|rice framework)\b/gi;
+      const frameworkCount = (desc.match(frameworkRegex) || []).length;
+      const frameworkAlignmentScore = Math.min(20, frameworkCount * 5);
+      
+      let proofValidationScore = 0;
+      const proofUrl = p.proofOfImpact || '';
+      if (proofUrl.length > 5 && (proofUrl.includes('github') || proofUrl.includes('linkedin') || proofUrl.includes('figma') || proofUrl.includes('loom') || proofUrl.includes('portfolio'))) {
+        proofValidationScore = 50;
+      }
+      
+      const compositeTrustScore = metricDensityScore + frameworkAlignmentScore + proofValidationScore;
+
+      // Update the payload model in-memory for immediate UI reflection and saving to profiles JSONB
+      p.metricDensityScore = metricDensityScore;
+      p.frameworkAlignmentScore = frameworkAlignmentScore;
+      p.proofValidationScore = proofValidationScore;
+      p.isVerified = proofValidationScore === 50;
+      
+      return {
+        user_id: user.id,
+        project_id: p.id,
+        proof_validation_score: proofValidationScore,
+        metric_density_score: metricDensityScore,
+        framework_alignment_score: frameworkAlignmentScore,
+        composite_trust_score: compositeTrustScore
+      };
+    });
+
+    try {
+       // Fire and forget identity_vault upsert to prevent auth blocking
+       if (vaultPayload.length > 0) {
+           supabase.from('identity_vault').upsert(vaultPayload, { onConflict: 'project_id' }).then();
+       }
+    } catch(e) {}
 
     const { error } = await supabase
       .from("profiles")
@@ -302,7 +375,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         github_url: data.githubUrl,
         twitter_url: data.twitterUrl,
         work_experience: sanitizeWorkExp(data.workExperience) as unknown as Json,
-        projects: sanitizeProjects(data.projects) as unknown as Json,
+        projects: sanitizedProjects as unknown as Json,
         skills: Array.isArray(data.skills) ? data.skills : [],
         key_highlights: Array.isArray(data.keyHighlights) ? data.keyHighlights : [],
         resume_url: data.resumeUrl,

@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase_v2';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
@@ -76,6 +76,15 @@ export function OverviewSection() {
   const completionScore = calculateCompletionScore(profile);
   const isLive = !!(profile.fullName && profile.headline && profile.bio);
   const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
+  
+  let totalAchieved = 0;
+  let totalPossible = profile.projects.length * 100;
+  profile.projects.forEach(p => {
+     let projScore = (p.proofValidationScore || 0) + (p.metricDensityScore || 0) + (p.frameworkAlignmentScore || 0);
+     totalAchieved += projScore;
+  });
+  const trustScore = totalPossible > 0 ? Math.round((totalAchieved / totalPossible) * 100) : 0;
+
   const [isParserOpen, setIsParserOpen] = useState(isProfileEmpty);
   const [chameleonStats, setChameleonStats] = useState<{industry_context: string, views: number}[]>([]);
   const [pingCount, setPingCount] = useState(0);
@@ -487,12 +496,13 @@ export function OverviewSection() {
       </motion.div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {[
           { label: 'Experiences', value: profile.workExperience.length, icon: Briefcase, accent: 'bg-emerald-500/10 text-emerald-500' },
           { label: 'Projects', value: profile.projects.length, icon: Palette, accent: 'bg-amber-500/10 text-amber-500' },
           { label: 'Skills', value: profile.skills.length, icon: Zap, accent: 'bg-violet-500/10 text-violet-500' },
           { label: 'Strength', value: `${strength.totalScore}`, icon: TrendingUp, accent: 'bg-primary/10 text-primary' },
+          { label: 'Trust Score', value: `${trustScore}%`, icon: ShieldCheck, accent: 'bg-blue-500/10 text-blue-500', isMono: true },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -507,13 +517,23 @@ export function OverviewSection() {
               <span className="text-xs text-muted-foreground">{stat.label}</span>
             </div>
             <motion.p
-              className="text-2xl font-bold text-foreground tabular-nums"
+              className={`text-2xl font-bold text-foreground tabular-nums ${stat.isMono ? 'font-mono tracking-widest text-[#00E5FF]' : ''}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.15 + i * 0.05 }}
             >
               {stat.value}
             </motion.p>
+            {stat.label === 'Trust Score' && (
+              <div className="mt-2 h-1 w-full bg-[#0a0a0a] rounded-full overflow-hidden">
+                 <motion.div 
+                   className="h-full bg-[#00E5FF]" 
+                   initial={{ width: 0 }}
+                   animate={{ width: `${trustScore}%` }}
+                   transition={{ duration: 1, ease: 'easeOut' }}
+                 />
+              </div>
+            )}
           </motion.div>
         ))}
       </div>

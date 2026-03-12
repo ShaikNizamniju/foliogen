@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { z } from 'zod';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   GripVertical,
   ChevronDown,
@@ -17,6 +18,7 @@ import {
   Upload,
   Lock,
   LockOpen,
+  ShieldCheck,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -69,6 +71,10 @@ export const projectSchema = z.object({
   password: z.string().optional(),
   proofOfImpact: z.string().optional().or(z.literal('')),
   verifiedImpact: z.boolean().default(false),
+  isVerified: z.boolean().default(false),
+  proofValidationScore: z.number().optional(),
+  metricDensityScore: z.number().optional(),
+  frameworkAlignmentScore: z.number().optional(),
   references: z.array(z.object({
     id: z.string(),
     type: z.enum(['url', 'testimonial']),
@@ -296,7 +302,15 @@ export function SmartProjectCard({
         return (
           <div className="flex items-center gap-1.5 text-destructive">
             <AlertCircle className="h-3.5 w-3.5" />
-            <span className="text-xs">Error</span>
+            <span className="text-xs">Neural Sync Interrupted</span>
+            <Button 
+               variant="outline" 
+               size="sm" 
+               className="ml-2 h-12 w-12 min-w-[48px] min-h-[48px] text-[10px] uppercase border-[#00E5FF]/30 text-[#00E5FF] hover:bg-[#00E5FF]/10 active:bg-[#00E5FF]/20"
+               onClick={() => onUpdate(project.id, localProject)}
+            >
+               Retry
+            </Button>
           </div>
         );
       default:
@@ -309,9 +323,12 @@ export function SmartProjectCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'border border-border rounded-xl bg-card transition-all',
-        isDragging && 'opacity-50 shadow-2xl ring-2 ring-primary/50',
-        !localProject.visible && 'opacity-60'
+        'relative border rounded-xl transition-all duration-500 overflow-hidden',
+        isDragging ? 'opacity-50 shadow-2xl ring-2 border-[#00E5FF]/50 bg-[#0a0a0a]' : 'bg-[#0a0a0a]',
+        !localProject.visible && 'opacity-60',
+        localProject.isVerified 
+          ? 'border-[#00E5FF] shadow-[0_0_8px_rgba(0,229,255,0.3)] animate-pulse hover:bg-[#00E5FF]/5 group' 
+          : 'border-border grayscale opacity-50 hover:opacity-75 hover:grayscale-0'
       )}
     >
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -328,14 +345,31 @@ export function SmartProjectCard({
           </button>
 
           {/* Project Title */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+          <div className="flex-1 min-w-0 relative">
+            <div className="flex items-center gap-2 pr-40">
               <span className="text-xs font-medium text-muted-foreground">
                 #{index + 1}
               </span>
               <h3 className="font-medium truncate">
                 {localProject.title || 'Untitled Project'}
               </h3>
+            </div>
+            {/* Identity Badge - Absolute right-aligned to prevent layout shift */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 hidden sm:flex">
+               {localProject.isVerified ? (
+                 <motion.span 
+                   className="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded text-[10px] font-bold tracking-widest flex items-center gap-1 shadow-[0_0_10px_rgba(59,130,246,0.2)]"
+                   whileHover={{ scale: 1.02 }}
+                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                 >
+                   <ShieldCheck className="h-3 w-3" />
+                   IDENTITY VERIFIED
+                 </motion.span>
+               ) : (
+                 <span className="text-[10px] text-muted-foreground/50 uppercase tracking-widest flex items-center gap-1 border border-dashed border-border/50 px-2 py-0.5 rounded">
+                   VERIFICATION PENDING
+                 </span>
+               )}
             </div>
           </div>
 
@@ -451,7 +485,7 @@ export function SmartProjectCard({
             <div className="space-y-2">
               <Label htmlFor={`proofOfImpact-${project.id}`} className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
-                Proof of Impact (Verification)
+                Proof Link (GitHub/LinkedIn/PRD)
               </Label>
               <Input
                 id={`proofOfImpact-${project.id}`}

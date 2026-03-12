@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/components/theme-provider';
 import {
   LayoutDashboard,
   User,
@@ -14,6 +15,8 @@ import {
   ChevronRight,
   ArrowLeftRight,
   Vault,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import {
@@ -50,6 +53,7 @@ export function DashboardSidebar() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
   const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
   const collapsed = isMobile ? isMobileCollapsed : state === 'collapsed';
 
@@ -63,7 +67,7 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-slate-50 dark:bg-[#0a0a0a]">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-white dark:bg-[#0a0a0a] transition-colors duration-300 ease-in-out">
       <SidebarHeader className={cn("p-0 flex flex-col", !collapsed && "gap-0")}>
         {/* Mobile: Dark high-contrast toggle bar */}
         {isMobile && (
@@ -134,14 +138,14 @@ export function DashboardSidebar() {
                         className={cn(
                           "flex flex-1 items-center gap-2",
                           collapsed && "justify-center",
-                          "transition-all duration-200 ease-in-out hover:bg-primary/5 rounded-xl h-full w-full",
-                          isActive ? "text-primary font-medium" : "text-sidebar-foreground"
+                          "transition-all duration-200 ease-in-out hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl h-full w-full",
+                          isActive ? "text-zinc-950 dark:text-zinc-50 font-medium" : "text-zinc-600 dark:text-zinc-400"
                         )}
                       >
                         {isActive && (
                           <motion.div
                             layoutId="sidebar-active-border"
-                            className="absolute left-0 top-[10%] bottom-[10%] w-[3px] bg-primary rounded-r-md"
+                            className="absolute left-0 top-[10%] bottom-[10%] w-[3px] bg-[#00E5FF] rounded-r-md"
                             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                           />
                         )}
@@ -149,13 +153,15 @@ export function DashboardSidebar() {
                           "relative z-10 flex items-center transition-all duration-300 ease-in-out",
                           collapsed ? "justify-center w-full" : "pl-2"
                         )}>
-                          <motion.div
-                            whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 8px rgba(59,130,246,0.8))" }}
-                            style={{ willChange: "transform, filter" }}
-                            className="flex items-center justify-center relative"
-                          >
-                            <item.icon className={cn("h-4 w-4 shrink-0 transition-colors", collapsed && "scale-110", isActive && "text-primary")} />
-                          </motion.div>
+                            <motion.div
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              animate={isActive ? { scale: [1, 1.03, 1] } : {}}
+                              transition={isActive ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : { type: 'spring', stiffness: 400, damping: 10 }}
+                              style={{ willChange: "transform" }}
+                              className="flex items-center justify-center relative"
+                            >
+                              <item.icon className={cn("h-4 w-4 shrink-0 transition-colors", collapsed && "scale-110", isActive && "text-[#00E5FF]")} />
+                            </motion.div>
                           <span
                             className={cn(
                               "ml-2 whitespace-nowrap transition-all duration-300 ease-in-out",
@@ -187,17 +193,25 @@ export function DashboardSidebar() {
             <div className="flex items-center gap-2 w-full pt-1">
               {/* Desktop handles sidebar toggles with SidebarTrigger normally */}
               {!isMobile && <SidebarTrigger className="h-8 w-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground" />}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="flex-1 justify-start text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-xl px-2"
-              >
-                <LogOut className="h-4 w-4 mr-2 shrink-0" />
-                Sign Out
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="flex-1 justify-start text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl px-2 focus-visible:ring-2 focus-visible:ring-[#00E5FF]"
+                >
+                  <LogOut className="h-4 w-4 mr-2 shrink-0" />
+                  Sign Out
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="h-9 w-9 shrink-0 min-w-[48px] min-h-[48px] text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl focus-visible:ring-2 focus-visible:ring-[#00E5FF]"
+                >
+                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </Button>
+              </div>
             </div>
-          </div>
         ) : (
           <div className="flex flex-col items-center gap-4 w-full">
             <SidebarTrigger className="h-8 w-8 mx-auto text-sidebar-foreground/60 hover:text-sidebar-foreground flex items-center justify-center shrink-0" />
@@ -205,10 +219,19 @@ export function DashboardSidebar() {
               variant="ghost"
               size="icon"
               onClick={handleSignOut}
-              className="h-10 w-10 mx-auto text-sidebar-foreground/60 hover:text-destructive hover:bg-destructive/10 rounded-xl shrink-0"
+              className="h-10 w-10 min-w-[48px] min-h-[48px] mx-auto text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl shrink-0 focus-visible:ring-2 focus-visible:ring-[#00E5FF]"
               title="Sign Out"
             >
               <LogOut className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="h-10 w-10 min-w-[48px] min-h-[48px] mx-auto text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl shrink-0 focus-visible:ring-2 focus-visible:ring-[#00E5FF]"
+              title="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
             <div className="h-10 w-10 overflow-hidden rounded-full border border-border mt-1">
               <div className="flex items-center justify-center w-full h-full bg-primary/10 text-primary font-bold">
