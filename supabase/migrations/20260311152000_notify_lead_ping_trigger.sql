@@ -34,7 +34,7 @@ BEGIN
 
   -- If we still don't have a URL, use the project URL directly
   IF edge_url IS NULL OR edge_url = '' THEN
-    edge_url := 'https://fjmcjsffeycwygicflfk.supabase.co';
+    edge_url := 'https://abcrgpmwoqsfwtmliqwo.supabase.co';
   END IF;
 
   edge_url := edge_url || '/functions/v1/notify-lead-ping';
