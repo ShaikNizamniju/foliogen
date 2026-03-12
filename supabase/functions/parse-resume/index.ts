@@ -140,11 +140,7 @@ ${resumeText.substring(0, 30000)}`
     const projectsCount = Array.isArray(parsedProfile.projects) ? parsedProfile.projects.length : 0;
     const workCount = Array.isArray(parsedProfile.workExperience) ? parsedProfile.workExperience.length : 0;
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
     if (!parsedProfile.fullName && skillsCount === 0 && workCount === 0) {
       return errorResponse("Could not extract meaningful data from this PDF.", 422);
     }
