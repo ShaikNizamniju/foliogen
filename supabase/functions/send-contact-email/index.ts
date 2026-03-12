@@ -57,7 +57,11 @@ serve(async (req) => {
     const safeMessage = sanitize(body.message, 5000);
     const safeToName = body.toName ? sanitize(body.toName, 200) : "Portfolio Owner";
 
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
 
     const emailJsResponse = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
       method: "POST",
@@ -82,7 +86,11 @@ serve(async (req) => {
       throw new Error("Email service error");
     }
 
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
 
     return new Response(
       JSON.stringify({ success: true, message: "Email sent successfully" }),

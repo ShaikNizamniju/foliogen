@@ -28,9 +28,15 @@ serve(async (req) => {
             });
         }
 
+<<<<<<< HEAD
+
+        const { planId, userId } = await req.json();
+
+=======
         
         const { planId, userId } = await req.json();
         
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
 
         if (user.id !== userId) {
             console.error(`[Stripe Checkout] User mismatch! JWT: ${user.id}, Payload: ${userId}`);
@@ -62,9 +68,15 @@ serve(async (req) => {
         }
 
         const selectedPriceId = planId === 'pro' ? pricePro : priceBasic;
+<<<<<<< HEAD
+
+
+
+=======
         
 
         
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
         const stripe = new Stripe(stripeKey, {
             apiVersion: '2023-10-16',
             httpClient: Stripe.createFetchHttpClient(),
@@ -73,7 +85,11 @@ serve(async (req) => {
         const origin = req.headers.get('origin') || 'https://foliogen.in';
         const dashboardUrl = `${origin}/dashboard`;
 
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -96,7 +112,11 @@ serve(async (req) => {
             },
         });
 
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
 
         // 5. Insert pending payment record via Database (Using Service Role for inserts)
         const serviceClient = createClient(
@@ -104,7 +124,11 @@ serve(async (req) => {
             Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         );
 
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
         await serviceClient
             .from('payments')
             .insert({
@@ -114,7 +138,11 @@ serve(async (req) => {
                 status: 'pending',
             });
 
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
 
         return new Response(JSON.stringify({ url: session.url }), {
             status: 200,

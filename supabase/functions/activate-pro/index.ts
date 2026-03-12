@@ -136,13 +136,21 @@ serve(async (req) => {
             },
           }),
         });
+<<<<<<< HEAD
+
+=======
         
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
       }
     } catch (emailErr) {
       console.error('Email send failed (non-blocking):', emailErr);
     }
 
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> 3bf792ec75ad13ae42a39375e4e5b69a2c503bd0
 
     return new Response(
       JSON.stringify({ success: true, planType: config.planType }),

@@ -2,7 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://fjmcjsffeycwygicflfk.supabase.co';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://abcrgpmwoqsfwtmliqwo.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_yzi4UYRXIdUg0ANPxexWGg_T5Ccg9wK';
 
 // Even if VITE_SUPABASE_URL is undefined in env, we now have a hardcoded fallback.
