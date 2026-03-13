@@ -146,7 +146,7 @@ export function BasicInfoForm() {
           <Label htmlFor="fullName">Full Name</Label>
           <Input
             id="fullName"
-            placeholder="John Doe"
+            placeholder="Shaik Nizamuddin"
             value={profile.fullName}
             onChange={(e) => updateProfile({ fullName: e.target.value })}
           />
@@ -156,7 +156,7 @@ export function BasicInfoForm() {
           <Label htmlFor="headline">Professional Headline</Label>
           <Input
             id="headline"
-            placeholder="Senior Software Engineer"
+            placeholder="AI Product Manager"
             value={profile.headline}
             onChange={(e) => updateProfile({ headline: e.target.value })}
           />
@@ -254,7 +254,7 @@ export function BasicInfoForm() {
           <Label htmlFor="location">Location</Label>
           <Input
             id="location"
-            placeholder="San Francisco, CA"
+            placeholder="Bengaluru, India"
             value={profile.location}
             onChange={(e) => updateProfile({ location: e.target.value })}
           />
@@ -265,7 +265,7 @@ export function BasicInfoForm() {
           <Input
             id="email"
             type="email"
-            placeholder="john@example.com"
+            placeholder="admin@foliogen.in"
             value={profile.email}
             onChange={(e) => updateProfile({ email: e.target.value })}
           />
@@ -277,7 +277,7 @@ export function BasicInfoForm() {
           <Label htmlFor="website">Website</Label>
           <Input
             id="website"
-            placeholder="https://johndoe.com"
+            placeholder="https://foliogen.in/u/shaik"
             value={profile.website}
             onChange={(e) => updateProfile({ website: e.target.value })}
           />
@@ -306,7 +306,7 @@ export function BasicInfoForm() {
             <Label htmlFor="linkedin">LinkedIn</Label>
             <Input
               id="linkedin"
-              placeholder="linkedin.com/in/johndoe"
+              placeholder="linkedin.com/in/shaik-nizamuddin"
               value={profile.linkedinUrl}
               onChange={(e) => updateProfile({ linkedinUrl: e.target.value })}
             />
@@ -316,7 +316,7 @@ export function BasicInfoForm() {
             <Label htmlFor="github">GitHub</Label>
             <Input
               id="github"
-              placeholder="github.com/johndoe"
+              placeholder="github.com/shaik-nizamuddin"
               value={profile.githubUrl}
               onChange={(e) => updateProfile({ githubUrl: e.target.value })}
             />
@@ -326,7 +326,7 @@ export function BasicInfoForm() {
             <Label htmlFor="twitter">Twitter</Label>
             <Input
               id="twitter"
-              placeholder="twitter.com/johndoe"
+              placeholder="x.com/nizamniju"
               value={profile.twitterUrl}
               onChange={(e) => updateProfile({ twitterUrl: e.target.value })}
             />

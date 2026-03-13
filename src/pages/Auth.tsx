@@ -57,7 +57,7 @@ export default function Auth() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://foliogen.in/auth/callback',
+          redirectTo: 'https://foliogen.in/dashboard',
         },
       });
       if (error) throw error;
@@ -317,7 +317,7 @@ export default function Auth() {
                 <Input
                   id="fullName"
                   type="text"
-                  placeholder="Jane Doe"
+                  placeholder="Shaik Nizamuddin"
                   value={fullName}
                   onChange={(e) => { setFullName(e.target.value); setErrors((p) => ({ ...p, fullName: false })); }}
                   className={cn(
@@ -334,7 +334,7 @@ export default function Auth() {
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="admin@foliogen.in"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: false })); }}
                 className={cn(
@@ -362,7 +362,7 @@ export default function Auth() {
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
+                  placeholder="Minimum 6 characters"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: false })); }}
                   className={cn(
@@ -374,7 +374,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 top-0 bottom-0 flex items-center text-muted-foreground hover:text-foreground transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -424,7 +424,7 @@ export default function Auth() {
             </p>
             <p className="text-xs text-muted-foreground">
               By continuing, you agree to our{' '}
-              <Link to="/privacy" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
+              <Link to="/terms" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
                 Terms
               </Link>{' '}
               and{' '}

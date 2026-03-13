@@ -153,6 +153,15 @@ export function Footer() {
             <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Foliogen. All rights reserved.
             </p>
+            <a
+              href="https://forms.gle/Pc8u6q12TdtJkQC69"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              Found a bug? Help us improve.
+            </a>
           </div>
         </div>
       </div>
