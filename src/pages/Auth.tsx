@@ -57,7 +57,7 @@ export default function Auth() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://www.foliogen.in/auth/callback',
+          redirectTo: 'https://foliogen.in/auth/callback',
         },
       });
       if (error) throw error;
@@ -133,12 +133,19 @@ export default function Auth() {
   const handleForgotPassword = async () => {
     if (!email) { toast.error('Please enter your email first.'); return; }
     try { emailSchema.parse(email); } catch { toast.error('Please enter a valid email.'); return; }
-    const { supabase } = await import('@/lib/supabase_v2');
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://www.foliogen.in/reset-password',
-    });
-    if (error) toast.error(error.message);
-    else toast.success('Password reset email sent! Check your inbox.');
+    
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://foliogen.in/reset-password',
+      });
+      if (error) throw error;
+      toast.success('Password reset email sent! Check your inbox.');
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to send reset email');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const switchMode = () => {
@@ -427,7 +434,7 @@ export default function Auth() {
             </p>
             <p className="text-xs">
               <a
-                href="https://forms.gle/placeholder"
+                href="https://forms.gle/Pc8u6q12TdtJkQC69"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-indigo-400 transition-colors"

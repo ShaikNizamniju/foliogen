@@ -31,45 +31,29 @@ const Privacy = () => {
           </p>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">1. Data Collection</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">1. Identity Vault & Data Sovereignty</h2>
             <p className="text-slate-400 leading-relaxed">
-              We collect resumes and professional data solely for the purpose of generating your portfolio.
-              This includes your name, work experience, skills, projects, and any other information you
-              voluntarily provide through our platform. We do not collect data beyond what is necessary
-              to deliver our core service.
+              Your "Identity Vault" is our core security architecture. We employ AES-256 bit encryption for all personal data. Foliogen operates on a "Data Sovereignty" principle—you own your data unconditionally. We do not sell, rent, or lease your professional identity to third-party recruiters or data brokers.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">2. AI Usage & Data Processing</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">2. AI Usage & Model Integrity</h2>
             <p className="text-slate-400 leading-relaxed mb-4">
-              Your data is processed by Google Gemini AI to generate portfolio content, enhance project
-              descriptions, and power the RAG-based chatbot on your public profile.
+              Your professional narratives are engineered via the STAR, RICE, and HEART frameworks powered by Google Gemini. This processing is ephemeral; your data is never used to train global LLM benchmarks.
             </p>
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 my-4">
-              <p className="text-slate-300 font-medium mb-2">Important:</p>
+              <p className="text-slate-300 font-medium mb-2">Security Lock:</p>
               <p className="text-slate-400 text-sm">
-                We do not use your data to train public AI models. Your professional information is
-                processed in real-time and is not retained by AI providers for model improvement purposes.
+                All backend interactions are protected by strict Row Level Security (RLS) policies. Your `composite_trust_score` and sensitive metrics are READ-ONLY via public APIs to prevent tampering.
               </p>
             </div>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">3. Cookies & Local Storage</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">3. Security Infrastructure</h2>
             <p className="text-slate-400 leading-relaxed">
-              We use local storage to save your session preferences, theme settings, and authentication
-              state. We do not use third-party tracking cookies. Essential cookies are used only to
-              maintain your logged-in session and remember your UI preferences.
-            </p>
-          </section>
-
-          <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">4. Data Security</h2>
-            <p className="text-slate-400 leading-relaxed">
-              Your data is stored securely using industry-standard encryption. All data transmission
-              is protected via HTTPS. We implement Row Level Security (RLS) policies to ensure users
-              can only access their own data.
+              We maintain a NO-LOGS policy for production analytics. All authentication is handled via encrypted handsakes with Supabase Auth, ensuring your credentials nunca (never) touch our internal logs.
             </p>
           </section>
 

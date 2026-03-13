@@ -30,21 +30,21 @@ const Terms = () => {
                     <section className="mb-10">
                         <h2 className="text-2xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            By accessing and using Foliogen, you accept and agree to be bound by the terms and provision of this agreement.
+                            By accessing and using Foliogen, you accept and agree to be bound by the terms of a "Verified Candidate." You represent that all professional narratives are true and grounded in fact.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">2. Description of Service</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">2. Description of Service & AI Integrity</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            Foliogen provides users with tools to generate, host, and manage digital portfolios. You are responsible for the content you upload and display on your portfolio.
+                            Foliogen provides AI-powered infrastructure for career acceleration. While our AI enhances your narratives, the "AI Match Integrity" clause requires you to review all generated content for accuracy before publication.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">3. User Conduct</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">3. Candidate Ethics</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            You agree to use our services only for lawful purposes. You must not violate any laws in your jurisdiction, including but not limited to copyright laws.
+                            You agree to use our services to represent your professional self authentically. Automated scraping or "identity spoofing" of other users' portfolios is grounds for immediate termination.
                         </p>
                     </section>
 

@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { PersonaSwitcher } from './PersonaSwitcher';
 
 import { motion } from 'framer-motion';
+import profilePhoto from '@/assets/profile-photo.jpeg';
 
 export function DashboardHeader() {
   const [publishOpen, setPublishOpen] = useState(false);
@@ -21,13 +22,13 @@ export function DashboardHeader() {
   const { user } = useAuth();
 
   const getPublicUrl = () => {
-    const baseUrl = "https://www.foliogen.in";
+    const baseUrl = "https://foliogen.in";
     const slug = profile.username || user?.id;
     return slug ? `${baseUrl}/u/${slug}` : '';
   };
 
   const getPortfolioUrl = () => {
-    const baseUrl = "https://www.foliogen.in";
+    const baseUrl = "https://foliogen.in";
     return user ? `${baseUrl}/p/${user.id}` : '';
   };
 
@@ -100,6 +101,22 @@ export function DashboardHeader() {
             <Rocket className="h-4 w-4 mr-2" />
             Publish
           </Button>
+
+          <div className="h-9 w-9 overflow-hidden rounded-full border border-border/50 bg-muted flex items-center justify-center ml-2">
+            <img 
+              src={profilePhoto} 
+              alt="Shaik Nizamuddin" 
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = '<span class="text-xs font-bold text-muted-foreground">SN</span>';
+                }
+              }}
+            />
+          </div>
         </div>
       </motion.header>
       <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />
