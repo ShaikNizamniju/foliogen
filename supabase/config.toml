@@ -1,4 +1,4 @@
-project_id = "fjmcjsffeycwyigicflfk"
+project_id = "fjmcjsffeycwygicflfk"
 
 [functions.parse-resume]
 verify_jwt = false
