@@ -145,7 +145,7 @@ export function KanbanBoard() {
       });
 
       if (error) {
-        console.error('[KanbanBoard] Error generating prep:', error);
+
         toast.error('Failed to generate interview prep');
         return;
       }
@@ -170,7 +170,7 @@ export function KanbanBoard() {
       setPrepModalOpen(true);
       toast.success('Interview prep generated!');
     } catch (error) {
-      console.error('[KanbanBoard] Error:', error);
+
       toast.error('Failed to generate interview prep');
     } finally {
       setGeneratingPrepId(null);

@@ -95,7 +95,7 @@ export function ShareModal({ open, onOpenChange, defaultUrl }: ShareModalProps) 
       });
 
     } catch (e: any) {
-      console.error(e);
+
       toast.error('Failed to generate context link', {
         style: { background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }
       });

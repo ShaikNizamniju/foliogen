@@ -98,7 +98,7 @@ export function ContactDialog({ open, onOpenChange, recipientEmail, recipientNam
         handleClose(false);
       }, 2000);
     } catch (error) {
-      console.error('Error sending message:', error);
+
       toast({
         title: "Failed to send",
         description: error instanceof Error ? error.message : "Please try again later.",

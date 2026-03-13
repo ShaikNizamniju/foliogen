@@ -19,7 +19,7 @@ export const findInterviewSlot = async (userId: string, durationMinutes: number)
         .lte('end_time', sevenDaysFromNow.toISOString());
 
     if (error) {
-        console.error('Error fetching calendar events:', error);
+
         throw new Error('Failed to find interview slot');
     }
 

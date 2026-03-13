@@ -42,7 +42,7 @@ const WealthDashboard = () => {
             .order('date', { ascending: false });
 
         if (error) {
-            console.error('Error fetching transactions:', error);
+
             setLoading(false);
             return;
         }

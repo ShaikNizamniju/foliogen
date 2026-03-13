@@ -19,7 +19,7 @@ export function useWelcomeEmail() {
                 );
             } catch (e) {
                 // Non-blocking – email failure should never block auth flow
-                console.warn('Welcome email failed (non-critical):', e);
+
             }
         },
         []

@@ -18,7 +18,7 @@ export const prioritizeJobs = async (userId: string): Promise<JobApplication[]> 
         .eq('user_id', userId);
 
     if (error) {
-        console.error('Error fetching job applications:', error);
+
         throw new Error('Failed to prioritize jobs');
     }
 

@@ -221,7 +221,7 @@ export function SmartProjectCard({
 
       toast.success('Proof uploaded successfully!');
     } catch (error) {
-      console.error('Upload error:', error);
+
       toast.error('Failed to upload file. Please try again.');
     } finally {
       setIsUploading(false);
@@ -272,7 +272,7 @@ export function SmartProjectCard({
 
       toast.success('Project image uploaded successfully!');
     } catch (error) {
-      console.error('Upload error:', error);
+
       toast.error('Failed to upload image. Please try again.');
     } finally {
       setIsImageUploading(false);

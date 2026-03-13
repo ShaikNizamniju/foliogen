@@ -36,7 +36,7 @@ export function ProGate({
         }
       );
     } catch (error) {
-      console.error('Payment error:', error);
+
     } finally {
       setPaying(false);
     }

@@ -107,7 +107,7 @@ export function ProjectsForm() {
       updateProfile({ projects: profileProjects });
     },
     onError: (error) => {
-      console.error('Save error:', error);
+
       toast.error('Failed to save projects');
     },
   });
@@ -309,7 +309,7 @@ export function ProjectsForm() {
 
       toast.success('Description enhanced successfully!');
     } catch (error) {
-      console.error('Enhance error:', error);
+
       toast.error(error instanceof Error ? error.message : 'Failed to enhance description');
     } finally {
       setEnhancingIds((prev) => {

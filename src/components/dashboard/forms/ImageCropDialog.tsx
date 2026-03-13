@@ -100,7 +100,7 @@ export function ImageCropDialog({
       onCropComplete(croppedBlob);
       onOpenChange(false);
     } catch (error) {
-      console.error('Error cropping image:', error);
+
     } finally {
       setIsProcessing(false);
     }

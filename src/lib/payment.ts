@@ -57,7 +57,7 @@ export async function handlePayment(
     });
 
     if (error || !data?.url) {
-      console.error("Checkout session creation failed:", error);
+      
       toast({ title: "Payment Error", description: "Failed to initialize secure checkout. Please try again.", variant: "destructive" });
       return;
     }
@@ -65,7 +65,7 @@ export async function handlePayment(
     // Redirect to Stripe Checkout
     window.location.href = data.url;
   } catch (err) {
-    console.error("Payment initialization error:", err);
+    
     toast({ title: "Payment Error", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
   }
 }

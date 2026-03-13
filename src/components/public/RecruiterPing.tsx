@@ -47,7 +47,7 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
       company: company.trim(),
       contact_method: contactMethod.trim(),
     }).then(({ error }) => {
-      if (error) console.error("Failed to ping:", error);
+      if (error) { }
     });
 
     // Trigger Neural Sync Success Animation

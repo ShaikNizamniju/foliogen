@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 export const useVoice = () => {
     const speak = useCallback((text: string) => {
         if (!('speechSynthesis' in window)) {
-            console.error('Speech synthesis not supported in this browser.');
+
             return;
         }
 

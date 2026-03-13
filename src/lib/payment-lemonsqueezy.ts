@@ -69,7 +69,7 @@ export async function handleLsPayment(
     });
 
     if (error || !data?.checkoutUrl) {
-        console.error('LemonSqueezy checkout error:', error || data);
+
         toast({
             title: 'Checkout Error',
             description: 'Failed to open checkout. Please try again in 2 minutes.',

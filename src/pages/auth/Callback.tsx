@@ -68,7 +68,7 @@ export default function AuthCallback() {
                     navigate('/auth', { replace: true });
                 }
             } catch (err: any) {
-                console.error('Auth Callback Error:', err);
+
                 const message = err?.message || 'Authentication failed';
                 setErrorDetails(message);
                 toast.error('Auth Error: ' + message);

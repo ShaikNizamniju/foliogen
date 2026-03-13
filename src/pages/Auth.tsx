@@ -57,7 +57,7 @@ export default function Auth() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://foliogen.in/dashboard',
+          redirectTo: window.location.origin + '/dashboard',
         },
       });
       if (error) throw error;
@@ -137,7 +137,7 @@ export default function Auth() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://foliogen.in/reset-password',
+        redirectTo: window.location.origin + '/reset-password',
       });
       if (error) throw error;
       toast.success('Password reset email sent! Check your inbox.');
@@ -230,7 +230,7 @@ export default function Auth() {
                 R
               </div>
               <div>
-                <p className="text-foreground text-sm font-medium">Rahul S.</p>
+                <p className="text-foreground text-sm font-medium">Shaik N.</p>
                 <p className="text-muted-foreground text-xs">AI Product Manager @ Foliogen</p>
               </div>
             </div>

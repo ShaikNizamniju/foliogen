@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data: { session: existingSession }, error } = await supabase.auth.getSession();
         if (error) {
-          console.error('Error fetching session:', error.message);
+
           setSession(null);
           setUser(null);
         } else {
@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(existingSession?.user ?? null);
         }
       } catch (error) {
-        console.error('Unexpected error fetching session:', error);
+
         setSession(null);
         setUser(null);
       } finally {

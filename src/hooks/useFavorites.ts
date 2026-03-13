@@ -27,7 +27,7 @@ export function useFavorites() {
 
         setFavorites(data?.map((f) => f.template_id) || []);
       } catch (error) {
-        console.error('Error fetching favorites:', error);
+
       } finally {
         setIsLoading(false);
       }
@@ -79,7 +79,7 @@ export function useFavorites() {
         } else {
           setFavorites((prev) => prev.filter((id) => id !== templateId));
         }
-        console.error('Error toggling favorite:', error);
+
         toast.error('Failed to update favorites');
       }
     },

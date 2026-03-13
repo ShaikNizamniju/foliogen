@@ -205,7 +205,7 @@ export function LandingV2() {
                         </div>
                         <div className="mock-body">
                             <div className="mock-profile-row">
-                                <div className="mock-avatar-lg" aria-hidden="true">A</div>
+                                <div className="mock-avatar-lg" aria-hidden="true">S</div>
                                 <div className="mock-profile-info">
                                     <div className="mock-name">Shaik Nizamuddin</div>
                                     <div className="mock-title">AI Product Manager</div>
@@ -467,7 +467,7 @@ export function LandingV2() {
                                     <div className="doc-arrow" aria-hidden="true">⟶</div>
                                     <div className="portfolio-mini">
                                         <div className="portfolio-mini-header">
-                                            <div className="portfolio-mini-avatar" aria-hidden="true">A</div>
+                                            <div className="portfolio-mini-avatar" aria-hidden="true">S</div>
                                             <div className="portfolio-mini-name">Shaik Nizamuddin</div>
                                         </div>
                                         <div className="portfolio-mini-tags">

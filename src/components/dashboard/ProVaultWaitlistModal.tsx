@@ -43,7 +43,7 @@ export function ProVaultWaitlistModal({
             toast.success('Access secured. You are on the elite waitlist.');
             onClose();
         } catch (err: any) {
-            console.error('Waitlist submission error:', err);
+
             const errorMessage = err?.message || 'Failed to join waitlist. Please try again.';
             toast.error(errorMessage.includes('fetch')
                 ? 'Database Connection Error. Please verify your network.'

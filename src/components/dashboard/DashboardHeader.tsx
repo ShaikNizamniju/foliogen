@@ -58,7 +58,7 @@ export function DashboardHeader() {
       window.print();
       toast({ title: "Print dialog opened", description: "Select Save as PDF to complete your export." });
     } catch (error) {
-      console.error('PDF export error:', error);
+
       toast({ title: "Export Failed", description: "There was an error opening print dialog. Please try again.", variant: "destructive" });
     } finally {
       setIsExporting(false);

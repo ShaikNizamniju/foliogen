@@ -12,7 +12,7 @@ export const analyzeSpending = async (userId: string): Promise<string> => {
         .gte('date', thirtyDaysAgo.toISOString());
 
     if (error) {
-        console.error('Error fetching transactions:', error);
+
         throw new Error('Failed to analyze spending');
     }
 

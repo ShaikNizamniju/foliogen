@@ -20,7 +20,7 @@ const JobCommandCenter = () => {
                         setSelectedJob(prioritized[0]); // Auto-select first job
                     }
                 } catch (e) {
-                    console.error("Failed to fetch jobs", e);
+
                 } finally {
                     setLoading(false);
                 }

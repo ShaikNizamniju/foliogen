@@ -43,7 +43,7 @@ export function BillingSection() {
         }
       );
     } catch (error) {
-      console.error('Payment error:', error);
+
     } finally {
       setPaying(false);
     }

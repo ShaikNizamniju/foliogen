@@ -33,7 +33,7 @@ export function RecruiterRadar() {
         .limit(5);
 
       if (error) {
-        console.error('[RecruiterRadar] Error fetching visits:', error);
+
       } else {
         setVisits(data || []);
       }

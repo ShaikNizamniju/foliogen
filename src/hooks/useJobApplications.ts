@@ -69,7 +69,7 @@ export function useJobApplications() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('[JobApplications] Error fetching:', error);
+
       toast.error('Failed to load job applications');
     } else {
       setJobsState((data as unknown as JobApplication[]) || []);
@@ -99,7 +99,7 @@ export function useJobApplications() {
       .single();
 
     if (error) {
-      console.error('[JobApplications] Error adding:', error);
+
       toast.error('Failed to add job application');
       return null;
     }
@@ -122,7 +122,7 @@ export function useJobApplications() {
       .eq('id', id);
 
     if (error) {
-      console.error('[JobApplications] Error updating:', error);
+
       toast.error('Failed to update job application');
       return false;
     }
@@ -144,7 +144,7 @@ export function useJobApplications() {
       .eq('id', id);
 
     if (error) {
-      console.error('[JobApplications] Error saving AI prep:', error);
+
       toast.error('Failed to save interview prep');
       return false;
     }
@@ -162,7 +162,7 @@ export function useJobApplications() {
       .eq('id', id);
 
     if (error) {
-      console.error('[JobApplications] Error deleting:', error);
+
       toast.error('Failed to delete job application');
       return false;
     }

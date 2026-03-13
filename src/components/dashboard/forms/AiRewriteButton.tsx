@@ -64,7 +64,7 @@ export function AiRewriteButton({ text, onResult }: AiRewriteButtonProps) {
             }
 
         } catch (err: any) {
-            console.error(err);
+
             toast({
                 title: "Rewrite failed",
                 description: "An error occurred while calling the AI. Please try again.",

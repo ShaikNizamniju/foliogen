@@ -49,7 +49,7 @@ export function SecureCheckoutModal({
             });
             onClose();
         } catch (err: any) {
-            console.error('Waitlist checkout error:', err);
+
             const errorMessage = err?.message || 'Unable to process checkout. Please try again or contact support.';
             toast({
                 title: 'Request Failed',

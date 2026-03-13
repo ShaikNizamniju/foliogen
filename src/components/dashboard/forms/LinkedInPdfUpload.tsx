@@ -74,7 +74,7 @@ export function LinkedInPdfUpload() {
       toast.success('LinkedIn profile imported successfully!');
 
     } catch (error: any) {
-      console.error('Upload Error:', error);
+
       toast.error(error.message || 'Failed to parse LinkedIn PDF');
     } finally {
       setIsParsing(false);
