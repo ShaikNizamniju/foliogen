@@ -63,7 +63,12 @@ export default function Auth() {
       if (error) throw error;
       // Note: signInWithOAuth redirects the window, so no navigate is needed here on success
     } catch (error: any) {
-      toast.error(error?.message || 'Google login failed');
+      const isNetworkError = error?.message?.toLowerCase().includes('fetch') || error?.message?.toLowerCase().includes('network error');
+      if (isNetworkError) {
+        toast.error("Network Error: Cannot connect to the Identity Vault. Please ensure your adblocker is disabled and try again.");
+      } else {
+        toast.error(error?.message || 'Google login failed');
+      }
       setGoogleLoading(false);
     }
   }, []);
@@ -124,7 +129,12 @@ export default function Auth() {
         }
       }
     } catch (err: any) {
-      toast.error(err?.message || 'An unexpected error occurred. Please try again.');
+      const isNetworkError = err?.message?.toLowerCase().includes('fetch') || err?.message?.toLowerCase().includes('network error');
+      if (isNetworkError) {
+        toast.error("Network Error: Cannot connect to the Identity Vault. Please ensure your adblocker is disabled and try again.");
+      } else {
+        toast.error(err?.message || 'An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
