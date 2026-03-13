@@ -224,7 +224,7 @@ export default function Auth() {
               </div>
               <div>
                 <p className="text-foreground text-sm font-medium">Rahul S.</p>
-                <p className="text-muted-foreground text-xs">Product Designer @ Swiggy</p>
+                <p className="text-muted-foreground text-xs">AI Product Manager @ Foliogen</p>
               </div>
             </div>
           </div>

@@ -9,7 +9,7 @@ interface ArpeggioTemplateProps {
 /* ── Demo Data ── */
 const demoProfile = {
   fullName: 'Alex Rivera',
-  headline: 'Product Designer & Creative Technologist',
+  headline: 'AI Product Manager & Creative Technologist',
   bio: 'I build systems that bridge design and engineering. Currently focused on spatial interfaces and design tooling for the next generation of creators.',
   location: 'San Francisco, CA',
   email: 'hello@alexrivera.design',
@@ -23,7 +23,7 @@ const demoProfile = {
     { title: 'Component Forge', category: 'Dev Tools', year: '2022', image: 'https://picsum.photos/seed/arp6/800/600', description: 'Visual component builder that exports production React code.' },
   ],
   workExperience: [
-    { year: '2022 — Present', role: 'Lead Product Designer', company: 'Vertex Labs' },
+    { year: '2022 — Present', role: 'AI Product Manager', company: 'Foliogen' },
     { year: '2020 — 2022', role: 'Senior Designer', company: 'Figma' },
     { year: '2018 — 2020', role: 'UI Engineer', company: 'Stripe' },
     { year: '2016 — 2018', role: 'Design Intern → Jr. Designer', company: 'Razorpay' },

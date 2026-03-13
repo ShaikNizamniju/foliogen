@@ -502,7 +502,7 @@ export function OverviewSection() {
           { label: 'Projects', value: profile.projects.length, icon: Palette, accent: 'bg-amber-500/10 text-amber-500' },
           { label: 'Skills', value: profile.skills.length, icon: Zap, accent: 'bg-violet-500/10 text-violet-500' },
           { label: 'Strength', value: `${strength.totalScore}`, icon: TrendingUp, accent: 'bg-primary/10 text-primary' },
-          { label: 'Trust Score', value: `${trustScore}%`, icon: ShieldCheck, accent: 'bg-blue-500/10 text-blue-500', isMono: true },
+          { label: 'Trust Score', value: `${Math.round(trustScore)}%`, icon: ShieldCheck, accent: 'bg-blue-500/10 text-blue-500', isMono: true },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}

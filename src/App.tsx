@@ -26,6 +26,8 @@ const Refunds = lazy(() => import("./pages/Refunds"));
 const ContactPage = lazy(() => import("./pages/Contact"));
 const Success = lazy(() => import("./pages/Success"));
 
+const Billing = lazy(() => import("./pages/dashboard/Billing"));
+
 const queryClient = new QueryClient();
 
 function AppRoutes() {
@@ -47,6 +49,7 @@ function AppRoutes() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/billing" element={<Billing />} />
           <Route path="/profile" element={<Dashboard />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/social-kit" element={<SocialKit />} />

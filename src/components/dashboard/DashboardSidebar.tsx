@@ -17,8 +17,10 @@ import {
   Vault,
   Sun,
   Moon,
+  CreditCard,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
+import profilePhoto from '@/assets/profile-photo.jpeg';
 import {
   Sidebar,
   SidebarContent,
@@ -45,6 +47,7 @@ const menuItems = [
   { title: 'Interview Prep', icon: Target, section: 'interview-prep' },
   { title: 'Templates', icon: Palette, section: 'templates' },
   { title: 'Identity Vault', icon: Vault, section: 'identity-vault' },
+  { title: 'Billing & Subscription', icon: CreditCard, section: 'billing' },
   { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },
   { title: 'Settings', icon: Settings, section: 'settings' },
 ];
@@ -133,7 +136,7 @@ export function DashboardSidebar() {
                       )}
                     >
                       <Link
-                        to={item.section === 'profile' ? '/profile' : `/dashboard?section=${item.section}`}
+                        to={item.section === 'profile' ? '/profile' : item.section === 'billing' ? '/dashboard/billing' : `/dashboard?section=${item.section}`}
                         data-tour={item.section === 'profile' ? 'profile' : undefined}
                         className={cn(
                           "flex flex-1 items-center gap-2",
@@ -233,10 +236,8 @@ export function DashboardSidebar() {
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <div className="h-10 w-10 overflow-hidden rounded-full border border-border mt-1">
-              <div className="flex items-center justify-center w-full h-full bg-primary/10 text-primary font-bold">
-                <User className="h-5 w-5" />
-              </div>
+            <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-[#00E5FF]/20 mt-1">
+              <img src={profilePhoto} alt="Shaik Nizamuddin" className="h-full w-full object-cover" />
             </div>
           </div>
         )}

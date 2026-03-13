@@ -79,14 +79,14 @@ body {
     /* Border radius */
     --radius: 0.75rem;
 
-    /* Sidebar - Dark Slate */
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 20% 98%;
+    /* Sidebar - Light Mode: Paper White */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 4%;
     --sidebar-primary: 239 84% 67%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 239 84% 96%;
-    --sidebar-accent-foreground: 239 84% 10%;
-    --sidebar-border: 215 28% 17%;
+    --sidebar-accent: 240 5% 96%;
+    --sidebar-accent-foreground: 240 6% 10%;
+    --sidebar-border: 240 6% 90%;
     --sidebar-ring: 186 76% 50%;
 
     /* Custom gradient tokens */
@@ -136,14 +136,14 @@ body {
     --input: 215 28% 17%;
     --ring: 186 76% 50%;
 
-    /* Sidebar - Dark Slate */
-    --sidebar-background: 222 47% 6%;
-    --sidebar-foreground: 210 20% 98%;
+    /* Sidebar - Dark Mode: Noir #0a0a0a */
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 239 84% 67%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 239 84% 10%;
-    --sidebar-accent-foreground: 239 84% 90%;
-    --sidebar-border: 215 28% 17%;
+    --sidebar-accent: 240 4% 10%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 240 4% 16%;
     --sidebar-ring: 186 76% 50%;
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './LandingV2.css';
+import PricingEngine from '@/components/pricing/PricingEngine';
 
 export function LandingV2() {
     const [navScrolled, setNavScrolled] = useState(false);
@@ -200,14 +201,14 @@ export function LandingV2() {
                             <div className="mock-circle" style={{ background: '#FF5F57' }} aria-hidden="true"></div>
                             <div className="mock-circle" style={{ background: '#FEBC2E' }} aria-hidden="true"></div>
                             <div className="mock-circle" style={{ background: '#28C840' }} aria-hidden="true"></div>
-                            <div className="mock-url-bar">foliogen.in/aryan-sharma</div>
+                            <div className="mock-url-bar">foliogen.in/shaik-nizamuddin</div>
                         </div>
                         <div className="mock-body">
                             <div className="mock-profile-row">
                                 <div className="mock-avatar-lg" aria-hidden="true">A</div>
                                 <div className="mock-profile-info">
-                                    <div className="mock-name">Aryan Sharma</div>
-                                    <div className="mock-title">Senior Product Designer</div>
+                                    <div className="mock-name">Shaik Nizamuddin</div>
+                                    <div className="mock-title">AI Product Manager</div>
                                     <div className="mock-location">📍 Bengaluru, India</div>
                                 </div>
                             </div>
@@ -467,7 +468,7 @@ export function LandingV2() {
                                     <div className="portfolio-mini">
                                         <div className="portfolio-mini-header">
                                             <div className="portfolio-mini-avatar" aria-hidden="true">A</div>
-                                            <div className="portfolio-mini-name">Aryan Sharma</div>
+                                            <div className="portfolio-mini-name">Shaik Nizamuddin</div>
                                         </div>
                                         <div className="portfolio-mini-tags">
                                             <span className="portfolio-mini-tag">UX</span>
@@ -680,136 +681,10 @@ export function LandingV2() {
             </section>
 
             {/* ─── PRICING ─── */}
-            <section className="pricing-section" id="pricing" aria-labelledby="pricing-title">
-                <div className="container">
-                    <div className="pricing-header">
-                        <div className="label sr">Pricing</div>
-                        <h2 className="section-title sr sr-d1" id="pricing-title">
-                            Simple, <em>transparent</em> pricing.
-                        </h2>
-                        <p className="body-base sr sr-d2" style={{ marginTop: 'var(--sp-2)' }}>
-                            Start free. No credit card required. Upgrade when you're ready.
-                        </p>
-                    </div>
-                    <div className="pricing-grid">
-                        {/* Free */}
-                        <div className="price-card sr">
-                            <div className="price-plan">Free</div>
-                            <div className="price-amount">
-                                <span className="price-currency">₹</span>
-                                <span className="price-number">0</span>
-                            </div>
-                            <div className="price-period">Forever — no card needed</div>
-                            <div className="price-divider"></div>
-                            <ul className="price-feature-list">
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> 1 portfolio</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> 3 basic templates</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Foliogen subdomain</li>
-                                <li className="price-feature"><span className="price-feature-check"><span className="check-no">✗</span></span> Custom domain</li>
-                                <li className="price-feature"><span className="price-feature-check"><span className="check-no">✗</span></span> Analytics dashboard</li>
-                                <li className="price-feature"><span className="price-feature-check"><span className="check-no">✗</span></span> AI content generation</li>
-                            </ul>
-                            <Link to="/auth" className="btn btn-outline price-cta">Get started free</Link>
-                        </div>
-                        {/* Basic */}
-                        <div className="price-card sr sr-d1">
-                            <div className="price-plan">Basic</div>
-                            <div className="price-amount">
-                                <span className="price-currency">₹</span>
-                                <span className="price-number">199</span>
-                            </div>
-                            <div className="price-period">per month</div>
-                            <div style={{ marginTop: '12px', background: 'rgba(79,70,229,0.1)', padding: '8px 12px', borderRadius: '4px', fontSize: '13px', color: '#818cf8', textAlign: 'center', fontWeight: 500, letterSpacing: '0.02em' }}>Enter <strong className="text-indigo-400">LAUNCH60</strong> for 60% off your first month</div>
-                            <div className="price-divider"></div>
-                            <ul className="price-feature-list">
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> 3 portfolios</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> All 19+ templates</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Custom domain</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Analytics dashboard</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> AI content generation</li>
-                                <li className="price-feature"><span className="price-feature-check"><span className="check-no">✗</span></span> White-label & API</li>
-                            </ul>
-                            <Link to="/auth" className="btn btn-outline price-cta" style={{ width: '100%', justifyContent: 'center' }}>Start building →</Link>
-                        </div>
-                        {/* Pro */}
-                        <div className="price-card recommended sr sr-d2" style={{ boxShadow: '0 0 30px rgba(79,70,229,0.15)', borderColor: '#4f46e5' }}>
-                            <div className="price-popular" style={{ background: '#4f46e5' }}>Best Value</div>
-                            <div className="price-plan">Pro</div>
-                            <div className="price-amount">
-                                <span className="price-currency">₹</span>
-                                <span className="price-number">999</span>
-                            </div>
-                            <div className="price-period" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.4)', fontSize: '14px' }}>₹2,388 / year</span>
-                                <span>per year</span>
-                            </div>
-                            <div className="price-divider"></div>
-                            <ul className="price-feature-list">
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Unlimited portfolios</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Priority AI generation</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> White-label & custom CSS</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Advanced analytics + heatmaps</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> Team collaboration</li>
-                                <li className="price-feature has"><span className="price-feature-check"><span className="check-yes">✓</span></span> API access</li>
-                            </ul>
-                            <Link to="/auth" className="btn btn-cobalt price-cta" style={{ width: '100%', justifyContent: 'center' }}>Go Pro →</Link>
-                        </div>
-                    </div>
-                    {/* Compare table */}
-                    <div className="overflow-x-auto w-full">
-                        <table className="compare-table sr" aria-label="Plan comparison">
-                            <thead>
-                                <tr>
-                                    <th>Feature</th>
-                                    <th>Free</th>
-                                    <th style={{ color: 'var(--cobalt)' }}>Basic</th>
-                                    <th>Pro</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <span className="compare-feature-name">Portfolio slots</span>
-                                    </td>
-                                    <td><span className="compare-text">1</span></td>
-                                    <td className="compare-highlight"><span className="compare-text">3</span></td>
-                                    <td><span className="compare-text">Unlimited</span></td>
-                                </tr>
-                                <tr>
-                                    <td><span className="compare-feature-name">Design templates</span><span className="compare-feature-note">Industry-standard layouts</span></td>
-                                    <td><span className="compare-text">3 basic</span></td>
-                                    <td className="compare-highlight"><span className="compare-yes">✓</span> <span className="compare-text">All 19+</span></td>
-                                    <td><span className="compare-yes">✓</span> <span className="compare-text">All 19+</span></td>
-                                </tr>
-                                <tr>
-                                    <td><span className="compare-feature-name">Custom domain</span></td>
-                                    <td><span className="compare-no">✗</span></td>
-                                    <td className="compare-highlight"><span className="compare-yes">✓</span></td>
-                                    <td><span className="compare-yes">✓</span></td>
-                                </tr>
-                                <tr>
-                                    <td><span className="compare-feature-name">AI content generation</span><span className="compare-feature-note">Rewrites your resume in recruiter language</span></td>
-                                    <td><span className="compare-no">✗</span></td>
-                                    <td className="compare-highlight"><span className="compare-yes">✓</span></td>
-                                    <td><span className="compare-yes">✓</span></td>
-                                </tr>
-                                <tr>
-                                    <td><span className="compare-feature-name">Analytics</span></td>
-                                    <td><span className="compare-no">✗</span></td>
-                                    <td className="compare-highlight"><span className="compare-text">Standard</span></td>
-                                    <td><span className="compare-text">Advanced + heatmaps</span></td>
-                                </tr>
-                                <tr>
-                                    <td><span className="compare-feature-name">White-label & API</span></td>
-                                    <td><span className="compare-no">✗</span></td>
-                                    <td className="compare-highlight"><span className="compare-no">✗</span></td>
-                                    <td><span className="compare-yes">✓</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <section id="pricing">
+                <PricingEngine />
             </section>
+
 
             {/* ─── TESTIMONIALS ─── */}
             <section className="testi-section" aria-labelledby="testi-title">
