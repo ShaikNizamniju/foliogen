@@ -35,9 +35,9 @@
 ```typescript
 describe('Profile data mapping', () => {
   it('maps snake_case DB row to camelCase ProfileData', () => {
-    const dbRow = { full_name: 'Jane Doe', photo_url: '...', skills: ['React'] };
-    const result = mapToProfile(dbRow);
-    expect(result.fullName).toBe('Jane Doe');
+    const dbRow = { full_name: 'Shaik Nizamuddin', photo_url: '...', skills: ['React'] };
+    const result = transformRow(dbRow);
+    expect(result.fullName).toBe('Shaik Nizamuddin');
     expect(result.skills).toEqual(['React']);
   });
 

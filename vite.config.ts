@@ -36,7 +36,7 @@ export default defineConfig(async ({ mode }) => {
       dynamicRoutes = ['/', '/pricing', '/about'];
     }
   } catch (error) {
-    console.error("Failed to fetch dynamic routes for sitemap:", error);
+    // Failed to fetch dynamic routes for sitemap
   }
 
   return {

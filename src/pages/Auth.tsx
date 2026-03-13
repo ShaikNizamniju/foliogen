@@ -142,7 +142,10 @@ export default function Auth() {
       if (error) throw error;
       toast.success('Password reset email sent! Check your inbox.');
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to send reset email');
+      toast.error('PASSWORD RESET FAILED', {
+        description: error?.message || 'Failed to send reset email. Please verify your connection.',
+        style: { background: '#7f1d1d', border: '1px solid #ef4444', color: 'white' }
+      });
     } finally {
       setLoading(false);
     }
@@ -358,7 +361,7 @@ export default function Auth() {
                   </button>
                 )}
               </div>
-              <div className="relative">
+              <div className="relative h-12">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -374,7 +377,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-0 bottom-0 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-muted-foreground hover:text-foreground transition-all duration-200"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
