@@ -23,7 +23,7 @@ const Privacy = () => {
 
       {/* Content */}
       <main className="container mx-auto px-4 py-16 max-w-3xl">
-        <h1 className="text-4xl font-bold text-white mb-8">Privacy Policy</h1>
+        <h1 className="text-4xl font-bold text-white mb-8">Data Vault Privacy Policy</h1>
 
         <div className="prose prose-invert prose-slate max-w-none">
           <p className="text-slate-300 text-lg mb-8">
@@ -31,21 +31,21 @@ const Privacy = () => {
           </p>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">1. Identity Vault & Data Sovereignty</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">1. Personal Data Vault & Sovereignty</h2>
             <p className="text-slate-400 leading-relaxed">
-              Your "Identity Vault" is our core security architecture. We employ AES-256 bit encryption for all personal data. Foliogen operates on a "Data Sovereignty" principle—you own your data unconditionally. We do not sell, rent, or lease your professional identity to third-party recruiters or data brokers.
+              Your "Personal Data Vault" is the core of our security architecture. We employ strict AES-256 bit encryption for all career narratives and identity data. Foliogen operates on the "Sovereignty Principle"—you own your professional identity unconditionally. We never sell, rent, or lease your data to third-party brokers or external recruitment agencies.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">2. AI Usage & Model Integrity</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">2. AI Processing Transparency</h2>
             <p className="text-slate-400 leading-relaxed mb-4">
-              Your professional narratives are engineered via the STAR, RICE, and HEART frameworks powered by Google Gemini. This processing is ephemeral; your data is never used to train global LLM benchmarks.
+              Our AI engines process your professional data ephemerally. Your career history is used solely to generate your portfolio and is never repurposed for global model training. We maintain a strict "Zero Leakage" policy for AI-generated insights.
             </p>
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 my-4">
-              <p className="text-slate-300 font-medium mb-2">Security Lock:</p>
+              <p className="text-slate-300 font-medium mb-2">Vault Security:</p>
               <p className="text-slate-400 text-sm">
-                All backend interactions are protected by strict Row Level Security (RLS) policies. Your `composite_trust_score` and sensitive metrics are READ-ONLY via public APIs to prevent tampering.
+                All backend interactions are protected by hardened Row Level Security (RLS). Your trust metrics and sensitive data are READ-ONLY via public APIs to prevent unauthorized tampering.
               </p>
             </div>
           </section>
@@ -53,45 +53,33 @@ const Privacy = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-semibold text-white mb-4">3. Security Infrastructure</h2>
             <p className="text-slate-400 leading-relaxed">
-              We maintain a NO-LOGS policy for production analytics. All authentication is handled via encrypted handsakes with Supabase Auth, ensuring your credentials nunca (never) touch our internal logs.
+              We maintain a rigorous NO-LOGS policy for production analytics. All authentication is handled through encrypted handshakes, ensuring your credentials never touch our internal diagnostic logs.
             </p>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">5. Your Rights</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">4. Sovereignty Rights</h2>
             <p className="text-slate-400 leading-relaxed mb-4">
-              You have the right to:
+              In accordance with international privacy standards, you have the right to:
             </p>
             <ul className="list-disc list-inside text-slate-400 space-y-2">
-              <li>Access and export your personal data at any time</li>
-              <li>Correct inaccurate information in your profile</li>
-              <li>Request complete deletion of your account and data</li>
-              <li>Withdraw consent for AI processing</li>
+              <li>Instant export of your Vault data in JSON format</li>
+              <li>Surgical correction of any narrative field</li>
+              <li>Nuclear deletion of all account data and active hosting</li>
+              <li>Revocation of AI processing access at any time</li>
             </ul>
           </section>
 
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">6. Contact & Data Deletion</h2>
-            <p className="text-slate-400 leading-relaxed mb-4">
-              For any privacy inquiries or data deletion requests, please contact us:
-            </p>
+            <h2 className="text-2xl font-semibold text-white mb-4">5. Contact & Data Deletion</h2>
             <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
               <p className="text-slate-300">Email:
                 <a href="mailto:admin@foliogen.in" className="text-primary hover:underline ml-2">admin@foliogen.in</a>
               </p>
               <p className="text-slate-400 text-sm mt-2">
-                We will respond to all requests within 30 days.
+                We respond to all Data Sovereignty inquiries within 30 days.
               </p>
             </div>
-          </section>
-
-          <section className="mb-10">
-            <h2 className="text-2xl font-semibold text-white mb-4">7. Terms of Service</h2>
-            <p className="text-slate-400 leading-relaxed">
-              By using Foliogen, you agree to use the service for lawful purposes only. You retain
-              ownership of all content you upload. We reserve the right to terminate accounts that
-              violate these terms or engage in abusive behavior.
-            </p>
           </section>
         </div>
       </main>

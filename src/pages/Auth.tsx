@@ -57,7 +57,11 @@ export default function Auth() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin + '/dashboard',
+          redirectTo: window.location.origin + '/auth/callback',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
         },
       });
       if (error) throw error;
@@ -147,7 +151,7 @@ export default function Auth() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password',
+        redirectTo: window.location.origin + '/auth/callback?next=/reset-password',
       });
       if (error) throw error;
       toast.success('Password reset email sent! Check your inbox.');
@@ -371,7 +375,7 @@ export default function Auth() {
                   </button>
                 )}
               </div>
-              <div className="relative h-12">
+              <div className="relative h-11">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -379,7 +383,7 @@ export default function Auth() {
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: false })); }}
                   className={cn(
-                    'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20 pr-10',
+                    'h-11 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20 pr-10',
                     errors.password && 'border-red-500'
                   )}
                   required
@@ -447,7 +451,7 @@ export default function Auth() {
             </p>
             <p className="text-xs">
               <a
-                href="https://forms.gle/Pc8u6q12TdtJkQC69"
+                href="https://forms.gle/foliogen_feedback"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-indigo-400 transition-colors"

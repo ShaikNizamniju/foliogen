@@ -20,7 +20,7 @@ const Terms = () => {
             </header>
 
             <main className="container mx-auto px-4 py-16 max-w-3xl">
-                <h1 className="text-4xl font-bold text-white mb-8">Terms of Service</h1>
+                <h1 className="text-4xl font-bold text-white mb-8">Professional Identity Verification (Terms)</h1>
 
                 <div className="prose prose-invert prose-slate max-w-none">
                     <p className="text-slate-300 text-lg mb-8">
@@ -28,44 +28,37 @@ const Terms = () => {
                     </p>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">1. Acceptance of Terms</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">1. Identity Verification Standards</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            By accessing and using Foliogen, you accept and agree to be bound by the terms of a "Verified Candidate." You represent that all professional narratives are true and grounded in fact.
+                            By utilizing Foliogen, you agree to represent your professional history with 100% accuracy. We strictly prohibit "Identity Spoofing" or the fabrication of professional credentials. All candidates are verified under our "True-Story" narrative protocol.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">2. Description of Service & AI Integrity</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">2. AI-Narrative Responsibility</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            Foliogen provides AI-powered infrastructure for career acceleration. While our AI enhances your narratives, the "AI Match Integrity" clause requires you to review all generated content for accuracy before publication.
+                            Foliogen provides AI-powered infrastructure to amplify your professional story. However, users bear full responsibility for the factual integrity of any AI-enhanced text. You must review and validate all AI-generated content before public deployment.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">3. Candidate Ethics</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">3. Professional Ethics & Use</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            You agree to use our services to represent your professional self authentically. Automated scraping or "identity spoofing" of other users' portfolios is grounds for immediate termination.
+                            Automated harvesting, scraping, or the reverse engineering of other users' portfolio architectures is fundamentally prohibited. Violation of these ethics results in immediate and permanent Vault closure.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">4. Paid Services & Branding</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">4. Paid Services & Brand Autonomy</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            Users on the Basic and Pro tiers are entitled to the "No-Foliogen Branding" clause. This guarantees that no Foliogen watermarks, logos, or promotional links will be appended to your published portfolio. You own your brand presentation unconditionally.
+                            Foliogen subscribers (Basic and Pro) are granted complete Brand Autonomy. This ensures your portfolio remains free of Foliogen branding, watermarks, or promotional footprints. Your professional brand is yours alone.
                         </p>
                     </section>
 
                     <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">5. Data Retention & Privacy</h2>
+                        <h2 className="text-2xl font-semibold text-white mb-4">5. Termination Clause</h2>
                         <p className="text-slate-400 leading-relaxed">
-                            Following the cancellation of a paid subscription, your published portfolio and underlying data will remain securely hosted and live for a grace period of 30 days. After 30 days, your portfolio will be taken offline, but your data is retained securely for 90 days before permanent deletion. Foliogen employs 256-bit encryption for all connected accounts.
-                        </p>
-                    </section>
-
-                    <section className="mb-10">
-                        <h2 className="text-2xl font-semibold text-white mb-4">6. Termination</h2>
-                        <p className="text-slate-400 leading-relaxed">
-                            We may terminate or suspend access to our service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
+                            Foliogen reserves the right to suspend or terminate Vault access for any breach of these "Professional Verification" standards. Upon termination, data access is immediately restricted to protect the integrity of our professional network.
                         </p>
                     </section>
                 </div>

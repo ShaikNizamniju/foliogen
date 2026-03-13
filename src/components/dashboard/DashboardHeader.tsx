@@ -105,15 +105,12 @@ export function DashboardHeader() {
           <div className="h-9 w-9 overflow-hidden rounded-full border border-border/50 bg-muted flex items-center justify-center ml-2">
             <img 
               src={profilePhoto} 
-              alt="Shaik Nizamuddin" 
+              alt={profile.fullName || 'User'} 
               className="h-full w-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const parent = target.parentElement;
-                if (parent) {
-                  parent.innerHTML = '<span class="text-xs font-bold text-muted-foreground">SN</span>';
-                }
+                const email = user?.email || 'shaik@foliogen.in';
+                target.src = `https://www.gravatar.com/avatar/${btoa(email).toLowerCase()}?d=mp&s=150`;
               }}
             />
           </div>

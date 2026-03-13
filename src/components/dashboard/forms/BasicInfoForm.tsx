@@ -12,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { Upload, Loader2, User, Trash2 } from 'lucide-react';
 import { ImageCropDialog } from './ImageCropDialog';
 import { AiRewriteButton } from './AiRewriteButton';
+import profilePhoto from '@/assets/profile-photo.jpeg';
 
 export function BasicInfoForm() {
   const { profile, updateProfile } = useProfile();
@@ -166,8 +167,16 @@ export function BasicInfoForm() {
       <div className="space-y-3">
         <Label>Profile Photo</Label>
         <div className="flex items-center gap-4">
-          <Avatar className="h-20 w-20 border-2 border-border">
-            <AvatarImage src={profile.photoUrl} alt={profile.fullName || 'Profile'} />
+          <Avatar className="h-20 w-20 border-2 border-border overflow-hidden">
+            <AvatarImage 
+              src={profile.photoUrl || profilePhoto} 
+              alt={profile.fullName || 'Profile'} 
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                const email = user?.email || 'shaik@foliogen.in';
+                target.src = `https://www.gravatar.com/avatar/${btoa(email).toLowerCase()}?d=mp&s=150`;
+              }}
+            />
             <AvatarFallback className="bg-muted">
               <User className="h-8 w-8 text-muted-foreground" />
             </AvatarFallback>

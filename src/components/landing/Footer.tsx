@@ -154,7 +154,7 @@ export function Footer() {
               © {new Date().getFullYear()} Foliogen. All rights reserved.
             </p>
             <a
-              href="https://forms.gle/Pc8u6q12TdtJkQC69"
+              href="https://forms.gle/foliogen_feedback"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1.5"
