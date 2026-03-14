@@ -501,7 +501,7 @@ export function OverviewSection() {
           { label: 'Experiences', value: profile.workExperience.length, icon: Briefcase, accent: 'bg-emerald-500/10 text-emerald-500' },
           { label: 'Projects', value: profile.projects.length, icon: Palette, accent: 'bg-amber-500/10 text-amber-500' },
           { label: 'Skills', value: profile.skills.length, icon: Zap, accent: 'bg-violet-500/10 text-violet-500' },
-          { label: 'Strength', value: `${strength.totalScore}`, icon: TrendingUp, accent: 'bg-primary/10 text-primary' },
+          { label: 'Strength', value: `${profile.profileStrength || strength.totalScore}`, icon: TrendingUp, accent: 'bg-primary/10 text-primary' },
           { label: 'Trust Score', value: `${Math.round(trustScore)}%`, icon: ShieldCheck, accent: 'bg-blue-500/10 text-blue-500', isMono: true },
         ].map((stat, i) => (
           <motion.div

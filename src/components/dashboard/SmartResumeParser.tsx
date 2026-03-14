@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import {
   UploadCloud, FileText, CheckCircle2, Loader2, AlertCircle,
   Briefcase, GraduationCap, Sparkles, X, ArrowRight, Merge
@@ -31,6 +32,7 @@ interface ParsedData {
   projects?: Project[];
   keyHighlights?: string[];
   predictedDomain?: ProfessionalDomain;
+  profileStrength?: number;
 }
 
 interface ParseStats {
@@ -49,10 +51,8 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   const [progress, setProgress] = useState(0);
   const [parsedData, setParsedData] = useState<ParsedData | null>(null);
   const [stats, setStats] = useState<ParseStats | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [uploadedResumeUrl, setUploadedResumeUrl] = useState<string>('');
   const [currentFile, setCurrentFile] = useState<File | null>(null);
 
   const { profile, updateProfile, saveProfile } = useProfile();
@@ -65,14 +65,18 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
     setStats(null);
     setFileName('');
     setErrorMessage('');
-    setUploadedResumeUrl('');
     setCurrentFile(null);
   }, []);
 
   const processFile = async (file: File) => {
     if (file.type !== 'application/pdf') {
-      toast.error('Please upload a PDF file');
-      return;
+       toast.error('Invalid Format', { description: 'Please upload a PDF file.' });
+       return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+       toast.error('File Too Large', { description: 'Maximum file size is 10MB.' });
+       return;
     }
 
     setFileName(file.name);
@@ -109,7 +113,6 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       setState('analyzing');
       setProgress(55);
 
-      // Truncate for stability (as per memory)
       const truncatedText = fullText.slice(0, 30000);
 
       const { data, error } = await supabase.functions.invoke('parse-resume', {
@@ -134,7 +137,14 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       setState('success');
       setProgress(100);
 
+      // Automatically trigger merge for speed if profile is empty
+      const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
+      if (isProfileEmpty) {
+          setTimeout(() => applyToProfile(data, file), 1000);
+      }
+
     } catch (error: any) {
+      console.error("Parse Error:", error);
       setState('error');
       const msg = error?.message || 'Failed to parse resume';
       setErrorMessage(msg);
@@ -142,200 +152,118 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
     }
   };
 
-  const applyToProfile = useCallback(async (mergeSkills: boolean = true) => {
-    if (!parsedData) return;
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles?.[0]) {
+      processFile(acceptedFiles[0]);
+    }
+  }, []);
 
-    // Upload the resume file to storage if we have one
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'application/pdf': ['.pdf'] },
+    maxSize: 10 * 1024 * 1024,
+    multiple: false
+  });
+
+  const applyToProfile = async (data: ParsedData, file?: File) => {
+    if (!data) return;
+
+    toast.loading('Synchronizing profile...', { id: 'resume-apply' });
+
+    // Upload to storage
     let resumeUrl = profile.resumeUrl;
-    if (currentFile && user) {
-      try {
-        const fileExt = currentFile.name.split('.').pop();
-        const filePath = `${user.id}/resume-${Date.now()}.${fileExt}`;
+    const fileToUpload = file || currentFile;
+    
+    if (fileToUpload && user) {
+      const fileExt = fileToUpload.name.split('.').pop();
+      const filePath = `${user.id}/resume-${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from('resumes')
+        .upload(filePath, fileToUpload, { upsert: true });
 
-        const { error: uploadError } = await supabase.storage
-          .from('resumes')
-          .upload(filePath, currentFile, { upsert: true });
-
-        if (!uploadError) {
-          const { data: urlData } = supabase.storage
-            .from('resumes')
-            .getPublicUrl(filePath);
-
-          resumeUrl = urlData.publicUrl;
-          setUploadedResumeUrl(resumeUrl);
-        } else {
-          console.error("Storage Upload Error:", uploadError);
-          toast.error("Resume Storage Failed: " + uploadError.message);
-        }
-      } catch (error: any) {
-        console.error("Resume Upload Logic Error:", error);
-        toast.error("Upload Logic Failed: " + (error?.message || "Internal error"));
+      if (!uploadError) {
+        const { data: urlData } = supabase.storage.from('resumes').getPublicUrl(filePath);
+        resumeUrl = urlData.publicUrl;
       }
     }
 
-    // Merge skills if requested
-    let finalSkills = parsedData.skills || [];
-    if (mergeSkills && profile.skills.length > 0) {
-      const existingSet = new Set(profile.skills.map(s => s.toLowerCase()));
-      const newSkills = finalSkills.filter(s => !existingSet.has(s.toLowerCase()));
-      finalSkills = [...profile.skills, ...newSkills];
-    }
-
-    // ── Standardize date to ISO string if possible, fallback to trimmed string
     const safeDate = (d: any): string => {
       if (!d || typeof d !== 'string') return '';
-      const trimmed = d.trim();
-
-      // Attempt to parse and format as ISO (YYYY-MM-DD)
-      // This handles "Jan 2020", "2020-01", etc.
       try {
-        const date = new Date(trimmed);
-        if (!isNaN(date.getTime()) && trimmed.length > 3) {
-          return date.toISOString().split('T')[0];
-        }
-      } catch (e) {
-        // Silently fallback to raw trimmed string if parsing fails
-      }
-      return trimmed;
+        const date = new Date(d.trim());
+        if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
+      } catch (e) { }
+      return d.trim();
     };
-
-    // Ensure work experience entries have all required fields with safe fallbacks.
-    // IMPORTANT: spread `w` FIRST then apply fallbacks, so nulls from AI are overridden.
-    const safeWorkExperience: WorkExperience[] = (parsedData.workExperience || []).map((w) => ({
-      ...w,                                       // raw AI data (may contain nulls)
-      id: w.id || crypto.randomUUID(),   // always a valid UUID
-      jobTitle: w.jobTitle || '',
-      company: w.company || '',
-      startDate: safeDate(w.startDate),
-      endDate: safeDate(w.endDate),
-      current: typeof w.current === 'boolean' ? w.current : false,
-      description: w.description || '',
-    }));
-
-    // Ensure project entries have all their required fields with safe fallbacks.
-    // IMPORTANT: spread `p` FIRST, then apply fallbacks, so nulls from AI are overridden.
-    const safeProjects: Project[] = (parsedData.projects || []).map((p) => ({
-      ...p,                                             // raw AI data (may contain nulls)
-      id: p.id || crypto.randomUUID(),
-      title: p.title || '',
-      description: p.description || '',
-      link: p.link || '',
-      imageUrl: p.imageUrl || '',
-      visualPrompt: p.visualPrompt || '',
-      techStack: Array.isArray(p.techStack) ? p.techStack : [],
-      targetKeywords: Array.isArray(p.targetKeywords) ? p.targetKeywords : [],
-      visible: typeof p.visible === 'boolean' ? p.visible : true,
-    }));
-
-    // Determine template
-    const domain = parsedData.predictedDomain as ProfessionalDomain | undefined;
-    const recommendedTemplate = domain ? getRecommendedTemplate(domain) : 'modern-dark';
-
-    if (domain) {
-      localStorage.setItem('foliogen_domain', domain);
-    }
 
     const updates: Partial<ProfileData> = {
-      fullName: parsedData.fullName || profile.fullName,
-      headline: parsedData.headline || profile.headline,
-      bio: parsedData.bio || profile.bio,
-      location: parsedData.location || profile.location,
-      email: parsedData.email || profile.email,
-      linkedinUrl: parsedData.linkedinUrl || profile.linkedinUrl,
-      skills: finalSkills,
-      workExperience: safeWorkExperience,
-      projects: safeProjects,
-      keyHighlights: parsedData.keyHighlights || profile.keyHighlights,
+      fullName: data.fullName || profile.fullName,
+      headline: data.headline || profile.headline,
+      bio: data.bio || profile.bio,
+      location: data.location || profile.location,
+      email: data.email || profile.email,
+      linkedinUrl: data.linkedinUrl || profile.linkedinUrl,
+      skills: [...new Set([...profile.skills, ...(data.skills || [])])],
+      workExperience: (data.workExperience || []).map(w => ({
+        ...w,
+        id: crypto.randomUUID(),
+        startDate: safeDate(w.startDate),
+        endDate: safeDate(w.endDate),
+      })),
+      projects: (data.projects || []).map(p => ({
+        ...p,
+        id: crypto.randomUUID(),
+        visible: true,
+      })),
+      keyHighlights: data.keyHighlights || profile.keyHighlights,
       resumeUrl: resumeUrl,
-      selectedTemplate: recommendedTemplate as typeof profile.selectedTemplate,
+      predictedDomain: data.predictedDomain || profile.predictedDomain,
+      selectedTemplate: data.predictedDomain ? getRecommendedTemplate(data.predictedDomain) as any : profile.selectedTemplate,
     };
 
-    toast.loading('Saving...', { id: 'auto-save' });
-    updateProfile(updates);
-
-    if (onTemplateChange) {
-      onTemplateChange(recommendedTemplate);
-    }
-
-    // Scroll to preview
-    setTimeout(() => {
-      const previewSection = document.querySelector('[data-template-preview]');
-      if (previewSection) {
-        previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const { error } = await saveProfile(updates);
+    
+    if (error) {
+      toast.error('Sync failed: ' + error.message, { id: 'resume-apply' });
+    } else {
+      toast.success('Neural Sync complete. Dashboard updated.', { id: 'resume-apply' });
+      if (onTemplateChange && updates.selectedTemplate) {
+        onTemplateChange(updates.selectedTemplate);
       }
-    }, 100);
-
-    resetParser();
-  }, [parsedData, profile, updateProfile, saveProfile, resetParser, onTemplateChange, currentFile, user]);
-
-  // Drag handlers
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => setIsDragging(false);
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files?.[0]) {
-      processFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      processFile(e.target.files[0]);
+      resetParser();
     }
   };
 
   return (
     <div className="w-full max-w-2xl mx-auto">
       <AnimatePresence mode="wait">
-        {/* Idle State */}
         {state === 'idle' && (
-          <motion.div
-            key="idle"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
+          <div
+            {...getRootProps()}
+            className={cn(
+               "relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer overflow-hidden",
+               isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30"
+            )}
           >
             <motion.div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              animate={isDragging ? { scale: 1.02 } : { scale: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className={`
-                relative border-2 border-dashed rounded-2xl p-12 text-center transition-colors duration-300
-                ${isDragging
-                  ? 'border-primary bg-primary/5'
-                  : 'border-muted-foreground/20 hover:border-primary/50 hover:bg-muted/30'
-                }
-              `}
+              key="idle"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0, scale: isDragActive ? 1.02 : 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
             >
-              <input
-                type="file"
-                accept=".pdf"
-                onChange={handleFileSelect}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
+              <input {...getInputProps()} />
               <div className="flex flex-col items-center gap-5">
                 <motion.div
-                  className={`p-5 rounded-2xl transition-colors duration-300 ${isDragging ? 'bg-primary/20' : 'bg-primary/10'}`}
-                  animate={isDragging ? { scale: 1.1, rotate: [0, -5, 5, 0] } : { scale: 1, rotate: 0 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
+                  className={cn("p-5 rounded-2xl transition-colors", isDragActive ? "bg-primary/20" : "bg-primary/10")}
                 >
-                  <UploadCloud className={`w-10 h-10 transition-colors ${isDragging ? 'text-primary' : 'text-primary/70'}`} />
+                  <UploadCloud className={cn("w-10 h-10", isDragActive ? "text-primary" : "text-primary/70")} />
                 </motion.div>
                 <div className="space-y-2">
                   <h3 className="text-xl font-semibold text-foreground">
                     Drop your Resume or LinkedIn PDF
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-md">
-                    Supports standard resumes and LinkedIn PDF exports — AI maps everything automatically
+                    Supports standard resumes and LinkedIn PDF exports — FolioGen AI maps everything automatically
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -344,89 +272,43 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                 </div>
               </div>
             </motion.div>
-          </motion.div>
+          </div>
         )}
 
-        {/* Processing State */}
         {(state === 'extracting' || state === 'analyzing') && (
           <motion.div
             key="processing"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="relative border border-border rounded-2xl p-8 bg-card overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative border border-border rounded-2xl p-10 bg-card overflow-hidden text-center"
           >
-            {/* Laser Scan Effect - Only during analyzing */}
-            {state === 'analyzing' && (
-              <motion.div
-                className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-                initial={{ top: '0%' }}
-                animate={{ top: ['0%', '100%', '0%'] }}
-                transition={{
-                  duration: 2,
-                  ease: 'easeInOut',
-                  repeat: Infinity,
-                }}
-              />
-            )}
-
-            <div className="flex flex-col items-center gap-6 relative z-10">
-              <div className="relative">
-                <motion.div
-                  className="p-5 rounded-2xl bg-primary/10"
-                  animate={{
-                    boxShadow: [
-                      '0 0 0 0 rgba(59,130,246,0)',
-                      '0 0 20px 5px rgba(59,130,246,0.3)',
-                      '0 0 0 0 rgba(59,130,246,0)',
-                    ]
-                  }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <Loader2 className="w-10 h-10 text-primary animate-spin" />
-                </motion.div>
-                <motion.div
-                  className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-card border border-border"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                >
-                  <Sparkles className="w-4 h-4 text-primary" />
-                </motion.div>
-              </div>
-
-              <div className="text-center space-y-2">
-                <motion.h3
-                  className="text-lg font-semibold text-foreground"
-                  animate={{ opacity: [1, 0.7, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  {state === 'extracting' ? 'Reading your resume...' : 'Brainstorming your portfolio...'}
-                </motion.h3>
-                <p className="text-sm text-muted-foreground">
-                  {fileName && <span className="font-medium">{fileName}</span>}
-                </p>
-              </div>
-
-              <div className="w-full max-w-sm space-y-2">
-                <Progress value={progress} className="h-2" />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{state === 'extracting' ? 'Extracting text' : 'AI analysis'}</span>
-                  <span>{progress}%</span>
-                </div>
-              </div>
+            <div className="absolute inset-x-0 top-0 h-1 bg-muted">
+                 <motion.div 
+                    className="h-full bg-primary" 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                 />
+            </div>
+            
+            <div className="flex flex-col items-center gap-6">
+                 <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                 <div className="space-y-2">
+                      <h3 className="text-xl font-semibold text-foreground">
+                        {state === 'extracting' ? 'Extracting Identity...' : 'Neural Mapping...'}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Uploading and AI is analyzing {fileName}...
+                      </p>
+                 </div>
             </div>
           </motion.div>
         )}
 
-        {/* Success State */}
         {state === 'success' && stats && (
           <motion.div
             key="success"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
             className="border border-primary/30 rounded-2xl p-8 bg-primary/5"
           >
             <div className="flex flex-col items-center gap-6">
@@ -436,74 +318,25 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
               <div className="text-center space-y-2">
                 <h3 className="text-xl font-semibold text-foreground">
-                  Resume analyzed successfully!
+                  Neural Sync Successful
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Here's what we found in your resume
+                  Extracted {stats.jobs} roles and {stats.skills} core competencies
                 </p>
               </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
-                <div className="flex flex-col items-center p-4 rounded-xl bg-card border border-border">
-                  <Briefcase className="w-5 h-5 text-primary mb-2" />
-                  <span className="text-2xl font-bold text-foreground">{stats.jobs}</span>
-                  <span className="text-xs text-muted-foreground">Jobs</span>
-                </div>
-                <div className="flex flex-col items-center p-4 rounded-xl bg-card border border-border">
-                  <Sparkles className="w-5 h-5 text-primary mb-2" />
-                  <span className="text-2xl font-bold text-foreground">{stats.skills}</span>
-                  <span className="text-xs text-muted-foreground">Skills</span>
-                </div>
-                <div className="flex flex-col items-center p-4 rounded-xl bg-card border border-border">
-                  <FileText className="w-5 h-5 text-primary mb-2" />
-                  <span className="text-2xl font-bold text-foreground">{stats.projects}</span>
-                  <span className="text-xs text-muted-foreground">Projects</span>
-                </div>
-                <div className="flex flex-col items-center p-4 rounded-xl bg-card border border-border">
-                  <CheckCircle2 className="w-5 h-5 text-primary mb-2" />
-                  <span className="text-2xl font-bold text-foreground">{stats.highlights}</span>
-                  <span className="text-xs text-muted-foreground">Highlights</span>
-                </div>
-              </div>
-
-              {/* Preview of extracted skills */}
-              {parsedData?.skills && parsedData.skills.length > 0 && (
-                <div className="w-full space-y-2">
-                  <p className="text-sm font-medium text-foreground">Skills found:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {parsedData.skills.slice(0, 8).map((skill, idx) => (
-                      <Badge key={idx} variant="secondary">{skill}</Badge>
-                    ))}
-                    {parsedData.skills.length > 8 && (
-                      <Badge variant="outline">+{parsedData.skills.length - 8} more</Badge>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 w-full">
+              <div className="flex gap-3 w-full">
                 <Button
-                  onClick={() => applyToProfile(true)}
+                  onClick={() => parsedData && applyToProfile(parsedData)}
                   className="flex-1 shadow-glow"
                 >
                   <Merge className="w-4 h-4 mr-2" />
-                  Merge with Profile
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => applyToProfile(false)}
-                  className="flex-1"
-                >
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                  Replace Profile
+                  Apply to Dashboard
                 </Button>
                 <Button
                   variant="ghost"
                   onClick={resetParser}
                   size="icon"
-                  className="shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -512,45 +345,24 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
           </motion.div>
         )}
 
-        {/* Error State — Noir Themed */}
         {state === 'error' && (
           <motion.div
             key="error"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="border border-muted-foreground/20 rounded-2xl p-8 bg-background"
+            className="border border-destructive/20 rounded-2xl p-8 bg-destructive/5 text-center"
           >
-            <div className="flex flex-col items-center gap-6">
-              <div className="p-4 rounded-2xl bg-muted">
-                <AlertCircle className="w-10 h-10 text-muted-foreground" />
-              </div>
-
-              <div className="text-center space-y-2">
-                <h3 className="text-lg font-semibold text-foreground tracking-tight">
-                  Neural Sync Interrupted
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-md">
-                  {errorMessage || 'Core connection offline. Investigating...'}
-                </p>
-              </div>
-
-              <Button
-                onClick={() => {
-                  resetParser();
-                  if (currentFile) processFile(currentFile);
-                }}
-                variant="outline"
-                className="min-h-[48px] px-8"
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Retry Analysis
-              </Button>
-            </div>
+            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
+            <h3 className="font-semibold text-foreground mb-2">Neural Sync Interrupted</h3>
+            <p className="text-sm text-muted-foreground mb-6">{errorMessage}</p>
+            <Button onClick={resetParser} variant="outline">Try Another File</Button>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
+}
+
+function cn(...classes: any[]) {
+  return classes.filter(Boolean).join(' ');
 }

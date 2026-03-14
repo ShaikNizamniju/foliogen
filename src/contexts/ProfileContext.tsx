@@ -113,6 +113,7 @@ export interface ProfileData {
   | "minimal-saas";
   full_profile?: any;
   resume_data?: any;
+  profileStrength?: number;
 }
 
 interface ProfileContextType {
@@ -225,6 +226,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         hidePhoto: (data as any).hide_photo || false,
         full_profile: (data as any).full_profile || null,
         resume_data: (data as any).resume_data || null,
+        profileStrength: (data as any).resume_data?.profileStrength || 0,
       });
     }
     setLoading(false);
@@ -383,6 +385,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         hide_photo: data.hidePhoto,
         selected_font: data.selectedFont,
         selected_template: data.selectedTemplate,
+        resume_data: { ...(data.resume_data || {}), profileStrength: data.profileStrength },
       } as any)
       .eq("user_id", user.id);
 

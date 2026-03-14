@@ -97,6 +97,7 @@ CRITICAL: All keys MUST be camelCase to match the TypeScript interface.`
 - projects (array of objects with keys: title, description, visualPrompt). The Deep-Dive: 3-4 bullet points per project that highlight technical complexity and business impact. For visualPrompt: generate a 2-4 word visual description for AI image generation.
 - keyHighlights (array of 3-5 short, punchy strings, max 10 words each. Candidate's strongest selling points or impressive metrics.)
 - predictedDomain: Predict the professional domain. Must be exactly one of: "tech", "creative", "corporate", "luxury".
+- profileStrength (number): A score from 0 to 100 based on the depth of experience, metric quantification, and narrative punch.
 
 Return ONLY raw JSON. No markdown, no backticks, no explanation.
 
