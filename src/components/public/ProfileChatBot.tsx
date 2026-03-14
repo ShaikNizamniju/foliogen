@@ -19,7 +19,7 @@ interface ProfileChatBotProps {
   slug?: string;
 }
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-with-profile`;
+const CHAT_URL = `https://fjmcjsffeycwygicflfk.supabase.co/functions/v1/chat-with-profile`;
 
 const QUALIFYING_QUESTIONS = [
   "Hi! Before I share details, which company are you reaching out from?",
@@ -117,7 +117,7 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbWNqc2ZmZXljd3lnaWNmbGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMzA0MjYsImV4cCI6MjA4NTYwNjQyNn0.blzGaOlPRVyM90RWoA7tshfGBXFPdkY6XWaspMdOou8",
       };
 
       if (session?.access_token) {
