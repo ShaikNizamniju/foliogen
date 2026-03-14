@@ -163,9 +163,13 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
           resumeUrl = urlData.publicUrl;
           setUploadedResumeUrl(resumeUrl);
+        } else {
+          console.error("Storage Upload Error:", uploadError);
+          toast.error("Resume Storage Failed: " + uploadError.message);
         }
-      } catch {
-        // Resume upload is non-critical; profile data still applies
+      } catch (error: any) {
+        console.error("Resume Upload Logic Error:", error);
+        toast.error("Upload Logic Failed: " + (error?.message || "Internal error"));
       }
     }
 

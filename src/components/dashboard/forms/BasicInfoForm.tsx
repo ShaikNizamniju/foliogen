@@ -83,7 +83,12 @@ export function BasicInfoForm() {
             variant: "destructive",
           });
         } else {
-          throw uploadError;
+          console.error("Photo Storage Error:", uploadError);
+          toast({
+            title: "Photo Storage Failed",
+            description: uploadError.message,
+            variant: "destructive",
+          });
         }
         return;
       }
