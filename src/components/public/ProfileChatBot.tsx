@@ -19,7 +19,7 @@ interface ProfileChatBotProps {
   slug?: string;
 }
 
-const CHAT_URL = `https://fjmcjsffeycwygicflfk.supabase.co/functions/v1/chat-with-profile`;
+const CHAT_URL = `https://fjmcjsffeycwygicflfk.supabase.co/functions/v1/profile-chat`;
 
 const QUALIFYING_QUESTIONS = [
   "Hi! Before I share details, which company are you reaching out from?",
