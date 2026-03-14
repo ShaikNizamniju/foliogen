@@ -137,8 +137,9 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to get response');
+        const errorText = await response.text().catch(() => "Could not read response body");
+        console.error(`Neural Sync Handshake Failed [${response.status}]:`, errorText);
+        throw new Error(errorText || `Status ${response.status}`);
       }
 
       const reader = response.body?.getReader();
