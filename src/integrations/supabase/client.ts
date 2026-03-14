@@ -16,10 +16,7 @@ export const supabase = new Proxy({} as any, {
             persistSession: true,
             autoRefreshToken: true,
             detectSessionInUrl: true,
-          },
-          global: {
-            headers: { 'x-application-name': 'foliogen' },
-          },
+          }
         });
       } catch (e) {
         console.error("CRITICAL: Supabase manual override initialization failed (client.ts).", e);
