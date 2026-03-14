@@ -206,11 +206,12 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
           } catch { }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Neural Sync Error:", error);
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId
-            ? { ...m, content: "I'm sorry, I couldn't process your request. Please try again." }
+            ? { ...m, content: `Neural Sync Error: ${error?.message || "Core connection offline"}. Please try again.` }
             : m
         )
       );
