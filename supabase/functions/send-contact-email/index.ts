@@ -88,7 +88,7 @@ serve(async (req) => {
       JSON.stringify({ success: true, message: "Email sent successfully" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error sending contact email:", error);
     return new Response(
       JSON.stringify({ error: "Failed to send email" }),

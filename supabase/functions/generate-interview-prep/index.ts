@@ -134,7 +134,7 @@ Format your response as JSON with this exact structure:
       const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
       const jsonStr = jsonMatch ? jsonMatch[1].trim() : content.trim();
       prepData = JSON.parse(jsonStr);
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error("[generate-interview-prep] Failed to parse AI response:", parseError);
       prepData = {
         company_summary: `${company} is a dynamic organization looking for talented ${role} professionals.`,
@@ -158,7 +158,7 @@ Format your response as JSON with this exact structure:
       JSON.stringify(prepData),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("[generate-interview-prep] Error:", error);
     return errorResponse("An unexpected error occurred", 500);
   }

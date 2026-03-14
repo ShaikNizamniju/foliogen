@@ -177,7 +177,7 @@ Be strategic and specific. Reference actual details from both the profile and jo
     return new Response(JSON.stringify(analysisResult), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("analyze-job-match error:", error);
     return errorResponse("An unexpected error occurred", 500);
   }

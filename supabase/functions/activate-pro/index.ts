@@ -138,7 +138,7 @@ serve(async (req) => {
         });
 
       }
-    } catch (emailErr) {
+    } catch (emailErr: any) {
       console.error('Email send failed (non-blocking):', emailErr);
     }
 
@@ -148,7 +148,7 @@ serve(async (req) => {
       JSON.stringify({ success: true, planType: config.planType }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Activate pro error:', error);
     return errorResponse('An unexpected error occurred', 500);
   }

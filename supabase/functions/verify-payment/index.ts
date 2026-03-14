@@ -43,14 +43,14 @@ serve(async (req) => {
         }
 
         const payload = `${razorpay_order_id}|${razorpay_payment_id}`;
-        const key = await crypto.subtle.importKey(
+        const key = await globalThis.crypto.subtle.importKey(
             "raw",
             new TextEncoder().encode(secret),
             { name: "HMAC", hash: "SHA-256" },
             false, ["sign"]
         );
 
-        const signatureBuffer = await crypto.subtle.sign(
+        const signatureBuffer = await globalThis.crypto.subtle.sign(
             "HMAC", key, new TextEncoder().encode(payload)
         );
         const expectedSignature = Array.from(new Uint8Array(signatureBuffer))
@@ -143,7 +143,7 @@ serve(async (req) => {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
 
-    } catch (err) {
+    } catch (err: any) {
         console.error("Verification error:", err);
         return new Response(JSON.stringify({ error: "Internal Server Error" }), {
             status: 500, headers: { ...corsHeaders }

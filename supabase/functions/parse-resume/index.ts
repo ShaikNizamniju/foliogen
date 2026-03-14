@@ -133,7 +133,7 @@ ${resumeText.substring(0, 30000)}`
     let parsedProfile;
     try {
       parsedProfile = JSON.parse(rawText);
-    } catch {
+    } catch (parseError: any) {
       return errorResponse("AI response was not valid JSON. Please try again.", 502);
     }
 
@@ -188,7 +188,7 @@ ${resumeText.substring(0, 30000)}`
       status: 200
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return errorResponse("An unexpected error occurred", 500);
   }
 });

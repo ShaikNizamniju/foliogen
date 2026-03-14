@@ -106,7 +106,7 @@ STRICT ENFORCEMENT RULES (The Impact Ledger):
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Rewrite text error:', error);
         return errorResponse('An unexpected error occurred', 500);
     }

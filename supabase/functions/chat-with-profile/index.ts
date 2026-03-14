@@ -178,7 +178,7 @@ CRITICAL RULES:
               const parsed = JSON.parse(jsonStr);
               const content = parsed.choices?.[0]?.delta?.content;
               if (content) fullResponse += content;
-            } catch { }
+            } catch (ignore: any) { }
           }
         }
         await supabaseAdmin.from('chat_queries').insert({
@@ -188,7 +188,7 @@ CRITICAL RULES:
           visitor_question: userQuery.substring(0, 1000),
           ai_response: fullResponse.substring(0, 5000),
         });
-      } catch (logErr) {
+      } catch (logErr: any) {
         console.error('Chat log error:', logErr);
       }
     })();
@@ -197,7 +197,7 @@ CRITICAL RULES:
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat error:', error);
     return errorResponse('An unexpected error occurred', 500);
   }

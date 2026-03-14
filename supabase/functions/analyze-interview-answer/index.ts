@@ -124,7 +124,7 @@ Format strictly as requested by the tool call.`;
     return new Response(JSON.stringify(feedback), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("error:", error);
     return errorResponse("An unexpected error occurred", 500);
   }

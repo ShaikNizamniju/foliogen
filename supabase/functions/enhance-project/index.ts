@@ -147,7 +147,7 @@ Do NOT include any preamble or explanation. Output EXACTLY the 3-4 bullet points
       headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Enhance project error:', error);
     return errorResponse('An unexpected error occurred', 500);
   }
