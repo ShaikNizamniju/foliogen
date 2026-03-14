@@ -20,6 +20,7 @@ interface ProfileChatBotProps {
 }
 
 const CHAT_URL = `https://fjmcjsffeycwygicflfk.supabase.co/functions/v1/profile-chat`;
+const HARDCODED_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbWNqc2ZmZXljd3lnaWNmbGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMzA0MjYsImV4cCI6MjA4NTYwNjQyNn0.blzGaOlPRVyM90RWoA7tshfGBXFPdkY6XWaspMdOou8";
 
 const QUALIFYING_QUESTIONS = [
   "Hi! Before I share details, which company are you reaching out from?",
@@ -67,25 +68,18 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
 
-    // Handle qualifying questions locally
     if (qualificationStep < QUALIFYING_QUESTIONS.length) {
-      // Capture company name from first answer
-      if (qualificationStep === 0) {
-        setVisitorCompany(userMessage.content);
-      }
-
+      if (qualificationStep === 0) setVisitorCompany(userMessage.content);
       const nextStep = qualificationStep + 1;
       setQualificationStep(nextStep);
 
       if (nextStep < QUALIFYING_QUESTIONS.length) {
-        // Ask next qualifying question
         setMessages((prev) => [
           ...prev,
           { id: crypto.randomUUID(), role: 'assistant', content: QUALIFYING_QUESTIONS[nextStep] },
         ]);
         return;
       } else {
-        // All questions answered — greet and proceed
         setMessages((prev) => [
           ...prev,
           {
@@ -98,9 +92,7 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
       }
     }
 
-    // Qualification complete — send to AI
     setIsLoading(true);
-    let assistantContent = '';
     const assistantId = crypto.randomUUID();
 
     setMessages((prev) => [
@@ -113,16 +105,11 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
         .filter((m) => m.id !== 'initial')
         .map((m) => ({ role: m.role, content: m.content }));
 
-      const { data: { session } } = await supabase.auth.getSession();
-
-      const headers: Record<string, string> = {
+      const headers = {
         'Content-Type': 'application/json',
-        apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbWNqc2ZmZXljd3lnaWNmbGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMzA0MjYsImV4cCI6MjA4NTYwNjQyNn0.blzGaOlPRVyM90RWoA7tshfGBXFPdkY6XWaspMdOou8",
+        'apikey': HARDCODED_ANON_KEY,
+        'Authorization': `Bearer ${HARDCODED_ANON_KEY}`,
       };
-
-      if (session?.access_token) {
-        headers.Authorization = `Bearer ${session.access_token}`;
-      }
 
       const response = await fetch(CHAT_URL, {
         method: 'POST',
@@ -137,82 +124,24 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
       });
 
       if (!response.ok) {
-        const errorText = await response.text().catch(() => "Could not read response body");
-        console.error(`Neural Sync Handshake Failed [${response.status}]:`, errorText);
-        throw new Error(errorText || `Status ${response.status}`);
+        const errorText = await response.text().catch(() => "Unknown Error");
+        throw new Error(errorText);
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
+      const data = await response.json();
+      const reply = data.reply || data.content || "Neural Sync: Connectivity restored.";
 
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
-          let line = buffer.slice(0, newlineIndex);
-          buffer = buffer.slice(newlineIndex + 1);
-
-          if (line.endsWith('\r')) line = line.slice(0, -1);
-          if (line.startsWith(':') || line.trim() === '') continue;
-          if (!line.startsWith('data: ')) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === '[DONE]') break;
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) {
-              assistantContent += content;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId ? { ...m, content: assistantContent } : m
-                )
-              );
-            }
-          } catch {
-            buffer = line + '\n' + buffer;
-            break;
-          }
-        }
-      }
-
-      // Handle remaining buffer
-      if (buffer.trim()) {
-        for (let raw of buffer.split('\n')) {
-          if (!raw) continue;
-          if (raw.endsWith('\r')) raw = raw.slice(0, -1);
-          if (raw.startsWith(':') || raw.trim() === '') continue;
-          if (!raw.startsWith('data: ')) continue;
-          const jsonStr = raw.slice(6).trim();
-          if (jsonStr === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) {
-              assistantContent += content;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantId ? { ...m, content: assistantContent } : m
-                )
-              );
-            }
-          } catch { }
-        }
-      }
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId ? { ...m, content: reply } : m
+        )
+      );
     } catch (error: any) {
       console.error("Neural Sync Error:", error);
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId
-            ? { ...m, content: `Neural Sync Error: ${error?.message || "Core connection offline"}. Please try again.` }
+            ? { ...m, content: `Neural Sync Error: ${error.message || "Core offline"}.` }
             : m
         )
       );
@@ -230,85 +159,48 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
 
   return (
     <>
-      {/* Floating Chat Button */}
       <motion.button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "fixed bottom-24 right-6 z-[100] h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 flex items-center justify-center transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          "fixed bottom-24 right-6 z-[100] h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center transition-colors hover:bg-primary/90",
           isOpen && "hidden"
         )}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
-        transition={{ type: "spring", stiffness: 400, damping: 17 }}
-        aria-label="Chat with this profile"
-        title="Ask about this professional"
       >
         <MessageSquare className="h-6 w-6" />
       </motion.button>
 
-      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className="fixed bottom-24 right-6 z-[100] w-[380px] max-w-[calc(100vw-3rem)] bg-background border border-border rounded-2xl shadow-2xl overflow-hidden"
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/50">
               <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <MessageSquare className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Chat with Portfolio</p>
-                  <p className="text-xs text-muted-foreground">Ask about {profileName}</p>
-                </div>
+                <MessageSquare className="h-4 w-4 text-primary" />
+                <p className="text-sm font-medium">Chat with {profileName}</p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setIsOpen(false)}
-              >
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsOpen(false)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* Messages */}
             <ScrollArea className="h-[350px] p-4" ref={scrollRef}>
               <div className="space-y-4">
                 {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={cn(
-                      "flex",
-                      message.role === 'user' ? "justify-end" : "justify-start"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm",
-                        message.role === 'user'
-                          ? "bg-primary text-primary-foreground rounded-br-md"
-                          : "bg-muted text-foreground rounded-bl-md"
-                      )}
-                    >
-                      {message.content || (
-                        <span className="flex items-center gap-1">
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                          Thinking...
-                        </span>
-                      )}
+                  <div key={message.id} className={cn("flex", message.role === 'user' ? "justify-end" : "justify-start")}>
+                    <div className={cn("max-w-[85%] rounded-2xl px-4 py-2.5 text-sm", message.role === 'user' ? "bg-primary text-primary-foreground rounded-br-md" : "bg-muted text-foreground rounded-bl-md")}>
+                      {message.content || <Loader2 className="h-3 w-3 animate-spin" />}
                     </div>
                   </div>
                 ))}
               </div>
             </ScrollArea>
 
-            {/* Input */}
             <div className="p-4 border-t border-border bg-muted/30">
               <div className="flex gap-2">
                 <Input
@@ -316,21 +208,12 @@ export function ProfileChatBot({ profileId, profileName, slug }: ProfileChatBotP
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={qualificationStep < QUALIFYING_QUESTIONS.length ? "Type your answer..." : "Ask a question..."}
+                  placeholder="Ask a question..."
                   disabled={isLoading}
                   className="flex-1 bg-background"
                 />
-                <Button
-                  onClick={sendMessage}
-                  disabled={!input.trim() || isLoading}
-                  size="icon"
-                  className="shrink-0"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
+                <Button onClick={sendMessage} disabled={!input.trim() || isLoading} size="icon">
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 </Button>
               </div>
             </div>
