@@ -41,12 +41,24 @@ function AppRoutes() {
   const isPublicRoute = location.pathname.startsWith('/p/') || location.pathname.startsWith('/u/') || location.pathname.startsWith('/auth/callback') || hasAuthToken;
 
   useEffect(() => {
-    // Task 1: URL Fragment Listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') {
-        // If we detect a successful handshake via fragment or session, move to dashboard
-        toast.success('Identity verified. Entering the Vault.');
-        navigate('/dashboard?section=overview', { replace: true });
+    // Task 3: Production Key Verification
+    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    if (!supabaseKey || supabaseKey.length < 10) {
+      toast.error("FATAL: Missing API Key. Check your .env file or production secrets.", {
+        duration: 10000,
+      });
+    }
+
+    // Task 1: URL Fragment Listener with Task 2 Hardening
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        if (session) {
+          // Task 2: Wait 500ms before navigating to let local storage commit
+          setTimeout(() => {
+            toast.success('Identity verified. Entering the Vault.');
+            navigate('/dashboard?section=overview', { replace: true });
+          }, 500);
+        }
       }
     });
 

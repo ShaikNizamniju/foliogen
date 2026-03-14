@@ -8,6 +8,11 @@ let supabaseInstance: any = null;
 export const supabase = new Proxy({} as any, {
   get: (target, prop) => {
     if (!supabaseInstance) {
+      if (!SUPABASE_URL || !SUPABASE_KEY || SUPABASE_KEY.length < 10) {
+        console.error("FATAL: Missing or invalid Supabase API Key. Identity Vault connection rejected.");
+        throw new Error("Missing API Key");
+      }
+
       try {
         supabaseInstance = createClient(SUPABASE_URL, SUPABASE_KEY, {
           auth: {
@@ -16,8 +21,12 @@ export const supabase = new Proxy({} as any, {
             autoRefreshToken: true,
             detectSessionInUrl: true,
           },
+          global: {
+            headers: { 'x-application-name': 'foliogen' },
+          },
         });
       } catch (e) {
+        console.error("CRITICAL: Supabase v2 primary initialization failed. Retrying with emergency fallback...", e);
         // Retry with hardcoded fallback if initialization fails
         supabaseInstance = createClient("https://fjmcjsffeycwygicflfk.supabase.co", SUPABASE_KEY, {
           auth: {
@@ -25,6 +34,9 @@ export const supabase = new Proxy({} as any, {
             persistSession: true,
             autoRefreshToken: true,
             detectSessionInUrl: true,
+          },
+          global: {
+            headers: { 'x-application-name': 'foliogen-v2-fallback' },
           },
         });
       }
