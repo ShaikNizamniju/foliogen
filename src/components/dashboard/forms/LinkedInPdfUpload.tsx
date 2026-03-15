@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Linkedin, Upload, Loader2, HelpCircle } from 'lucide-react';
+import { Linkedin, Upload, Loader2, HelpCircle, GitMerge, Replace } from 'lucide-react';
 import { supabase } from '@/lib/supabase_v2';
-import { useProfile } from '@/contexts/ProfileContext';
+import { useProfile, ProfileData } from '@/contexts/ProfileContext';
 import { toast } from 'sonner';
 import * as pdfjsLib from 'pdfjs-dist';
 import {
@@ -10,6 +10,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 // Dynamically resolve worker URL to match installed pdfjs-dist version
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
@@ -17,7 +25,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs
 export function LinkedInPdfUpload() {
   const [isDragging, setIsDragging] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
-  const { updateProfile } = useProfile();
+  const [mergeModalOpen, setMergeModalOpen] = useState(false);
+  const [pendingData, setPendingData] = useState<Partial<ProfileData> | null>(null);
+  const { profile, updateProfile, saveProfile } = useProfile();
 
   const processFile = async (file: File) => {
     if (file.type !== 'application/pdf') {
@@ -28,8 +38,6 @@ export function LinkedInPdfUpload() {
     setIsParsing(true);
     try {
       const arrayBuffer = await file.arrayBuffer();
-
-      // Load PDF
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdf = await loadingTask.promise;
 
@@ -47,19 +55,27 @@ export function LinkedInPdfUpload() {
 
       toast.info('Analyzing LinkedIn profile with AI...');
 
-      // Call Edge Function (same as resume parser)
       const { data, error } = await supabase.functions.invoke('parse-resume', {
         body: { resumeText: fullText }
       });
 
       if (error) throw new Error("Connection failed: " + error.message);
+      if (data.error) throw new Error(data.error);
 
-      // Handle logic errors returned by the function
-      if (data.error) {
-        throw new Error(data.error);
-      }
+      const safeWorkExperience = (data.workExperience || []).map((w: any) => ({
+        ...w,
+        id: w.id || crypto.randomUUID(),
+      }));
+      const safeProjects = (data.projects || []).map((p: any) => ({
+        title: p.title || '',
+        description: p.description || '',
+        link: p.link || '',
+        imageUrl: p.imageUrl || '',
+        ...p,
+        id: p.id || crypto.randomUUID(),
+      }));
 
-      updateProfile({
+      const parsed: Partial<ProfileData> = {
         fullName: data.fullName,
         headline: data.headline,
         bio: data.bio,
@@ -67,18 +83,53 @@ export function LinkedInPdfUpload() {
         email: data.email,
         linkedinUrl: data.linkedinUrl,
         skills: data.skills || [],
-        workExperience: data.workExperience || [],
-        projects: data.projects || []
-      });
+        workExperience: safeWorkExperience,
+        projects: safeProjects,
+      };
 
-      toast.success('LinkedIn profile imported successfully!');
-
+      // Check if user has existing data — if so, show merge modal
+      const hasExistingData = profile.fullName || profile.workExperience.length > 0 || profile.projects.length > 0;
+      if (hasExistingData) {
+        setPendingData(parsed);
+        setMergeModalOpen(true);
+      } else {
+        // No existing data, just replace
+        applyData(parsed, 'replace');
+      }
     } catch (error: any) {
-
       toast.error(error.message || 'Failed to parse LinkedIn PDF');
     } finally {
       setIsParsing(false);
     }
+  };
+
+  const applyData = async (data: Partial<ProfileData>, mode: 'merge' | 'replace') => {
+    if (mode === 'merge') {
+      // Merge: combine arrays, keep existing scalar fields if new ones are empty
+      const mergedSkills = [...new Set([...(profile.skills || []), ...(data.skills || [])])];
+      const existingExpIds = new Set(profile.workExperience.map(w => `${w.company}-${w.jobTitle}`));
+      const newExp = (data.workExperience || []).filter(w => !existingExpIds.has(`${w.company}-${w.jobTitle}`));
+      const existingProjIds = new Set(profile.projects.map(p => p.title));
+      const newProj = (data.projects || []).filter(p => !existingProjIds.has(p.title));
+
+      updateProfile({
+        fullName: profile.fullName || data.fullName,
+        headline: profile.headline || data.headline,
+        bio: profile.bio || data.bio,
+        location: profile.location || data.location,
+        email: profile.email || data.email,
+        linkedinUrl: data.linkedinUrl || profile.linkedinUrl,
+        skills: mergedSkills,
+        workExperience: [...profile.workExperience, ...newExp],
+        projects: [...profile.projects, ...newProj],
+      });
+      toast.success('LinkedIn data merged with your portfolio!');
+    } else {
+      updateProfile(data);
+      toast.success('LinkedIn profile imported — previous data replaced.');
+    }
+    setMergeModalOpen(false);
+    setPendingData(null);
   };
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
@@ -152,6 +203,36 @@ export function LinkedInPdfUpload() {
           </div>
         </div>
       </div>
+
+      {/* Merge / Replace Modal */}
+      <Dialog open={mergeModalOpen} onOpenChange={setMergeModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">LinkedIn Import Detected</DialogTitle>
+            <DialogDescription>
+              You already have portfolio data. Would you like to merge the LinkedIn data with your current portfolio, or replace it entirely?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <Button
+              variant="outline"
+              className="flex-1 gap-2"
+              onClick={() => pendingData && applyData(pendingData, 'merge')}
+            >
+              <GitMerge className="h-4 w-4" />
+              Merge Data
+            </Button>
+            <Button
+              variant="destructive"
+              className="flex-1 gap-2"
+              onClick={() => pendingData && applyData(pendingData, 'replace')}
+            >
+              <Replace className="h-4 w-4" />
+              Replace All
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
