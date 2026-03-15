@@ -53,19 +53,19 @@ serve(async (req) => {
     const textCheck = validateText(resumeText, "Resume text", 30000, 50);
     if (!textCheck.valid) return validationError(textCheck.error!);
 
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
-      return errorResponse("Server configuration error", 500);
+      return errorResponse("Server configuration error: Missing GEMINI_API_KEY", 500);
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "gemini-1.5-flash",
         messages: [
           {
             role: "system",

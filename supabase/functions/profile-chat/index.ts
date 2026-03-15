@@ -89,7 +89,7 @@ serve(async (req) => {
       visitor_company: typeof visitorCompany === 'string' ? sanitize(visitorCompany, 200) : null,
       visitor_question: userQuery.substring(0, 1000),
       ai_response: reply,
-    }).catch(console.error);
+    }).then(({ error }) => { if (error) console.error(error); });
 
     return new Response(
       JSON.stringify({ reply }),
