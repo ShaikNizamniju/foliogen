@@ -1,4 +1,5 @@
-import { useProfile } from "@/contexts/ProfileContext";
+import { useState, useEffect } from "react";
+import { useProfile, ProfileData } from "@/contexts/ProfileContext";
 import { MinimalistTemplate } from "./templates/MinimalistTemplate";
 import { CreativeTemplate } from "./templates/CreativeTemplate";
 import { SaasTemplate } from "./templates/SaasTemplate";
@@ -23,12 +24,51 @@ import { Eye } from "lucide-react";
 import { FONT_OPTIONS, FontChoice } from "@/contexts/ProfileContext";
 import { Helmet } from "react-helmet-async";
 
+// Persona keyword maps for filtering/sorting projects
+const PERSONA_KEYWORDS: Record<string, string[]> = {
+  "big tech": ["scale", "distributed", "microservice", "cloud", "aws", "gcp", "azure", "kubernetes", "docker", "ci/cd", "api", "platform", "infrastructure", "system design", "performance", "ml", "machine learning", "data pipeline"],
+  "startup": ["mvp", "startup", "launch", "growth", "scrappy", "lean", "prototype", "ship", "founder", "product-market", "iteration", "agile", "rapid", "bootstrap", "saas"],
+  "fintech": ["fintech", "payment", "banking", "finance", "compliance", "kyc", "blockchain", "trading", "risk", "transaction", "ledger", "regulation", "stripe", "razorpay"],
+  "healthtech": ["health", "medical", "patient", "clinical", "hipaa", "ehr", "telemedicine", "diagnosis", "pharma", "biotech", "healthcare", "wellness", "fda"],
+};
+
+function scoreProjectForPersona(project: { title: string; description: string; techStack?: string[] }, persona: string): number {
+  const keywords = PERSONA_KEYWORDS[persona];
+  if (!keywords) return 0;
+  const text = `${project.title} ${project.description} ${(project.techStack || []).join(' ')}`.toLowerCase();
+  return keywords.reduce((score, kw) => score + (text.includes(kw) ? 1 : 0), 0);
+}
+
 export function TemplatePreview() {
   const { profile, updateProfile } = useProfile();
+  const [persona, setPersona] = useState(() => localStorage.getItem("foliogen_target_industry") || "none");
+
+  // Listen for persona changes from PersonaSwitcher
+  useEffect(() => {
+    const handler = (e: CustomEvent) => {
+      setPersona(e.detail as string);
+    };
+    window.addEventListener("persona-recalibrating", handler as EventListener);
+    return () => window.removeEventListener("persona-recalibrating", handler as EventListener);
+  }, []);
+
+  // Build display profile with persona-sorted projects
+  const getDisplayProfile = () => {
+    const base = { ...profile, photoUrl: profile.hidePhoto ? "" : profile.photoUrl };
+    if (persona === "none" || !PERSONA_KEYWORDS[persona]) return base;
+
+    const scored = [...base.projects].map(p => ({
+      project: p,
+      score: scoreProjectForPersona(p, persona),
+    }));
+    scored.sort((a, b) => b.score - a.score);
+    return { ...base, projects: scored.map(s => s.project) };
+  };
+
+  const displayProfile = getDisplayProfile();
 
   return (
     <>
-      {/* Real-time Font Sync: Load currently selected font */}
       {profile.selectedFont && profile.selectedFont !== 'default' && (() => {
         const fontOption = FONT_OPTIONS.find(f => f.id === profile.selectedFont);
         if (!fontOption) return null;
@@ -48,9 +88,13 @@ export function TemplatePreview() {
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground shrink-0">
             <Eye className="h-4 w-4" />
             Live Preview
+            {persona !== "none" && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-mono uppercase tracking-wider">
+                {persona}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
-            {/* Font Selector */}
             <Select
               value={profile.selectedFont}
               onValueChange={(value) => updateProfile({ selectedFont: value as FontChoice })}
@@ -66,7 +110,6 @@ export function TemplatePreview() {
                 ))}
               </SelectContent>
             </Select>
-            {/* Template Selector */}
             <Select
               value={profile.selectedTemplate}
               onValueChange={(value) => updateProfile({ selectedTemplate: value as any })}
@@ -99,7 +142,7 @@ export function TemplatePreview() {
           </div>
         </div>
 
-        {/* Preview Content - Natural scrolling */}
+        {/* Preview Content */}
         <div className="flex-1 overflow-auto p-4 print:p-0 print:overflow-visible">
           <div className="rounded-xl border border-border bg-card shadow-lg overflow-hidden transform scale-[0.55] origin-top-left w-[182%] print:transform-none print:w-full print:border-0 print:shadow-none print:rounded-none">
             <div
@@ -115,7 +158,6 @@ export function TemplatePreview() {
               }}
             >
               {(() => {
-                const displayProfile = { ...profile, photoUrl: profile.hidePhoto ? "" : profile.photoUrl };
                 switch (profile.selectedTemplate) {
                   case "minimalist": return <MinimalistTemplate profile={displayProfile} />;
                   case "creative": return <CreativeTemplate profile={displayProfile} />;

@@ -239,12 +239,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       clearTimeout(saveTimeoutRef.current);
     }
 
+    // Show saving indicator immediately
+    toast.loading('Auto-saving...', { id: 'auto-save', duration: 10000 });
+
     saveTimeoutRef.current = setTimeout(async () => {
       const { error } = await saveProfile(dataToSave);
       if (error) {
-        toast.error('Auto-save failed: ' + error.message, { id: 'auto-save' });
+        toast.error('Auto-save failed', { id: 'auto-save', description: error.message });
       } else {
-        toast.success('All changes saved', { id: 'auto-save', duration: 2000 });
+        toast.success('Saved ✓', { id: 'auto-save', duration: 1500 });
       }
     }, 1500);
   }, [user]);
