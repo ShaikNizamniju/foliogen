@@ -30,9 +30,7 @@ const pageTransition = {
 
 export function DashboardContent() {
   const location = useLocation();
-  const section = location.pathname === '/profile'
-    ? 'profile'
-    : (new URLSearchParams(location.search).get('section') || 'overview');
+  const section = new URLSearchParams(location.search).get('section') || 'overview';
 
   const [isRecalibrating, setIsRecalibrating] = useState(false);
   const [recalibratingText, setRecalibratingText] = useState("");

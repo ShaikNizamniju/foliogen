@@ -82,7 +82,7 @@ function AppRoutes() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/billing" element={<Billing />} />
-          <Route path="/profile" element={<Dashboard />} />
+          {/* /profile redirects handled via /dashboard?section=profile */}
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/social-kit" element={<SocialKit />} />
           <Route path="/templates" element={<TemplatesGallery />} />

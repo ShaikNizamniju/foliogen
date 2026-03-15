@@ -60,9 +60,7 @@ export function DashboardSidebar() {
   const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
   const collapsed = isMobile ? isMobileCollapsed : state === 'collapsed';
 
-  const currentSection = location.pathname === '/profile'
-    ? 'profile'
-    : (new URLSearchParams(location.search).get('section') || 'overview');
+  const currentSection = new URLSearchParams(location.search).get('section') || 'overview';
 
   const handleSignOut = async () => {
     await signOut();
