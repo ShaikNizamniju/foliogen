@@ -104,12 +104,12 @@ export function DashboardHeader() {
 
           <div className="h-9 w-9 overflow-hidden rounded-full border border-border/50 bg-muted flex items-center justify-center ml-2">
             <img 
-              src={profilePhoto} 
+              src={profile.photoUrl || profilePhoto} 
               alt={profile.fullName || 'User'} 
               className="h-full w-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                const email = user?.email || 'shaik@foliogen.in';
+                const email = user?.email || '';
                 target.src = `https://www.gravatar.com/avatar/${btoa(email).toLowerCase()}?d=mp&s=150`;
               }}
             />

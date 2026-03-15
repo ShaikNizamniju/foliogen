@@ -66,9 +66,7 @@ export default function Dashboard() {
 
     // Enforce overview as default route if accessing base dashboard
     if (user && !loading) {
-      if (location.pathname === '/profile') {
-        return; // Allow direct profile route
-      } else if (!location.search.includes('section=')) {
+      if (location.pathname === '/dashboard' && !location.search.includes('section=')) {
         navigate('/dashboard?section=overview', { replace: true });
       }
     }
