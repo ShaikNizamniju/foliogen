@@ -142,42 +142,44 @@ ${resumeText.substring(0, 30000)}`
     const workCount = Array.isArray(parsedProfile.workExperience) ? parsedProfile.workExperience.length : 0;
 
     const parsedProjects = Array.isArray(parsedProfile.projects) ? parsedProfile.projects : [];
-    
+
     // Asynchronous Identity Vault logging for initial audit
     const vaultEntries: any[] = [];
     parsedProjects.forEach((p: any) => {
-       p.id = crypto.randomUUID();
-       const desc = p.description || '';
-       // Metric Density: Regex specific for Impact Units ($, %, 50k, 10M, 150ms)
-       const metricRegex = /(?:\$)?\d+(?:,\d{3})*(?:\.\d+)?(?:k|K|m|M|b|B|ms|s|pps|%|\s*ROI|\s*latency|\s*conversion|\s*ARR)?\b/gi;
-       const metricsCount = (desc.match(metricRegex) || []).length;
-       const metricDensityScore = Math.min(30, metricsCount * 10);
-       
-       // Framework Alignment: RICE / HEART / STAR synonyms (case insensitive)
-       const frameworkRegex = /\b(reach|impact|confidence|effort|happiness|engagement|adoption|retention|task success|situation|task|action|result|prioritization|metric|increased|decreased|orchestrated|star method|rice framework)\b/gi;
-       const frameworkCount = (desc.match(frameworkRegex) || []).length;
-       const frameworkAlignmentScore = Math.min(20, frameworkCount * 5);
-       
-       p.metricDensityScore = metricDensityScore;
-       p.frameworkAlignmentScore = frameworkAlignmentScore;
-       p.proofValidationScore = 0;
-       p.isVerified = false;
+      p.id = crypto.randomUUID();
+      let desc = p.description || '';
+      if (Array.isArray(desc)) desc = desc.join(' ');
+      if (typeof desc !== 'string') desc = String(desc);
+      // Metric Density: Regex specific for Impact Units ($, %, 50k, 10M, 150ms)
+      const metricRegex = /(?:\$)?\d+(?:,\d{3})*(?:\.\d+)?(?:k|K|m|M|b|B|ms|s|pps|%|\s*ROI|\s*latency|\s*conversion|\s*ARR)?\b/gi;
+      const metricsCount = (desc.match(metricRegex) || []).length;
+      const metricDensityScore = Math.min(30, metricsCount * 10);
 
-       vaultEntries.push({
-           user_id: userId,
-           project_id: p.id,
-           proof_validation_score: 0,
-           metric_density_score: metricDensityScore,
-           framework_alignment_score: frameworkAlignmentScore,
-           composite_trust_score: metricDensityScore + frameworkAlignmentScore
-       });
+      // Framework Alignment: RICE / HEART / STAR synonyms (case insensitive)
+      const frameworkRegex = /\b(reach|impact|confidence|effort|happiness|engagement|adoption|retention|task success|situation|task|action|result|prioritization|metric|increased|decreased|orchestrated|star method|rice framework)\b/gi;
+      const frameworkCount = (desc.match(frameworkRegex) || []).length;
+      const frameworkAlignmentScore = Math.min(20, frameworkCount * 5);
+
+      p.metricDensityScore = metricDensityScore;
+      p.frameworkAlignmentScore = frameworkAlignmentScore;
+      p.proofValidationScore = 0;
+      p.isVerified = false;
+
+      vaultEntries.push({
+        user_id: userId,
+        project_id: p.id,
+        proof_validation_score: 0,
+        metric_density_score: metricDensityScore,
+        framework_alignment_score: frameworkAlignmentScore,
+        composite_trust_score: metricDensityScore + frameworkAlignmentScore
+      });
     });
 
     // Fire and forget (asynchronously) - DO NOT await to prevent performance degradation
     if (vaultEntries.length > 0) {
-       supabase.from('identity_vault').insert(vaultEntries).then();
+      supabase.from('identity_vault').insert(vaultEntries).then();
     }
-    
+
     parsedProfile.projects = parsedProjects;
 
     if (!parsedProfile.fullName && skillsCount === 0 && workCount === 0) {
@@ -190,6 +192,7 @@ ${resumeText.substring(0, 30000)}`
     });
 
   } catch (error: any) {
-    return errorResponse("An unexpected error occurred", 500);
+    console.error("FATAL SERVER CRASH:", error);
+    return errorResponse(`Crash: ${error.message || error}`, 500);
   }
 });
