@@ -136,7 +136,7 @@ export function DashboardSidebar() {
                       )}
                     >
                       <Link
-                        to={item.section === 'profile' ? '/profile' : item.section === 'billing' ? '/dashboard/billing' : `/dashboard?section=${item.section}`}
+                        to={item.section === 'billing' ? '/dashboard/billing' : `/dashboard?section=${item.section}`}
                         data-tour={item.section === 'profile' ? 'profile' : undefined}
                         className={cn(
                           "flex flex-1 items-center gap-2",
