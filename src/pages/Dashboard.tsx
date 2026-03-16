@@ -15,6 +15,7 @@ import { supabase } from '@/lib/supabase_v2';
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { usePro } from '@/contexts/ProContext';
 import { ProVaultWaitlistModal } from '@/components/dashboard/ProVaultWaitlistModal';
+import { FoundersFeedback } from '@/components/dashboard/FoundersFeedback';
 
 // Global Data Context to avoid loading spinners on tab switch
 export const GlobalDataContext = createContext<any>(null);
@@ -162,6 +163,9 @@ function DashboardInner() {
         onClose={() => setWaitlistOpen(false)}
         userEmail={user?.email}
       />
+
+      {/* Floating Feedback Button */}
+      <FoundersFeedback />
     </SidebarProvider>
   );
 }

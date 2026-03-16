@@ -4,7 +4,8 @@ export type AnalyticsEvent =
   | 'resume_upload_success'
   | 'persona_switch'
   | 'checkout_started'
-  | 'payment_success_viewed';
+  | 'payment_success_viewed'
+  | 'feedback_submitted';
 
 export async function trackEvent(eventName: AnalyticsEvent, metadata: Record<string, any> = {}) {
   try {
