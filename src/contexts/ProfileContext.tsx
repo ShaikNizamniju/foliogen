@@ -4,6 +4,13 @@ import { toast } from "sonner";
 import { useAuth } from "./AuthContext";
 import { Json } from "@/integrations/supabase/types";
 
+export type Persona = "general" | "startup" | "bigtech" | "fintech";
+
+export interface NarrativeVariant {
+  bio: string;
+  headline: string;
+}
+
 export interface WorkExperience {
   id: string;
   jobTitle: string;
@@ -114,6 +121,8 @@ export interface ProfileData {
   full_profile?: any;
   resume_data?: any;
   profileStrength?: number;
+  activePersona: Persona;
+  narrativeVariants: Record<Persona, NarrativeVariant>;
 }
 
 interface ProfileContextType {
@@ -147,6 +156,13 @@ const defaultProfile: ProfileData = {
   full_profile: null,
   resume_data: null,
   hidePhoto: false,
+  activePersona: "general",
+  narrativeVariants: {
+    general: { bio: "", headline: "" },
+    startup: { bio: "", headline: "" },
+    bigtech: { bio: "", headline: "" },
+    fintech: { bio: "", headline: "" },
+  },
 };
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -227,6 +243,13 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         full_profile: (data as any).full_profile || null,
         resume_data: (data as any).resume_data || null,
         profileStrength: (data as any).resume_data?.profileStrength || 0,
+        activePersona: (data as any).active_persona || "general",
+        narrativeVariants: (data as any).narrative_variants || {
+          general: { bio: data.bio || "", headline: data.headline || "" },
+          startup: { bio: "", headline: "" },
+          bigtech: { bio: "", headline: "" },
+          fintech: { bio: "", headline: "" },
+        },
       });
     }
     setLoading(false);
@@ -389,6 +412,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         selected_font: data.selectedFont,
         selected_template: data.selectedTemplate,
         resume_data: { ...(data.resume_data || {}), profileStrength: data.profileStrength },
+        active_persona: data.activePersona,
+        narrative_variants: data.narrativeVariants,
       } as any)
       .eq("user_id", user.id);
 

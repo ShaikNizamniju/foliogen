@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/components/theme-provider';
 import {
@@ -60,7 +60,8 @@ export function DashboardSidebar() {
   const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
   const collapsed = isMobile ? isMobileCollapsed : state === 'collapsed';
 
-  const currentSection = new URLSearchParams(location.search).get('section') || 'overview';
+  const [searchParams] = useSearchParams();
+  const currentSection = searchParams.get('section') || 'overview';
 
   const handleSignOut = async () => {
     await signOut();
@@ -134,7 +135,7 @@ export function DashboardSidebar() {
                       )}
                     >
                       <Link
-                        to={item.section === 'billing' ? '/dashboard/billing' : `/dashboard?section=${item.section}`}
+                        to={`/dashboard?section=${item.section}`}
                         data-tour={item.section === 'profile' ? 'profile' : undefined}
                         className={cn(
                           "flex flex-1 items-center gap-2",

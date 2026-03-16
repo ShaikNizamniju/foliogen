@@ -28,19 +28,12 @@ serve(async (req) => {
             });
         }
 
-        const { planId, userId } = await req.json();
+        const { planId, userId, priceId, successUrl } = await req.json();
 
         if (user.id !== userId) {
             console.error(`[Stripe Checkout] User mismatch! JWT: ${user.id}, Payload: ${userId}`);
             return new Response(JSON.stringify({ error: "Unauthorized - User mismatch" }), {
                 status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
-
-        if (planId !== 'basic' && planId !== 'pro') {
-            console.error(`[Stripe Checkout] Invalid plan ID provided: ${planId}`);
-            return new Response(JSON.stringify({ error: "Invalid plan ID" }), {
-                status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
@@ -54,12 +47,13 @@ serve(async (req) => {
         const priceBasic = Deno.env.get('STRIPE_PRICE_BASIC');
         const pricePro = Deno.env.get('STRIPE_PRICE_PRO');
 
-        if (!priceBasic || !pricePro) {
-            console.error(`[Stripe Checkout] Missing Price IDs. STRIPE_PRICE_BASIC: ${!!priceBasic}, STRIPE_PRICE_PRO: ${!!pricePro}`);
-            throw new Error('STRIPE_PRICE_BASIC or STRIPE_PRICE_PRO is missing from environment variables. Please add them in Supabase Edge Function Secrets.');
-        }
+        // Use the passed priceId if available, otherwise fallback to env-based planId
+        const selectedPriceId = priceId || (planId === 'pro' ? pricePro : priceBasic);
 
-        const selectedPriceId = planId === 'pro' ? pricePro : priceBasic;
+        if (!selectedPriceId) {
+            console.error(`[Stripe Checkout] No Price ID found. PriceId: ${priceId}, PlanId: ${planId}`);
+            throw new Error('No valid Price ID could be determined. Please provide a priceId or check planId mapping.');
+        }
 
         const stripe = new Stripe(stripeKey, {
             apiVersion: '2023-10-16',
@@ -68,8 +62,6 @@ serve(async (req) => {
 
         const origin = req.headers.get('origin') || 'https://foliogen.in';
         const dashboardUrl = `${origin}/dashboard`;
-
-
 
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -83,12 +75,13 @@ serve(async (req) => {
                 },
             ],
             mode: 'payment',
-            success_url: `${origin}/?success=true&plan=${planId}&session_id={CHECKOUT_SESSION_ID}`,
+            success_url: successUrl || `${origin}/?success=true&plan=${planId}&session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${dashboardUrl}?checkout_status=cancelled`,
             client_reference_id: userId,
             metadata: {
                 userId: userId,
-                planId: planId,
+                planId: planId || 'custom',
+                priceId: selectedPriceId
             },
         });
 

@@ -44,7 +44,10 @@ export default function Auth() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      navigate('/dashboard?section=overview', { replace: true });
+      // If we already have a section intended, or just default to overview
+      const searchParams = new URLSearchParams(window.location.search);
+      const section = searchParams.get('section') || 'overview';
+      navigate(`/dashboard?section=${section}`, { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -57,7 +60,7 @@ export default function Auth() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: 'https://foliogen.in/auth/callback',
+          redirectTo: window.location.origin + '/dashboard?section=overview',
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -458,6 +461,9 @@ export default function Auth() {
               >
                 Found a bug? Help us improve. →
               </a>
+            </p>
+            <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium pt-4 border-t border-border/50">
+              Join 500+ pros using the 90-day Sprint Pass. No subscriptions. Just results.
             </p>
           </div>
         </div>

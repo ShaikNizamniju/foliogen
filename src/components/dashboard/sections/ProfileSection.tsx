@@ -31,7 +31,7 @@ const tabs = [
   { id: 'skills', label: 'Skills', icon: Sparkles },
   { id: 'font', label: 'Portfolio Font', icon: Type },
   { id: 'resume', label: 'Resume Upload', icon: Upload },
-  { id: 'linkedin', label: 'Import LinkedIn PDF', icon: Linkedin },
+  { id: 'linkedin', label: 'LinkedIn Auto-Sync', icon: Linkedin },
 ];
 
 export function ProfileSection() {
@@ -119,17 +119,27 @@ export function ProfileSection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Profile Data</h1>
           <p className="text-muted-foreground">
             Fill in your information to generate your portfolio.
           </p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="shadow-glow">
-          <Save className="h-4 w-4 mr-2" />
-          {saving ? 'Saving...' : 'Save Changes'}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setActiveTab('linkedin')} 
+            className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+          >
+            <Linkedin className="h-4 w-4 mr-2" />
+            Check for LinkedIn Updates
+          </Button>
+          <Button onClick={handleSave} disabled={saving} className="shadow-glow">
+            <Save className="h-4 w-4 mr-2" />
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6 items-start">

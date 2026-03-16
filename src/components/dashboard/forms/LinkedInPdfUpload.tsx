@@ -87,14 +87,35 @@ export function LinkedInPdfUpload() {
         projects: safeProjects,
       };
 
-      // Check if user has existing data — if so, show merge modal
-      const hasExistingData = profile.fullName || profile.workExperience.length > 0 || profile.projects.length > 0;
-      if (hasExistingData) {
+      // DIFF LOGIC: Identify "What's New"
+      const existingExpIds = new Set(profile.workExperience.map(w => `${w.company.toLowerCase()}-${w.jobTitle.toLowerCase()}`));
+      const newExp = (safeWorkExperience || []).filter((w: any) => !existingExpIds.has(`${w.company.toLowerCase()}-${w.jobTitle.toLowerCase()}`));
+      
+      const existingSkills = new Set(profile.skills.map(s => s.toLowerCase()));
+      const newSkills = (data.skills || []).filter((s: string) => !existingSkills.has(s.toLowerCase()));
+
+      const existingProjTitles = new Set(profile.projects.map(p => p.title.toLowerCase()));
+      const newProj = (safeProjects || []).filter((p: any) => !existingProjTitles.has(p.title.toLowerCase()));
+
+      const hasDiff = newExp.length > 0 || newSkills.length > 0 || newProj.length > 0;
+
+      if (hasDiff) {
         setPendingData(parsed);
         setMergeModalOpen(true);
+        
+        // Detailed Toast Notification
+        if (newExp.length > 0) {
+          toast(`We found a new role at ${newExp[0].company}!`, {
+            description: "Would you like to add it to your Startup and Big Tech personas?",
+            icon: <Linkedin className="h-4 w-4 text-[#0A66C2]" />,
+          });
+        } else if (newSkills.length > 0) {
+          toast(`New skills detected!`, {
+            description: `${newSkills.slice(0, 3).join(', ')}${newSkills.length > 3 ? '...' : ''} added to your arsenal.`,
+          });
+        }
       } else {
-        // No existing data, just replace
-        applyData(parsed, 'replace');
+        toast.info("Your portfolio is already up to date with this LinkedIn profile.");
       }
     } catch (error: any) {
       toast.error(error.message || 'Failed to parse LinkedIn PDF');
@@ -103,30 +124,46 @@ export function LinkedInPdfUpload() {
     }
   };
 
-  const applyData = async (data: Partial<ProfileData>, mode: 'merge' | 'replace') => {
-    if (mode === 'merge') {
-      // Merge: combine arrays, keep existing scalar fields if new ones are empty
-      const mergedSkills = [...new Set([...(profile.skills || []), ...(data.skills || [])])];
-      const existingExpIds = new Set(profile.workExperience.map(w => `${w.company}-${w.jobTitle}`));
-      const newExp = (data.workExperience || []).filter(w => !existingExpIds.has(`${w.company}-${w.jobTitle}`));
-      const existingProjIds = new Set(profile.projects.map(p => p.title));
-      const newProj = (data.projects || []).filter(p => !existingProjIds.has(p.title));
-
-      updateProfile({
-        fullName: profile.fullName || data.fullName,
-        headline: profile.headline || data.headline,
-        bio: profile.bio || data.bio,
-        location: profile.location || data.location,
-        email: profile.email || data.email,
-        linkedinUrl: data.linkedinUrl || profile.linkedinUrl,
-        skills: mergedSkills,
-        workExperience: [...profile.workExperience, ...newExp],
-        projects: [...profile.projects, ...newProj],
-      });
-      toast.success('LinkedIn data merged with your portfolio!');
-    } else {
+  const applyData = async (data: Partial<ProfileData>, mode: 'merge' | 'replace' | 'append') => {
+    if (mode === 'replace') {
       updateProfile(data);
       toast.success('LinkedIn profile imported — previous data replaced.');
+    } else {
+      // Merge/Append Logic
+      const mergedSkills = [...new Set([...(profile.skills || []), ...(data.skills || [])])];
+      
+      const existingExpIds = new Set(profile.workExperience.map(w => `${w.company.toLowerCase()}-${w.jobTitle.toLowerCase()}`));
+      const newExp = (data.workExperience || []).filter(w => !existingExpIds.has(`${w.company.toLowerCase()}-${w.jobTitle.toLowerCase()}`));
+      
+      const existingProjTitles = new Set(profile.projects.map(p => p.title.toLowerCase()));
+      const newProj = (data.projects || []).filter(p => !existingProjTitles.has(p.title.toLowerCase()));
+
+      // Recalculate newSkills for toast in applyData
+      const existingSkills = new Set(profile.skills.map(s => s.toLowerCase()));
+      const newSkills = (data.skills || []).filter((s: string) => !existingSkills.has(s.toLowerCase()));
+
+      if (mode === 'append') {
+        updateProfile({
+          skills: mergedSkills,
+          workExperience: [...profile.workExperience, ...newExp],
+          projects: [...profile.projects, ...newProj],
+        });
+        toast.success(`Appended ${newExp.length} roles and ${newSkills.length} skills to your portfolio.`);
+      } else {
+        // Full Merge
+        updateProfile({
+          fullName: data.fullName || profile.fullName,
+          headline: data.headline || profile.headline,
+          bio: data.bio || profile.bio,
+          location: data.location || profile.location,
+          email: data.email || profile.email,
+          linkedinUrl: data.linkedinUrl || profile.linkedinUrl,
+          skills: mergedSkills,
+          workExperience: [...profile.workExperience, ...newExp],
+          projects: [...profile.projects, ...newProj],
+        });
+        toast.success('LinkedIn data merged with your portfolio!');
+      }
     }
     setMergeModalOpen(false);
     setPendingData(null);
@@ -213,23 +250,32 @@ export function LinkedInPdfUpload() {
               You already have portfolio data. Would you like to merge the LinkedIn data with your current portfolio, or replace it entirely?
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-col gap-3 pt-4">
             <Button
-              variant="outline"
-              className="flex-1 gap-2"
-              onClick={() => pendingData && applyData(pendingData, 'merge')}
+              className="flex-1 gap-2 bg-[#0A66C2] hover:bg-[#0A66C2]/90 shadow-glow"
+              onClick={() => pendingData && applyData(pendingData, 'append')}
             >
               <GitMerge className="h-4 w-4" />
-              Merge Data
+              Append New Only (Evergreen)
             </Button>
-            <Button
-              variant="destructive"
-              className="flex-1 gap-2"
-              onClick={() => pendingData && applyData(pendingData, 'replace')}
-            >
-              <Replace className="h-4 w-4" />
-              Replace All
-            </Button>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => pendingData && applyData(pendingData, 'merge')}
+              >
+                <GitMerge className="h-4 w-4" />
+                Full Merge
+              </Button>
+              <Button
+                variant="destructive"
+                className="gap-2"
+                onClick={() => pendingData && applyData(pendingData, 'replace')}
+              >
+                <Replace className="h-4 w-4" />
+                Replace All
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

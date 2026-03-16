@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase_v2';
 import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePro } from '@/contexts/ProContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
@@ -70,6 +71,7 @@ function RadialProgress({ score, size = 120, strokeWidth = 8 }: { score: number;
 export function OverviewSection() {
   const { profile, loading } = useProfile();
   const { user } = useAuth();
+  const { isPro } = usePro();
   const navigate = useNavigate();
 
   const strength = calculatePortfolioStrength(profile);
@@ -86,7 +88,9 @@ export function OverviewSection() {
   const trustScore = totalPossible > 0 ? Math.round((totalAchieved / totalPossible) * 100) : 0;
 
   const [isParserOpen, setIsParserOpen] = useState(isProfileEmpty);
+  const [isPulseModalOpen, setIsPulseModalOpen] = useState(false);
   const [chameleonStats, setChameleonStats] = useState<{industry_context: string, views: number}[]>([]);
+  const [pulseViews, setPulseViews] = useState<any[]>([]);
   const [pingCount, setPingCount] = useState(0);
 
   useEffect(() => {
@@ -140,6 +144,17 @@ export function OverviewSection() {
           }
         })
         .subscribe();
+
+      // Fetch detailed Pulse views from the new analytics table
+      supabase.from('portfolio_views')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20)
+        .then(({ data }) => {
+          if (data) {
+            setPulseViews(data);
+          }
+        });
 
       return () => { supabase.removeChannel(channel); };
     }
@@ -277,7 +292,35 @@ export function OverviewSection() {
           variants={fadeUp}
           whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
           className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default"
+          onClick={() => !isPro ? setIsPulseModalOpen(true) : navigate('/dashboard?section=billing')}
         >
+          {!isPro && (
+            <div className="absolute inset-0 z-20 backdrop-blur-md bg-black/40 flex flex-col items-start p-4 overflow-hidden">
+               <div className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none">
+                <div className="bg-[#0a0a0a]/80 border border-white/10 p-4 rounded-xl shadow-2xl backdrop-blur-sm scale-90 group-hover:scale-100 transition-transform duration-300">
+                  <Lock className="h-6 w-6 text-amber-500 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-white text-center">Unlock Insights</p>
+                  <p className="text-[10px] text-zinc-400 mt-1 uppercase tracking-widest text-center">Sprint Pass Required</p>
+                </div>
+              </div>
+              
+              {/* Teaser Data Feed */}
+              <div className="w-full space-y-2 opacity-20 select-none pointer-events-none mt-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-blue-500/50" />
+                      <div className="flex flex-col gap-1">
+                        <div className="h-1.5 w-24 bg-zinc-600 rounded" />
+                        <div className="text-[8px] text-zinc-500 font-mono">VISITOR FROM [REDACTED COMPANY]</div>
+                      </div>
+                    </div>
+                    <div className="h-2 w-8 bg-zinc-800 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -310,9 +353,21 @@ export function OverviewSection() {
               </motion.p>
             </div>
             <div className="mt-2 space-y-1">
-              {chameleonStats.length > 0 ? chameleonStats.slice(0, 2).map((stat) => (
+              {isPro && pulseViews.length > 0 ? pulseViews.slice(0, 3).map((view, idx) => {
+                const city = view.viewer_region?.split(',')[0] || 'Unknown City';
+                const displayLocation = view.viewer_company && view.viewer_company !== 'Individual Visitor' 
+                  ? `🏢 ${view.viewer_company}` 
+                  : `📍 ${city}`;
+                
+                return (
+                  <div key={view.id || idx} className="flex justify-between items-center text-[10px] text-muted-foreground">
+                    <span className="truncate max-w-[120px]" title={displayLocation}>{displayLocation}</span>
+                    <span className="capitalize text-blue-400/70 font-mono">{view.persona_active}</span>
+                  </div>
+                );
+              }) : chameleonStats.length > 0 ? chameleonStats.slice(0, 2).map((stat) => (
                 <div key={stat.industry_context} className="flex justify-between items-center text-[10px] text-muted-foreground">
-                  <span className="truncate max-w-[80px] capitalize">{stat.industry_context.replace('_', ' ')}</span>
+                  <span className="truncate max-w-[80px] capitalize">📍 {stat.industry_context.replace('_', ' ')}</span>
                   <span>{stat.views}</span>
                 </div>
               )) : (
@@ -564,6 +619,90 @@ export function OverviewSection() {
       <motion.div variants={fadeUp}>
         <ResumeInsights />
       </motion.div>
+
+      {/* Recruiter Pulse Upgrade Modal */}
+      <AnimatePresence>
+        {isPulseModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsPulseModalOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-[#00E5FF] to-blue-500" />
+              
+              <div className="p-8">
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-[#00E5FF]/20 blur-2xl rounded-full" />
+                    <div className="relative p-4 rounded-2xl bg-zinc-900 border border-white/10">
+                      <TrendingUp className="h-8 w-8 text-[#00E5FF]" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center space-y-2 mb-8">
+                  <h2 className="text-2xl font-bold text-white tracking-tight">Unlock Recruiter Insights</h2>
+                  <p className="text-zinc-400 text-sm">
+                    See exactly who is viewing your work and which industry persona is winning the most clicks.
+                  </p>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  {[
+                    { label: "Company Verification", desc: "Identify visitors from top tech companies" },
+                    { label: "Regional Tracking", desc: "Know where in the world your work is being viewed" },
+                    { label: "Persona Performance", desc: "Compare Startup vs. Big Tech interest in real-time" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                      <div className="p-1 rounded-full bg-[#00E5FF]/10 mt-0.5">
+                        <CheckCircle2 className="h-4 w-4 text-[#00E5FF]" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{item.label}</p>
+                        <p className="text-xs text-zinc-500">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <Button 
+                    onClick={() => {
+                      setIsPulseModalOpen(false);
+                      navigate('/dashboard?section=billing');
+                    }}
+                    className="w-full h-12 bg-[#00E5FF] hover:bg-[#00E5FF]/90 text-[#0a0a0a] font-bold rounded-xl"
+                  >
+                    Upgrade to Sprint Pass
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => setIsPulseModalOpen(false)}
+                    className="w-full h-12 text-zinc-500 hover:text-white"
+                  >
+                    Maybe later
+                  </Button>
+                </div>
+              </div>
+
+              <div className="px-8 py-4 bg-zinc-900/50 border-t border-white/5 text-center">
+                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">
+                  Matches average job search lifecycle | No Subscription
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

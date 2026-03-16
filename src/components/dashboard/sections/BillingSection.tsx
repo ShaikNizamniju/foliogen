@@ -5,47 +5,101 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Crown, Check, Sparkles, Target, Wand2, Users,
-  Calendar, Loader2, ShieldCheck, CreditCard, RefreshCw
+  Calendar, Loader2, ShieldCheck, CreditCard, RefreshCw, ArrowRight
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { handlePayment } from '@/lib/payment';
 import { motion } from 'framer-motion';
 import { format, differenceInDays } from 'date-fns';
+import { supabase } from '@/lib/supabase_v2';
 
-const PRO_FEATURES = [
-  { icon: Target, label: "SpyGlass Analytics", description: "See who's viewing your portfolio" },
-  { icon: Users, label: "Recruiter Personalization", description: "Chameleon Mode for custom links" },
-  { icon: Wand2, label: "AI Interview Coach", description: "AI-powered interview prep" },
-  { icon: Calendar, label: "Priority Support", description: "Fast responses when you need help" },
+const SPRINT_PASS_FEATURES = [
+  { icon: Crown, label: "Persona Switcher (All Modes)", description: "Startup, Big Tech, and Fintech variants" },
+  { icon: Users, label: "Recognized Company Resolution", description: "Identify visitors from Google, Stripe, etc." },
+  { icon: Wand2, label: "LinkedIn Auto-Sync engine", description: "Append accomplishments without overwriting" },
+  { icon: ShieldCheck, label: "Custom Domain Support", description: "Professional vanity URLs (.com, .me)" },
+  { icon: Sparkles, label: "Recruiter Pulse (Real-time)", description: "Live tracking of every visitor and company" },
 ];
 
-const BASIC_FEATURES = [
-  { icon: Target, label: "4 Portfolio Templates", description: "Minimalist, Creative, Modern Dark, Swiss" },
-  { icon: Wand2, label: "AI Portfolio Scoring", description: "Standard AI suggestions" },
-  { icon: Calendar, label: "Basic Analytics", description: "View count tracking" },
-  { icon: Users, label: "Email Support", description: "Standard response times" },
+const STARTER_FEATURES = [
+  { icon: Check, label: "1 Contextual Persona", description: "General professional summary" },
+  { icon: Check, label: "All 19+ Design Systems", description: "Full access to premium templates" },
+  { icon: Check, label: "Custom Domain Support", description: "foliogen.in/u/yourname" },
+  { icon: Check, label: "Standard AI Parsing", description: "Resume-to-portfolio synth" },
+];
+
+const FREE_FEATURES = [
+  { icon: Check, label: "1 Contextual Persona", description: "General professional summary" },
+  { icon: Check, label: "Standard Templates", description: "Basic, clean designs" },
+  { icon: Check, label: "Foliogen Subdomain", description: "foliogen.in/u/yourname" },
 ];
 
 export function BillingSection() {
   const { isPro, loading, proSince, planType, subscriptionStatus, nextRenewalDate, refreshProStatus } = usePro();
   const { user } = useAuth();
-  const [paying, setPaying] = useState(false);
+  const [payingPlan, setPayingPlan] = useState<string | null>(null);
+  
+  const [countryCode, setCountryCode] = useState<'US' | 'IN'>('IN'); // Mocked to IN
+  const currency = countryCode === 'IN' ? 'INR' : 'USD';
+  const isRegionalOffer = countryCode === 'IN';
 
-  const handleUpgrade = async (planKey: 'BASIC' | 'PRO') => {
+  const starterPrice = currency === 'INR' ? '₹199' : '$7';
+  const sprintPassPrice = currency === 'INR' ? '₹999' : '$29';
+
+  const handleCheckout = async (planKey: 'STARTER' | 'SPRINT_PASS') => {
     if (!user) return;
+    setPayingPlan(planKey);
 
-    setPaying(true);
+    let priceId = '';
+    const selectedPrice = planKey === 'STARTER' ? starterPrice : sprintPassPrice;
+
+    if (currency === 'INR') {
+      switch (planKey) {
+        case 'STARTER': priceId = 'price_1T97muSAaaABftfWXJqNbATMq'; break;
+        case 'SPRINT_PASS': priceId = 'price_1T97ojSAaaABftfWXcc46P31m'; break;
+      }
+    } else {
+      switch (planKey) {
+        case 'STARTER': priceId = 'price_1TBSe5SAaaABftfWXPuq1tpOk'; break; // Using Global Pass as fallback
+        case 'SPRINT_PASS': priceId = 'price_1TBSe5SAaaABftfWXPuq1tpOk'; break;
+      }
+    }
+    
+    console.log("Redirecting to Stripe with Price ID:", priceId);
+
+    toast.info("Connecting to Secure Checkout...", {
+      description: `Redirecting to Stripe for the ${planKey.replace('_', ' ')} (${selectedPrice} ${currency}).`
+    });
+
+    // Alert Fallback if redirect takes too long
+    const alertTimeout = setTimeout(() => {
+      window.alert("Proceeding to secure checkout for " + planKey + ". If you are not redirected automatically, please check your popup blocker.");
+    }, 2000);
+
     try {
-      await handlePayment(
-        { id: user.id, email: user.email, name: user.user_metadata?.full_name },
-        planKey,
-        () => {
-          refreshProStatus();
+      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+        body: { 
+          planId: planKey.toLowerCase(),
+          userId: user.id,
+          priceId: priceId,
+          successUrl: window.location.origin + '/dashboard?section=billing&status=success'
         }
-      );
-    } catch (error) {
+      });
 
-    } finally {
-      setPaying(false);
+      clearTimeout(alertTimeout);
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (error: any) {
+      clearTimeout(alertTimeout);
+      console.error("Checkout error:", error);
+      toast.error("Checkout failed", { 
+        description: error.message || "Failed to initiate secure checkout. Please try again." 
+      });
+      setPayingPlan(null);
     }
   };
 
@@ -57,294 +111,154 @@ export function BillingSection() {
     );
   }
 
-  const displayPlanName = planType === 'pro' ? 'Pro' : planType === 'basic' ? 'Basic' : 'Free';
-  const isFree = planType === 'free' || (!planType || planType === '');
-  const isActivePlan = subscriptionStatus === 'active';
-  const portfolioLimit = planType === 'pro' ? 'Unlimited' : planType === 'basic' ? '3' : '1';
+  const isLevelActive = (level: 'free' | 'starter' | 'sprint_pass') => {
+    if (level === 'sprint_pass') return isPro || planType === 'sprint_pass';
+    if (level === 'starter') return isPro || planType === 'starter' || planType === 'sprint_pass';
+    return true;
+  };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Billing</h1>
-        <p className="text-muted-foreground">
-          Manage your subscription and billing details.
+    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+      <div className="text-center space-y-3">
+        <h1 className="text-4xl font-extrabold text-foreground tracking-tight">Access Tiers</h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          No recurring payments. Pay for the duration of your job search.
         </p>
       </div>
 
-      {/* Subscription Management Card */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-muted-foreground" />
-            <h2 className="font-semibold text-foreground">Subscription Management</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 items-stretch">
+        {/* Free Tier */}
+        <div className="rounded-2xl border border-border bg-card/50 p-6 flex flex-col">
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-foreground">Free</h3>
+            <p className="text-muted-foreground text-xs mt-1">Foundational access for students</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge
-              variant={isActivePlan ? "default" : "secondary"}
-              className={isActivePlan ? "bg-emerald-500 text-white" : ""}
-            >
-              {isActivePlan ? "Active" : subscriptionStatus === 'past_due' ? "Past Due" : "Inactive"}
-            </Badge>
-            <Badge
-              variant={isPro ? "default" : "secondary"}
-              className={planType === 'pro' ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white" : planType === 'basic' ? "bg-primary text-primary-foreground" : ""}
-            >
-              {planType === 'pro' && <Crown className="h-3 w-3 mr-1" />}
-              {displayPlanName} Plan
-            </Badge>
+
+          <div className="flex items-baseline gap-1 mb-6">
+            <span className="text-3xl font-bold text-foreground">{currency === 'INR' ? '₹0' : '$0'}</span>
+            <span className="text-muted-foreground text-sm">forever</span>
           </div>
+
+          <div className="space-y-3 mb-8 flex-1">
+            {FREE_FEATURES.map((feature, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <Check className="h-4 w-4 text-muted-foreground/40 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium text-foreground text-xs">{feature.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{feature.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Button variant="outline" className="w-full h-10 rounded-xl text-sm" disabled>
+            Active Plan
+          </Button>
         </div>
 
-        {isPro ? (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
-              <div className="p-2 rounded-lg bg-amber-500/20">
-                <ShieldCheck className="h-5 w-5 text-amber-500" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-foreground">{displayPlanName} Member</p>
-                <p className="text-sm text-muted-foreground">
-                  Member since {proSince ? format(proSince, 'MMMM d, yyyy') : 'N/A'}
-                </p>
-              </div>
-            </div>
-
-            {nextRenewalDate && (
-              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <RefreshCw className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">Next Renewal</p>
-                    <p className="text-sm text-muted-foreground">
-                      {format(new Date(nextRenewalDate), 'MMMM d, yyyy')} • {planType === 'pro' ? '₹999/year' : '₹199/mo'}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">
-                    Pro expires in {differenceInDays(new Date(nextRenewalDate), new Date())} days
-                  </Badge>
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {(planType === 'pro' ? PRO_FEATURES : BASIC_FEATURES).map((feature, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  <span className="text-foreground">{feature.label}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Upgrade from Basic to Pro */}
-            {planType === 'basic' && (
-              <div className="pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground mb-3">
-                  Upgrade to Pro to unlock all 19+ templates, Priority AI, and SpyGlass Analytics.
-                </p>
-                <Button
-                  onClick={() => handleUpgrade('PRO')}
-                  disabled={paying}
-                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-                >
-                  {paying ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Crown className="h-4 w-4 mr-2" />
-                      Upgrade to Pro — ₹999/year
-                    </>
-                  )}
-                </Button>
-              </div>
-            )}
+        {/* Starter Tier */}
+        <div className="rounded-2xl border border-border bg-card p-6 flex flex-col relative">
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-foreground">Starter</h3>
+            <p className="text-muted-foreground text-xs mt-1">Best for entry-level pros</p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/50 border border-border">
-              <div className="p-2 rounded-lg bg-muted">
-                <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-medium text-foreground">Free Plan</p>
-                <p className="text-sm text-muted-foreground">
-                  1 template, basic resume parsing, community support
-                </p>
-              </div>
-            </div>
-            <Button
-              onClick={() => handleUpgrade('BASIC')}
-              disabled={paying}
-              size="lg"
-              className="w-full"
-            >
-              {paying ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                "Upgrade to Basic — ₹199/mo"
-              )}
-            </Button>
+
+          <div className="flex items-baseline gap-1 mb-6">
+            <span className="text-3xl font-bold text-foreground">{starterPrice}</span>
+            <span className="text-muted-foreground text-sm">/ once</span>
           </div>
-        )}
-      </div>
 
-      {/* Portfolio Slots Counter */}
-      <div className="rounded-xl border border-border bg-card p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-foreground">Portfolio Slots</h3>
-            <p className="text-sm text-muted-foreground mt-1">Create and publish multiple portfolios</p>
-          </div>
-          <div className="text-right">
-            <span className="text-3xl font-bold text-foreground">1</span>
-            <span className="text-lg text-muted-foreground"> / {portfolioLimit}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Upgrade Cards (only show if not Pro) */}
-      {planType !== 'pro' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Basic Plan */}
-          {planType !== 'basic' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-border bg-card p-8 relative overflow-hidden"
-            >
-              <div className="relative z-10">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-foreground">Basic</h3>
-                  <p className="text-muted-foreground text-sm">Great for getting started</p>
+          <div className="space-y-3 mb-8 flex-1">
+            {STARTER_FEATURES.map((feature, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <Check className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium text-foreground text-xs">{feature.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{feature.description}</p>
                 </div>
-
-                <div className="flex items-baseline gap-2 mb-6">
-                  <span className="text-4xl font-bold text-foreground">₹199</span>
-                  <span className="text-muted-foreground">/mo</span>
-                </div>
-
-                <div className="space-y-3 mb-8">
-                  {BASIC_FEATURES.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="p-1.5 rounded-lg bg-primary/10 shrink-0 mt-0.5">
-                        <feature.icon className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground text-sm">{feature.label}</p>
-                        <p className="text-xs text-muted-foreground">{feature.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <Button
-                  onClick={() => handleUpgrade('BASIC')}
-                  disabled={paying}
-                  size="lg"
-                  variant="outline"
-                  className="w-full h-12"
-                >
-                  {paying ? (
-                    <>
-                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    "Start Basic"
-                  )}
-                </Button>
               </div>
-            </motion.div>
-          )}
+            ))}
+          </div>
 
-          {/* Pro Plan */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-orange-500/5 to-red-500/5 p-8 relative overflow-hidden"
+          <Button 
+            onClick={() => handleCheckout('STARTER')}
+            disabled={!!payingPlan || isLevelActive('starter')}
+            variant="outline"
+            className="w-full h-10 rounded-xl text-sm shadow-sm"
           >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-amber-500/10 to-transparent rounded-full blur-3xl" />
+            {payingPlan === 'STARTER' ? <Loader2 className="h-4 w-4 animate-spin" /> : isLevelActive('starter') ? "Current Tier" : `Get Starter`}
+          </Button>
+        </div>
 
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500">
-                  <Crown className="h-6 w-6 text-white" />
+        {/* Sprint Pass Tier */}
+        <div className="rounded-2xl border-2 border-primary bg-primary/5 p-6 relative flex flex-col shadow-[0_0_40px_-15px_rgba(79,70,229,0.3)] scale-105">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[8px] font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+            Recommended
+          </div>
+          
+          <div className="mb-6">
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-bold text-foreground">Sprint Pass</h3>
+              {isRegionalOffer && (
+                <Badge variant="outline" className="text-[8px] border-amber-500/50 text-amber-600 bg-amber-50 dark:bg-amber-950/20 px-1 py-0">
+                  Save 60%
+                </Badge>
+              )}
+            </div>
+            <p className="text-muted-foreground text-xs mt-1">Precision career re-engineering</p>
+          </div>
+
+          <div className="flex items-baseline gap-1 mb-6">
+            <span className="text-3xl font-bold text-foreground">{sprintPassPrice}</span>
+            <span className="text-muted-foreground text-sm">/ 90 days</span>
+          </div>
+
+          <div className="space-y-3 mb-8 flex-1">
+            {SPRINT_PASS_FEATURES.map((feature, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <div className="p-0.5 rounded-full bg-primary/10 mt-0.5">
+                  <Check className="h-3 w-3 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground">Pro</h3>
-                  <p className="text-muted-foreground text-sm">Best value — everything unlimited</p>
+                  <p className="font-medium text-foreground text-xs">{feature.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{feature.description}</p>
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-4xl font-bold text-foreground">₹999</span>
-                <span className="text-muted-foreground">/year</span>
-              </div>
+          <Button 
+            onClick={() => handleCheckout('SPRINT_PASS')}
+            disabled={!!payingPlan || isLevelActive('sprint_pass')}
+            size="lg"
+            className="w-full h-12 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 group"
+          >
+            {payingPlan === 'SPRINT_PASS' ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : isLevelActive('sprint_pass') ? (
+              "Pass Active"
+            ) : (
+              <>
+                Unlock Sprint Pass
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
+          </Button>
 
-              <div className="space-y-3 mb-8">
-                {PRO_FEATURES.map((feature, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="flex items-start gap-3"
-                  >
-                    <div className="p-1.5 rounded-lg bg-amber-500/10 shrink-0 mt-0.5">
-                      <feature.icon className="h-4 w-4 text-amber-500" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground text-sm">{feature.label}</p>
-                      <p className="text-xs text-muted-foreground">{feature.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
-                <div className="flex items-center gap-2 text-sm pt-1">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  <span className="text-foreground">All 19+ Design Systems</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-emerald-500" />
-                  <span className="text-foreground">Full Scoring Engine</span>
-                </div>
-              </div>
-
-              <Button
-                onClick={() => handleUpgrade('PRO')}
-                disabled={paying}
-                size="lg"
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg shadow-amber-500/25 h-12 text-lg"
-              >
-                {paying ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-5 w-5 mr-2" />
-                    Go Pro
-                  </>
-                )}
-              </Button>
-
-              <p className="text-xs text-center text-muted-foreground mt-4">
-                Secure payment via GoKwik • Instant activation
-              </p>
-            </div>
-          </motion.div>
+          <p className="text-[8px] text-center text-muted-foreground mt-4">
+            One-time payment • No auto-renew • Stripe Secure
+          </p>
         </div>
-      )}
+      </div>
+
+      {/* Trust Banner */}
+      <div className="mt-12 p-6 rounded-2xl bg-muted/30 border border-border text-center">
+        <p className="text-sm italic text-muted-foreground">
+          "The Sprint Pass approach is refreshing. No need to worry about recurring fees. 
+          I paid for the duration of my interview cycle and had exactly what I needed."
+        </p>
+        <p className="text-xs font-semibold mt-2">— Product Lead @ Stripe</p>
+      </div>
     </div>
   );
 }

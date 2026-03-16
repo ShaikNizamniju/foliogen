@@ -1,7 +1,7 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Mail } from 'lucide-react';
+import { LogOut, User, Mail, Linkedin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -46,6 +46,30 @@ export function SettingsSection() {
               <p className="text-sm text-muted-foreground">Account ID</p>
               <p className="font-medium text-foreground font-mono text-sm">{user?.id?.slice(0, 8)}...</p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Notifications & Automation */}
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h2 className="font-semibold text-foreground mb-4">Notifications & Automation</h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/30">
+            <div className="flex gap-3">
+              <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400 h-fit">
+                <Linkedin className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="font-medium text-foreground text-sm">LinkedIn Pulse Sync</p>
+                <p className="text-xs text-muted-foreground">Receive a monthly nudge to sync your latest LinkedIn accomplishments.</p>
+              </div>
+            </div>
+            <button 
+              className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 bg-primary"
+              onClick={() => toast.success("Notification preferences updated.")}
+            >
+              <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow ring-0 transition duration-200 ease-in-out" />
+            </button>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
@@ -56,7 +56,8 @@ function GlobalDataProvider({ children }: { children: ReactNode }) {
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const currentSection = searchParams.get('section');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -64,13 +65,11 @@ export default function Dashboard() {
       return;
     }
 
-    // Enforce overview as default route if accessing base dashboard
-    if (user && !loading) {
-      if (location.pathname === '/dashboard' && !location.search.includes('section=')) {
-        navigate('/dashboard?section=overview', { replace: true });
-      }
+    // Enforce overview as default route if accessing base dashboard without a section
+    if (user && !loading && location.pathname === '/dashboard' && !currentSection) {
+      navigate('/dashboard?section=overview', { replace: true });
     }
-  }, [user, loading, navigate, location]);
+  }, [user, loading, navigate, location.pathname, currentSection]);
 
   if (loading) {
     return (

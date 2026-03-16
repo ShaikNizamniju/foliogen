@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Sparkles, Building2, Rocket, Landmark, Stethoscope } from "lucide-react";
+import { ChevronDown, Sparkles, Building2, Rocket, Landmark, Lock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,37 +9,55 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-const INDUSTRIES = [
-  { id: "none", label: "General Fit", icon: Sparkles },
-  { id: "big tech", label: "Big Tech", icon: Building2 },
-  { id: "startup", label: "Early-Stage Startup", icon: Rocket },
-  { id: "fintech", label: "Fintech", icon: Landmark },
-  { id: "healthtech", label: "Healthtech", icon: Stethoscope },
+import { useProfile, Persona } from "@/contexts/ProfileContext";
+import { usePro } from "@/contexts/ProContext";
+import { toast } from "sonner";
+import { useSearchParams } from "react-router-dom";
+
+const PERSONAS: { id: Persona; label: string; icon: any; description: string; isPro?: boolean }[] = [
+  { id: "general", label: "General Fit", icon: Sparkles, description: "Standard professional narrative.", isPro: false },
+  { id: "bigtech", label: "Big Tech", icon: Building2, description: "Scale, Systems, Stakeholders.", isPro: true },
+  { id: "startup", label: "Startup", icon: Rocket, description: "0-to-1, Velocity, Ambiguity.", isPro: true },
+  { id: "fintech", label: "Fintech", icon: Landmark, description: "Trust, Compliance, Security.", isPro: true },
 ];
 
 export function PersonaSwitcher() {
-  const [industry, setIndustry] = useState("none");
+  const { profile, updateProfile } = useProfile();
+  const { isPro } = usePro();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activePersona = profile.activePersona || "general";
 
   useEffect(() => {
-    const saved = localStorage.getItem("foliogen_target_industry");
-    if (saved) {
-      setIndustry(saved);
-    }
+    const handleNavigate = () => {
+      setSearchParams({ section: 'billing' });
+    };
+    window.addEventListener('navigate-to-billing', handleNavigate);
+    return () => window.removeEventListener('navigate-to-billing', handleNavigate);
   }, []);
 
-  const handleSelect = (id: string) => {
-    if (id === industry) return;
+  const handleSelect = (id: Persona) => {
+    const persona = PERSONAS.find(p => p.id === id);
+    if (persona?.isPro && !isPro) {
+      toast.error("Sprint Pass Required", { 
+        description: "Upgrade to unlock target-industry personas.",
+        action: {
+          label: "Upgrade",
+          onClick: () => window.dispatchEvent(new CustomEvent("navigate-to-billing"))
+        }
+      });
+      return;
+    }
+    if (id === activePersona) return;
     
     // Optimistic UI updates
-    setIndustry(id);
-    localStorage.setItem("foliogen_target_industry", id);
+    updateProfile({ activePersona: id });
     
     // Dispatch global event for the Neural Sync animation on the dashboard
     window.dispatchEvent(new CustomEvent("persona-recalibrating", { detail: id }));
   };
 
-  const currentIndustry = INDUSTRIES.find(i => i.id === industry) || INDUSTRIES[0];
-  const Icon = currentIndustry.icon;
+  const currentPersona = PERSONAS.find(i => i.id === activePersona) || PERSONAS[0];
+  const Icon = currentPersona.icon;
 
   return (
     <div className="relative group mr-2">
@@ -47,7 +65,7 @@ export function PersonaSwitcher() {
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-slate-200 dark:border-white/10 rounded-lg bg-white/40 dark:bg-black/40 backdrop-blur-md hover:bg-slate-100 dark:hover:bg-black/60 transition-all text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] focus:outline-none focus:ring-1 focus:ring-slate-500/50 outline-none">
             <Icon className="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
-            <span>{currentIndustry.label}</span>
+            <span>{currentPersona.label}</span>
             <ChevronDown className="w-3.5 h-3.5 opacity-50 ml-1" />
           </button>
         </DropdownMenuTrigger>
@@ -55,9 +73,9 @@ export function PersonaSwitcher() {
           align="end" 
           className="w-56 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.8)] rounded-xl p-1.5"
         >
-          {INDUSTRIES.map((ind) => {
+          {PERSONAS.map((ind) => {
             const IndIcon = ind.icon;
-            const isActive = ind.id === industry;
+            const isActive = ind.id === activePersona;
             return (
               <DropdownMenuItem
                 key={ind.id}
@@ -71,7 +89,13 @@ export function PersonaSwitcher() {
               >
                 <div className="flex items-center gap-2.5">
                   <IndIcon className={cn("w-4 h-4", isActive ? "text-blue-400" : "opacity-70")} />
-                  <span className={cn("font-medium", isActive ? "font-semibold" : "")}>{ind.label}</span>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn("font-medium", isActive ? "font-semibold" : "")}>{ind.label}</span>
+                      {ind.isPro && !isPro && <Lock className="w-2.5 h-2.5 text-amber-500/60" />}
+                    </div>
+                    <span className="text-[10px] text-neutral-500">{ind.description}</span>
+                  </div>
                 </div>
                 {isActive && (
                   <motion.div
@@ -91,7 +115,7 @@ export function PersonaSwitcher() {
       {/* The Noir Detail Micro-copy */}
       <div className="absolute -bottom-6 right-0 w-max pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-50">
         <p className="text-[10px] text-neutral-500 font-mono tracking-wider bg-black/80 px-2 py-0.5 rounded border border-white/5 shadow-lg">
-          Calibrating narrative for {currentIndustry.label}...
+          Calibrating narrative for {currentPersona.label}...
         </p>
       </div>
     </div>

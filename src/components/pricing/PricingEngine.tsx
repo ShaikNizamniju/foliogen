@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, CreditCard } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -9,60 +10,63 @@ interface PricingEngineProps {
 }
 
 const PricingEngine = ({ showTitle = true }: PricingEngineProps) => {
-  const [isAnnual, setIsAnnual] = useState(false);
+  const [countryCode, setCountryCode] = useState<'US' | 'IN'>('IN'); // Mocked to IN for verification
+  const price = countryCode === 'IN' ? '₹999' : '$29';
+  const isRegionalOffer = countryCode === 'IN';
 
   const plans = [
     {
       name: 'Free',
-      monthlyPrice: 0,
-      annualPrice: 0,
+      price: countryCode === 'IN' ? '₹0' : '$0',
       period: 'Forever — no card needed',
+      description: 'Foundational access for students',
       features: [
-        { name: '1 portfolio', included: true },
-        { name: '3 basic templates', included: true },
+        { name: '1 Contextual Persona', included: true },
+        { name: 'Standard Templates', included: true },
         { name: 'Foliogen subdomain', included: true },
+        { name: 'Standard AI Parsing', included: true },
         { name: 'Custom domain', included: false },
-        { name: 'Analytics dashboard', included: false },
-        { name: 'AI content generation', included: false },
+        { name: 'Persona Switcher', included: false },
+        { name: 'Recruiter Pulse', included: false },
       ],
-      cta: 'Get started free',
+      cta: 'Start Building',
       variant: 'default',
     },
     {
-      name: 'Basic',
-      monthlyPrice: 199,
-      annualPrice: 139,
-      period: 'per month',
-      savings: '₹720/year',
+      name: 'Starter',
+      price: countryCode === 'IN' ? '₹199' : '$7',
+      period: 'One-time payment. Lifetime.',
+      description: 'Perfect for entry-level pros',
       features: [
-        { name: '3 portfolios', included: true },
-        { name: 'All 19+ templates', included: true },
-        { name: 'Custom domain', included: true },
-        { name: 'Analytics dashboard', included: true },
-        { name: 'AI content generation', included: true },
-        { name: 'White-label & API', included: false },
+        { name: '1 Contextual Persona', included: true },
+        { name: 'All 19+ Design Systems', included: true },
+        { name: 'Custom Domain Support', included: true },
+        { name: 'Standard Analytics', included: true },
+        { name: 'Standard AI Parsing', included: true },
+        { name: 'Persona Switcher', included: false },
+        { name: 'Recruiter Pulse', included: false },
       ],
-      cta: 'Start building →',
-      variant: 'popular',
-      badge: 'Most Popular',
+      cta: 'Get Starter',
+      variant: 'default',
     },
     {
-      name: 'Pro',
-      monthlyPrice: 999,
-      annualPrice: 699,
-      period: 'per year',
-      savings: '₹3,600/year',
+      name: 'Sprint Pass',
+      price: price,
+      period: 'One-time payment. 90-day access.',
+      description: 'The ultimate career moat',
+      badge: 'Most Popular',
+      regionalOffer: isRegionalOffer,
       features: [
-        { name: 'Unlimited portfolios', included: true },
-        { name: 'Priority AI generation', included: true },
-        { name: 'White-label & custom CSS', included: true },
-        { name: 'Advanced analytics + heatmaps', included: true },
-        { name: 'Team collaboration', included: true },
-        { name: 'API access', included: true },
+        { name: 'Persona Switcher (Startup mode)', included: true },
+        { name: 'Persona Switcher (Big Tech mode)', included: true },
+        { name: 'Persona Switcher (Fintech mode)', included: true },
+        { name: 'Recruiter Pulse (Real-time)', included: true },
+        { name: 'LinkedIn Auto-Sync engine', included: true },
+        { name: 'Recognized Company Resolution', included: true },
+        { name: 'All 19+ Design Systems', included: true },
       ],
-      cta: 'Go Pro →',
+      cta: 'Get the Sprint Pass',
       variant: 'noir',
-      badge: 'Best Value',
     },
   ];
 
@@ -76,7 +80,7 @@ const PricingEngine = ({ showTitle = true }: PricingEngineProps) => {
             viewport={{ once: true }}
             className="text-[12px] uppercase tracking-[0.2em] font-bold text-[#3a5cf5]"
           >
-            Pricing
+            The Pay-Once Model
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
@@ -85,43 +89,22 @@ const PricingEngine = ({ showTitle = true }: PricingEngineProps) => {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-['Plus_Jakarta_Sans'] font-medium text-[#181a2a] dark:text-white"
           >
-            Simple, <em className="font-['Instrument_Serif'] italic font-normal text-[#3a5cf5]">transparent</em> pricing.
+            One pass. <em className="font-['Instrument_Serif'] italic font-normal text-[#3a5cf5]">Zero</em> subscriptions.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-muted-foreground"
+            className="text-muted-foreground max-w-2xl mx-auto"
           >
-            Start free. No credit card required. Upgrade when you're ready.
+            Matches the average job search lifecycle. No hidden fees or recurring bills. Pay for the duration of your hunt.
           </motion.p>
         </div>
       )}
 
-      {/* Billing Toggle */}
-      <div className="flex flex-col items-center justify-center mb-12 space-y-4">
-        <div className="flex items-center gap-4">
-          <span className={cn("text-sm font-medium transition-colors", !isAnnual ? "text-[#181a2a] dark:text-white" : "text-muted-foreground")}>Monthly</span>
-          <button
-            onClick={() => setIsAnnual(!isAnnual)}
-            className="relative w-12 h-6 rounded-full bg-zinc-200 dark:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-[#3a5cf5]/20"
-          >
-            <motion.div
-              animate={{ x: isAnnual ? 24 : 0 }}
-              className="absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-sm"
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            />
-          </button>
-          <span className={cn("text-sm font-medium transition-colors", isAnnual ? "text-[#181a2a] dark:text-white" : "text-muted-foreground")}>Annual</span>
-          <div className="bg-[#19a451]/10 text-[#19a451] text-[10px] font-bold px-2 py-1 rounded-full border border-[#19a451]/20 animate-pulse">
-            SAVE 30%
-          </div>
-        </div>
-      </div>
-
       {/* Pricing Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
         {plans.map((plan, idx) => (
           <motion.div
             key={plan.name}
@@ -130,9 +113,9 @@ const PricingEngine = ({ showTitle = true }: PricingEngineProps) => {
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
             className={cn(
-              "relative flex flex-col p-8 rounded-[14px] border border-[rgba(17,17,16,0.09)] transition-all duration-300 hover:shadow-xl",
+              "relative flex flex-col p-8 rounded-3xl border border-[rgba(17,17,16,0.09)] transition-all duration-300 hover:shadow-2xl",
               plan.variant === 'noir' 
-              ? "bg-[#181a2a] text-white border-transparent" 
+              ? "bg-[#181a2a] text-white border-transparent shadow-[0_20px_50px_rgba(58,92,245,0.1)] scale-105 z-10" 
               : "bg-white text-[#181a2a]"
             )}
           >
@@ -146,36 +129,24 @@ const PricingEngine = ({ showTitle = true }: PricingEngineProps) => {
             )}
 
             <div className="mb-6">
-              <h3 className="text-sm font-bold uppercase tracking-widest opacity-60 mb-8">{plan.name}</h3>
-              <div className="relative h-16 flex items-baseline gap-2">
-                <span className="text-2xl font-medium">₹</span>
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={isAnnual ? 'annual' : 'monthly'}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-6xl font-medium tracking-tighter"
-                  >
-                    {isAnnual ? plan.annualPrice : plan.monthlyPrice}
-                  </motion.span>
-                </AnimatePresence>
-                {isAnnual && plan.monthlyPrice > 0 && (
-                  <span className="text-lg line-through opacity-40 absolute -top-4 left-6">
-                    ₹{plan.monthlyPrice}
-                  </span>
+              <div className="flex items-center gap-2 mb-8">
+                <h3 className="text-sm font-bold uppercase tracking-widest opacity-60">{plan.name}</h3>
+                {plan.regionalOffer && plan.name === 'Sprint Pass' && (
+                   <span className="text-[9px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-tighter">
+                     Regional Offer
+                   </span>
                 )}
               </div>
-              <div className="mt-2 text-sm opacity-60 min-h-[40px]">
-                {isAnnual && plan.annualPrice > 0 ? (
-                  <div className="flex flex-col gap-1">
-                    <span>Billed as ₹{plan.annualPrice * 12} per year</span>
-                    <span className="text-[#19a451] font-bold">You save {plan.savings}</span>
-                  </div>
-                ) : (
-                  <span>{plan.period}</span>
+              <div className="relative h-16 flex items-baseline gap-2">
+                <span className="text-5xl font-medium tracking-tighter">
+                  {plan.price}
+                </span>
+                {plan.name === 'Sprint Pass' && (
+                  <span className="text-blue-400 font-bold text-xs uppercase tracking-widest">/ Pass</span>
                 )}
+              </div>
+              <div className="mt-2 text-xs opacity-60 min-h-[40px]">
+                {plan.period}
               </div>
             </div>
 
@@ -183,7 +154,7 @@ const PricingEngine = ({ showTitle = true }: PricingEngineProps) => {
 
             <ul className="space-y-4 mb-10 flex-1">
               {plan.features.map((feature) => (
-                <li key={feature.name} className="flex items-center gap-3 text-sm">
+                <li key={feature.name} className="flex items-center gap-3 text-xs">
                   {feature.included ? (
                     <Check className="h-4 w-4 text-[#19a451] shrink-0" />
                   ) : (
@@ -196,69 +167,27 @@ const PricingEngine = ({ showTitle = true }: PricingEngineProps) => {
               ))}
             </ul>
 
-            <Button
-              className={cn(
-                "w-full h-12 rounded-xl font-bold transition-all duration-300",
-                plan.variant === 'noir'
-                ? "bg-[#3a5cf5] hover:bg-[#3a5cf5]/90 text-white"
-                : "bg-white hover:bg-zinc-50 text-[#181a2a] border border-zinc-200 shadow-sm"
-              )}
-            >
-              {plan.cta}
-            </Button>
+            <Link to="/auth" className="w-full">
+              <Button
+                className={cn(
+                  "w-full h-14 rounded-2xl font-bold transition-all duration-300 text-lg",
+                  plan.variant === 'noir'
+                  ? "bg-[#3a5cf5] hover:bg-[#3a5cf5]/90 text-white shadow-lg shadow-blue-500/20"
+                  : "bg-white hover:bg-zinc-50 text-[#181a2a] border border-zinc-200 shadow-sm"
+                )}
+              >
+                {plan.cta}
+              </Button>
+            </Link>
           </motion.div>
         ))}
       </div>
 
-      {/* Feature Comparison Table */}
-      <div className="mt-24 max-w-5xl mx-auto overflow-hidden rounded-2xl border border-[rgba(17,17,16,0.09)] bg-white dark:bg-zinc-900 shadow-sm hidden md:block">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-zinc-50 dark:bg-zinc-950">
-              <th className="p-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">Feature</th>
-              <th className="p-6 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">Free</th>
-              <th className="p-6 text-center text-xs font-bold uppercase tracking-widest text-[#3a5cf5]">Basic</th>
-              <th className="p-6 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">Pro</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-            {[
-              { name: 'Portfolio slots', desc: 'Published live portfolios', free: '1', basic: '3', pro: 'Unlimited' },
-              { name: 'Design templates', desc: 'Industry-standard layouts', free: '3 basic', basic: 'All 19+', pro: 'All 19+' },
-              { name: 'Custom domain', free: false, basic: true, pro: true },
-              { name: 'AI content generation', desc: 'Rewrites resume in recruiter language', free: false, basic: true, pro: true },
-              { name: 'Analytics', free: false, basic: 'Standard', pro: 'Advanced + heatmaps' },
-              { name: 'White-label & API', free: false, basic: false, pro: true },
-              { name: 'Team collaboration', free: false, basic: false, pro: true },
-              { name: 'Priority support', free: false, basic: false, pro: true },
-            ].map((row, idx) => (
-              <tr key={row.name} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-colors">
-                <td className="p-6">
-                  <div className="font-medium text-sm text-[#181a2a] dark:text-white">{row.name}</div>
-                  {row.desc && <div className="text-[11px] text-muted-foreground mt-1">{row.desc}</div>}
-                </td>
-                <td className="p-6 text-center align-middle">
-                  {typeof row.free === 'boolean' 
-                    ? (row.free ? <Check className="h-4 w-4 text-[#19a451] mx-auto" /> : <X className="h-4 w-4 text-muted-foreground/20 mx-auto" />)
-                    : <span className="text-sm opacity-60">{row.free}</span>
-                  }
-                </td>
-                <td className="p-6 text-center align-middle bg-[#3a5cf5]/5">
-                  {typeof row.basic === 'boolean'
-                    ? (row.basic ? <Check className="h-4 w-4 text-[#19a451] mx-auto" /> : <X className="h-4 w-4 text-muted-foreground/20 mx-auto" />)
-                    : <span className="text-sm font-bold text-[#3a5cf5]">{row.basic}</span>
-                  }
-                </td>
-                <td className="p-6 text-center align-middle">
-                  {typeof row.pro === 'boolean'
-                    ? (row.pro ? <Check className="h-4 w-4 text-[#19a451] mx-auto" /> : <X className="h-4 w-4 text-muted-foreground/20 mx-auto" />)
-                    : <span className="text-sm opacity-60">{row.pro}</span>
-                  }
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="mt-16 text-center">
+        <p className="text-xs text-muted-foreground flex items-center justify-center gap-2">
+          <CreditCard className="h-3 w-3" />
+          Secured by Stripe • Instant Access • Limited Time Pricing
+        </p>
       </div>
     </div>
   );

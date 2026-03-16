@@ -124,7 +124,15 @@ export function LivePreviewPane() {
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
                   {(() => {
-                    const displayProfile = { ...profile, photoUrl: profile.hidePhoto ? "" : profile.photoUrl };
+                    const activePersona = profile.activePersona || "general";
+                    const variant = profile.narrativeVariants?.[activePersona];
+                    const displayProfile = { 
+                      ...profile, 
+                      bio: variant?.bio || profile.bio,
+                      headline: variant?.headline || profile.headline,
+                      photoUrl: profile.hidePhoto ? "" : profile.photoUrl 
+                    };
+
                     switch (profile.selectedTemplate) {
                       case "modern-dark": return <ModernDarkTemplate profile={displayProfile} />;
                       case "minimalist": return <MinimalistTemplate profile={displayProfile} />;

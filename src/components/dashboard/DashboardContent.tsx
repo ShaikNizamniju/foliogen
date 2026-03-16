@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { OverviewSection } from './sections/OverviewSection';
 import { ProfileSection } from './sections/ProfileSection';
 import { TemplatesSection } from './sections/TemplatesSection';
@@ -7,6 +7,7 @@ import { JobMatchSection } from './sections/JobMatchSection';
 import { JobsSection } from './sections/JobsSection';
 import { InterviewPrepSection } from './sections/InterviewPrepSection';
 import { ChatLogSection } from './sections/ChatLogSection';
+import { BillingSection } from './sections/BillingSection';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
@@ -29,8 +30,8 @@ const pageTransition = {
 };
 
 export function DashboardContent() {
-  const location = useLocation();
-  const section = new URLSearchParams(location.search).get('section') || 'overview';
+  const [searchParams] = useSearchParams();
+  const section = searchParams.get('section') || 'overview';
 
   const [isRecalibrating, setIsRecalibrating] = useState(false);
   const [recalibratingText, setRecalibratingText] = useState("");
@@ -58,6 +59,7 @@ export function DashboardContent() {
       case 'chat-log': return <ChatLogSection />;
       case 'identity-vault': return <IdentityVaultSection />;
       case 'settings': return <SettingsSection />;
+      case 'billing': return <BillingSection />;
       default: return <OverviewSection />;
     }
   };

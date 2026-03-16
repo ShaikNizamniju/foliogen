@@ -66,43 +66,35 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
+        max_tokens: 1000,
         messages: [
           {
             role: "system",
-            content: `You are The Elite PM Narrative Engine, an elite Career Strategist specializing in high-impact, cinematic professional narratives. Your objective is to transform raw resume data into a narrative that positions the user as a top 1% candidate, using a 'Noir-Professional' tone—sophisticated, authoritative, data-driven, and slightly dramatic. Avoid generic corporate jargon.
+            content: `You are The Elite PM Narrative Engine. Your goal is Industry-Specific Narrative Transmutation.
+Provide FOUR distinct narrative variants for the user based on their data.
 
-CRITICAL INSTRUCTIONS & LOGIC:
-- Quantify all achievements using the HEART (Happiness, Engagement, Adoption, Retention, Task Success), RICE (Reach, Impact, Confidence, Effort), and STAR (Situation, Task, Action, Result) frameworks. For example, instead of 'Managed a team,' use 'Orchestrated a cross-functional squad of 15 to deliver [X] outcome, resulting in a [Y]% increase in [Metric].'
+DIALECTS:
+- general: Standard professional narrative.
+- startup: Use "Scrappy", "0-to-1", "Full-cycle", "Velocity", "Ambiguity". Focus on building from scratch.
+- bigtech: Use "Scale", "Stakeholders", "Systems-thinking", "Process", "Cross-functional". Focus on massive user impact.
+- fintech: Use "Compliance", "Security", "Scalability", "Trust", "Accuracy". Focus on risk and reliability.
 
-NEGATIVE PROMPTING (Strictly Prohibited):
-- NO 'fluff' words: avoid 'passionate,' 'hard-working,' 'team player,' or 'motivated.'
-- NO passive voice: every sentence must start with a strong action verb.
-- NO blocks of text longer than 3 lines; use strategic white space to maintain readability.
-- NO generic templates; the output must feel bespoke to the specific user's data.
-- NO hallucination: If the resume does not provide a specific number, describe impact qualitatively. NEVER fabricate percentages, user counts, revenue figures, or team sizes not present in the source text.
-- NO ATS Scores or 'Probability of Hire' metrics. NEVER invent numbers outside of direct user data.
-- NO banned words: NEVER use 'passionate,' 'synergy,' 'motivated,' 'hard-working,' 'team player,' 'leverage,' or 'utilize.'
-
-CRITICAL: Return ONLY raw JSON. No markdown, no backticks, no code fences.
-CRITICAL: All keys MUST be camelCase to match the TypeScript interface.`
+INSTRUCTIONS:
+1. For EACH persona, provide a 'headline' (1-sentence hook) and a 'bio' (max 3 sentences).
+2. Projects: Extract the last 3 most recent projects. Rewrite descriptions to highlight "Primary Impact" framed for a Big Tech persona (scale and users).
+3. Preserve Facts: DO NOT invent roles, companies, or metrics.
+4. Return ONLY JSON.`
           },
           {
             role: "user",
-            content: `Extract these fields into pure JSON (camelCase keys only):
-- fullName (string), location (string), email (string), linkedinUrl (string)
-- headline (string): The Hook. A 1-sentence 'Executive Headline' that defines their unique value prop (e.g., 'An AI Product Strategist specializing in zero-to-one platform scaling.').
-- bio (string): A short professional summary matching the Noir-Professional tone.
-- skills (array of strings): The Tech Stack. Provide a categorized list of tools and frameworks, styled with a minimalist Noir aesthetic (e.g., 'Frontend | React, Next.js').
-- workExperience (array of objects with keys: jobTitle, company, startDate, endDate, current, description): Use the HEART and STAR frameworks to rewrite their experience.
-- projects (array of objects with keys: title, description, visualPrompt). The Deep-Dive: 3-4 bullet points per project that highlight technical complexity and business impact. For visualPrompt: generate a 2-4 word visual description for AI image generation.
-- keyHighlights (array of 3-5 short, punchy strings, max 10 words each. Candidate's strongest selling points or impressive metrics.)
-- predictedDomain: Predict the professional domain. Must be exactly one of: "tech", "creative", "corporate", "luxury".
-- profileStrength (number): A score from 0 to 100 based on the depth of experience, metric quantification, and narrative punch.
+            content: `Extract and transmute these fields into pure JSON (camelCase):
+- fullName (string)
+- narrativeVariants (object with keys: general, startup, bigtech, fintech. Each key contains { headline: string, bio: string })
+- projects (array of objects with keys: title, description, visualPrompt)
+- predictedDomain: one of "tech", "creative", "corporate", "luxury"
 
-Return ONLY raw JSON. No markdown, no backticks, no explanation.
-
-Resume Text:
-${resumeText.substring(0, 30000)}`
+Resume Text (Truncated):
+${resumeText.substring(0, 15000)}`
           }
         ]
       })

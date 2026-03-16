@@ -10,7 +10,7 @@ import { Footer } from "@/components/landing/Footer";
 const SuccessOverlay = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const planFromUrl = searchParams.get("plan") || "pro";
+  const planFromUrl = searchParams.get("plan") || "sprint_pass";
 
   return (
     <div className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-700">
@@ -28,7 +28,7 @@ const SuccessOverlay = () => {
       </div>
       <h1 className="text-4xl md:text-6xl font-serif text-white mb-4 tracking-tight">Identity, Engineered.</h1>
       <p className="text-muted-foreground text-lg mb-12 max-w-md mx-auto">
-        {planFromUrl === "pro" ? "Welcome to the Pro Tier" : "Welcome to the Basic Tier"}
+        {planFromUrl === "sprint_pass" ? "Welcome to the Sprint Pass" : "Welcome to the Free Tier"}
       </p>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-2">
         <button

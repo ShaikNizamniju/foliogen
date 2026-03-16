@@ -29,6 +29,7 @@ import { HeroBoldTemplate } from '@/components/templates/HeroBoldTemplate';
 import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
 import { useViewTracker } from '@/hooks/useViewTracker';
+import { useRecruiterPulse } from '@/hooks/useRecruiterPulse';
 
 export default function PublicPortfolio() {
   const { id, slug } = useParams<{ id: string, slug?: string }>();
@@ -39,7 +40,11 @@ export default function PublicPortfolio() {
   const [recruiterMode, setRecruiterMode] = useState(false);
 
   // Track portfolio views (handles owner detection, session/localStorage spam prevention)
-  useViewTracker(id);
+  useViewTracker(profile?.id);
+  
+  // Detailed tracking for "Recruiter Pulse" (Anonymized IP + Region)
+  // We use the slug (if present) to identify the persona, otherwise 'general'
+  useRecruiterPulse(profile?.id, slug || 'general');
 
   useEffect(() => {
     if (id) {
@@ -194,6 +199,13 @@ export default function PublicPortfolio() {
       calendlyUrl: (payload as any).calendly_url || '',
       selectedFont: ((payload as any).selected_font as FontChoice) || 'default',
       selectedTemplate: (payload.selected_template as ProfileData['selectedTemplate']) || 'minimalist',
+      activePersona: (payload as any).active_persona || 'general',
+      narrativeVariants: (payload as any).narrative_variants || {
+        general: { bio: payload.bio || '', headline: payload.headline || '' },
+        startup: { bio: '', headline: '' },
+        bigtech: { bio: '', headline: '' },
+        fintech: { bio: '', headline: '' },
+      },
     });
     setLoading(false);
   };

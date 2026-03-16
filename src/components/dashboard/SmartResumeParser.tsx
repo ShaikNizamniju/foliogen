@@ -1,24 +1,36 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {
   UploadCloud, FileText, CheckCircle2, Loader2, AlertCircle,
-  Briefcase, GraduationCap, Sparkles, X, ArrowRight, Merge
+  Briefcase, GraduationCap, Sparkles, X, ArrowRight, Merge, Save, Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase_v2';
-import { useProfile, WorkExperience, Project, ProfileData } from '@/contexts/ProfileContext';
+import { useProfile, WorkExperience, Project, ProfileData, Persona, NarrativeVariant } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import * as pdfjsLib from 'pdfjs-dist';
 import { getRecommendedTemplate, ProfessionalDomain } from '@/lib/domainRecommendation';
+import { cn } from '@/lib/utils';
 
 // Dynamically resolve worker URL to match installed pdfjs-dist version
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
-type ParseState = 'idle' | 'extracting' | 'analyzing' | 'success' | 'error';
+type ParseState = 'idle' | 'extracting' | 'analyzing' | 'reviewing' | 'success' | 'error';
 
 interface ParsedData {
   fullName?: string;
@@ -33,6 +45,7 @@ interface ParsedData {
   keyHighlights?: string[];
   predictedDomain?: ProfessionalDomain;
   profileStrength?: number;
+  narrativeVariants?: Record<Persona, NarrativeVariant>;
 }
 
 interface ParseStats {
@@ -49,19 +62,65 @@ interface SmartResumeParserProps {
 export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps = {}) {
   const [state, setState] = useState<ParseState>('idle');
   const [progress, setProgress] = useState(0);
-  const [parsedData, setParsedData] = useState<ParsedData | null>(null);
+  const [pendingData, setPendingData] = useState<ParsedData | null>(null);
   const [stats, setStats] = useState<ParseStats | null>(null);
   const [fileName, setFileName] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [currentFile, setCurrentFile] = useState<File | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
 
   const { profile, updateProfile, saveProfile } = useProfile();
   const { user } = useAuth();
 
+  // Restore state from sessionStorage on mount
+  useEffect(() => {
+    const savedData = sessionStorage.getItem('foliogen_pending_parse');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        setPendingData(parsed);
+        setState('reviewing');
+        // If we recover, show a subtle hint
+        toast.info("Resuming your previous resume review session.", { duration: 3000 });
+      } catch (e) {
+        sessionStorage.removeItem('foliogen_pending_parse');
+      }
+    }
+  }, []);
+
+  // Persist review data to sessionStorage
+  useEffect(() => {
+    if (state === 'reviewing' && pendingData) {
+      sessionStorage.setItem('foliogen_pending_parse', JSON.stringify(pendingData));
+    } else if (state === 'idle' || state === 'success' || state === 'error') {
+      sessionStorage.removeItem('foliogen_pending_parse');
+    }
+  }, [state, pendingData]);
+
+  // Handle background finish notification
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && state === 'reviewing') {
+        const wasInBackground = sessionStorage.getItem('foliogen_parse_background');
+        if (wasInBackground === 'true') {
+          toast.success("Analysis complete! Review your profile below.", { icon: <Sparkles className="w-4 h-4 text-primary" /> });
+          sessionStorage.removeItem('foliogen_parse_background');
+        }
+      }
+    };
+
+    if ((state === 'analyzing' || state === 'extracting') && document.hidden) {
+      sessionStorage.setItem('foliogen_parse_background', 'true');
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [state]);
+
   const resetParser = useCallback(() => {
     setState('idle');
     setProgress(0);
-    setParsedData(null);
+    setPendingData(null);
     setStats(null);
     setFileName('');
     setErrorMessage('');
@@ -113,7 +172,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       setState('analyzing');
       setProgress(55);
 
-      const truncatedText = fullText.slice(0, 30000);
+      const truncatedText = fullText.slice(0, 15000);
 
       const { data, error } = await supabase.functions.invoke('parse-resume', {
         body: { resumeText: truncatedText }
@@ -121,10 +180,10 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
       setProgress(80);
 
-      if (error) throw new Error("Neural Sync: Core connection offline. Investigating...");
+      if (error) throw new Error("Synchronization interrupted: Core mapping offline.");
       if (data?.error) throw new Error(data.error);
 
-      // Step 3: Calculate stats
+      // Step 3: Prepare for Review
       const parsedStats: ParseStats = {
         jobs: data.workExperience?.length || 0,
         skills: data.skills?.length || 0,
@@ -132,16 +191,10 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         highlights: data.keyHighlights?.length || 0,
       };
 
-      setParsedData(data);
+      setPendingData(data);
       setStats(parsedStats);
-      setState('success');
+      setState('reviewing');
       setProgress(100);
-
-      // Automatically trigger merge for speed if profile is empty
-      const isProfileEmpty = profile.workExperience.length === 0 && profile.skills.length === 0;
-      if (isProfileEmpty) {
-          setTimeout(() => applyToProfile(data, file), 1000);
-      }
 
     } catch (error: any) {
       console.error("Parse Error:", error);
@@ -165,72 +218,88 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
     multiple: false
   });
 
-  const applyToProfile = async (data: ParsedData, file?: File) => {
-    if (!data) return;
+  const handleApplySync = async (finalData: ParsedData) => {
+    if (!finalData) return;
 
-    toast.loading('Synchronizing profile...', { id: 'resume-apply' });
+    setIsApplying(true);
+    const toastId = 'resume-apply';
+    toast.loading('Synchronizing professional data...', { id: toastId });
 
-    // Upload to storage
-    let resumeUrl = profile.resumeUrl;
-    const fileToUpload = file || currentFile;
-    
-    if (fileToUpload && user) {
-      const fileExt = fileToUpload.name.split('.').pop();
-      const filePath = `${user.id}/resume-${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(filePath, fileToUpload, { upsert: true });
+    try {
+      // Upload to storage if needed
+      let resumeUrl = profile.resumeUrl;
+      const fileToUpload = currentFile;
+      
+      if (fileToUpload && user) {
+        const fileExt = fileToUpload.name.split('.').pop();
+        const filePath = `${user.id}/resume-${Date.now()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('resumes')
+          .upload(filePath, fileToUpload, { upsert: true });
 
-      if (!uploadError) {
-        const { data: urlData } = supabase.storage.from('resumes').getPublicUrl(filePath);
-        resumeUrl = urlData.publicUrl;
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('resumes').getPublicUrl(filePath);
+          resumeUrl = urlData.publicUrl;
+        }
       }
-    }
 
-    const safeDate = (d: any): string => {
-      if (!d || typeof d !== 'string') return '';
-      try {
-        const date = new Date(d.trim());
-        if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
-      } catch (e) { }
-      return d.trim();
-    };
+      const safeDate = (d: any): string => {
+        if (!d || typeof d !== 'string') return '';
+        try {
+          const date = new Date(d.trim());
+          if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
+        } catch (e) { }
+        return d.trim();
+      };
 
-    const updates: Partial<ProfileData> = {
-      fullName: data.fullName || profile.fullName,
-      headline: data.headline || profile.headline,
-      bio: data.bio || profile.bio,
-      location: data.location || profile.location,
-      email: data.email || profile.email,
-      linkedinUrl: data.linkedinUrl || profile.linkedinUrl,
-      skills: [...new Set([...profile.skills, ...(data.skills || [])])],
-      workExperience: (data.workExperience || []).map(w => ({
-        ...w,
-        id: crypto.randomUUID(),
-        startDate: safeDate(w.startDate),
-        endDate: safeDate(w.endDate),
-      })),
-      projects: (data.projects || []).map(p => ({
-        ...p,
-        id: crypto.randomUUID(),
-        visible: true,
-      })),
-      keyHighlights: data.keyHighlights || profile.keyHighlights,
-      resumeUrl: resumeUrl,
-      predictedDomain: data.predictedDomain || profile.predictedDomain,
-      selectedTemplate: data.predictedDomain ? getRecommendedTemplate(data.predictedDomain) as any : profile.selectedTemplate,
-    };
+      const updates: Partial<ProfileData> = {
+        fullName: finalData.fullName || profile.fullName,
+        headline: finalData.headline || profile.headline,
+        bio: finalData.bio || profile.bio,
+        location: finalData.location || profile.location,
+        email: finalData.email || profile.email,
+        linkedinUrl: finalData.linkedinUrl || profile.linkedinUrl,
+        skills: [...new Set([...profile.skills, ...(finalData.skills || [])])],
+        workExperience: (finalData.workExperience || []).map(w => ({
+          ...w,
+          id: crypto.randomUUID(),
+          startDate: safeDate(w.startDate),
+          endDate: safeDate(w.endDate),
+        })),
+        projects: (finalData.projects || []).map(p => ({
+          ...p,
+          id: crypto.randomUUID(),
+          visible: true,
+        })),
+        keyHighlights: finalData.keyHighlights || profile.keyHighlights,
+        resumeUrl: resumeUrl,
+        predictedDomain: finalData.predictedDomain || profile.predictedDomain,
+        selectedTemplate: finalData.predictedDomain ? getRecommendedTemplate(finalData.predictedDomain) as any : profile.selectedTemplate,
+        narrativeVariants: finalData.narrativeVariants || profile.narrativeVariants,
+        activePersona: profile.activePersona,
+      };
 
-    const { error } = await saveProfile(updates);
-    
-    if (error) {
-      toast.error('Sync failed: ' + error.message, { id: 'resume-apply' });
-    } else {
-      toast.success('Neural Sync complete. Dashboard updated.', { id: 'resume-apply' });
-      if (onTemplateChange && updates.selectedTemplate) {
-        onTemplateChange(updates.selectedTemplate);
+      const { error } = await saveProfile(updates);
+      
+      if (error) {
+        toast.error('Sync failed: ' + error.message, { id: toastId });
+      } else {
+        // ENSURE TOAST DISMISSAL/REPLACEMENT IS INSTANT
+        toast.success('Professional data synchronized.', { id: toastId });
+        
+        if (onTemplateChange && updates.selectedTemplate) {
+          onTemplateChange(updates.selectedTemplate);
+        }
+        
+        // Immediate UI Reset
+        sessionStorage.removeItem('foliogen_pending_parse');
+        resetParser();
+        setState('success');
       }
-      resetParser();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to sync profile", { id: toastId });
+    } finally {
+      setIsApplying(false);
     }
   };
 
@@ -263,7 +332,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                     Drop your Resume or LinkedIn PDF
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-md">
-                    Supports standard resumes and LinkedIn PDF exports — FolioGen AI maps everything automatically
+                    FolioGen AI extracts your experience and transforms it into a premium narrative.
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -294,10 +363,10 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
                  <Loader2 className="w-12 h-12 text-primary animate-spin" />
                  <div className="space-y-2">
                       <h3 className="text-xl font-semibold text-foreground">
-                        {state === 'extracting' ? 'Extracting Identity...' : 'Neural Mapping...'}
+                        {state === 'extracting' ? 'Extracting Identity...' : 'Analyzing Professional Narrative...'}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        Uploading and AI is analyzing {fileName}...
+                        Processing {fileName}... This usually takes 5-10 seconds.
                       </p>
                  </div>
             </div>
@@ -307,40 +376,31 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         {state === 'success' && stats && (
           <motion.div
             key="success"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="border border-primary/30 rounded-2xl p-8 bg-primary/5"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="border border-emerald-500/20 rounded-2xl p-8 bg-emerald-500/5 text-center"
           >
             <div className="flex flex-col items-center gap-6">
-              <div className="p-4 rounded-2xl bg-primary/20">
-                <CheckCircle2 className="w-10 h-10 text-primary" />
+              <div className="p-4 rounded-full bg-emerald-500/20">
+                <CheckCircle2 className="w-10 h-10 text-emerald-500" />
               </div>
 
               <div className="text-center space-y-2">
                 <h3 className="text-xl font-semibold text-foreground">
-                  Neural Sync Successful
+                  Import Complete
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  Extracted {stats.jobs} roles and {stats.skills} core competencies
+                  Your portfolio has been synchronized with your latest experience.
                 </p>
               </div>
 
-              <div className="flex gap-3 w-full">
-                <Button
-                  onClick={() => parsedData && applyToProfile(parsedData)}
-                  className="flex-1 shadow-glow"
-                >
-                  <Merge className="w-4 h-4 mr-2" />
-                  Apply to Dashboard
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={resetParser}
-                  size="icon"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
+              <Button
+                onClick={resetParser}
+                variant="outline"
+                className="w-full"
+              >
+                Upload Another
+              </Button>
             </div>
           </motion.div>
         )}
@@ -353,16 +413,169 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
             className="border border-destructive/20 rounded-2xl p-8 bg-destructive/5 text-center"
           >
             <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <h3 className="font-semibold text-foreground mb-2">Neural Sync Interrupted</h3>
+            <h3 className="font-semibold text-foreground mb-2">Processing Interrupted</h3>
             <p className="text-sm text-muted-foreground mb-6">{errorMessage}</p>
             <Button onClick={resetParser} variant="outline">Try Another File</Button>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Review & Confirm UI */}
+      {state === 'reviewing' && pendingData && (
+        <ReviewAndConfirm 
+          data={pendingData} 
+          isApplying={isApplying}
+          onApply={handleApplySync} 
+          onDiscard={resetParser} 
+        />
+      )}
     </div>
   );
 }
 
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
+interface ReviewAndConfirmProps {
+  data: ParsedData;
+  isApplying: boolean;
+  onApply: (data: ParsedData) => void;
+  onDiscard: () => void;
+}
+
+function ReviewAndConfirm({ data, isApplying, onApply, onDiscard }: ReviewAndConfirmProps) {
+  const [editedData, setEditedData] = useState<ParsedData>({
+    ...data,
+    // Initialize bio/headline from 'general' variant if present
+    bio: data.narrativeVariants?.general?.bio || data.bio || '',
+    headline: data.narrativeVariants?.general?.headline || data.headline || '',
+    projects: data.projects?.slice(0, 3) || [] // Show top 3 as per requirement
+  });
+
+  const handleChange = (field: keyof ParsedData, value: string) => {
+    setEditedData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleProjectChange = (index: number, field: keyof Project, value: string) => {
+    setEditedData(prev => {
+      const newProjects = [...(prev.projects || [])];
+      newProjects[index] = { ...newProjects[index], [field]: value };
+      return { ...prev, projects: newProjects };
+    });
+  };
+
+  return (
+    <Dialog open={true} onOpenChange={() => {}}>
+      <DialogContent 
+        className="max-w-3xl max-h-[90vh] overflow-y-auto"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+            <Sparkles className="h-6 w-6 text-primary" />
+            Verify Your Professional Identity
+          </DialogTitle>
+          <DialogDescription>
+            Our AI has extracted the following narrative. Please verify and edit details before applying to your live dashboard.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6 py-4">
+          {/* Basic Info */}
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+              <Input 
+                value={editedData.fullName || ''} 
+                onChange={(e) => handleChange('fullName', e.target.value)}
+                placeholder="Name extracted from resume"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Headline</label>
+              <Input 
+                value={editedData.headline || ''} 
+                onChange={(e) => handleChange('headline', e.target.value)}
+                placeholder="A compelling professional headline"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Professional Bio</label>
+              <Textarea 
+                value={editedData.bio || ''} 
+                onChange={(e) => handleChange('bio', e.target.value)}
+                placeholder="Your professional summary"
+                className="min-h-[100px] resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Top 3 Projects */}
+          <div className="space-y-4">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-primary flex items-center gap-2 border-b border-border pb-2">
+               Top Case Studies (Extracted)
+            </h4>
+            <div className="grid gap-4">
+              {editedData.projects?.map((project, idx) => (
+                <Card key={idx} className="border-border/50 bg-muted/30">
+                  <CardHeader className="p-4 pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      <Briefcase className="h-4 w-4 text-primary" />
+                      Project #{idx + 1}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0 space-y-3">
+                    <Input 
+                      value={project.title || ''} 
+                      onChange={(e) => handleProjectChange(idx, 'title', e.target.value)}
+                      placeholder="Project Title"
+                      className="font-medium bg-background"
+                    />
+                    <Textarea 
+                      value={project.description || ''} 
+                      onChange={(e) => handleProjectChange(idx, 'description', e.target.value)}
+                      placeholder="Project achievements and metrics"
+                      className="text-xs bg-background h-20"
+                    />
+                  </CardContent>
+                </Card>
+              ))}
+              {(!editedData.projects || editedData.projects.length === 0) && (
+                <p className="text-xs text-muted-foreground italic text-center py-4">
+                  No separate projects detected. Experience will be imported to your resume section.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter className="gap-2 sm:gap-0 sticky bottom-0 bg-background pt-4 border-t border-border">
+          <Button 
+            variant="ghost" 
+            onClick={onDiscard}
+            disabled={isApplying}
+            className="text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Discard Import
+          </Button>
+          <Button 
+            onClick={() => onApply(editedData)}
+            disabled={isApplying}
+            className="shadow-glow bg-primary hover:bg-primary/90 min-w-[140px]"
+          >
+            {isApplying ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Merge className="h-4 w-4 mr-2" />
+                Sync to Portfolio
+              </>
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }

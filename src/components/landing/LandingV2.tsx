@@ -168,10 +168,10 @@ export function LandingV2() {
                     <h1 className="headline hero-headline">
                         Your professional<br />
                         identity,<br />
-                        <em>engineered.</em>
+                        <em>re-engineered.</em>
                     </h1>
                     <p className="body-lg hero-sub">
-                        Upload your resume. Our AI builds a world-class portfolio in minutes — no design skills, no code, no compromise.
+                        Re-engineered for the job you want. Our AI builds a world-class portfolio in minutes — no design skills, no code, no compromise.
                     </p>
                     <div className="hero-actions">
                         <Link to="/auth" className="btn btn-cobalt">
@@ -314,10 +314,10 @@ export function LandingV2() {
                         <div className="step-item sr" role="listitem">
                             <div className="process-line hidden md:block" />
                             <div className="step-number-wrap">
-                                <span className="step-icon" aria-hidden="true">📄</span>
+                                <span className="step-icon" aria-hidden="true">🔄</span>
                             </div>
-                            <div className="step-name">Import</div>
-                            <p className="step-desc">Upload your resume — PDF, DOCX, or paste a LinkedIn URL. We parse it all within seconds.</p>
+                            <div className="step-name">Sync</div>
+                            <p className="step-desc">Connect your LinkedIn PDF. Our "Auto-Sync" engine ensures your portfolio never goes stale as your career grows.</p>
                         </div>
                         <div className="step-item sr sr-d1" role="listitem">
                             <div className="process-line hidden md:block" />
@@ -361,24 +361,24 @@ export function LandingV2() {
                             </p>
                             <div className="why-list">
                                 <div className="why-item sr">
-                                    <div className="why-item-icon" aria-hidden="true">🧠</div>
+                                    <div className="why-item-icon" aria-hidden="true">🎭</div>
                                     <div className="why-item-text">
-                                        <div className="why-item-title">Contextual AI Writing</div>
-                                        <p className="why-item-desc">Rewrites your experience in the precise language of your industry. Not generic — specifically tailored to your field and seniority.</p>
+                                        <div className="why-item-title">Narrative Transmutation</div>
+                                        <p className="why-item-desc">Use the Persona Switcher to flip your portfolio between Startup, Big Tech, and Fintech modes instantly. Same facts, different focus.</p>
                                     </div>
                                 </div>
                                 <div className="why-item sr sr-d1">
-                                    <div className="why-item-icon" aria-hidden="true">📊</div>
+                                    <div className="why-item-icon" aria-hidden="true">📡</div>
                                     <div className="why-item-text">
-                                        <div className="why-item-title">Deep Portfolio Analytics</div>
-                                        <p className="why-item-desc">Track every view, click, and scroll. Know which companies visited, how long they stayed, and what they clicked on.</p>
+                                        <div className="why-item-title">Recruiter Pulse Tracking</div>
+                                        <p className="why-item-desc">Real-time analytics with company-level tracking. Know if a recruiter from Google or Amazon is viewing your work right now.</p>
                                     </div>
                                 </div>
                                 <div className="why-item sr sr-d2">
-                                    <div className="why-item-icon" aria-hidden="true">🔒</div>
+                                    <div className="why-item-icon" aria-hidden="true">🏛️</div>
                                     <div className="why-item-text">
-                                        <div className="why-item-title">Your Data, Always Yours</div>
-                                        <p className="why-item-desc">Zero training on your content. End-to-end encryption. Full export anytime. GDPR compliant. Your data is never sold.</p>
+                                        <div className="why-item-title">LinkedIn Auto-Sync</div>
+                                        <p className="why-item-desc">Upload your latest LinkedIn export and our AI will "diff" your profile, adding new wins automatically without overwriting your manual edits.</p>
                                     </div>
                                 </div>
                             </div>
@@ -493,7 +493,7 @@ export function LandingV2() {
                                         <div className="theme-swatch-label" style={{ background: 'rgba(0,0,0,0.15)', color: '#333' }}>Editorial</div>
                                     </div>
                                     <div className="theme-swatch" style={{ background: 'linear-gradient(135deg,#0f2027,#2c5364)' }}>
-                                        <div className="theme-swatch-label">Corporate</div>
+                                        <div className="theme-swatch-label">Executive</div>
                                     </div>
                                     <div className="theme-swatch" style={{ background: '#fdf6ec' }}>
                                         <div className="theme-swatch-label" style={{ background: 'rgba(0,0,0,0.15)', color: '#333' }}>Warm</div>
@@ -538,8 +538,8 @@ export function LandingV2() {
                         {/* Publishing */}
                         <div className="feat-cell sr sr-d1">
                             <div className="feat-eyebrow">Deployment</div>
-                            <div className="feat-title">Instant<br />Publishing</div>
-                            <p className="feat-desc">Custom domain support, global CDN, automatic HTTPS, and one-click resume PDF export — all included.</p>
+                            <div className="feat-title">Precision<br />Publishing</div>
+                            <p className="feat-desc">Custom domain support, global CDN, automatic HTTPS, and specialized recruiter filters — all included in your pass.</p>
                         </div>
                         {/* ATS Resume */}
                         <div className="feat-cell sr sr-d2">
@@ -596,15 +596,15 @@ export function LandingV2() {
                     {/* Card 3 */}
                     <div className="template-card">
                         <div className="template-preview" style={{ background: 'linear-gradient(135deg,#0f2027 0%, #2c5364 100%)', padding: '16px' }}>
-                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: 'rgba(255,255,255,0.35)', marginBottom: '4px' }}>CORPORATE</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#fff' }}>Finance<br />Executive</div>
+                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: 'rgba(255,255,255,0.35)', marginBottom: '4px' }}>EXECUTIVE</div>
+                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#fff' }}>Strategic<br />Director</div>
                             <div style={{ marginTop: '10px', border: '1px solid rgba(255,255,255,0.1)', padding: '6px 8px', borderRadius: '2px' }}>
-                                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', fontFamily: '"Geist Mono", monospace' }}>EXPERIENCE ──────</div>
+                                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', fontFamily: '"Geist Mono", monospace' }}>LEVEL: SENIOR ──────</div>
                             </div>
                         </div>
                         <div className="template-info">
-                            <div className="template-name">Corporate Pro</div>
-                            <div className="template-type">FINANCE / BANKING</div>
+                            <div className="template-name">Executive Elite</div>
+                            <div className="template-type">STRATEGY / LEADERSHIP</div>
                         </div>
                     </div>
                     {/* Card 4 */}
@@ -768,7 +768,7 @@ export function LandingV2() {
                                 <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
                             </div>
                             <blockquote className="font-['Instrument_Serif',serif] text-xl md:text-2xl text-slate-200 leading-relaxed italic">
-                                "Foliogen successfully translated my decade of consulting experience into a sleek, 1-page digital narrative. The ATS workflow alone is worth the Pro tier."
+                                "Foliogen successfully translated my decade of consulting experience into a sleek, 1-page digital narrative. The ATS workflow alone is worth the Sprint Pass."
                             </blockquote>
                             <div className="flex items-center gap-4 mt-auto">
                                 <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-[#4f46e5] to-indigo-800 shadow-inner">S</div>
@@ -799,8 +799,8 @@ export function LandingV2() {
                         <div className="faq-list sr sr-d1">
                             {[
                                 {
-                                    q: "What is the difference between Basic and Pro?",
-                                    a: "Basic (₹199/mo) provides standard cinematic templates and essential analytics. Pro (₹999/yr, less than ₹84/mo) unlocks our entire 19+ exclusive template suite, full AI writing features, and advanced portfolio tracking analytics."
+                                    q: "What is the Sprint Pass?",
+                                    a: "The Sprint Pass is a 90-day access plan designed to match the average job search lifecycle. For a one-time payment, you unlock our entire 19+ exclusive template suite, full AI writing features, and advanced recruiter tracking analytics."
                                 },
                                 {
                                     q: "Is my payment secure?",
@@ -808,7 +808,7 @@ export function LandingV2() {
                                 },
                                 {
                                     q: "Can I cancel anytime?",
-                                    a: "Absolutely. You can flexibly cancel your monthly or yearly subscription at any time directly through your billing dashboard. Your portfolio will remain active for the remainder of your billing cycle."
+                                    a: "Since the Sprint Pass is a one-time payment for 90 days of access, there are no recurring subscriptions to cancel. You get full access for the entire duration without worrying about hidden bills."
                                 }
                             ].map((faq, i) => (
                                 <div key={i} className={`faq-item ${faqStates[i] ? 'open' : ''}`}>

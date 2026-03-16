@@ -57,8 +57,12 @@ function AppRoutes() {
         if (session) {
           // Task 2: Wait 500ms before navigating to let local storage commit
           setTimeout(() => {
-            toast.success('Identity verified. Entering the Vault.');
-            navigate('/dashboard?section=overview', { replace: true });
+            // Only redirect if we're not currently on a dashboard route or don't have a section param
+            const searchParams = new URLSearchParams(window.location.search);
+            if (!window.location.pathname.startsWith('/dashboard') || !searchParams.has('section')) {
+              toast.success('Identity verified. Entering the Vault.');
+              navigate('/dashboard?section=overview', { replace: true });
+            }
           }, 500);
         }
       }

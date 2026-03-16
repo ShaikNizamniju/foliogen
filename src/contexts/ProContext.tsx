@@ -44,7 +44,7 @@ export function ProProvider({ children }: { children: ReactNode }) {
     const userEmail = user.email?.toLowerCase();
     if (userEmail && VIP_WHITELIST.includes(userEmail)) {
       setIsPro(true);
-      setPlanType("pro");
+      setPlanType("sprint_pass");
       setSubscriptionStatus("active");
       setProSince(new Date());
       setLoading(false);
@@ -87,7 +87,7 @@ export function ProProvider({ children }: { children: ReactNode }) {
     await fetchProStatus();
   };
 
-  const isBasicOrAbove = isPro || planType === 'basic';
+  const isBasicOrAbove = isPro || planType === 'sprint_pass' || planType === 'pro';
 
   return (
     <ProContext.Provider value={{ isPro, isBasicOrAbove, loading, subscriptionId, proSince, planType, subscriptionStatus, nextRenewalDate, refreshProStatus }}>
