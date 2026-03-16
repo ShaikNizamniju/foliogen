@@ -13,6 +13,7 @@ import { useProfile, Persona } from "@/contexts/ProfileContext";
 import { usePro } from "@/contexts/ProContext";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
+import { trackEvent } from "@/lib/analytics";
 
 const PERSONAS: { id: Persona; label: string; icon: any; description: string; isPro?: boolean }[] = [
   { id: "general", label: "General Fit", icon: Sparkles, description: "Standard professional narrative.", isPro: false },
@@ -54,6 +55,9 @@ export function PersonaSwitcher() {
     
     // Dispatch global event for the Neural Sync animation on the dashboard
     window.dispatchEvent(new CustomEvent("persona-recalibrating", { detail: id }));
+
+    // Log North Star Metric
+    trackEvent('persona_switch', { persona: id });
   };
 
   const currentPersona = PERSONAS.find(i => i.id === activePersona) || PERSONAS[0];

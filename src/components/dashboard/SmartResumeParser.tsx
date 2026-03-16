@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dialog';
 import * as pdfjsLib from 'pdfjs-dist';
 import { getRecommendedTemplate, ProfessionalDomain } from '@/lib/domainRecommendation';
+import { trackEvent } from '@/lib/analytics';
 import { cn } from '@/lib/utils';
 
 // Dynamically resolve worker URL to match installed pdfjs-dist version
@@ -365,6 +366,12 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         sessionStorage.removeItem('foliogen_pending_parse');
         resetParser();
         setState('success');
+        
+        // Log North Star Metric
+        trackEvent('resume_upload_success', { 
+          domain: updates.predictedDomain,
+          template: updates.selectedTemplate 
+        });
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to sync profile", { id: toastId });

@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format, differenceInDays } from 'date-fns';
 import { supabase } from '@/lib/supabase_v2';
 import { triggerCelebration } from '@/lib/confetti';
+import { trackEvent } from '@/lib/analytics';
 import {
   Dialog,
   DialogContent,
@@ -63,6 +64,9 @@ export function BillingSection() {
       // 3. Show the Welcome Hype Modal
       setShowSuccessModal(true);
 
+      // Log North Star Metric
+      trackEvent('payment_success_viewed');
+
       // 4. Toast notification
       toast.success("Identity Engine Unlocked!", {
         description: "Your professional potential has been supercharged."
@@ -102,6 +106,9 @@ export function BillingSection() {
     }
     
     console.log("Redirecting to Stripe with Price ID:", priceId);
+
+    // Log North Star Metric
+    trackEvent('checkout_started', { plan: planKey, currency, price: selectedPrice });
 
     toast.info("Connecting to Secure Checkout...", {
       description: `Redirecting to Stripe for the ${planKey.replace('_', ' ')} (${selectedPrice} ${currency}).`
