@@ -92,11 +92,14 @@ export function DashboardSidebar() {
             </motion.div>
             <span
               className={cn(
-                "font-semibold text-lg text-sidebar-foreground tracking-tight whitespace-nowrap transition-all duration-300 ease-in-out",
+                "font-semibold text-lg text-sidebar-foreground tracking-tight whitespace-nowrap transition-all duration-300 ease-in-out flex items-center gap-2",
                 collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"
               )}
             >
               Foliogen
+              <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest">
+                Beta
+              </span>
             </span>
           </Link>
           {/* Desktop: ChevronLeft toggle */}

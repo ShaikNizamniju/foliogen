@@ -4,7 +4,7 @@ import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePro } from '@/contexts/ProContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck, Lock } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck, Lock, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
@@ -592,6 +592,42 @@ export function OverviewSection() {
           </motion.div>
         ))}
       </div>
+
+      {/* Identity Roadmap Teaser */}
+      <motion.div variants={fadeUp}>
+        <div className="rounded-2xl border border-border/40 bg-zinc-900/40 p-6 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Lock className="h-12 w-12 text-zinc-400" />
+          </div>
+          
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-zinc-800 text-zinc-500">
+              <Target className="h-4 w-4" />
+            </div>
+            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Identity Roadmap</h2>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h3 className="text-lg font-bold text-foreground">AI Interview Coach</h3>
+                <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase">Target</span>
+              </div>
+              <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
+                Practice role-specific interviews based on your unique portfolio narratives. Master the dialects of Startup and Big Tech before you step into the room.
+              </p>
+            </div>
+            
+            <div className="shrink-0 flex flex-col items-end">
+              <span className="text-xs font-mono text-primary/70">COMING Q3 2026</span>
+              <div className="mt-2 text-[10px] text-muted-foreground uppercase tracking-tighter bg-zinc-800/50 px-3 py-1 rounded-md border border-white/5">
+                Research Phase
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Quick Actions */}
       <motion.div variants={fadeUp} className="flex flex-wrap gap-3">

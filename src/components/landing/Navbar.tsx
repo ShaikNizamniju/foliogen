@@ -33,8 +33,11 @@ export function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl"
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center">
-          <img src={logo} alt="Foliogen" className="h-10 w-auto" />
+        <Link to="/" className="flex items-center gap-2 group">
+          <img src={logo} alt="Foliogen" className="h-10 w-auto transition-transform group-hover:scale-105" />
+          <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-[0_0_10px_rgba(99,102,241,0.1)]">
+            Beta
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
