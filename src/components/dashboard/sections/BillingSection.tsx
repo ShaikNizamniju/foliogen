@@ -21,7 +21,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const SPRINT_PASS_FEATURES = [
   { icon: Crown, label: "Persona Switcher (All Modes)", description: "Startup, Big Tech, and Fintech variants" },
@@ -49,27 +49,31 @@ export function BillingSection() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [payingPlan, setPayingPlan] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('status') === 'success') {
-      // 1. Clear the URL params for a clean UI
-      const newUrl = window.location.pathname + (window.location.search.replace(/[?&]status=success/, '').replace(/^&/, '?'));
-      window.history.replaceState({}, '', newUrl);
-
-      // 2. Trigger Celebration
+    if (searchParams.get('status') === 'success') {
+      // 1. Trigger Celebration
       triggerCelebration();
 
-      // 3. Update Local State immediately
+      // 2. Update Local State immediately
       if (refreshProStatus) refreshProStatus();
 
-      // 4. Show the Welcome Hype Modal
+      // 3. Show the Welcome Hype Modal
       setShowSuccessModal(true);
 
-      toast.success("Payment successful! Your features are now unlocked.");
+      // 4. Toast notification
+      toast.success("Identity Engine Unlocked!", {
+        description: "Your professional potential has been supercharged."
+      });
+
+      // 5. Cleanup URL - remove status param
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('status');
+      setSearchParams(newParams, { replace: true });
     }
-  }, [refreshProStatus]);
+  }, [searchParams, refreshProStatus, setSearchParams]);
   
   const [countryCode, setCountryCode] = useState<'US' | 'IN'>('IN'); // Mocked to IN
   const currency = countryCode === 'IN' ? 'INR' : 'USD';
@@ -292,17 +296,24 @@ export function BillingSection() {
         <p className="text-xs font-semibold mt-2">— Product Lead @ Stripe</p>
       </div>
       {/* Success Welcome Modal */}
-      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md border-primary/20 bg-background/95 backdrop-blur-xl">
+      <Dialog 
+        open={showSuccessModal} 
+        onOpenChange={(open) => {
+          // Prevent closing by clicking outside or pressing ESC
+          if (!open) return;
+          setShowSuccessModal(true);
+        }}
+      >
+        <DialogContent className="sm:max-w-md border-primary/20 bg-background/95 backdrop-blur-xl [&>button]:hidden">
           <DialogHeader className="text-center pt-6">
             <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
               <PartyPopper className="h-8 w-8 text-primary animate-bounce" />
             </div>
             <DialogTitle className="text-2xl font-bold">
-              Welcome to the Sprint Pass, {user?.user_metadata?.full_name?.split(' ')[0] || 'Explorer'}! 🚀
+              Identity Engine Unlocked 🚀
             </DialogTitle>
             <DialogDescription className="text-base pt-2">
-              Your Narrative Engine is now fully unlocked. You can now flip between **Startup**, **Big Tech**, and **Fintech** modes instantly.
+              Welcome to the Sprint Pass. You now have unlimited access to our industry-specific Narrative Engine and real-time Recruiter Tracking.
             </DialogDescription>
           </DialogHeader>
           <div className="py-6 space-y-4">
@@ -323,7 +334,10 @@ export function BillingSection() {
           </div>
           <DialogFooter className="sm:justify-center pb-6">
             <Button 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => {
+                setShowSuccessModal(false);
+                navigate('/dashboard?section=templates');
+              }}
               size="lg"
               className="w-full rounded-xl font-bold shadow-lg shadow-primary/20"
             >

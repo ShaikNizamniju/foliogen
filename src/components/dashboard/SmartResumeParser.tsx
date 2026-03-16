@@ -224,22 +224,28 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   const handleApplySync = async (finalData: ParsedData) => {
     if (!finalData) return;
 
-    // Check for conflicts before applying
-    const hasConflicts = finalData.workExperience?.some(newW => 
+    // Identify specific conflicting roles
+    const conflicts = (finalData.workExperience || []).filter(newW => 
       profile.workExperience.some(oldW => 
         oldW.company.toLowerCase() === newW.company.toLowerCase() && 
         oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
       )
-    );
+    ).map(newW => {
+      const existing = profile.workExperience.find(oldW => 
+        oldW.company.toLowerCase() === newW.company.toLowerCase() && 
+        oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
+      );
+      return { newRole: newW, existingRole: existing! };
+    });
 
-    if (hasConflicts && applyMode === 'replace' && !mergeConfirmOpen) {
+    if (conflicts.length > 0 && applyMode === 'replace' && !mergeConfirmOpen) {
       setMergeConfirmOpen(true);
       return;
     }
 
     setIsApplying(true);
     const toastId = 'resume-apply';
-    toast.loading('Synchronizing professional data...', { id: toastId });
+    toast.loading('Synchronizing identity vault...', { id: toastId });
 
     try {
       // Upload to storage if needed
@@ -268,6 +274,59 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         return d.trim();
       };
 
+      // Process Work Experience with intelligent merging
+      let updatedWorkExp = [...profile.workExperience];
+
+      if (applyMode === 'merge') {
+        const freshRoles = (finalData.workExperience || []).filter(newW => 
+          !profile.workExperience.some(oldW => 
+            oldW.company.toLowerCase() === newW.company.toLowerCase() && 
+            oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
+          )
+        ).map(w => ({
+          ...w,
+          id: crypto.randomUUID(),
+          startDate: safeDate(w.startDate),
+          endDate: safeDate(w.endDate),
+        }));
+
+        // Merge descriptions for existing roles
+        updatedWorkExp = profile.workExperience.map(oldW => {
+          const match = (finalData.workExperience || []).find(newW => 
+            newW.company.toLowerCase() === oldW.company.toLowerCase() && 
+            newW.jobTitle.toLowerCase() === oldW.jobTitle.toLowerCase()
+          );
+
+          if (match) {
+            // Split by common delimiters and deduplicate bullet points
+            const oldBullets = (oldW.description || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+            const newBullets = (match.description || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+            
+            const uniqueNewBullets = newBullets.filter(nb => 
+              !oldBullets.some(ob => ob.toLowerCase().includes(nb.toLowerCase()) || nb.toLowerCase().includes(ob.toLowerCase()))
+            );
+
+            if (uniqueNewBullets.length > 0) {
+              return {
+                ...oldW,
+                description: [oldW.description, ...uniqueNewBullets].join('\n• ').replace(/\n• \n•/g, '\n•').trim()
+              };
+            }
+          }
+          return oldW;
+        });
+
+        updatedWorkExp = [...updatedWorkExp, ...freshRoles];
+      } else {
+        // Replace matching roles or just overwrite everything
+        updatedWorkExp = (finalData.workExperience || []).map(w => ({
+          ...w,
+          id: crypto.randomUUID(),
+          startDate: safeDate(w.startDate),
+          endDate: safeDate(w.endDate),
+        }));
+      }
+
       const updates: Partial<ProfileData> = {
         fullName: finalData.fullName || profile.fullName,
         headline: finalData.headline || profile.headline,
@@ -276,24 +335,7 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         email: finalData.email || profile.email,
         linkedinUrl: finalData.linkedinUrl || profile.linkedinUrl,
         skills: [...new Set([...profile.skills, ...(finalData.skills || [])])],
-        workExperience: applyMode === 'merge' 
-          ? [...profile.workExperience, ...(finalData.workExperience || []).filter(newW => 
-              !profile.workExperience.some(oldW => 
-                oldW.company.toLowerCase() === newW.company.toLowerCase() && 
-                oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
-              )
-            ).map(w => ({
-              ...w,
-              id: crypto.randomUUID(),
-              startDate: safeDate(w.startDate),
-              endDate: safeDate(w.endDate),
-            }))]
-          : (finalData.workExperience || []).map(w => ({
-              ...w,
-              id: crypto.randomUUID(),
-              startDate: safeDate(w.startDate),
-              endDate: safeDate(w.endDate),
-            })),
+        workExperience: updatedWorkExp,
         projects: (finalData.projects || []).map(p => ({
           ...p,
           id: crypto.randomUUID(),
@@ -458,30 +500,52 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         />
       )}
 
-      {/* Merge Confirmation Dialog */}
+      {/* Identity Conflict Dialog */}
       <Dialog open={mergeConfirmOpen} onOpenChange={setMergeConfirmOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl border-amber-500/20 bg-background/95 backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-lg">Matching Data Detected</DialogTitle>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-amber-500" />
+              Professional Identity Conflict
+            </DialogTitle>
             <DialogDescription>
-              We found roles that match your existing portfolio. How would you like to proceed?
+              We found matching roles for <span className="text-foreground font-semibold">
+                {pendingData?.workExperience?.filter(newW => 
+                  profile.workExperience.some(oldW => 
+                    oldW.company.toLowerCase() === newW.company.toLowerCase() && 
+                    oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
+                  )
+                ).map(w => w.company).join(', ')}
+              </span>. Your current profile has manual edits. How should we proceed?
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-3 pt-4">
-            <Button
-              className="flex-1 gap-2 bg-primary hover:bg-primary/90 shadow-glow"
-              onClick={() => {
-                setApplyMode('merge');
-                if (pendingData) handleApplySync(pendingData);
-                setMergeConfirmOpen(false);
-              }}
-            >
-              <GitMerge className="h-4 w-4" />
-              Merge (Append New Roles Only)
-            </Button>
+
+          <div className="py-4 space-y-4 max-h-[400px] overflow-y-auto pr-2">
+            {pendingData?.workExperience?.filter(newW => 
+              profile.workExperience.some(oldW => 
+                oldW.company.toLowerCase() === newW.company.toLowerCase() && 
+                oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
+              )
+            ).map((newW, idx) => {
+              const oldW = profile.workExperience.find(o => 
+                o.company.toLowerCase() === newW.company.toLowerCase() && 
+                o.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
+              )!;
+              return (
+                <div key={idx} className="p-4 rounded-xl border border-border bg-muted/30">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                    {newW.company} — {newW.jobTitle}
+                  </p>
+                  <RoleDiffView oldText={oldW.description} newText={newW.description} />
+                </div>
+              );
+            })}
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border">
             <Button
               variant="outline"
-              className="gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+              className="flex-1 gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 h-12"
               onClick={() => {
                 setApplyMode('replace');
                 if (pendingData) handleApplySync(pendingData);
@@ -489,9 +553,20 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
               }}
             >
               <Replace className="h-4 w-4" />
-              Update (Replace Matching Roles)
+              Overwrite (Replace with PDF Data)
             </Button>
-          </div>
+            <Button
+              className="flex-1 gap-2 bg-primary hover:bg-primary/90 shadow-glow h-12"
+              onClick={() => {
+                setApplyMode('merge');
+                if (pendingData) handleApplySync(pendingData);
+                setMergeConfirmOpen(false);
+              }}
+            >
+              <GitMerge className="h-4 w-4" />
+              Merge (Append New Successes)
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
@@ -642,5 +717,45 @@ function ReviewAndConfirm({ data, isApplying, onApply, onDiscard }: ReviewAndCon
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+function RoleDiffView({ oldText, newText }: { oldText: string, newText: string }) {
+  const oldBullets = (oldText || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+  const newBullets = (newText || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+  
+  const uniqueNewBullets = newBullets.filter(nb => 
+    !oldBullets.some(ob => ob.toLowerCase().includes(nb.toLowerCase()) || nb.toLowerCase().includes(ob.toLowerCase()))
+  );
+
+  return (
+    <div className="space-y-2">
+      <div className="text-[11px] text-muted-foreground line-clamp-2 italic">
+        Existing: {oldText.slice(0, 100)}...
+      </div>
+      <div className="space-y-1">
+        {oldBullets.map((b, i) => (
+          <div key={i} className="text-xs flex gap-2 text-muted-foreground/60">
+            <span className="shrink-0">•</span>
+            <span className="line-clamp-1">{b}</span>
+          </div>
+        ))}
+        {uniqueNewBullets.map((b, i) => (
+          <motion.div 
+            key={i} 
+            initial={{ opacity: 0, x: -5 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-xs flex gap-2 text-emerald-500 font-medium bg-emerald-500/5 p-1 rounded border border-emerald-500/10"
+          >
+            <span className="shrink-0 font-bold">+</span>
+            <span>{b}</span>
+          </motion.div>
+        ))}
+        {uniqueNewBullets.length === 0 && (
+          <p className="text-[10px] text-amber-500/70 italic">
+            No new bullet points detected for this role.
+          </p>
+        )}
+      </div>
+    </div>
   );
 }
