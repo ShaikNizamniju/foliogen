@@ -26,6 +26,7 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Refunds = lazy(() => import("./pages/Refunds"));
 const ContactPage = lazy(() => import("./pages/Contact"));
 const Success = lazy(() => import("./pages/Success"));
+const AboutFounder = lazy(() => import("./pages/AboutFounder"));
 
 const Billing = lazy(() => import("./pages/dashboard/Billing"));
 
@@ -94,6 +95,7 @@ function AppRoutes() {
           <Route path="/refunds" element={<Refunds />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/success" element={<Success />} />
+          <Route path="/founder" element={<AboutFounder />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

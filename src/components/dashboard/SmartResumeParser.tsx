@@ -27,6 +27,7 @@ import {
 import * as pdfjsLib from 'pdfjs-dist';
 import { getRecommendedTemplate, ProfessionalDomain } from '@/lib/domainRecommendation';
 import { trackEvent } from '@/lib/analytics';
+import { logError } from '@/lib/logger';
 import { cn } from '@/lib/utils';
 
 // Dynamically resolve worker URL to match installed pdfjs-dist version
@@ -202,10 +203,24 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
     } catch (error: any) {
       console.error("Parse Error:", error);
+      
+      // Log AI Error Tracking
+      if (state === 'analyzing') {
+        logError('ResumeParser', error, { 
+          fileType: currentFile?.type || 'unknown',
+          fileName: fileName 
+        });
+        
+        toast.error("Format issue detected", {
+          description: "The AI encountered a format it didn't recognize. I've been notified and will tune the engine! 🚀"
+        });
+      } else {
+        const msg = error?.message || 'Failed to parse resume';
+        toast.error(msg);
+      }
+
       setState('error');
-      const msg = error?.message || 'Failed to parse resume';
-      setErrorMessage(msg);
-      toast.error(msg);
+      setErrorMessage(error?.message || 'Failed to parse resume');
     }
   };
 
