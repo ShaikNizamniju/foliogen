@@ -1,9 +1,14 @@
 import { Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTheme } from "@/components/theme-provider";
+import { useLocation } from "react-router-dom";
 
 export function FloatingThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const location = useLocation();
+  
+  // Hide on dashboard as it's integrated into the header
+  if (location.pathname.startsWith('/dashboard')) return null;
 
   // Check if currently dark (either explicit dark or system prefers dark)
   const isDark = theme === "dark" || 

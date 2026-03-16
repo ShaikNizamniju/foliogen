@@ -1,7 +1,8 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Mail, Linkedin, RefreshCw } from 'lucide-react';
+import { LogOut, User, Mail, Linkedin, RefreshCw, MessageSquare } from 'lucide-react';
+import { FoundersFeedback } from '@/components/dashboard/FoundersFeedback';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -119,6 +120,20 @@ export function SettingsSection() {
             Sign Out
           </Button>
         </div>
+      </div>
+
+      {/* Feedback Section */}
+      <div className="rounded-xl border border-primary/20 bg-primary/5 p-6">
+        <h2 className="font-semibold text-foreground mb-1">Help me build FolioGen</h2>
+        <p className="text-xs text-muted-foreground mb-4">Have a feature request or found a bug? I'd love to hear from you directly.</p>
+        <FoundersFeedback 
+          trigger={
+            <Button variant="default" className="w-full sm:w-auto">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Submit Feedback
+            </Button>
+          }
+        />
       </div>
     </div>
   );

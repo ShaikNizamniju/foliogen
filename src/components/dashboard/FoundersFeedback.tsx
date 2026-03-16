@@ -16,8 +16,19 @@ import { useAuth } from "@/contexts/AuthContext";
 import { trackEvent } from "@/lib/analytics";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function FoundersFeedback() {
-  const [isOpen, setIsOpen] = useState(false);
+export function FoundersFeedback({ 
+  trigger, 
+  isOpen: externalOpen, 
+  onOpenChange: setExternalOpen 
+}: { 
+  trigger?: React.ReactNode;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setIsOpen = setExternalOpen !== undefined ? setExternalOpen : setInternalOpen;
+  
   const [feedback, setFeedback] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
@@ -62,24 +73,28 @@ export function FoundersFeedback() {
 
   return (
     <>
-      {/* Floating Button */}
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="fixed bottom-6 right-6 z-[60]"
-      >
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="h-12 px-6 rounded-full bg-primary shadow-[0_8px_30px_rgb(79,70,229,0.4)] hover:shadow-[0_8px_30px_rgb(79,70,229,0.6)] group transition-all duration-300"
+      {/* Trigger */}
+      {trigger ? (
+        <div onClick={() => setIsOpen(true)}>{trigger}</div>
+      ) : !externalOpen && (
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="fixed bottom-6 right-6 z-[60]"
         >
-          <MessageSquare className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-          <span className="font-semibold">Feedback</span>
-          <div className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-foreground opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-foreground"></span>
-          </div>
-        </Button>
-      </motion.div>
+          <Button
+            onClick={() => setIsOpen(true)}
+            className="h-12 px-6 rounded-full bg-primary shadow-[0_8px_30px_rgb(79,70,229,0.4)] hover:shadow-[0_8px_30px_rgb(79,70,229,0.6)] group transition-all duration-300"
+          >
+            <MessageSquare className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+            <span className="font-semibold">Feedback</span>
+            <div className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-foreground opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-foreground"></span>
+            </div>
+          </Button>
+        </motion.div>
+      )}
 
       {/* Feedback Modal */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

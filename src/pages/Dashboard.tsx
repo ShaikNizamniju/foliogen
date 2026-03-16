@@ -163,9 +163,6 @@ function DashboardInner() {
         onClose={() => setWaitlistOpen(false)}
         userEmail={user?.email}
       />
-
-      {/* Floating Feedback Button */}
-      <FoundersFeedback />
     </SidebarProvider>
   );
 }
