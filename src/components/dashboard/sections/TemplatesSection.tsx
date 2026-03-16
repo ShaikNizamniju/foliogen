@@ -68,7 +68,7 @@ export function TemplatesSection() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         {templates.map((template) => {
           const isLocked = !isBasicOrAbove && template.id !== FREE_TEMPLATE_ID;

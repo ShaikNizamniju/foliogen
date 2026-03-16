@@ -379,7 +379,7 @@ export default function TemplatesGallery() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {filtered.map((template, i) => {
                 const isRecommended = isRecommendedForDomain(template.id, activeDomain);
@@ -392,7 +392,7 @@ export default function TemplatesGallery() {
                     variants={cardVariants}
                     initial="hidden"
                     animate="visible"
-                    className={`group relative rounded-2xl border bg-card overflow-hidden cursor-pointer transition-all duration-300 ${
+                    className={`group relative rounded-2xl border bg-card overflow-hidden cursor-pointer transition-all duration-300 flex flex-col h-full ${
                       isRecommended
                         ? 'border-primary ring-2 ring-primary/20 shadow-lg'
                         : activeDomain && !isRelevant
@@ -412,7 +412,7 @@ export default function TemplatesGallery() {
                     )}
 
                     {/* Thumbnail */}
-                    <div className={`relative h-56 bg-gradient-to-br ${template.gradient} overflow-hidden`}>
+                    <div className={`relative aspect-video w-full bg-gradient-to-br ${template.gradient} overflow-hidden shrink-0`}>
                       <div className="absolute inset-0 origin-top-left scale-[0.25] w-[400%] h-[400%] pointer-events-none">
                         <template.preview />
                       </div>
@@ -427,17 +427,21 @@ export default function TemplatesGallery() {
                     </div>
 
                     {/* Info */}
-                    <div className="p-5">
+                    <div className="p-5 flex flex-col flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-semibold text-foreground tracking-tight">
+                        <h3 className="text-lg font-semibold text-foreground tracking-tight line-clamp-1">
                           {template.name}
                         </h3>
-                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
+                        <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-200" />
                       </div>
-                      <p className="text-sm text-muted-foreground mb-3">{template.tagline}</p>
-                      <span className="text-xs tracking-wider uppercase text-muted-foreground/70">
-                        {template.style}
-                      </span>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 min-h-[2.5rem]">
+                        {template.tagline}
+                      </p>
+                      <div className="mt-auto">
+                        <span className="text-[10px] tracking-wider uppercase font-medium text-muted-foreground/60 transition-colors group-hover:text-primary/70">
+                          {template.style}
+                        </span>
+                      </div>
                     </div>
                   </motion.div>
                 );

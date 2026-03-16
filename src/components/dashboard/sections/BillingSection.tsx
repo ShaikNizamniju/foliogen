@@ -1,17 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePro } from '@/contexts/ProContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Crown, Check, Sparkles, Target, Wand2, Users,
-  Calendar, Loader2, ShieldCheck, CreditCard, RefreshCw, ArrowRight
+  Calendar, Loader2, ShieldCheck, CreditCard, RefreshCw, ArrowRight,
+  PartyPopper
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { handlePayment } from '@/lib/payment';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { format, differenceInDays } from 'date-fns';
 import { supabase } from '@/lib/supabase_v2';
+import { triggerCelebration } from '@/lib/confetti';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { useNavigate } from 'react-router-dom';
 
 const SPRINT_PASS_FEATURES = [
   { icon: Crown, label: "Persona Switcher (All Modes)", description: "Startup, Big Tech, and Fintech variants" },
@@ -37,7 +47,29 @@ const FREE_FEATURES = [
 export function BillingSection() {
   const { isPro, loading, proSince, planType, subscriptionStatus, nextRenewalDate, refreshProStatus } = usePro();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [payingPlan, setPayingPlan] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('status') === 'success') {
+      // 1. Clear the URL params for a clean UI
+      const newUrl = window.location.pathname + (window.location.search.replace(/[?&]status=success/, '').replace(/^&/, '?'));
+      window.history.replaceState({}, '', newUrl);
+
+      // 2. Trigger Celebration
+      triggerCelebration();
+
+      // 3. Update Local State immediately
+      if (refreshProStatus) refreshProStatus();
+
+      // 4. Show the Welcome Hype Modal
+      setShowSuccessModal(true);
+
+      toast.success("Payment successful! Your features are now unlocked.");
+    }
+  }, [refreshProStatus]);
   
   const [countryCode, setCountryCode] = useState<'US' | 'IN'>('IN'); // Mocked to IN
   const currency = countryCode === 'IN' ? 'INR' : 'USD';
@@ -259,6 +291,48 @@ export function BillingSection() {
         </p>
         <p className="text-xs font-semibold mt-2">— Product Lead @ Stripe</p>
       </div>
+      {/* Success Welcome Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md border-primary/20 bg-background/95 backdrop-blur-xl">
+          <DialogHeader className="text-center pt-6">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+              <PartyPopper className="h-8 w-8 text-primary animate-bounce" />
+            </div>
+            <DialogTitle className="text-2xl font-bold">
+              Welcome to the Sprint Pass, {user?.user_metadata?.full_name?.split(' ')[0] || 'Explorer'}! 🚀
+            </DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              Your Narrative Engine is now fully unlocked. You can now flip between **Startup**, **Big Tech**, and **Fintech** modes instantly.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6 space-y-4">
+            <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <div className="p-1 rounded-full bg-emerald-500/10 mt-0.5">
+                  <Check className="h-3 w-3 text-emerald-500" />
+                </div>
+                <p className="text-xs text-muted-foreground"><span className="text-foreground font-medium">Unlimited Persona Switches</span> active</p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-1 rounded-full bg-emerald-500/10 mt-0.5">
+                  <Check className="h-3 w-3 text-emerald-500" />
+                </div>
+                <p className="text-xs text-muted-foreground"><span className="text-foreground font-medium">Real-time Recruiter Pulse</span> enabled</p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="sm:justify-center pb-6">
+            <Button 
+              onClick={() => navigate('/dashboard')}
+              size="lg"
+              className="w-full rounded-xl font-bold shadow-lg shadow-primary/20"
+            >
+              Switch My First Persona
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

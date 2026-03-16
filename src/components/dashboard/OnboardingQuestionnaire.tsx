@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { domainOptions, getRecommendedTemplate, type ProfessionalDomain } from '@/lib/domainRecommendation';
@@ -29,10 +29,25 @@ export function OnboardingQuestionnaire() {
     if (!selected) return;
     const recommended = getRecommendedTemplate(selected);
     localStorage.setItem(ONBOARDING_DONE_KEY, selected);
+    
     if (selected === 'other' && otherText.trim()) {
       localStorage.setItem('foliogen_custom_domain', otherText.trim());
     }
-    updateProfile({ selectedTemplate: recommended as any });
+
+    // Specialized Logic for Tech/Engineering
+    if (selected === 'tech') {
+      updateProfile({ 
+        selectedTemplate: 'executive', // Suggesting Executive Elite (id: executive)
+        activePersona: 'bigtech',
+        predictedDomain: 'tech'
+      });
+    } else {
+      updateProfile({ 
+        selectedTemplate: recommended as any,
+        predictedDomain: selected
+      });
+    }
+    
     setOpen(false);
   };
 
@@ -50,16 +65,12 @@ export function OnboardingQuestionnaire() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden bg-background border-border gap-0">
         <DialogTitle className="sr-only">Choose your professional domain</DialogTitle>
+        <DialogDescription className="sr-only">
+          Select your industry to help us tailor your portfolio experience.
+        </DialogDescription>
 
         {/* Header */}
         <div className="relative px-6 pt-8 pb-4">
-          <button
-            onClick={handleSkip}
-            className="absolute top-4 right-4 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <X className="h-4 w-4" />
-          </button>
-
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

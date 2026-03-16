@@ -1,12 +1,13 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Mail, Linkedin } from 'lucide-react';
+import { LogOut, User, Mail, Linkedin, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export function SettingsSection() {
   const { user, signOut } = useAuth();
+  const { saveProfile } = useProfile();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -75,15 +76,49 @@ export function SettingsSection() {
       </div>
 
       {/* Danger Zone */}
-      <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
-        <h2 className="font-semibold text-foreground mb-4">Sign Out</h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Sign out of your Foliogen account.
-        </p>
-        <Button variant="outline" onClick={handleSignOut} className="text-destructive border-destructive/50 hover:bg-destructive hover:text-destructive-foreground">
-          <LogOut className="h-4 w-4 mr-2" />
-          Sign Out
-        </Button>
+      <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-6 space-y-4">
+        <div>
+          <h2 className="font-semibold text-foreground mb-1">Danger Zone</h2>
+          <p className="text-xs text-muted-foreground">Manage sensitive account actions and data resets.</p>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row gap-4">
+          <Button 
+            variant="outline" 
+            onClick={async () => {
+              if (window.confirm("Are you sure you want to reset your portfolio? This will clear all professional data (Bio, Headline, Experience, Projects) but keep your account. This cannot be undone.")) {
+                await saveProfile({
+                  bio: '',
+                  headline: '',
+                  workExperience: [],
+                  projects: [],
+                  skills: [],
+                  keyHighlights: [],
+                  narrativeVariants: {
+                    general: { bio: "", headline: "" },
+                    startup: { bio: "", headline: "" },
+                    bigtech: { bio: "", headline: "" },
+                    fintech: { bio: "", headline: "" },
+                  }
+                });
+                toast.success("Portfolio data has been reset.");
+              }
+            }} 
+            className="text-amber-500 border-amber-500/30 hover:bg-amber-500 hover:text-white"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Reset Portfolio Data
+          </Button>
+
+          <Button 
+            variant="outline" 
+            onClick={handleSignOut} 
+            className="text-destructive border-destructive/50 hover:bg-destructive hover:text-destructive-foreground"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
       </div>
     </div>
   );

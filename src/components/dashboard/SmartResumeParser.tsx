@@ -2,7 +2,8 @@ import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import {
   UploadCloud, FileText, CheckCircle2, Loader2, AlertCircle,
-  Briefcase, GraduationCap, Sparkles, X, ArrowRight, Merge, Save, Trash2
+  Briefcase, GraduationCap, Sparkles, ArrowRight, Merge, Save, Trash2,
+  GitMerge, Replace
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase_v2';
@@ -68,6 +69,8 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [isApplying, setIsApplying] = useState(false);
+  const [mergeConfirmOpen, setMergeConfirmOpen] = useState(false);
+  const [applyMode, setApplyMode] = useState<'merge' | 'replace'>('replace');
 
   const { profile, updateProfile, saveProfile } = useProfile();
   const { user } = useAuth();
@@ -221,6 +224,19 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
   const handleApplySync = async (finalData: ParsedData) => {
     if (!finalData) return;
 
+    // Check for conflicts before applying
+    const hasConflicts = finalData.workExperience?.some(newW => 
+      profile.workExperience.some(oldW => 
+        oldW.company.toLowerCase() === newW.company.toLowerCase() && 
+        oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
+      )
+    );
+
+    if (hasConflicts && applyMode === 'replace' && !mergeConfirmOpen) {
+      setMergeConfirmOpen(true);
+      return;
+    }
+
     setIsApplying(true);
     const toastId = 'resume-apply';
     toast.loading('Synchronizing professional data...', { id: toastId });
@@ -260,12 +276,24 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
         email: finalData.email || profile.email,
         linkedinUrl: finalData.linkedinUrl || profile.linkedinUrl,
         skills: [...new Set([...profile.skills, ...(finalData.skills || [])])],
-        workExperience: (finalData.workExperience || []).map(w => ({
-          ...w,
-          id: crypto.randomUUID(),
-          startDate: safeDate(w.startDate),
-          endDate: safeDate(w.endDate),
-        })),
+        workExperience: applyMode === 'merge' 
+          ? [...profile.workExperience, ...(finalData.workExperience || []).filter(newW => 
+              !profile.workExperience.some(oldW => 
+                oldW.company.toLowerCase() === newW.company.toLowerCase() && 
+                oldW.jobTitle.toLowerCase() === newW.jobTitle.toLowerCase()
+              )
+            ).map(w => ({
+              ...w,
+              id: crypto.randomUUID(),
+              startDate: safeDate(w.startDate),
+              endDate: safeDate(w.endDate),
+            }))]
+          : (finalData.workExperience || []).map(w => ({
+              ...w,
+              id: crypto.randomUUID(),
+              startDate: safeDate(w.startDate),
+              endDate: safeDate(w.endDate),
+            })),
         projects: (finalData.projects || []).map(p => ({
           ...p,
           id: crypto.randomUUID(),
@@ -429,6 +457,43 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
           onDiscard={resetParser} 
         />
       )}
+
+      {/* Merge Confirmation Dialog */}
+      <Dialog open={mergeConfirmOpen} onOpenChange={setMergeConfirmOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Matching Data Detected</DialogTitle>
+            <DialogDescription>
+              We found roles that match your existing portfolio. How would you like to proceed?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 pt-4">
+            <Button
+              className="flex-1 gap-2 bg-primary hover:bg-primary/90 shadow-glow"
+              onClick={() => {
+                setApplyMode('merge');
+                if (pendingData) handleApplySync(pendingData);
+                setMergeConfirmOpen(false);
+              }}
+            >
+              <GitMerge className="h-4 w-4" />
+              Merge (Append New Roles Only)
+            </Button>
+            <Button
+              variant="outline"
+              className="gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+              onClick={() => {
+                setApplyMode('replace');
+                if (pendingData) handleApplySync(pendingData);
+                setMergeConfirmOpen(false);
+              }}
+            >
+              <Replace className="h-4 w-4" />
+              Update (Replace Matching Roles)
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -350,12 +350,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       const desc = p.description || '';
       // Hardened Regex for Metric Density: supports commas, decimals, and impact units
       const metricRegex = /(?:\$)?\d+(?:,\d{3})*(?:\.\d+)?(?:k|K|m|M|b|B|ms|s|pps|%|\s*ROI|\s*latency|\s*conversion|\s*ARR)?\b/gi;
-      const metricsCount = (desc.match(metricRegex) || []).length;
+      const metricsCount = (typeof desc === 'string' ? (desc.match(metricRegex) || []).length : 0);
       const metricDensityScore = Math.min(30, metricsCount * 10);
       
       // Hardened Framework Check: synonyms for RICE, HEART, STAR
       const frameworkRegex = /\b(reach|impact|confidence|effort|happiness|engagement|adoption|retention|task success|situation|task|action|result|prioritization|metric|increased|decreased|orchestrated|star method|rice framework)\b/gi;
-      const frameworkCount = (desc.match(frameworkRegex) || []).length;
+      const frameworkCount = (typeof desc === 'string' ? (desc.match(frameworkRegex) || []).length : 0);
       const frameworkAlignmentScore = Math.min(20, frameworkCount * 5);
       
       let proofValidationScore = 0;

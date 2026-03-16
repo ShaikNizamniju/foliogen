@@ -328,10 +328,10 @@ export function TemplateCard({
       {/* Clickable area for selection */}
       <button
         onClick={onSelect}
-        className="w-full text-left"
+        className="w-full text-left flex flex-col h-full"
       >
         {/* Mini Preview */}
-        <div className="aspect-[4/3] w-full overflow-hidden">
+        <div className="aspect-video w-full overflow-hidden shrink-0">
           <motion.div
             className="h-full w-full"
             whileHover={{ scale: 1.02 }}
@@ -342,11 +342,11 @@ export function TemplateCard({
         </div>
 
         {/* Info */}
-        <div className="p-4 bg-card">
-          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+        <div className="p-4 bg-card flex flex-col flex-1">
+          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
             {name}
           </h3>
-          <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2 min-h-[2rem]">
             {description}
           </p>
         </div>
