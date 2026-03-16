@@ -233,11 +233,25 @@ export default function PublicPortfolio() {
   }
 
   // Generate SEO metadata
-  const pageTitle = profile.fullName
-    ? `${profile.fullName} | The AI PM Identity Vault`
-    : 'The AI PM Identity Vault';
-  const pageDescription = profile.bio || profile.headline || `Professional portfolio of ${profile.fullName || 'a talented professional'}`;
-  const pageImage = profile.photoUrl || 'https://www.foliogen.in/og-image.png';
+  const personaLabels: Record<string, string> = {
+    general: 'Professional',
+    startup: 'Startup',
+    bigtech: 'Big Tech',
+    fintech: 'Fintech'
+  };
+  const activePersonaLabel = personaLabels[profile.activePersona] || 'Professional';
+
+  const pageTitle = profile.fullName && profile.headline
+    ? `${profile.fullName} | ${profile.headline}`
+    : `${profile.fullName} | Portfolio`;
+    
+  const pageDescription = profile.headline 
+    ? `${profile.headline}. ${profile.bio?.slice(0, 160)}`
+    : profile.bio || `Professional portfolio of ${profile.fullName}`;
+
+  const ogTitle = `${profile.fullName} | ${activePersonaLabel} Portfolio`;
+  const ogDescription = profile.bio || pageDescription;
+  const pageImage = profile.photoUrl || 'https://www.foliogen.in/og-premium-placeholder.png';
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   // Vanilla JS fallback to mutate meta tags for crawlers that struggle with Helmet
@@ -261,13 +275,13 @@ export default function PublicPortfolio() {
       }
     };
 
-    updateMetaTag('og:title', pageTitle);
-    updateMetaTag('og:description', pageDescription);
+    updateMetaTag('og:title', ogTitle);
+    updateMetaTag('og:description', ogDescription);
     updateMetaTag('og:image', pageImage);
     updateMetaTag('og:url', pageUrl);
 
-    updateMetaTag('twitter:title', pageTitle);
-    updateMetaTag('twitter:description', pageDescription);
+    updateMetaTag('twitter:title', ogTitle);
+    updateMetaTag('twitter:description', ogDescription);
     updateMetaTag('twitter:image', pageImage);
     updateMetaTag('twitter:url', pageUrl);
 
@@ -280,7 +294,7 @@ export default function PublicPortfolio() {
       canonicalTag.setAttribute('href', pageUrl);
       document.head.appendChild(canonicalTag);
     }
-  }, [profile, pageTitle, pageDescription, pageImage, pageUrl]);
+  }, [profile, pageTitle, pageDescription, ogTitle, ogDescription, pageImage, pageUrl]);
 
   // Render the selected template directly - no editing controls
   const renderTemplate = () => {
@@ -476,15 +490,15 @@ export default function PublicPortfolio() {
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={pageUrl} />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={ogDescription} />
         {pageImage && <meta property="og:image" content={pageImage} />}
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={pageUrl} />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:title" content={ogTitle} />
+        <meta name="twitter:description" content={ogDescription} />
         {pageImage && <meta name="twitter:image" content={pageImage} />}
       </Helmet>
       {/* Chameleon Mode: Recruiter-specific welcome banner (Pro feature) */}
