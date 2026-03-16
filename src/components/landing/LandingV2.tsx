@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './LandingV2.css';
 import PricingEngine from '@/components/pricing/PricingEngine';
+import { Testimonials } from '@/components/landing/Testimonials';
 
 export function LandingV2() {
     const [navScrolled, setNavScrolled] = useState(false);
@@ -693,91 +694,8 @@ export function LandingV2() {
                     <h2 className="section-title sr sr-d1" id="testi-title">
                         What professionals<br /><em>actually say.</em>
                     </h2>
-                    <div className="columns-1 sm:columns-1 md:columns-2 lg:columns-3 gap-4 md:gap-6 space-y-4 md:space-y-6 mt-8 md:mt-12 sr sr-d2">
-                        {/* Card 1 */}
-                        <div className="bg-[#000000] border border-[#4f46e5] p-8 rounded-2xl break-inside-avoid flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(79,70,229,0.25)]">
-                            <div className="flex gap-1 text-[#4f46e5]">
-                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                            </div>
-                            <blockquote className="font-['Instrument_Serif',serif] text-xl md:text-2xl text-slate-200 leading-relaxed italic">
-                                "I went from a 3-page Word resume to a portfolio that got me 3 interview calls in 48 hours. The AI writing is genuinely better than anything I wrote myself."
-                            </blockquote>
-                            <div className="flex items-center gap-4 mt-auto">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-[#4f46e5] to-indigo-800 shadow-inner">R</div>
-                                <div>
-                                    <div className="font-sans font-medium text-white">Riya Kapoor</div>
-                                    <div className="font-sans text-sm text-slate-400">Product Manager · Swiggy</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Card 2 */}
-                        <div className="bg-[#000000] border border-[#4f46e5] p-8 rounded-2xl break-inside-avoid flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(79,70,229,0.25)]">
-                            <div className="flex gap-1 text-[#4f46e5]">
-                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                            </div>
-                            <blockquote className="font-['Instrument_Serif',serif] text-xl md:text-2xl text-slate-200 leading-relaxed italic">
-                                "I spent 12 minutes on Foliogen and had a portfolio I was actually proud to share. The design templates are miles ahead of anything I'd seen before."
-                            </blockquote>
-                            <div className="flex items-center gap-4 mt-auto">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-[#4f46e5] to-indigo-800 shadow-inner">A</div>
-                                <div>
-                                    <div className="font-sans font-medium text-white">Arjun Mehta</div>
-                                    <div className="font-sans text-sm text-slate-400">Frontend Engineer · Razorpay</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Card 3 */}
-                        <div className="bg-[#000000] border border-[#4f46e5] p-8 rounded-2xl break-inside-avoid flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(79,70,229,0.25)]">
-                            <div className="flex gap-1 text-[#4f46e5]">
-                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                            </div>
-                            <blockquote className="font-['Instrument_Serif',serif] text-xl md:text-2xl text-slate-200 leading-relaxed italic">
-                                "My portfolio is my business as a freelancer. Foliogen's analytics showed me exactly which clients were looking — and I converted two of them that week."
-                            </blockquote>
-                            <div className="flex items-center gap-4 mt-auto">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-[#4f46e5] to-indigo-800 shadow-inner">L</div>
-                                <div>
-                                    <div className="font-sans font-medium text-white">Leena Das</div>
-                                    <div className="font-sans text-sm text-slate-400">Brand Designer · Freelance</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Card 4 */}
-                        <div className="bg-[#000000] border border-[#4f46e5] p-8 rounded-2xl break-inside-avoid flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(79,70,229,0.25)]">
-                            <div className="flex gap-1 text-[#4f46e5]">
-                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                            </div>
-                            <blockquote className="font-['Instrument_Serif',serif] text-xl md:text-2xl text-slate-200 leading-relaxed italic">
-                                "The Cobalt theme perfectly encapsulates the engineering aesthetic I wanted. It's not just a portfolio, it's a command center for my career narrative."
-                            </blockquote>
-                            <div className="flex items-center gap-4 mt-auto">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-[#4f46e5] to-indigo-800 shadow-inner">D</div>
-                                <div>
-                                    <div className="font-sans font-medium text-white">David Chen</div>
-                                    <div className="font-sans text-sm text-slate-400">Senior Full-Stack Developer</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Card 5 */}
-                        <div className="bg-[#000000] border border-[#4f46e5] p-8 rounded-2xl break-inside-avoid flex flex-col gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(79,70,229,0.25)]">
-                            <div className="flex gap-1 text-[#4f46e5]">
-                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                            </div>
-                            <blockquote className="font-['Instrument_Serif',serif] text-xl md:text-2xl text-slate-200 leading-relaxed italic">
-                                "Foliogen successfully translated my decade of consulting experience into a sleek, 1-page digital narrative. The ATS workflow alone is worth the Sprint Pass."
-                            </blockquote>
-                            <div className="flex items-center gap-4 mt-auto">
-                                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-[#4f46e5] to-indigo-800 shadow-inner">S</div>
-                                <div>
-                                    <div className="font-sans font-medium text-white">Sarah Jenkins</div>
-                                    <div className="font-sans text-sm text-slate-400">Strategy Consultant</div>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="mt-8 md:mt-12 sr sr-d2">
+                        <Testimonials />
                     </div>
                 </div>
             </section>

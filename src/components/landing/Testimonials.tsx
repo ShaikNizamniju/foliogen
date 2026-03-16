@@ -49,11 +49,23 @@ const testimonials = [
     name: "Liam O'Connor",
     role: "Data Scientist",
     company: "Meta",
+  },
+  {
+    quote: "Foliogen successfully translated my decade of consulting experience into a sleek, 1-page digital narrative. The ATS workflow alone is worth the Sprint Pass.",
+    name: "Sarah Jenkins",
+    role: "Strategy Consultant",
+    company: "Deloitte",
+  },
+  {
+    quote: "The Cobalt theme perfectly encapsulates the engineering aesthetic I wanted. It's not just a portfolio, it's a command center.",
+    name: "David Chen",
+    role: "Senior Full-Stack Developer",
+    company: "Atlassian",
   }
 ];
 
-const firstRow = testimonials.slice(0, 4);
-const secondRow = testimonials.slice(4);
+const firstRow = testimonials.slice(0, 5);
+const secondRow = testimonials.slice(5, 10);
 
 interface MarqueeRowProps {
   items: typeof testimonials;
@@ -76,27 +88,27 @@ function MarqueeRow({ items, direction, speed = 40 }: MarqueeRowProps) {
           repeat: Infinity,
           ease: "linear",
         }}
-        className="flex gap-6 whitespace-nowrap"
-        whileHover={{ animationPlayState: 'paused' }}
+        className="flex gap-6 flex-nowrap"
       >
         {displayItems.map((t, i) => (
           <div
             key={i}
-            className="min-w-[350px] max-w-[450px] group relative rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm p-8 hover:border-primary/30 transition-colors duration-300 whitespace-normal"
+            className="w-[400px] flex-shrink-0 group relative rounded-2xl border border-primary/20 bg-black p-8 hover:border-primary/50 transition-all duration-300"
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-            <div className="relative z-10 flex flex-col h-full">
-              <Quote className="h-5 w-5 text-primary/40 mb-4 flex-shrink-0" />
-              <p
-                className="text-lg md:text-xl leading-snug text-foreground/90 mb-6 flex-grow"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
-              >
-                "{t.quote}"
-              </p>
-              <div className="border-t border-border/40 pt-4 mt-auto">
-                <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {t.role}, {t.company}
+            <div className="flex gap-1 text-primary mb-4">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p className="font-['Instrument_Serif',serif] text-xl md:text-2xl text-slate-200 leading-relaxed italic mb-8">
+              "{t.quote}"
+            </p>
+            <div className="flex items-center gap-4 mt-auto border-t border-white/10 pt-6">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white bg-gradient-to-br from-primary to-indigo-800 shadow-inner">
+                {t.name[0]}
+              </div>
+              <div>
+                <p className="font-sans font-medium text-white">{t.name}</p>
+                <p className="font-sans text-xs text-slate-400">
+                  {t.role} · {t.company}
                 </p>
               </div>
             </div>
@@ -135,16 +147,16 @@ export function Testimonials() {
         </div>
 
         {/* Marquee Container with Edge Fade Mask */}
-        <div className="relative space-y-4 [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+        <div className="relative space-y-4 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]">
           {/* Desktop: Two rows in opposite directions */}
           <div className="hidden md:block space-y-8">
-            <MarqueeRow items={firstRow} direction="left" speed={30} />
-            <MarqueeRow items={secondRow} direction="right" speed={35} />
+            <MarqueeRow items={firstRow} direction="left" speed={25} />
+            <MarqueeRow items={secondRow} direction="right" speed={30} />
           </div>
 
           {/* Mobile: Single smooth scrolling row */}
           <div className="md:hidden">
-            <MarqueeRow items={testimonials} direction="left" speed={25} />
+            <MarqueeRow items={testimonials} direction="left" speed={20} />
           </div>
         </div>
       </div>
