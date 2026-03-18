@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { PersonaSwitcher } from './PersonaSwitcher';
 
 import { motion } from 'framer-motion';
-import profilePhoto from '@/assets/profile-photo.jpeg';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export function DashboardHeader() {
   const [publishOpen, setPublishOpen] = useState(false);
