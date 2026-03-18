@@ -595,33 +595,36 @@ export function OverviewSection() {
 
       {/* Identity Roadmap Teaser */}
       <motion.div variants={fadeUp}>
-        <div className="rounded-2xl border border-border/40 bg-zinc-900/40 p-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Lock className="h-12 w-12 text-zinc-400" />
+        <div className="rounded-2xl border border-primary/30 bg-indigo-950/20 p-6 relative overflow-hidden group transition-all duration-500 hover:border-primary/50 hover:brightness-110 hover:shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+          {/* Constant Slow Shimmer (Idle & Hover) */}
+          <div className="absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-indigo-400/[0.05] to-transparent -translate-x-full animate-[shimmer_5s_infinite_linear] pointer-events-none" />
+          
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
+            <Lock className="h-12 w-12 text-indigo-400" />
           </div>
           
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-lg bg-zinc-800 text-zinc-500">
+            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-300">
               <Target className="h-4 w-4" />
             </div>
-            <h2 className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Identity Roadmap</h2>
+            <h2 className="text-sm font-semibold text-indigo-200/90 uppercase tracking-widest">Identity Roadmap</h2>
           </div>
 
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <h3 className="text-lg font-bold text-foreground">AI Interview Coach</h3>
                 <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase">Target</span>
               </div>
-              <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
+              <p className="text-sm text-slate-100/90 max-w-lg leading-relaxed font-medium">
                 Practice role-specific interviews based on your unique portfolio narratives. Master the dialects of Startup and Big Tech before you step into the room.
               </p>
             </div>
             
             <div className="shrink-0 flex flex-col items-end">
-              <span className="text-xs font-mono text-primary/70">COMING Q3 2026</span>
-              <div className="mt-2 text-[10px] text-muted-foreground uppercase tracking-tighter bg-zinc-800/50 px-3 py-1 rounded-md border border-white/5">
+              <span className="text-xs font-mono font-bold text-emerald-400 tracking-tighter">LAUNCHING: Oct 15, 2026</span>
+              <div className="mt-2 text-[10px] text-indigo-300/70 uppercase tracking-tighter bg-indigo-900/40 px-3 py-1 rounded-md border border-indigo-500/20">
                 Research Phase
               </div>
             </div>
