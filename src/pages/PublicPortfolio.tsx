@@ -412,7 +412,7 @@ export default function PublicPortfolio() {
             )}
 
             {/* 3. Tech Stack (Categorized) */}
-            <div className="col-span-1 bg-white/5 border border-white/10 p-8 rounded-3xl">
+            <div className="col-span-1 bg-white/5 border border-white/10 p-5 md:p-8 rounded-2xl md:rounded-3xl">
               <div className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-6">
                 Technical Stack
               </div>
