@@ -1,28 +1,28 @@
 project_id = "fjmcjsffeycwygicflfk"
 
 [functions.parse-resume]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-contact-email]
-verify_jwt = false
+verify_jwt = true
 
 [functions.profile-chat]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enhance-project]
-verify_jwt = false
+verify_jwt = true
 
 [functions.analyze-job-match]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-interview-prep]
-verify_jwt = false
+verify_jwt = true
 
 [functions.activate-pro]
-verify_jwt = false
+verify_jwt = true
 
 [functions.verify-project-password]
-verify_jwt = false
+verify_jwt = true
 
 [functions.analyze-interview-answer]
-verify_jwt = false
+verify_jwt = true
