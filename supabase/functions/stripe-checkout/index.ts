@@ -55,12 +55,14 @@ serve(async (req) => {
             throw new Error('No valid Price ID could be determined. Please provide a priceId or check planId mapping.');
         }
 
+        console.log("Attempting checkout with Price ID:", selectedPriceId);
+
         const stripe = new Stripe(stripeKey, {
             apiVersion: '2023-10-16',
             httpClient: Stripe.createFetchHttpClient(),
         });
 
-        const origin = req.headers.get('origin') || 'https://foliogen.in';
+        const origin = 'https://www.foliogen.in';
         const dashboardUrl = `${origin}/dashboard`;
 
         const session = await stripe.checkout.sessions.create({
@@ -112,6 +114,19 @@ serve(async (req) => {
 
     } catch (error: any) {
         console.error("stripe-checkout error:", error?.message || error);
+        console.error("Stripe Error Details:", error);
+        
+        // Handle specific Stripe errors
+        if (error?.type === 'StripeInvalidRequestError') {
+            return new Response(JSON.stringify({ 
+                error: "INVALID_REQUEST", 
+                message: "Stripe rejected the request. Check Price IDs and API Keys.",
+                details: error.message
+            }), {
+                status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
         return new Response(JSON.stringify({ error: "INTERNAL_ERROR", message: error?.message || "Internal Server Error" }), {
             status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
