@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProfile } from '@/contexts/ProfileContext';
 import { supabase } from '@/lib/supabase_v2';
+import { generateNextSequentialSlug } from '@/lib/slugEngine';
 import {
   Dialog,
   DialogContent,
@@ -12,18 +13,19 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Check, Copy, ExternalLink, Rocket, Linkedin, Twitter, Mail, AlertCircle, Loader2 } from 'lucide-react';
+import { Check, Copy, ExternalLink, Rocket, Linkedin, Twitter, Mail, AlertCircle, Loader2, Link2, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { triggerCelebration } from '@/lib/confetti';
 import { QRCodeSVG } from 'qrcode.react';
 import { usePro } from '@/contexts/ProContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface PublishDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-// Validate slug format
+// Validate slug format (for Pro custom slugs)
 const isValidSlug = (slug: string): boolean => {
   return /^[a-z0-9_-]{3,30}$/.test(slug);
 };
@@ -39,17 +41,36 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   const [slugError, setSlugError] = useState<string | null>(null);
   const [isCheckingSlug, setIsCheckingSlug] = useState(false);
   const [customSlug, setCustomSlug] = useState<string | null>(null);
+  const [isLoadingSlug, setIsLoadingSlug] = useState(false);
 
-  // Generate portfolio URL based on slug
+  // On dialog open, pre-fetch existing custom_slug or generate a preview
+  useEffect(() => {
+    if (!open || !user?.id) return;
+
+    const loadExistingSlug = async () => {
+      setIsLoadingSlug(true);
+      const { data: existing } = await supabase
+        .from('portfolios')
+        .select('custom_slug')
+        .eq('user_id', user.id)
+        .not('custom_slug', 'is', null)
+        .limit(1)
+        .maybeSingle();
+
+      if (existing?.custom_slug) {
+        setCustomSlug(existing.custom_slug);
+      }
+      setIsLoadingSlug(false);
+    };
+
+    loadExistingSlug();
+  }, [open, user?.id]);
+
+  // Generate portfolio URL based on the sequential slug
   const portfolioUrl = useMemo(() => {
-    if (!user?.id) return '';
     if (customSlug) return `https://www.foliogen.in/u/${customSlug}`;
-    
-    // Legacy mapping (before custom_slug is finalized)
-    const identifier = profile?.username || user?.id || '';
-    const finalSlug = slug.trim() || 'default';
-    return `https://www.foliogen.in/p/${identifier}/${finalSlug}`;
-  }, [user?.id, profile?.username, slug, customSlug]);
+    return '';
+  }, [customSlug]);
 
   // Check if profile has minimum required content
   const hasMinimumContent = useMemo(() => {
@@ -57,7 +78,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   }, [profile?.fullName, profile?.headline]);
 
   const checkSlugAvailability = async (value: string): Promise<boolean> => {
-    if (!value.trim()) return true; // Empty is allowed (uses default)
+    if (!value.trim()) return true;
 
     const normalized = value.toLowerCase().trim();
 
@@ -83,7 +104,6 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       return false;
     }
 
-    // Available if no result for THIS user. Since slug is unique per user, this checks their own namespace
     if (data) {
       setSlugError('You already have a portfolio with this slug');
       return false;
@@ -97,22 +117,6 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
     setSlug(value);
     setSlugError(null);
-  };
-
-  const generateGlobalSequentialSlug = async (): Promise<string> => {
-    const { count: dbCount } = await supabase.from('portfolios').select('*', { count: 'exact', head: true });
-    let count = dbCount || 0;
-    
-    while (true) {
-      let candidate = '';
-      if (count < 26) candidate = String.fromCharCode(97 + count);
-      else if (count < 52) candidate = 'a' + String.fromCharCode(97 + count - 26);
-      else candidate = 'a' + (count - 51);
-      
-      const { data } = await supabase.from('portfolios').select('id').eq('custom_slug', candidate).maybeSingle();
-      if (!data) return candidate;
-      count++;
-    }
   };
 
   const handlePublish = async () => {
@@ -147,8 +151,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       return;
     }
 
-    // Now create/update the portfolio instance in the portfolios table
-    // ProfileContext data is ready
+    // Build the data payload
     const dataJson = {
       full_name: profile.fullName,
       photo_url: profile.photoUrl,
@@ -167,30 +170,37 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       calendly_url: profile.calendlyUrl,
       resume_url: profile.resumeUrl,
       selected_font: profile.selectedFont,
-      hide_photo: profile.hidePhoto
+      hide_photo: profile.hidePhoto,
     };
 
     let generatedCustomSlug = customSlug;
 
-    // Check existing portfolio for custom_slug
-    const { data: existing } = await supabase.from('portfolios').select('id, slug, custom_slug').eq('user_id', user.id).limit(1);
-    
+    // ── Sequential Slug Assignment ──────────────────────────────────────
+    // Check if user already has a custom_slug assigned
+    const { data: existing } = await supabase
+      .from('portfolios')
+      .select('id, slug, custom_slug')
+      .eq('user_id', user.id)
+      .limit(1);
+
     if (existing && existing.length > 0 && existing[0].custom_slug) {
+      // Reuse existing sequential slug
       generatedCustomSlug = existing[0].custom_slug;
     } else {
-      setIsPublishing(true);
-      generatedCustomSlug = await generateGlobalSequentialSlug();
-      setCustomSlug(generatedCustomSlug);
+      // Generate a brand-new sequential slug (a, b, c, … aa, ab, …)
+      generatedCustomSlug = await generateNextSequentialSlug();
     }
 
+    setCustomSlug(generatedCustomSlug);
+
+    // ── Upsert portfolio ────────────────────────────────────────────────
     if (isPro) {
-      // Pro: Insert directly (with conflict resolution if they typed an existing slug)
       const { error: portError } = await supabase.from('portfolios').upsert({
         user_id: user.id,
         slug: normalizedSlug,
         custom_slug: generatedCustomSlug,
         template_name: profile.selectedTemplate || 'minimalist',
-        data_json: dataJson
+        data_json: dataJson,
       }, { onConflict: 'user_id,slug' });
 
       if (portError) {
@@ -199,14 +209,12 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
         return;
       }
     } else {
-      // Free: Overwrite existing logic. Need to find their existing portfolio (if any) and overwrite.
+      // Free: overwrite existing
       if (existing && existing.length > 0) {
-        // Upsert on their existing slug
-        const targetSlug = existing[0].slug;
         const { error: portError } = await supabase.from('portfolios').update({
           template_name: profile.selectedTemplate || 'minimalist',
           custom_slug: generatedCustomSlug,
-          data_json: dataJson
+          data_json: dataJson,
         }).eq('id', existing[0].id);
 
         if (portError) {
@@ -215,16 +223,14 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
           return;
         }
 
-        // Ensure the slug input visually updates if we ignored it
-        setSlug(targetSlug);
+        setSlug(existing[0].slug);
       } else {
-        // No existing, insert
         const { error: portError } = await supabase.from('portfolios').insert({
           user_id: user.id,
           slug: normalizedSlug,
           custom_slug: generatedCustomSlug,
           template_name: profile.selectedTemplate || 'minimalist',
-          data_json: dataJson
+          data_json: dataJson,
         });
 
         if (portError) {
@@ -240,7 +246,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     triggerCelebration();
     toast({
       title: 'Identity Deployed 🚀',
-      description: `Your portfolio is live at https://www.foliogen.in/u/${generatedCustomSlug}`,
+      description: `Your portfolio is live at foliogen.in/u/${generatedCustomSlug}`,
     });
   };
 
@@ -294,9 +300,9 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg bg-popover/95 backdrop-blur-xl border border-border shadow-xl rounded-2xl overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-foreground">
             {isPublished ? (
               <>
                 <Check className="h-5 w-5 text-emerald-500" />
@@ -304,156 +310,212 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
               </>
             ) : (
               <>
-                <Rocket className="h-5 w-5" />
+                <Rocket className="h-5 w-5 text-primary" />
                 Publish Your Portfolio
               </>
             )}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-muted-foreground">
             {isPublished
-              ? 'Share this link with recruiters and hiring managers.'
-              : 'Choose a custom username for your portfolio URL.'}
+              ? 'Share this professional link with recruiters and hiring managers.'
+              : 'Deploy your portfolio with a unique, professional short URL.'}
           </DialogDescription>
         </DialogHeader>
 
-        {!isPublished ? (
-          <div className="flex flex-col gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="slug">Choose a unique URL slug</Label>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground whitespace-nowrap">
-                  foliogen.in/p/{profile?.username || user?.id || 'id'}/
-                </span>
-                <Input
-                  id="slug"
-                  value={slug}
-                  onChange={handleSlugChange}
-                  placeholder="e.g. design-v1"
-                  className="flex-1 font-mono"
-                  disabled={isPublishing || !isPro}
-                />
-              </div>
-              {!isPro && (
-                <p className="text-[11px] text-amber-500 font-medium">
-                  Free users are limited to 1 default portfolio. Any publish will overwrite your active identity.
-                </p>
-              )}
-              {slugError && (
-                <p className="text-sm text-destructive flex items-center gap-1">
-                  <AlertCircle className="h-3.5 w-3.5" />
-                  {slugError}
-                </p>
-              )}
-              {!slugError && slug && isPro && (
-                <p className="text-sm text-muted-foreground">
-                  Leave empty to use 'default'
-                </p>
-              )}
-            </div>
-
-            <Button
-              onClick={handlePublish}
-              disabled={isPublishing || saving || isCheckingSlug || !!slugError}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+        <AnimatePresence mode="wait">
+          {!isPublished ? (
+            <motion.div
+              key="pre-publish"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="flex flex-col gap-5 py-4"
             >
-              {isPublishing || saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Publishing...
-                </>
-              ) : isCheckingSlug ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Checking availability...
-                </>
-              ) : (
-                <>
-                  <Rocket className="h-4 w-4 mr-2" />
-                  Deploy Identity
-                </>
+              {/* ── URL Preview ────────────────────────────────────────── */}
+              <div className="bg-muted/50 border border-border rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Link2 className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    Your Professional URL
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 bg-background rounded-lg px-4 py-3 border border-border">
+                  <span className="text-sm text-muted-foreground font-mono">foliogen.in/u/</span>
+                  {isLoadingSlug ? (
+                    <div className="flex items-center gap-1.5">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                      <span className="text-sm text-muted-foreground font-mono">generating...</span>
+                    </div>
+                  ) : customSlug ? (
+                    <span className="text-sm font-mono font-bold text-primary">{customSlug}</span>
+                  ) : (
+                    <span className="text-sm font-mono text-muted-foreground italic">
+                      auto-assigned on deploy
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-2 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  Sequential slugs (a, b, c… aa, ab…) are assigned automatically for clean, memorable URLs.
+                </p>
+              </div>
+
+              {/* ── Pro Custom Slug (optional, for Pro users) ──────────── */}
+              {isPro && (
+                <div className="space-y-2">
+                  <Label htmlFor="slug" className="text-xs font-medium text-muted-foreground">
+                    Custom Internal Slug (Pro)
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap font-mono">
+                      internal:
+                    </span>
+                    <Input
+                      id="slug"
+                      value={slug}
+                      onChange={handleSlugChange}
+                      placeholder="e.g. design-v1"
+                      className="flex-1 font-mono text-sm h-9"
+                      disabled={isPublishing}
+                    />
+                  </div>
+                  {slugError && (
+                    <p className="text-sm text-destructive flex items-center gap-1">
+                      <AlertCircle className="h-3.5 w-3.5" />
+                      {slugError}
+                    </p>
+                  )}
+                </div>
               )}
-            </Button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4 py-4">
-            <div className="bg-white p-3 rounded-xl shadow-sm border border-border inline-block">
-              <QRCodeSVG
-                value={portfolioUrl}
-                size={160}
-                level="M"
-                includeMargin={false}
-              />
-            </div>
 
-            <p className="text-sm text-center text-muted-foreground w-full">
-              Scan this QR code or copy the link below to share your professional identity.
-            </p>
+              {!isPro && (
+                <p className="text-[11px] text-amber-500 font-medium flex items-center gap-1.5 bg-amber-500/5 border border-amber-500/10 rounded-lg px-3 py-2">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                  Free users are limited to 1 portfolio. Any publish will overwrite your active identity.
+                </p>
+              )}
 
-            <div className="flex items-center gap-2 w-full">
-              <Input
-                value={portfolioUrl}
-                readOnly
-                className="flex-1 text-sm bg-muted/30 font-medium"
-              />
               <Button
-                size="icon"
-                variant="outline"
-                onClick={handleCopy}
-                className="shrink-0"
+                onClick={handlePublish}
+                disabled={isPublishing || saving || isCheckingSlug || !!slugError}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-11 shadow-glow"
               >
-                {copied ? (
-                  <Check className="h-4 w-4 text-emerald-500" />
+                {isPublishing || saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Publishing...
+                  </>
+                ) : isCheckingSlug ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Checking availability...
+                  </>
                 ) : (
-                  <Copy className="h-4 w-4" />
+                  <>
+                    <Rocket className="h-4 w-4 mr-2" />
+                    Deploy Identity
+                  </>
                 )}
               </Button>
-            </div>
-            <div className="flex gap-2 w-full mt-2">
-              <Button
-                variant="outline"
-                onClick={handleOpenPortfolio}
-                className="flex-1"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Open Portfolio
-              </Button>
-              <Button onClick={handleCopy} className="flex-1 shadow-glow">
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Link
-              </Button>
-            </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="post-publish"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center gap-5 py-4"
+            >
+              {/* ── QR Code ────────────────────────────────────────────── */}
+              <div className="bg-white p-3 rounded-xl shadow-sm border border-border inline-block">
+                <QRCodeSVG
+                  value={portfolioUrl}
+                  size={160}
+                  level="M"
+                  includeMargin={false}
+                />
+              </div>
 
-            <div className="border-t border-border pt-4 mt-2 w-full">
-              <p className="text-sm text-muted-foreground mb-3">Share on social media</p>
-              <div className="flex gap-2">
+              {/* ── Professional URL Highlight ─────────────────────────── */}
+              <div className="w-full bg-primary/5 border border-primary/20 rounded-xl p-4 text-center">
+                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Your Live URL</p>
+                <p className="text-lg font-mono font-bold text-primary">
+                  foliogen.in/u/{customSlug}
+                </p>
+              </div>
+
+              <p className="text-sm text-center text-muted-foreground w-full">
+                Scan the QR code or copy the link below to share your professional identity.
+              </p>
+
+              {/* ── Copy URL ───────────────────────────────────────────── */}
+              <div className="flex items-center gap-2 w-full">
+                <Input
+                  value={portfolioUrl}
+                  readOnly
+                  className="flex-1 text-sm bg-muted/30 font-mono font-medium"
+                />
                 <Button
+                  size="icon"
                   variant="outline"
-                  onClick={handleShareLinkedIn}
-                  className="flex-1 gap-2"
+                  onClick={handleCopy}
+                  className="shrink-0"
                 >
-                  <Linkedin className="h-4 w-4" />
-                  LinkedIn
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleShareTwitter}
-                  className="flex-1 gap-2"
-                >
-                  <Twitter className="h-4 w-4" />
-                  Twitter
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleShareEmail}
-                  className="flex-1 gap-2"
-                >
-                  <Mail className="h-4 w-4" />
-                  Email
+                  {copied ? (
+                    <Check className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
-            </div>
-          </div>
-        )}
+
+              <div className="flex gap-2 w-full mt-1">
+                <Button
+                  variant="outline"
+                  onClick={handleOpenPortfolio}
+                  className="flex-1"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Open Portfolio
+                </Button>
+                <Button onClick={handleCopy} className="flex-1 shadow-glow">
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Link
+                </Button>
+              </div>
+
+              {/* ── Social Share ────────────────────────────────────────── */}
+              <div className="border-t border-border pt-4 mt-1 w-full">
+                <p className="text-sm text-muted-foreground mb-3">Share on social media</p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={handleShareLinkedIn}
+                    className="flex-1 gap-2"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                    LinkedIn
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleShareTwitter}
+                    className="flex-1 gap-2"
+                  >
+                    <Twitter className="h-4 w-4" />
+                    Twitter
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleShareEmail}
+                    className="flex-1 gap-2"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </DialogContent>
     </Dialog>
   );

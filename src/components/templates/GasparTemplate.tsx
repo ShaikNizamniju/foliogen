@@ -8,10 +8,10 @@ interface GasparTemplateProps {
 const cities = ['MUMBAI', 'DELHI', 'BANGALORE', 'TOKYO', 'MILAN'];
 
 const projects = [
-  { id: 1, title: 'Maison Lumière', category: 'Brand Identity', year: '2024', image: 'https://picsum.photos/seed/gaspar1/600/400' },
-  { id: 2, title: 'Atelier Noir', category: 'Editorial Design', year: '2023', image: 'https://picsum.photos/seed/gaspar2/600/400' },
-  { id: 3, title: 'Verso Studio', category: 'Web Design', year: '2024', image: 'https://picsum.photos/seed/gaspar3/600/400' },
-  { id: 4, title: 'Callisto', category: 'Product Design', year: '2023', image: 'https://picsum.photos/seed/gaspar4/600/400' },
+  { id: 1, title: 'Maison Lumière', category: 'Brand Identity', year: '2024', image: '' },
+  { id: 2, title: 'Atelier Noir', category: 'Editorial Design', year: '2023', image: '' },
+  { id: 3, title: 'Verso Studio', category: 'Web Design', year: '2024', image: '' },
+  { id: 4, title: 'Callisto', category: 'Product Design', year: '2023', image: '' },
 ];
 
 const marqueeClients = ['GOOGLE', 'APPLE', 'NIKE', 'FERRARI', 'VOGUE', 'NETFLIX', 'TESLA', 'AMAZON'];
@@ -63,7 +63,7 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
       title: p.title || 'Project',
       category: p.techStack?.[0] || 'Design',
       year: new Date().getFullYear().toString(),
-      image: p.imageUrl || `https://picsum.photos/seed/gaspar${i + 1}/600/400`,
+      image: p.imageUrl || '',
     }))
     : projects;
   const profileSkills = profile?.skills?.length ? profile.skills.slice(0, 8) : marqueeClients;
@@ -98,9 +98,9 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <motion.div initial={{ scale: 1.08, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] as const }} className="w-full h-[60vh] md:h-[75vh] relative">
-          <img src="https://picsum.photos/seed/gaspar-hero/1200/500" alt="Hero" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-[#1A1A1A]/25" />
+        <motion.div initial={{ scale: 1.08, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] as const }} className="w-full h-[60vh] md:h-[75vh] relative bg-[#2A2A2A]">
+          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1A1A1A]/80" />
           {cities.map((city, i) => {
             const positions = [
               { top: '15%', left: '10%' },
@@ -134,17 +134,19 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
             {profileProjects.map((p) => (
-              <motion.div key={p.id} variants={itemVariants} className="group cursor-pointer">
-                <div className="relative overflow-hidden mb-5">
-                  <motion.img src={p.image} alt={p.title} className="w-full aspect-[3/2] object-cover" whileHover={{ scale: 1.05 }} transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }} />
-                  <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/30 transition-colors duration-500 flex items-center justify-center">
-                    <span className="text-white text-sm tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">See Project →</span>
+              <motion.div key={p.id} variants={itemVariants} className="group cursor-pointer flex flex-col h-full">
+                {p.image && (
+                  <div className="relative overflow-hidden mb-5">
+                    <motion.img src={p.image} alt={p.title} className="w-full aspect-[3/2] object-cover" whileHover={{ scale: 1.05 }} transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }} />
+                    <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/30 transition-colors duration-500 flex items-center justify-center">
+                      <span className="text-white text-sm tracking-widest uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300">See Project →</span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start justify-between">
+                )}
+                <div className={`flex items-start justify-between ${!p.image ? 'p-8 border border-[#D4C9B8]/30 h-full flex-grow flex-col justify-center bg-[#1A1A1A]/5 hover:bg-[#1A1A1A]/10 transition-colors' : ''}`}>
                   <div>
-                    <span className="text-[10px] tracking-[0.25em] uppercase mb-1 block" style={{ color: '#8B7355' }}>{p.year} · {p.category}</span>
-                    <h3 className="text-xl md:text-2xl font-light group-hover:text-[#8B7355] transition-colors duration-300" style={{ fontFamily: "'Playfair Display', serif" }}>{p.title}</h3>
+                    <span className="text-[10px] tracking-[0.25em] uppercase mb-2 block" style={{ color: '#8B7355' }}>{p.year} · {p.category}</span>
+                    <h3 className="text-xl md:text-3xl font-light group-hover:text-[#8B7355] transition-colors duration-300" style={{ fontFamily: "'Playfair Display', serif" }}>{p.title}</h3>
                   </div>
                 </div>
               </motion.div>

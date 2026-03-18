@@ -62,15 +62,23 @@ export function IdentityVaultSection() {
         setLoading(false);
     };
 
-    const handleCopyLink = async (slug: string) => {
-        // If it's the exact string 'default', route to /p/:id (legacy) or /p/:username (if username exists)
-        // Actually, App.tsx will route /p/:username/:slug. We will build the full URL.
-        // For now, let's assume foliogen.in/p/username/slug.
-        // We need the user's username or id.
+    const handleCopyLink = async (portfolio: Record<string, unknown>) => {
+        // Prefer the professional sequential slug (/u/{custom_slug})
+        const customSlug = portfolio.custom_slug as string | undefined;
+        if (customSlug) {
+            const url = `https://www.foliogen.in/u/${customSlug}`;
+            await navigator.clipboard.writeText(url);
+            toast({
+                title: 'Link Copied',
+                description: `Professional URL copied: foliogen.in/u/${customSlug}`,
+            });
+            return;
+        }
+
+        // Fallback to legacy URL format
+        const slug = portfolio.slug as string;
         const { data: profile } = await supabase.from('profiles').select('username').eq('user_id', user?.id).single();
         const identifier = profile?.username || user?.id;
-
-        // Legacy route if slug is default
         const url = slug === 'default'
             ? `https://www.foliogen.in/p/${identifier}`
             : `https://www.foliogen.in/p/${identifier}/${slug}`;
@@ -146,9 +154,9 @@ export function IdentityVaultSection() {
             </motion.div>
 
             {portfolios.length === 0 ? (
-                <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center py-20 border border-[#333] rounded-2xl bg-black/40">
+                <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center py-20 border border-border rounded-2xl bg-card">
                     <ShieldAlert className="h-10 w-10 text-muted-foreground mx-auto mb-4 opacity-50" />
-                    <h3 className="text-xl font-instrument text-white mb-2">No active identities found</h3>
+                    <h3 className="text-xl font-instrument text-foreground mb-2">No active identities found</h3>
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">You haven't published any portfolios yet. Head over to the Profile section to build and deploy your first identity.</p>
                     <Button onClick={handleGenerateClick} variant="outline" className="border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-400">
                         Create Portfolio
@@ -164,12 +172,12 @@ export function IdentityVaultSection() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ delay: i * 0.1 }}
-                                className="group relative overflow-hidden rounded-2xl border border-[#333] bg-black hover:border-indigo-500/50 transition-all duration-300"
+                                className="group relative overflow-hidden rounded-2xl border border-border bg-card hover:border-indigo-500/50 transition-all duration-300"
                             >
                                 <div className="p-6">
                                     <div className="flex items-start justify-between mb-6">
                                         <div>
-                                            <h3 className="text-xl font-instrument text-white capitalize mb-1">
+                                            <h3 className="text-xl font-instrument text-foreground capitalize mb-1">
                                                 {portfolio.template_name.replace('-', ' ')}
                                             </h3>
                                             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-widest">
@@ -191,9 +199,12 @@ export function IdentityVaultSection() {
 
                                     <div className="space-y-4">
                                         <div>
-                                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">Slug / URL Path</div>
+                                            <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">Professional URL</div>
                                             <div className="font-mono text-sm text-indigo-300 bg-indigo-500/5 px-3 py-2 rounded-lg border border-indigo-500/10 truncate">
-                                                /{portfolio.slug}
+                                                {portfolio.custom_slug
+                                                    ? <>foliogen.in/u/<span className="font-bold text-primary">{portfolio.custom_slug}</span></>
+                                                    : <>/{portfolio.slug}</>
+                                                }
                                             </div>
                                         </div>
 
@@ -201,8 +212,8 @@ export function IdentityVaultSection() {
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => handleCopyLink(portfolio.slug)}
-                                                className="w-full bg-[#111] border-[#333] text-zinc-300 hover:bg-[#222] hover:text-white"
+                                                onClick={() => handleCopyLink(portfolio)}
+                                                className="w-full bg-secondary border-border text-foreground/80 hover:bg-accent hover:text-foreground"
                                             >
                                                 <Copy className="h-3.5 w-3.5 mr-2" />
                                                 Copy Link
@@ -211,9 +222,13 @@ export function IdentityVaultSection() {
                                                 variant="outline"
                                                 size="sm"
                                                 asChild
-                                                className="w-full bg-[#111] border-[#333] text-zinc-300 hover:bg-[#222] hover:text-white"
+                                                className="w-full bg-secondary border-border text-foreground/80 hover:bg-accent hover:text-foreground"
                                             >
-                                                <a href={`/p/${user?.id}/${portfolio.slug}`} target="_blank" rel="noopener noreferrer">
+                                                <a
+                                                    href={portfolio.custom_slug ? `/u/${portfolio.custom_slug}` : `/p/${user?.id}/${portfolio.slug}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
                                                     <ExternalLink className="h-3.5 w-3.5 mr-2" />
                                                     View Site
                                                 </a>
@@ -232,13 +247,13 @@ export function IdentityVaultSection() {
 
             {/* Free User Warning Modal */}
             <Dialog open={freeWarningOpen} onOpenChange={setFreeWarningOpen}>
-                <DialogContent className="border-[#333] bg-black text-white sm:max-w-md">
+                <DialogContent className="border-border bg-card text-foreground sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle className="font-instrument text-2xl flex items-center gap-2 text-white">
+                        <DialogTitle className="font-instrument text-2xl flex items-center gap-2 text-foreground">
                             <ShieldAlert className="h-6 w-6 text-amber-500" />
                             Overwrite Warning
                         </DialogTitle>
-                        <DialogDescription className="text-zinc-400 pt-3 text-base">
+                        <DialogDescription className="text-muted-foreground pt-3 text-base">
                             Your existing portfolio will be <strong>overwritten</strong>. Upgrade to Pro to host multiple unique links simultaneously without losing your current identity.
                         </DialogDescription>
                     </DialogHeader>
@@ -246,7 +261,7 @@ export function IdentityVaultSection() {
                         <Button
                             onClick={() => { setFreeWarningOpen(false); navigate('/dashboard?section=profile'); }}
                             variant="outline"
-                            className="w-full bg-[#111] border-[#333] text-white hover:bg-[#222]"
+                            className="w-full bg-secondary border-border text-foreground hover:bg-accent"
                         >
                             Continue & Overwrite
                         </Button>
@@ -263,24 +278,24 @@ export function IdentityVaultSection() {
 
             {/* Delete Confirmation Modal */}
             <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
-                <DialogContent className="border-red-900/30 bg-[#0a0a0a] text-white sm:max-w-md">
+                <DialogContent className="border-red-900/30 bg-card text-foreground sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle className="font-instrument text-2xl text-red-500">Destroy Identity</DialogTitle>
-                        <DialogDescription className="text-zinc-400">
-                            This action cannot be undone. This will permanently delete the portfolio instance at <strong className="text-zinc-200 uppercase font-mono tracking-wider px-1 bg-white/10 rounded">{portfolioToDelete?.slug}</strong>.
+                        <DialogDescription className="text-muted-foreground">
+                            This action cannot be undone. This will permanently delete the portfolio instance at <strong className="text-foreground uppercase font-mono tracking-wider px-1 bg-muted rounded">{portfolioToDelete?.slug}</strong>.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-3">
-                        <Label className="text-zinc-400">Type the slug name to confirm</Label>
+                        <Label className="text-muted-foreground">Type the slug name to confirm</Label>
                         <Input
                             value={deleteConfirmText}
                             onChange={(e) => setDeleteConfirmText(e.target.value)}
                             placeholder={portfolioToDelete?.slug}
-                            className="bg-black/50 border-[#333] focus-visible:ring-red-500 font-mono"
+                            className="bg-muted border-border focus-visible:ring-red-500 font-mono"
                         />
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" className="text-zinc-400 hover:text-white" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
+                        <Button variant="ghost" className="text-muted-foreground hover:text-foreground" onClick={() => setDeleteModalOpen(false)}>Cancel</Button>
                         <Button
                             variant="destructive"
                             onClick={executeDelete}

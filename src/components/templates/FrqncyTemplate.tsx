@@ -11,20 +11,15 @@ const tags = ['#design', '#motion', '#visual', '#creative', '#branding'];
 const marqueeText = 'BRANDING → MOTION → UI DESIGN → VISUAL → CAMPAIGNS → ';
 
 const projectCards = [
-  { title: 'Neon Drift', category: 'Brand Identity', bg: '#CDFF64', text: '#111111', image: 'https://picsum.photos/seed/frq1/600/400' },
-  { title: 'Coral Pulse', category: 'Motion Design', bg: '#FF6B6B', text: '#FFFFFF', image: 'https://picsum.photos/seed/frq2/600/400' },
-  { title: 'Cyan Wave', category: 'UI Design', bg: '#64BFFF', text: '#111111', image: 'https://picsum.photos/seed/frq3/600/400' },
-  { title: 'Dark Matter', category: 'Campaign', bg: '#111111', text: '#FFFFFF', image: 'https://picsum.photos/seed/frq4/600/400' },
-  { title: 'Haze Studio', category: 'Visual Design', bg: '#E8E0FF', text: '#111111', image: 'https://picsum.photos/seed/frq5/600/400' },
-  { title: 'Golden Hour', category: 'Branding', bg: '#FFE4B5', text: '#111111', image: 'https://picsum.photos/seed/frq6/600/400' },
+  { title: 'Neon Drift', category: 'Brand Identity', bg: '#CDFF64', text: '#111111', image: '' },
+  { title: 'Coral Pulse', category: 'Motion Design', bg: '#FF6B6B', text: '#FFFFFF', image: '' },
+  { title: 'Cyan Wave', category: 'UI Design', bg: '#64BFFF', text: '#111111', image: '' },
+  { title: 'Dark Matter', category: 'Campaign', bg: '#111111', text: '#FFFFFF', image: '' },
+  { title: 'Haze Studio', category: 'Visual Design', bg: '#E8E0FF', text: '#111111', image: '' },
+  { title: 'Golden Hour', category: 'Branding', bg: '#FFE4B5', text: '#111111', image: '' },
 ];
 
-const polaroids = [
-  { src: 'https://picsum.photos/seed/pol1/300/350', rot: '-3deg' },
-  { src: 'https://picsum.photos/seed/pol2/300/350', rot: '2deg' },
-  { src: 'https://picsum.photos/seed/pol3/300/350', rot: '-1deg' },
-  { src: 'https://picsum.photos/seed/pol4/300/350', rot: '3deg' },
-];
+const DEFAULT_ROTATIONS = ['-3deg', '2deg', '-1deg', '3deg'];
 
 const brands = ['Google', 'Spotify', 'Nike', 'Discord', 'Figma', 'Notion'];
 
@@ -80,7 +75,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
   const name = profile?.fullName || 'Alex Rivera';
   const role = profile?.headline || 'Creative Director';
   const bio = profile?.bio || "I don't just design. I create experiences people actually feel.";
-  const photoUrl = profile?.photoUrl || 'https://picsum.photos/seed/frq-profile/400/400';
+  const photoUrl = profile?.photoUrl || '';
   const email = profile?.email || '';
   const profileSkills = profile?.skills?.length ? profile.skills : tags;
 
@@ -90,7 +85,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
       category: p.techStack?.[0] || 'Design',
       bg: bg_palettes[i % bg_palettes.length],
       text: text_palettes[i % text_palettes.length],
-      image: p.imageUrl || `https://picsum.photos/seed/frq${i + 1}/600/400`,
+      image: p.imageUrl || '',
     }))
     : projectCards;
 
@@ -203,8 +198,8 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
               className="rounded-2xl overflow-hidden cursor-pointer transition-shadow duration-300 hover:shadow-2xl"
               style={{ backgroundColor: p.bg }}
             >
-              <img src={p.image} alt={p.title} className="w-full aspect-[3/2] object-cover" />
-              <div className="p-5">
+              {p.image && <img src={p.image} alt={p.title} className="w-full aspect-[3/2] object-cover" />}
+              <div className={`p-5 ${!p.image ? 'h-full min-h-[160px] flex flex-col justify-center' : ''}`}>
                 <h3 className="text-lg font-semibold mb-1" style={{ fontFamily: heading, color: p.text }}>{p.title}</h3>
                 <span className="text-xs tracking-widest uppercase" style={{ fontFamily: mono, color: p.text, opacity: 0.7 }}>{p.category}</span>
               </div>
@@ -225,22 +220,24 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
           &ldquo;{bio}&rdquo;
         </motion.p>
 
-        {/* Polaroids */}
-        <div className="flex flex-wrap justify-center gap-6 md:gap-10 mt-14">
-          {polaroids.map((p, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, rotate: 0 }}
-              whileInView={{ opacity: 1, rotate: parseFloat(p.rot) }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="bg-white p-2.5 pb-10 shadow-lg"
-              style={{ transform: `rotate(${p.rot})` }}
-            >
-              <img src={p.src} alt="Polaroid" className="w-40 md:w-52 aspect-[6/7] object-cover" />
-            </motion.div>
-          ))}
-        </div>
+        {/* Polaroids - User Project Images */}
+        {profile?.projects && profile.projects.filter(p => p.imageUrl).length > 0 && (
+          <div className="flex flex-wrap justify-center gap-6 md:gap-10 mt-14">
+            {profile.projects.filter(p => p.imageUrl).slice(0, 4).map((p, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, rotate: 0 }}
+                whileInView={{ opacity: 1, rotate: parseFloat(DEFAULT_ROTATIONS[i % DEFAULT_ROTATIONS.length]) }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="bg-white p-2.5 pb-10 shadow-lg"
+                style={{ transform: `rotate(${DEFAULT_ROTATIONS[i % DEFAULT_ROTATIONS.length]})` }}
+              >
+                <img src={p.imageUrl} alt={p.title} className="w-40 md:w-52 aspect-[6/7] object-cover" />
+              </motion.div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Collaborations / Skills */}

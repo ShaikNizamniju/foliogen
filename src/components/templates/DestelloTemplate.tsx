@@ -9,12 +9,12 @@ interface DestelloTemplateProps {
 
 /* ── Data ── */
 const works = [
-  { num: '01', title: 'Nova Identity', category: 'Brand Identity', image: 'https://picsum.photos/seed/dest1/1200/600' },
-  { num: '02', title: 'Pulse Campaign', category: 'Art Direction', image: 'https://picsum.photos/seed/dest2/1200/600' },
-  { num: '03', title: 'Kinetic Social', category: 'Social Marketing', image: 'https://picsum.photos/seed/dest3/1200/600' },
-  { num: '04', title: 'Vertex Studio', category: 'Content Production', image: 'https://picsum.photos/seed/dest4/1200/600' },
-  { num: '05', title: 'Ember Film', category: 'Art Direction', image: 'https://picsum.photos/seed/dest5/1200/600' },
-  { num: '06', title: 'Arclight Launch', category: 'Brand Identity', image: 'https://picsum.photos/seed/dest6/1200/600' },
+  { num: '01', title: 'Nova Identity', category: 'Brand Identity', image: '' },
+  { num: '02', title: 'Pulse Campaign', category: 'Art Direction', image: '' },
+  { num: '03', title: 'Kinetic Social', category: 'Social Marketing', image: '' },
+  { num: '04', title: 'Vertex Studio', category: 'Content Production', image: '' },
+  { num: '05', title: 'Ember Film', category: 'Art Direction', image: '' },
+  { num: '06', title: 'Arclight Launch', category: 'Brand Identity', image: '' },
 ];
 
 const expertise = [
@@ -25,10 +25,10 @@ const expertise = [
 ];
 
 const processSteps = [
-  { title: 'Spark the Vision', desc: 'We start with deep discovery — understanding your brand DNA, audience, and goals.', image: 'https://picsum.photos/seed/proc1/800/400' },
-  { title: 'Craft the Blueprint', desc: 'Strategy meets structure. We map the experience before a single pixel is placed.', image: 'https://picsum.photos/seed/proc2/800/400' },
-  { title: 'Design the Experience', desc: 'Every detail is intentional — from typography to micro-interactions.', image: 'https://picsum.photos/seed/proc3/800/400' },
-  { title: 'Launch & Illuminate', desc: 'We ship, measure, and iterate — ensuring impact from day one.', image: 'https://picsum.photos/seed/proc4/800/400' },
+  { title: 'Spark the Vision', desc: 'We start with deep discovery — understanding your brand DNA, audience, and goals.', image: '' },
+  { title: 'Craft the Blueprint', desc: 'Strategy meets structure. We map the experience before a single pixel is placed.', image: '' },
+  { title: 'Design the Experience', desc: 'Every detail is intentional — from typography to micro-interactions.', image: '' },
+  { title: 'Launch & Illuminate', desc: 'We ship, measure, and iterate — ensuring impact from day one.', image: '' },
 ];
 
 const testimonials = [
@@ -89,9 +89,9 @@ function ProcessAccordion({ step, index }: { step: typeof processSteps[0]; index
       <AnimatePresence initial={false}>
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const }} className="overflow-hidden">
-            <div className="pb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className={`pb-6 grid grid-cols-1 gap-6 ${step.image ? 'md:grid-cols-2' : ''}`}>
               <p className="text-sm leading-relaxed" style={{ color: '#555' }}>{step.desc}</p>
-              <img src={step.image} alt={step.title} className="w-full aspect-[2/1] object-cover rounded-lg" />
+              {step.image && <img src={step.image} alt={step.title} className="w-full aspect-[2/1] object-cover rounded-lg" />}
             </div>
           </motion.div>
         )}
@@ -116,7 +116,7 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
     num: `0${i + 1}`.slice(-2),
     title: p.title || 'Project',
     category: p.techStack?.[0] || 'Design',
-    image: p.imageUrl || `https://picsum.photos/seed/dest${i + 1}/1200/600`
+    image: p.imageUrl || ''
   })) : works;
 
   const profileExpertise = profile?.skills?.length ? profile.skills.map((s, i) => ({
@@ -128,7 +128,7 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
   const profileProcess = profile?.workExperience?.length ? profile.workExperience.map((w, i) => ({
     title: w.jobTitle || 'Role',
     desc: w.company || '',
-    image: `https://picsum.photos/seed/proc${i + 1}/800/400`
+    image: ''
   })) : processSteps;
 
   return (
@@ -199,11 +199,15 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
         <AnimatePresence>
           {activeWork !== null && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.4 }} className="overflow-hidden mt-8">
-              <div className="rounded-2xl overflow-hidden relative">
-                <img src={profileWorks[activeWork].image} alt={profileWorks[activeWork].title} className="w-full aspect-[2/1] object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-6 md:p-10">
-                  <span className="text-xs tracking-widest uppercase text-white/70">{profileWorks[activeWork].category}</span>
+              <div className={`rounded-2xl overflow-hidden relative min-h-[160px] md:min-h-[240px] ${!profileWorks[activeWork].image ? 'bg-[#0A0A0A] p-6 md:p-10 flex flex-col justify-end' : ''}`}>
+                {profileWorks[activeWork].image && (
+                  <>
+                    <img src={profileWorks[activeWork].image} alt={profileWorks[activeWork].title} className="w-full aspect-[2/1] object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/60 to-transparent" />
+                  </>
+                )}
+                <div className={profileWorks[activeWork].image ? "absolute bottom-0 left-0 p-6 md:p-10" : ""}>
+                  <span className={`text-xs tracking-widest uppercase ${profileWorks[activeWork].image ? 'text-white/70' : 'text-white/50'}`}>{profileWorks[activeWork].category}</span>
                   <h3 className="text-2xl md:text-4xl font-bold text-white mt-1" style={{ fontFamily: "'Syne', sans-serif" }}>{profileWorks[activeWork].title}</h3>
                 </div>
               </div>

@@ -134,13 +134,13 @@ export function ShareModal({ open, onOpenChange, defaultUrl }: ShareModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] rounded-xl">
+      <DialogContent className="sm:max-w-md bg-popover/95 backdrop-blur-xl border border-border shadow-xl rounded-xl">
         <DialogHeader>
-          <DialogTitle className="text-white flex items-center gap-2">
+          <DialogTitle className="text-foreground flex items-center gap-2">
             <Globe className="h-5 w-5 text-blue-400" />
             Share Portfolio
           </DialogTitle>
-          <DialogDescription className="text-neutral-400">
+          <DialogDescription className="text-muted-foreground">
             Generate an industry-specific URL with targeted tracking analytics.
           </DialogDescription>
         </DialogHeader>

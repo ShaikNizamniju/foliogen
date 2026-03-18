@@ -69,7 +69,7 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-white dark:bg-[#0a0a0a] transition-colors duration-300 ease-in-out">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar dark:bg-sidebar transition-colors duration-300 ease-in-out">
       <SidebarHeader className={cn("p-0 flex flex-col", !collapsed && "gap-0")}>
         {/* Mobile: Dark high-contrast toggle bar */}
         {isMobile && (
@@ -150,7 +150,7 @@ export function DashboardSidebar() {
                         {isActive && (
                           <motion.div
                             layoutId="sidebar-active-border"
-                            className="absolute left-0 top-[10%] bottom-[10%] w-[3px] bg-[#00E5FF] rounded-r-md"
+                            className="absolute left-0 top-[10%] bottom-[10%] w-[3px] bg-primary rounded-r-md"
                             transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                           />
                         )}

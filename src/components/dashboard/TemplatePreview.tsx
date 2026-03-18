@@ -155,8 +155,34 @@ export function TemplatePreview() {
                     ? `'${fontOption.preview}', sans-serif`
                     : undefined;
                 })(),
+                fontSize: profile.fontConfig?.size === 'sm' ? '0.875rem' : profile.fontConfig?.size === 'lg' ? '1.125rem' : profile.fontConfig?.size === 'xl' ? '1.25rem' : profile.fontConfig?.size === '2xl' ? '1.5rem' : '1rem',
+                fontWeight: profile.fontConfig?.isBold ? 'bold' : 'normal',
+                fontStyle: profile.fontConfig?.isItalic ? 'italic' : 'normal',
+                textDecoration: profile.fontConfig?.isUnderline ? 'underline' : 'none',
+                textAlign: profile.fontConfig?.alignment || 'left',
               }}
             >
+              <style>
+                {`
+                  [data-template-preview] #portfolio-export-container p,
+                  [data-template-preview] #portfolio-export-container h1,
+                  [data-template-preview] #portfolio-export-container h2,
+                  [data-template-preview] #portfolio-export-container h3,
+                  [data-template-preview] #portfolio-export-container h4,
+                  [data-template-preview] #portfolio-export-container span,
+                  [data-template-preview] #portfolio-export-container a {
+                    ${profile.fontConfig?.isBold ? 'font-weight: bold !important;' : ''}
+                    ${profile.fontConfig?.isItalic ? 'font-style: italic !important;' : ''}
+                    ${profile.fontConfig?.isUnderline ? 'text-decoration: underline !important;' : ''}
+                    ${profile.fontConfig?.alignment ? `text-align: ${profile.fontConfig.alignment} !important;` : ''}
+                  }
+                  ${profile.fontConfig?.size && profile.fontConfig.size !== 'base' ? `
+                    [data-template-preview] #portfolio-export-container {
+                      zoom: ${profile.fontConfig.size === 'sm' ? 0.875 : profile.fontConfig.size === 'lg' ? 1.125 : profile.fontConfig.size === 'xl' ? 1.25 : 1.5};
+                    }
+                  ` : ''}
+                `}
+              </style>
               {(() => {
                 switch (profile.selectedTemplate) {
                   case "minimalist": return <MinimalistTemplate profile={displayProfile} />;

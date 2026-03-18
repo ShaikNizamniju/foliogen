@@ -80,7 +80,7 @@ export function DashboardContent() {
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
             className="absolute inset-0 z-50 flex items-center justify-center bg-black/40 xl:rounded-xl ml-4 mr-4 mt-4"
           >
-            <div className="flex flex-col items-center gap-5 bg-[#0a0a0a]/90 border border-white/10 p-8 rounded-2xl shadow-2xl">
+            <div className="flex flex-col items-center gap-5 bg-card/90 border border-border p-8 rounded-2xl shadow-2xl">
               <div className="h-1.5 w-64 bg-white/5 rounded-full overflow-hidden shrink-0 relative">
                 <motion.div 
                   initial={{ x: "-100%" }}

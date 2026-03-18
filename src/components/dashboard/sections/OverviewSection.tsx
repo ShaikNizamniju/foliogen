@@ -297,7 +297,7 @@ export function OverviewSection() {
           {!isPro && (
             <div className="absolute inset-0 z-20 backdrop-blur-md bg-black/40 flex flex-col items-start p-4 overflow-hidden">
                <div className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none">
-                <div className="bg-[#0a0a0a]/80 border border-white/10 p-4 rounded-xl shadow-2xl backdrop-blur-sm scale-90 group-hover:scale-100 transition-transform duration-300">
+                <div className="bg-popover/80 border border-border p-4 rounded-xl shadow-2xl backdrop-blur-sm scale-90 group-hover:scale-100 transition-transform duration-300">
                   <Lock className="h-6 w-6 text-amber-500 mx-auto mb-2" />
                   <p className="text-sm font-bold text-white text-center">Unlock Insights</p>
                   <p className="text-[10px] text-zinc-400 mt-1 uppercase tracking-widest text-center">Sprint Pass Required</p>
@@ -580,7 +580,7 @@ export function OverviewSection() {
               {stat.value}
             </motion.p>
             {stat.label === 'Trust Score' && (
-              <div className="mt-2 h-1 w-full bg-[#0a0a0a] rounded-full overflow-hidden">
+              <div className="mt-2 h-1 w-full bg-muted rounded-full overflow-hidden">
                  <motion.div 
                    className="h-full bg-[#00E5FF]" 
                    initial={{ width: 0 }}
@@ -674,7 +674,7 @@ export function OverviewSection() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg bg-[#0a0a0a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden"
+              className="relative w-full max-w-lg bg-popover border border-border rounded-3xl shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-[#00E5FF] to-blue-500" />
               

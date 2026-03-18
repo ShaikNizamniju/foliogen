@@ -175,6 +175,131 @@ const defaultProfile: ProfileData = {
   },
 };
 
+/**
+ * ──────────────────────────────────────────────────────────────────────────────
+ * Data Migration Layer
+ * ──────────────────────────────────────────────────────────────────────────────
+ * Safely parses a JSON column from Supabase into the expected type.
+ * Returns `fallback` on null / undefined / malformed JSON / wrong type.
+ */
+function safeParseJsonArray<T>(raw: unknown, fallback: T[]): T[] {
+  if (raw == null) return fallback;
+  try {
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    return Array.isArray(parsed) ? (parsed as T[]) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeParseJsonObject<T extends object>(
+  raw: unknown,
+  fallback: T,
+): T {
+  if (raw == null) return fallback;
+  try {
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      // Deep-merge: inject any missing keys from the fallback schema
+      return { ...fallback, ...(parsed as T) };
+    }
+    return fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Merges a raw DB row into a fully-typed ProfileData object.
+ * Every field is guaranteed to exist with at least its default value.
+ */
+function migrateProfileData(
+  raw: Record<string, unknown>,
+  vaultMap: Map<string, Record<string, unknown>>,
+): ProfileData {
+  const workExperience = safeParseJsonArray<WorkExperience>(
+    raw.work_experience,
+    defaultProfile.workExperience,
+  );
+
+  let projects = safeParseJsonArray<Project>(
+    raw.projects,
+    defaultProfile.projects,
+  );
+
+  // Enrich projects with Identity Vault scores
+  projects = projects.map((p) => {
+    const v = vaultMap.get(p.id);
+    if (v) {
+      return {
+        ...p,
+        proofValidationScore: (v.proof_validation_score as number) ?? 0,
+        metricDensityScore: (v.metric_density_score as number) ?? 0,
+        frameworkAlignmentScore: (v.framework_alignment_score as number) ?? 0,
+        isVerified: (v.proof_validation_score as number) === 50,
+      };
+    }
+    return { ...p, isVerified: false };
+  });
+
+  const fontConfig = safeParseJsonObject<FontConfig>(
+    raw.font_config,
+    defaultProfile.fontConfig!,
+  );
+
+  const defaultNarrativeVariants: Record<Persona, NarrativeVariant> = {
+    general: { bio: (raw.bio as string) || "", headline: (raw.headline as string) || "" },
+    startup: { bio: "", headline: "" },
+    bigtech: { bio: "", headline: "" },
+    fintech: { bio: "", headline: "" },
+  };
+
+  const narrativeVariants = safeParseJsonObject<Record<Persona, NarrativeVariant>>(
+    raw.narrative_variants,
+    defaultNarrativeVariants,
+  );
+
+  const keyHighlights = safeParseJsonArray<string>(
+    raw.key_highlights,
+    [],
+  );
+
+  const resumeData = raw.resume_data as Record<string, unknown> | null;
+
+  return {
+    id: (raw.id as string) ?? undefined,
+    fullName: (raw.full_name as string) || "",
+    photoUrl: (raw.photo_url as string) || "",
+    bio: (raw.bio as string) || "",
+    headline: (raw.headline as string) || "",
+    location: (raw.location as string) || "",
+    email: (raw.email as string) || "",
+    website: (raw.website as string) || "",
+    linkedinUrl: (raw.linkedin_url as string) || "",
+    githubUrl: (raw.github_url as string) || "",
+    twitterUrl: (raw.twitter_url as string) || "",
+    workExperience,
+    projects,
+    skills: safeParseJsonArray<string>(raw.skills, []),
+    keyHighlights,
+    views: (raw.views as number) || 0,
+    resumeUrl: (raw.resume_url as string) || "",
+    calendlyUrl: (raw.calendly_url as string) || "",
+    selectedFont: ((raw.selected_font as FontChoice) || "default"),
+    selectedTemplate: ((raw.selected_template as ProfileData["selectedTemplate"]) || "modern-dark"),
+    username: (raw.username as string) || "",
+    isPro: (raw.is_pro as boolean) || false,
+    predictedDomain: (raw.predicted_domain as string) || "",
+    hidePhoto: (raw.hide_photo as boolean) || false,
+    full_profile: raw.full_profile ?? null,
+    resume_data: resumeData ?? null,
+    profileStrength: (resumeData?.profileStrength as number) || 0,
+    activePersona: ((raw.active_persona as Persona) || "general"),
+    fontConfig,
+    narrativeVariants,
+  };
+}
+
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
@@ -200,77 +325,12 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     const { data: vaultData } = await supabase.from("identity_vault").select("*").eq("user_id", user.id);
 
     if (data && !error) {
-      const vaultMap = new Map();
+      const vaultMap = new Map<string, Record<string, unknown>>();
       if (vaultData) {
-        vaultData.forEach((v: any) => vaultMap.set(v.project_id, v));
+        vaultData.forEach((v: Record<string, unknown>) => vaultMap.set(v.project_id as string, v));
       }
 
-      let workExp: WorkExperience[] = [];
-      try {
-        const parsed = typeof data.work_experience === 'string' ? JSON.parse(data.work_experience) : data.work_experience;
-        if (Array.isArray(parsed)) workExp = parsed;
-      } catch (e) {}
-
-      let proj: Project[] = [];
-      try {
-        const parsed = typeof data.projects === 'string' ? JSON.parse(data.projects) : data.projects;
-        if (Array.isArray(parsed)) proj = parsed;
-      } catch (e) {}
-
-      proj = proj.map(p => {
-        const v = vaultMap.get(p.id);
-        if (v) {
-          p.proofValidationScore = v.proof_validation_score;
-          p.metricDensityScore = v.metric_density_score;
-          p.frameworkAlignmentScore = v.framework_alignment_score;
-          p.isVerified = p.proofValidationScore === 50;
-        } else {
-          p.isVerified = false;
-        }
-        return p;
-      });
-
-      const keyHighlights = Array.isArray((data as any).key_highlights)
-        ? ((data as any).key_highlights as string[])
-        : [];
-
-      setProfile({
-        id: data.id,
-        fullName: data.full_name || "",
-        photoUrl: data.photo_url || "",
-        bio: data.bio || "",
-        headline: data.headline || "",
-        location: data.location || "",
-        email: data.email || "",
-        website: data.website || "",
-        linkedinUrl: data.linkedin_url || "",
-        githubUrl: data.github_url || "",
-        twitterUrl: data.twitter_url || "",
-        workExperience: workExp,
-        projects: proj,
-        skills: data.skills || [],
-        keyHighlights: keyHighlights,
-        views: data.views || 0,
-        resumeUrl: (data as any).resume_url || "",
-        calendlyUrl: (data as any).calendly_url || "",
-        selectedFont: ((data as any).selected_font as FontChoice) || "default",
-        selectedTemplate: (data.selected_template as ProfileData["selectedTemplate"]) || "modern-dark",
-        username: (data as any).username || "",
-        isPro: (data as any).is_pro || false,
-        predictedDomain: (data as any).predicted_domain || "",
-        hidePhoto: (data as any).hide_photo || false,
-        full_profile: (data as any).full_profile || null,
-        resume_data: (data as any).resume_data || null,
-        profileStrength: (data as any).resume_data?.profileStrength || 0,
-        activePersona: (data as any).active_persona || "general",
-        fontConfig: (data as any).font_config || { size: 'base', isBold: false, isItalic: false, isUnderline: false, alignment: 'left' },
-        narrativeVariants: (data as any).narrative_variants || {
-          general: { bio: data.bio || "", headline: data.headline || "" },
-          startup: { bio: "", headline: "" },
-          bigtech: { bio: "", headline: "" },
-          fintech: { bio: "", headline: "" },
-        },
-      });
+      setProfile(migrateProfileData(data as Record<string, unknown>, vaultMap));
     }
     setLoading(false);
   };

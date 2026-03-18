@@ -561,8 +561,34 @@ export default function PublicPortfolio() {
               ? `'${fontOption.preview}', sans-serif`
               : undefined;
           })(),
+          fontSize: profile.fontConfig?.size === 'sm' ? '0.875rem' : profile.fontConfig?.size === 'lg' ? '1.125rem' : profile.fontConfig?.size === 'xl' ? '1.25rem' : profile.fontConfig?.size === '2xl' ? '1.5rem' : '1rem',
+          fontWeight: profile.fontConfig?.isBold ? 'bold' : 'normal',
+          fontStyle: profile.fontConfig?.isItalic ? 'italic' : 'normal',
+          textDecoration: profile.fontConfig?.isUnderline ? 'underline' : 'none',
+          textAlign: profile.fontConfig?.alignment || 'left',
         }}
       >
+        <style>
+          {`
+            #portfolio-export-container p,
+            #portfolio-export-container h1,
+            #portfolio-export-container h2,
+            #portfolio-export-container h3,
+            #portfolio-export-container h4,
+            #portfolio-export-container span,
+            #portfolio-export-container a {
+              ${profile.fontConfig?.isBold ? 'font-weight: bold !important;' : ''}
+              ${profile.fontConfig?.isItalic ? 'font-style: italic !important;' : ''}
+              ${profile.fontConfig?.isUnderline ? 'text-decoration: underline !important;' : ''}
+              ${profile.fontConfig?.alignment ? `text-align: ${profile.fontConfig.alignment} !important;` : ''}
+            }
+            ${profile.fontConfig?.size && profile.fontConfig.size !== 'base' ? `
+              #portfolio-export-container {
+                zoom: ${profile.fontConfig.size === 'sm' ? 0.875 : profile.fontConfig.size === 'lg' ? 1.125 : profile.fontConfig.size === 'xl' ? 1.25 : 1.5};
+              }
+            ` : ''}
+          `}
+        </style>
         <div id="portfolio-export-container" className="print:w-full">
           <ErrorBoundary fallbackMessage="Portfolio template encountered an error">
             {recruiterMode ? renderRecruiterGrid() : renderTemplate()}

@@ -75,7 +75,7 @@ export function PersonaSwitcher() {
         </DropdownMenuTrigger>
         <DropdownMenuContent 
           align="end" 
-          className="w-56 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.8)] rounded-xl p-1.5"
+          className="w-56 bg-popover/95 backdrop-blur-xl border border-border shadow-xl rounded-xl p-1.5"
         >
           {PERSONAS.map((ind) => {
             const IndIcon = ind.icon;

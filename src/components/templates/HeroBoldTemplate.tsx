@@ -34,8 +34,8 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
   const bio = profile?.bio || 'I help organizations navigate disruption with clarity. 15 years of strategy, 300+ keynotes, one mission: make complexity simple.';
   const skills = profile?.skills?.length ? profile.skills : ['Strategy', 'Public Speaking', 'Leadership', 'Innovation', 'AI Ethics', 'Product Vision'];
   const projects = profile?.projects?.length
-    ? profile.projects.slice(0, 4).map((p) => ({ ...p, techStack: p.techStack || [] }))
-    : demoProjects;
+    ? profile.projects.slice(0, 4).map((p) => ({ ...p, techStack: p.techStack || [], imageUrl: p.imageUrl || '' }))
+    : demoProjects.map(p => ({ ...p, imageUrl: '' }));
   const experience = profile?.workExperience?.length ? profile.workExperience : demoExperience;
   const email = profile?.email || 'hello@alexrivera.com';
   const linkedin = profile?.linkedinUrl || '';
@@ -75,13 +75,21 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
       {/* Bio strip */}
       <section className="border-t border-b px-8 md:px-20 py-16 md:py-24" style={{ borderColor: '#27272A' }}>
         <div className="flex flex-col md:flex-row gap-12 items-center md:items-start max-w-5xl">
-            {(!profile?.hidePhoto) && (
+            {(!profile || !profile.hidePhoto) && (
               <div className="shrink-0">
                 {profile?.photoUrl ? (
-                  <img src={profile.photoUrl} alt={name} className="w-32 h-32 md:w-48 md:h-48 rounded-2xl object-cover grayscale opacity-90 border" style={{ borderColor: '#27272A' }} />
+                  <div className="relative group">
+                    <img
+                      src={profile.photoUrl}
+                      alt={name}
+                      className="w-32 h-32 md:w-48 md:h-48 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-90 border-2"
+                      style={{ borderColor: '#E11D48' }}
+                    />
+                    <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_40px_rgba(0,0,0,0.5)] pointer-events-none" />
+                  </div>
                 ) : (
-                  <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl bg-[#111113] border flex items-center justify-center" style={{ borderColor: '#27272A' }}>
-                    <UserCircle className="w-16 h-16 md:w-24 md:h-24 text-[#71717A]" />
+                  <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl bg-[#111113] border-2 flex items-center justify-center transition-colors shadow-2xl" style={{ borderColor: '#27272A' }}>
+                    <UserCircle className="w-16 h-16 md:w-24 md:h-24 text-[#333]" />
                   </div>
                 )}
               </div>
@@ -142,21 +150,29 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
               <motion.div
                 key={p.id}
                 variants={fadeUp}
-                className="group p-6 md:p-8 rounded-2xl border transition-colors duration-300 hover:border-[#E11D48]/50"
+                className="group rounded-2xl border transition-all duration-300 hover:border-[#E11D48]/50 overflow-hidden flex flex-col h-full"
                 style={{ borderColor: '#27272A', backgroundColor: '#111113' }}
               >
-                <h3 className="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-[#E11D48] transition-colors">
-                  {p.title}
-                </h3>
-                <p className="text-sm leading-relaxed mb-4" style={{ color: '#71717A' }}>
-                  {p.description}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {p.techStack?.map((t) => (
-                    <span key={t} className="text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-full border" style={{ borderColor: '#27272A', color: '#A1A1AA' }}>
-                      {t}
-                    </span>
-                  ))}
+                {p.imageUrl && (
+                  <div className="relative h-48 md:h-64 overflow-hidden">
+                    <img src={p.imageUrl} alt={p.title} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#111113] to-transparent opacity-60" />
+                  </div>
+                )}
+                <div className={`p-6 md:p-8 flex flex-col flex-grow ${!p.imageUrl ? 'justify-center min-h-[220px]' : ''}`}>
+                  <h3 className="text-xl md:text-2xl font-bold mb-3 text-white group-hover:text-[#E11D48] transition-colors leading-tight">
+                    {p.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: '#71717A' }}>
+                    {p.description}
+                  </p>
+                  <div className="mt-auto flex flex-wrap gap-2">
+                    {p.techStack?.map((t) => (
+                      <span key={t} className="text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-full border" style={{ borderColor: '#27272A', color: '#A1A1AA' }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             ))}

@@ -15,19 +15,19 @@ const demoProfile = {
   email: 'hello@alexrivera.design',
   skills: ['Brand Strategy', 'Visual Identity', 'Editorial Design', 'Art Direction', 'Typography', 'Motion Graphics'],
   projects: [
-    { title: 'Solstice', desc: 'Brand identity for a wellness retreat.', category: 'Identity', image: 'https://picsum.photos/seed/nak1/800/600' },
-    { title: 'Ethereal', desc: 'Editorial design for a luxury magazine.', category: 'Editorial', image: 'https://picsum.photos/seed/nak2/800/600' },
-    { title: 'Prism', desc: 'Visual system for a fintech startup.', category: 'Systems', image: 'https://picsum.photos/seed/nak3/800/600' },
-    { title: 'Vesper', desc: 'Packaging for an artisan fragrance brand.', category: 'Packaging', image: 'https://picsum.photos/seed/nak4/800/600' },
-    { title: 'Lunar', desc: 'Campaign visuals for a fashion label.', category: 'Campaign', image: 'https://picsum.photos/seed/nak5/800/600' },
-    { title: 'Cadence', desc: 'Motion identity for a music platform.', category: 'Motion', image: 'https://picsum.photos/seed/nak6/800/600' },
+    { title: 'Solstice', desc: 'Brand identity for a wellness retreat.', category: 'Identity', image: '' },
+    { title: 'Ethereal', desc: 'Editorial design for a luxury magazine.', category: 'Editorial', image: '' },
+    { title: 'Prism', desc: 'Visual system for a fintech startup.', category: 'Systems', image: '' },
+    { title: 'Vesper', desc: 'Packaging for an artisan fragrance brand.', category: 'Packaging', image: '' },
+    { title: 'Lunar', desc: 'Campaign visuals for a fashion label.', category: 'Campaign', image: '' },
+    { title: 'Cadence', desc: 'Motion identity for a music platform.', category: 'Motion', image: '' },
   ],
   workExperience: [
     { period: '2022 — Now', role: 'Creative Director', company: 'Studio Nakula', desc: 'Leading brand and identity projects for premium clients worldwide.' },
     { period: '2019 — 2022', role: 'Sr. Art Director', company: 'Pentagram', desc: 'Directed visual identities for Fortune 500 brands.' },
     { period: '2017 — 2019', role: 'Designer', company: 'Landor', desc: 'Crafted brand systems and packaging design.' },
   ],
-  photoUrl: 'https://picsum.photos/seed/nak-profile/500/600',
+  photoUrl: '',
   linkedinUrl: '#',
   githubUrl: '#',
   twitterUrl: '#',
@@ -63,7 +63,7 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
         title: proj.title,
         desc: proj.description || '',
         category: proj.techStack?.[0] || 'Project',
-        image: proj.imageUrl || `https://picsum.photos/seed/nak${i + 1}/800/600`,
+        image: proj.imageUrl || '',
       }))
     : demoProfile.projects;
 
@@ -103,8 +103,8 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
           <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl lg:text-[88px] font-normal leading-[1.05] tracking-tight" style={{ fontFamily: serif }}>
             Designing brands that{' '}
             <span className="italic">resonate</span>{' '}
-            <span className="inline-block w-16 md:w-24 h-8 md:h-12 rounded-full overflow-hidden align-middle mx-1">
-              {(!profile || !profile.hidePhoto) ? (
+            <span className={`inline-block w-16 md:w-24 h-8 md:h-12 rounded-full overflow-hidden align-middle mx-1 ${(!profile?.photoUrl) ? 'border border-[#E8E8E4]' : ''}`}>
+              {(!profile || !profile.hidePhoto) && (
                  profile?.photoUrl ? (
                    <img src={profile.photoUrl} alt="" className="w-full h-full object-cover" />
                  ) : (
@@ -112,7 +112,7 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
                      <UserCircle className="w-6 h-6 md:w-8 md:h-8 text-[#999]" />
                    </div>
                  )
-              ) : null}
+              )}
             </span>{' '}
             and inspire.
           </motion.h1>
@@ -185,28 +185,38 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {projects.slice(0, 6).map((proj: any, i: number) => (
-              <motion.div key={i} variants={fadeUp} className="group cursor-pointer">
-                <div className="relative overflow-hidden rounded-2xl" style={{ border: '1px solid #E8E8E4' }}>
-                  <motion.img
-                    src={proj.image}
-                    alt={proj.title}
-                    className="w-full aspect-[4/3] object-cover"
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                  <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/40 transition-colors duration-400 flex items-center justify-center">
-                    <motion.div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 text-white text-sm font-medium px-5 py-2.5 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
-                      View Project <ArrowUpRight className="h-4 w-4" />
-                    </motion.div>
+              <motion.div key={i} variants={fadeUp} className="group cursor-pointer flex flex-col h-full">
+                {proj.image ? (
+                  <div className="relative overflow-hidden rounded-2xl" style={{ border: '1px solid #E8E8E4' }}>
+                    <motion.img
+                      src={proj.image}
+                      alt={proj.title}
+                      className="w-full aspect-[4/3] object-cover"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                    <div className="absolute inset-0 bg-[#1A1A1A]/0 group-hover:bg-[#1A1A1A]/40 transition-colors duration-400 flex items-center justify-center">
+                      <motion.div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 text-white text-sm font-medium px-5 py-2.5 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+                        View Project <ArrowUpRight className="h-4 w-4" />
+                      </motion.div>
+                    </div>
                   </div>
-                </div>
-                <div className="mt-4 flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-medium tracking-tight" style={{ fontFamily: serif }}>{proj.title}</h3>
-                    <p className="text-sm mt-0.5" style={{ color: '#888' }}>{proj.desc}</p>
+                ) : (
+                  <div className="flex-1 flex flex-col justify-center p-8 md:p-12 rounded-2xl bg-[#E8E8E4]/20 border border-[#E8E8E4] hover:bg-[#E8E8E4]/30 transition-colors mb-4">
+                    <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-4" style={{ fontFamily: serif }}>{proj.title}</h3>
+                    <p className="text-base leading-relaxed text-[#666]">{proj.desc}</p>
+                    <span className="text-xs tracking-wider uppercase mt-6 block" style={{ color: '#BBB' }}>{proj.category}</span>
                   </div>
-                  <span className="text-xs tracking-wider uppercase mt-1 shrink-0" style={{ color: '#BBB' }}>{proj.category}</span>
-                </div>
+                )}
+                {proj.image && (
+                  <div className="mt-4 flex items-start justify-between px-1">
+                    <div>
+                      <h3 className="text-lg font-medium tracking-tight" style={{ fontFamily: serif }}>{proj.title}</h3>
+                      <p className="text-sm mt-0.5" style={{ color: '#888' }}>{proj.desc}</p>
+                    </div>
+                    <span className="text-xs tracking-wider uppercase mt-1 shrink-0" style={{ color: '#BBB' }}>{proj.category}</span>
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

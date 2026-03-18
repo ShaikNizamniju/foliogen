@@ -178,7 +178,7 @@ export function EditProfileDrawer({ open, onOpenChange }: EditProfileDrawerProps
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-xl p-0 h-full flex flex-col bg-[#0a0a0a] border-l border-white/10">
+      <SheetContent side="right" className="w-full sm:max-w-xl p-0 h-full flex flex-col bg-background border-l border-border">
         <SheetHeader className="p-6 border-b border-white/5 shrink-0">
           <SheetTitle className="text-xl font-bold flex items-center gap-2">
             <User className="h-5 w-5 text-primary" />
@@ -222,7 +222,7 @@ export function EditProfileDrawer({ open, onOpenChange }: EditProfileDrawerProps
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploadingPhoto}
-                            className="absolute bottom-0 right-0 p-2 bg-primary rounded-full shadow-lg border-2 border-[#0a0a0a] hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100"
+                            className="absolute bottom-0 right-0 p-2 bg-primary rounded-full shadow-lg border-2 border-background hover:scale-110 transition-transform disabled:opacity-50 disabled:scale-100"
                           >
                             <ImagePlus className="h-4 w-4 text-white" />
                           </button>

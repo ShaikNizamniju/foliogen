@@ -15,12 +15,12 @@ const demoProfile = {
   email: 'hello@alexrivera.design',
   skills: ['Product Design', 'Systems Thinking', 'Prototyping', 'Design Tokens', 'React', 'Figma', 'Motion Design', 'User Research'],
   projects: [
-    { title: 'Modular Design System', category: 'Design Systems', year: '2024', image: 'https://picsum.photos/seed/arp1/800/600', description: 'A token-driven system used across 12 products serving 4M+ users.' },
-    { title: 'Spatial Canvas', category: 'Spatial UI', year: '2024', image: 'https://picsum.photos/seed/arp2/800/600', description: 'An infinite canvas tool for collaborative 3D spatial design.' },
-    { title: 'Kinetic Typography', category: 'Motion', year: '2023', image: 'https://picsum.photos/seed/arp3/800/600', description: 'Type that responds to cursor, scroll, and ambient audio input.' },
-    { title: 'Zero Latency', category: 'Performance', year: '2023', image: 'https://picsum.photos/seed/arp4/800/600', description: 'Edge-optimized design tool with sub-50ms interaction latency.' },
-    { title: 'Color Intelligence', category: 'AI / Design', year: '2023', image: 'https://picsum.photos/seed/arp5/800/600', description: 'ML-powered palette generation from brand voice and mood.' },
-    { title: 'Component Forge', category: 'Dev Tools', year: '2022', image: 'https://picsum.photos/seed/arp6/800/600', description: 'Visual component builder that exports production React code.' },
+    { title: 'Modular Design System', category: 'Design Systems', year: '2024', image: '', description: 'A token-driven system used across 12 products serving 4M+ users.' },
+    { title: 'Spatial Canvas', category: 'Spatial UI', year: '2024', image: '', description: 'An infinite canvas tool for collaborative 3D spatial design.' },
+    { title: 'Kinetic Typography', category: 'Motion', year: '2023', image: '', description: 'Type that responds to cursor, scroll, and ambient audio input.' },
+    { title: 'Zero Latency', category: 'Performance', year: '2023', image: '', description: 'Edge-optimized design tool with sub-50ms interaction latency.' },
+    { title: 'Color Intelligence', category: 'AI / Design', year: '2023', image: '', description: 'ML-powered palette generation from brand voice and mood.' },
+    { title: 'Component Forge', category: 'Dev Tools', year: '2022', image: '', description: 'Visual component builder that exports production React code.' },
   ],
   workExperience: [
     { year: '2022 — Present', role: 'AI Product Manager', company: 'Foliogen' },
@@ -28,7 +28,7 @@ const demoProfile = {
     { year: '2018 — 2020', role: 'UI Engineer', company: 'Stripe' },
     { year: '2016 — 2018', role: 'Design Intern → Jr. Designer', company: 'Razorpay' },
   ],
-  photoUrl: 'https://picsum.photos/seed/arp-profile/400/400',
+  photoUrl: '',
   linkedinUrl: '#',
   githubUrl: '#',
   twitterUrl: '#',
@@ -65,7 +65,7 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
         title: proj.title,
         category: proj.techStack?.[0] || 'Project',
         year: '2024',
-        image: proj.imageUrl || `https://picsum.photos/seed/arp${i + 1}/800/600`,
+        image: proj.imageUrl || '',
         description: proj.description || '',
       }))
     : demoProfile.projects;
@@ -114,15 +114,15 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
           {/* Right — Photo with grid overlay */}
           <motion.div variants={fadeUp} className="md:col-span-5 relative">
             <div className="relative overflow-hidden" style={{ border: '2px solid #222' }}>
-              {(!profile || !profile.hidePhoto) ? (
-                 profile?.photoUrl && profile.photoUrl !== 'https://picsum.photos/seed/arp-profile/400/400' ? (
+              {(!profile || !profile.hidePhoto) && (
+                 profile?.photoUrl ? (
                    <img src={profile.photoUrl} alt={name} className="w-full aspect-[4/5] object-cover grayscale" />
                  ) : (
                    <div className="w-full aspect-[4/5] bg-[#111] flex items-center justify-center">
                      <UserCircle className="w-24 h-24 text-[#333]" />
                    </div>
                  )
-              ) : null}
+              )}
               {/* Grid overlay */}
               <div className="absolute inset-0" style={{
                 backgroundImage: 'linear-gradient(#FAFAFA08 1px, transparent 1px), linear-gradient(90deg, #FAFAFA08 1px, transparent 1px)',
@@ -181,24 +181,30 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
                   variants={fadeUp}
                   className={`group cursor-pointer ${isLarge ? 'md:col-span-2' : ''}`}
                 >
-                  <div className="relative overflow-hidden" style={{ border: '1px solid #1A1A1A' }}>
-                    <motion.img
-                      src={proj.image}
-                      alt={proj.title}
-                      className={`w-full object-cover ${isLarge ? 'aspect-[21/9]' : 'aspect-[3/2]'}`}
-                      whileHover={{ scale: 1.04 }}
-                      transition={{ duration: 0.6 }}
-                    />
-                    <div className="absolute inset-0 bg-[#0A0A0A]/0 group-hover:bg-[#0A0A0A]/60 transition-colors duration-400 flex items-end p-6">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
-                        <p className="text-sm text-white/70 mb-1" style={{ fontFamily: mono }}>{proj.description}</p>
-                        <div className="flex items-center gap-2 text-white">
-                          <span className="text-sm font-medium">View Project</span>
-                          <ArrowUpRight className="h-4 w-4" />
+                  {proj.image ? (
+                    <div className="relative overflow-hidden" style={{ border: '1px solid #1A1A1A' }}>
+                      <motion.img
+                        src={proj.image}
+                        alt={proj.title}
+                        className={`w-full object-cover ${isLarge ? 'aspect-[21/9]' : 'aspect-[3/2]'}`}
+                        whileHover={{ scale: 1.04 }}
+                        transition={{ duration: 0.6 }}
+                      />
+                      <div className="absolute inset-0 bg-[#0A0A0A]/0 group-hover:bg-[#0A0A0A]/60 transition-colors duration-400 flex items-end p-6">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
+                          <p className="text-sm text-white/70 mb-1" style={{ fontFamily: mono }}>{proj.description}</p>
+                          <div className="flex items-center gap-2 text-white">
+                            <span className="text-sm font-medium">View Project</span>
+                            <ArrowUpRight className="h-4 w-4" />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className={`p-8 md:p-12 border border-[#1A1A1A] bg-[#111] hover:bg-[#151515] transition-colors ${isLarge ? 'md:aspect-[21/4]' : 'aspect-[3/1]'} flex flex-col justify-center`}>
+                       <p className="text-sm md:text-base text-[#888] max-w-2xl" style={{ fontFamily: mono }}>{proj.description}</p>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between mt-4">
                     <h3 className="text-lg md:text-xl font-semibold tracking-tight group-hover:text-[#64BFFF] transition-colors" style={{ fontFamily: heading }}>{proj.title}</h3>
                     <span className="text-[10px] tracking-[0.25em] uppercase" style={{ fontFamily: mono, color: '#555' }}>{proj.category} · {proj.year}</span>
