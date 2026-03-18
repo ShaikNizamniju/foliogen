@@ -164,6 +164,9 @@ function DashboardInner() {
         onClose={() => setWaitlistOpen(false)}
         userEmail={user?.email}
       />
+
+      {/* Floating mobile CTA for non-pro users */}
+      {!isBasicOrAbove && <MobileSprintCTA />}
     </SidebarProvider>
   );
 }
