@@ -269,7 +269,8 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       const fileToUpload = currentFile;
       
       if (fileToUpload && user) {
-        const fileExt = fileToUpload.name.split('.').pop();
+        const fileName = (typeof fileToUpload.name === 'string' ? fileToUpload.name : 'resume.pdf');
+        const fileExt = fileName.split('.').pop() || 'pdf';
         const filePath = `${user.id}/resume-${Date.now()}.${fileExt}`;
         const { error: uploadError } = await supabase.storage
           .from('resumes')
@@ -284,10 +285,11 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
       const safeDate = (d: any): string => {
         if (!d || typeof d !== 'string') return '';
         try {
-          const date = new Date(d.trim());
+          const trimmed = d.trim();
+          const date = new Date(trimmed);
           if (!isNaN(date.getTime())) return date.toISOString().split('T')[0];
         } catch (e) { }
-        return d.trim();
+        return String(d).trim();
       };
 
       // Process Work Experience with intelligent merging
@@ -315,8 +317,10 @@ export function SmartResumeParser({ onTemplateChange }: SmartResumeParserProps =
 
           if (match) {
             // Split by common delimiters and deduplicate bullet points
-            const oldBullets = (oldW.description || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
-            const newBullets = (match.description || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+            const oldDesc = typeof oldW.description === 'string' ? oldW.description : '';
+            const newDesc = typeof match.description === 'string' ? match.description : '';
+            const oldBullets = oldDesc.split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+            const newBullets = newDesc.split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
             
             const uniqueNewBullets = newBullets.filter(nb => 
               !oldBullets.some(ob => ob.toLowerCase().includes(nb.toLowerCase()) || nb.toLowerCase().includes(ob.toLowerCase()))
@@ -742,8 +746,10 @@ function ReviewAndConfirm({ data, isApplying, onApply, onDiscard }: ReviewAndCon
   );
 }
 function RoleDiffView({ oldText, newText }: { oldText: string, newText: string }) {
-  const oldBullets = (oldText || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
-  const newBullets = (newText || '').split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+  const oldStr = typeof oldText === 'string' ? oldText : '';
+  const newStr = typeof newText === 'string' ? newText : '';
+  const oldBullets = oldStr.split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
+  const newBullets = newStr.split(/[•\n-]/).map(s => s.trim()).filter(Boolean);
   
   const uniqueNewBullets = newBullets.filter(nb => 
     !oldBullets.some(ob => ob.toLowerCase().includes(nb.toLowerCase()) || nb.toLowerCase().includes(ob.toLowerCase()))

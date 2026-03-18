@@ -185,7 +185,7 @@ export function OverviewSection() {
       {/* Welcome */}
       <motion.div variants={fadeUp}>
         <h1 className="text-3xl font-bold text-foreground tracking-tight">
-          Welcome back{profile.fullName ? `, ${profile.fullName.split(' ')[0]}` : ''}
+          Welcome back{typeof profile.fullName === 'string' && profile.fullName.trim() ? `, ${profile.fullName.split(' ')[0]}` : ''}
         </h1>
         <p className="text-muted-foreground mt-1">
           Your portfolio at a glance. Keep it sharp for recruiters.
@@ -354,7 +354,7 @@ export function OverviewSection() {
             </div>
             <div className="mt-2 space-y-1">
               {isPro && pulseViews.length > 0 ? pulseViews.slice(0, 3).map((view, idx) => {
-                const city = view.viewer_region?.split(',')[0] || 'Unknown City';
+                const city = (typeof view.viewer_region === 'string' ? view.viewer_region.split(',')[0] : null) || 'Unknown City';
                 const displayLocation = view.viewer_company && view.viewer_company !== 'Individual Visitor' 
                   ? `🏢 ${view.viewer_company}` 
                   : `📍 ${city}`;

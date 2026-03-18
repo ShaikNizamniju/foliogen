@@ -178,7 +178,8 @@ const DEFAULT_COVERS = [
 /**
  * Normalize text for keyword matching
  */
-function normalizeText(text: string): string {
+function normalizeText(text: any): string {
+  if (typeof text !== 'string') return '';
   return text.toLowerCase().trim();
 }
 
@@ -187,7 +188,7 @@ function normalizeText(text: string): string {
  */
 function calculateMatchScore(title: string, tags: string[], coverKeywords: string[]): number {
   const normalizedTitle = normalizeText(title);
-  const normalizedTags = tags.map(normalizeText);
+  const normalizedTags = Array.isArray(tags) ? tags.map(normalizeText) : [];
   
   let score = 0;
   
@@ -205,7 +206,7 @@ function calculateMatchScore(title: string, tags: string[], coverKeywords: strin
     }
     
     // Partial word match in title
-    const titleWords = normalizedTitle.split(/\s+/);
+    const titleWords = normalizedTitle.split(/\s+/).filter(Boolean);
     if (titleWords.some(word => word.startsWith(normalizedKeyword) || normalizedKeyword.startsWith(word))) {
       score += 1;
     }
@@ -228,7 +229,10 @@ function buildUnsplashUrl(photoId: string, width: number = 800, quality: number 
  * @returns Unsplash image URL
  */
 export function getSmartCover(title: string, tags: string[] = []): string {
-  if (!title && tags.length === 0) {
+  const safeTitle = typeof title === 'string' ? title : '';
+  const safeTags = Array.isArray(tags) ? tags : [];
+
+  if (!safeTitle && safeTags.length === 0) {
     // Return random default if no context
     const randomIndex = Math.floor(Math.random() * DEFAULT_COVERS.length);
     return buildUnsplashUrl(DEFAULT_COVERS[randomIndex]);
@@ -238,7 +242,7 @@ export function getSmartCover(title: string, tags: string[] = []): string {
   let highestScore = 0;
   
   for (const mapping of COVER_MAPPINGS) {
-    const score = calculateMatchScore(title, tags, mapping.keywords);
+    const score = calculateMatchScore(safeTitle, safeTags, mapping.keywords);
     if (score > highestScore) {
       highestScore = score;
       bestMatch = mapping;
@@ -251,7 +255,7 @@ export function getSmartCover(title: string, tags: string[] = []): string {
   }
   
   // Use consistent default based on title hash for same project = same image
-  const hashCode = title.split('').reduce((acc, char) => {
+  const hashCode = safeTitle.split('').reduce((acc, char) => {
     return ((acc << 5) - acc) + char.charCodeAt(0);
   }, 0);
   const defaultIndex = Math.abs(hashCode) % DEFAULT_COVERS.length;
