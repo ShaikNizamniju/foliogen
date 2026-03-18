@@ -102,18 +102,12 @@ export function DashboardHeader() {
             Publish
           </Button>
 
-          <div className="h-9 w-9 overflow-hidden rounded-full border border-border/50 bg-muted flex items-center justify-center ml-2">
-            <img 
-              src={profile.photoUrl || profilePhoto} 
-              alt={profile.fullName || 'User'} 
-              className="h-full w-full object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                const email = user?.email || '';
-                target.src = `https://www.gravatar.com/avatar/${btoa(email).toLowerCase()}?d=mp&s=150`;
-              }}
-            />
-          </div>
+          <Avatar className="h-9 w-9 border border-border/50 ml-2">
+            <AvatarImage src={profile.photoUrl || user?.user_metadata?.avatar_url} alt={profile.fullName || 'User'} />
+            <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+              {(profile.fullName || user?.email || '??').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
         </div>
       </motion.header>
       <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />

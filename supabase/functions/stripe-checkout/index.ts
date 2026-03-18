@@ -43,17 +43,13 @@ serve(async (req) => {
             throw new Error('STRIPE_SECRET_KEY is missing');
         }
 
-        // Fetch Price IDs securely from the environment
+        // Hardcoded fallback for Sprint Pass if env vars are missing
+        const FALLBACK_PRICE_ID = 'price_1RUVhrSBybGMwBbxhxd9KHUD';
+
         const priceBasic = Deno.env.get('STRIPE_PRICE_BASIC');
         const pricePro = Deno.env.get('STRIPE_PRICE_PRO');
 
-        // Use the passed priceId if available, otherwise fallback to env-based planId
-        const selectedPriceId = priceId || (planId === 'pro' ? pricePro : priceBasic);
-
-        if (!selectedPriceId) {
-            console.error(`[Stripe Checkout] No Price ID found. PriceId: ${priceId}, PlanId: ${planId}`);
-            throw new Error('No valid Price ID could be determined. Please provide a priceId or check planId mapping.');
-        }
+        const selectedPriceId = priceId || (planId === 'pro' ? pricePro : priceBasic) || FALLBACK_PRICE_ID;
 
         console.log("Attempting checkout with Price ID:", selectedPriceId);
 
