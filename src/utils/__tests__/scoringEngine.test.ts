@@ -22,6 +22,13 @@ const emptyProfile: ProfileData = {
   calendlyUrl: "",
   selectedFont: "default",
   selectedTemplate: "modern-dark",
+  activePersona: "general",
+  narrativeVariants: {
+    general: { bio: "", headline: "" },
+    startup: { bio: "", headline: "" },
+    bigtech: { bio: "", headline: "" },
+    fintech: { bio: "", headline: "" },
+  },
 };
 
 describe("calculatePortfolioStrength", () => {
