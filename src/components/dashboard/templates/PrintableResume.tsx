@@ -105,7 +105,7 @@ export function PrintableResume({ profile }: PrintableResumeProps) {
                 </div>
                 {exp.description && (
                   <ul className="mt-1 text-[10px] leading-tight text-gray-800 pl-3">
-                    {exp.description.split('\n').filter(Boolean).map((line, i) => (
+                    {(typeof exp.description === 'string' ? exp.description.split('\n') : []).filter(Boolean).map((line, i) => (
                       <li key={i} className="list-disc ml-1">
                         {line.replace(/^[-•]\s*/, '')}
                       </li>
