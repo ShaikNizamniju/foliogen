@@ -369,8 +369,8 @@ export default function PublicPortfolio() {
     const allSkills = profile.skills || [];
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white p-8 md:p-16 selection:bg-blue-500/30 font-sans">
-        <div className="max-w-6xl mx-auto flex flex-col gap-16 animate-in fade-in duration-700">
+      <div className="min-h-screen bg-[#0a0a0a] text-white p-4 px-6 md:p-8 md:p-16 selection:bg-blue-500/30 font-sans">
+        <div className="max-w-6xl mx-auto flex flex-col gap-10 md:gap-16 animate-in fade-in duration-700">
           {/* 1. Executive Headline */}
           <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-8 gap-6">
             <div>
