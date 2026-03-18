@@ -433,7 +433,7 @@ export default function PublicPortfolio() {
             </div>
 
             {/* 4. Verified Links */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-8 rounded-3xl">
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-5 md:p-8 rounded-2xl md:rounded-3xl">
               <div className="flex items-center gap-3 mb-8">
                 <div className="text-xs font-bold text-green-400 uppercase tracking-widest">
                   Proof of Impact
