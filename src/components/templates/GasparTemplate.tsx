@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
+import { UserCircle } from 'lucide-react';
 
 interface GasparTemplateProps {
   profile?: ProfileData;
@@ -78,7 +79,16 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
         className="sticky top-0 z-30 flex items-center justify-between px-8 md:px-16 py-6 backdrop-blur-md"
         style={{ backgroundColor: 'rgba(245,240,232,0.85)' }}
       >
-        <span className="text-2xl tracking-[0.15em] font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{name.split(' ')[0]?.toUpperCase() || 'ALEX'}</span>
+        <div className="flex items-center gap-4">
+          {(!profile?.hidePhoto) && (
+             profile?.photoUrl ? (
+                <img src={profile.photoUrl} alt={name} className="w-10 h-10 rounded-full object-cover" />
+             ) : (
+                <UserCircle className="w-10 h-10 text-[#8B7355]" />
+             )
+          )}
+          <span className="text-2xl tracking-[0.15em] font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>{name.split(' ')[0]?.toUpperCase() || 'ALEX'}</span>
+        </div>
         <div className="flex gap-8 text-xs tracking-[0.2em] uppercase" style={{ color: '#8B7355' }}>
           {['Work', 'About', 'Contact'].map((l) => (
             <span key={l} className="cursor-pointer transition-colors hover:text-[#1A1A1A]">{l}</span>

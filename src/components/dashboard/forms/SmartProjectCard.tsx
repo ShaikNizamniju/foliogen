@@ -323,8 +323,8 @@ export function SmartProjectCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'relative border rounded-xl transition-all duration-500 overflow-hidden',
-        isDragging ? 'opacity-50 shadow-2xl ring-2 border-[#00E5FF]/50 bg-[#0a0a0a]' : 'bg-[#0a0a0a]',
+        'relative border rounded-xl transition-all duration-500 overflow-hidden text-card-foreground',
+        isDragging ? 'opacity-50 shadow-2xl ring-2 border-[#00E5FF]/50 bg-card' : 'bg-card',
         !localProject.visible && 'opacity-60',
         localProject.isVerified 
           ? 'border-[#00E5FF] shadow-[0_0_8px_rgba(0,229,255,0.3)] animate-pulse hover:bg-[#00E5FF]/5 group' 

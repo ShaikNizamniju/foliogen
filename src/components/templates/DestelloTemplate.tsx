@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ArrowRight, ArrowLeft, ChevronRight, Send } from 'lucide-react';
+import { ChevronDown, ArrowRight, ArrowLeft, ChevronRight, Send, UserCircle } from 'lucide-react';
 import { ProfileData } from '@/contexts/ProfileContext';
 
 interface DestelloTemplateProps {
@@ -162,7 +162,15 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.15 }} className="flex-1 max-w-md w-full">
             <div className="relative rounded-2xl overflow-hidden">
-              <img src="https://picsum.photos/seed/dest-hero/500/700" alt="Hero" className="w-full aspect-[5/7] object-cover" />
+              {(!profile || !profile.hidePhoto) ? (
+                profile?.photoUrl ? (
+                  <img src={profile.photoUrl} alt="Hero" className="w-full aspect-[5/7] object-cover" />
+                ) : (
+                  <div className="w-full aspect-[5/7] bg-[#F5F5F5] flex items-center justify-center">
+                    <UserCircle className="w-32 h-32 text-[#CCCCCC]" />
+                  </div>
+                )
+              ) : null}
               <div className="absolute inset-0 bg-[#FF4444]/15 mix-blend-multiply" />
             </div>
           </motion.div>

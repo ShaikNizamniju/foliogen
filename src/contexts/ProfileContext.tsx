@@ -74,6 +74,14 @@ export const FONT_OPTIONS: { id: FontChoice; label: string; googleFont: string; 
   { id: "wistle", label: "Wistle", googleFont: "Bricolage+Grotesque:wght@300;400;500;600;700", preview: "Bricolage Grotesque", category: "Modern" },
 ];
 
+export interface FontConfig {
+  size: string;
+  isBold: boolean;
+  isItalic: boolean;
+  isUnderline: boolean;
+  alignment: 'left' | 'center' | 'right' | 'justify';
+}
+
 export interface ProfileData {
   id?: string;
   fullName: string;
@@ -94,6 +102,7 @@ export interface ProfileData {
   resumeUrl: string;
   calendlyUrl: string;
   selectedFont: FontChoice;
+  fontConfig?: FontConfig;
   username?: string;
   isPro?: boolean;
   predictedDomain?: string;
@@ -157,6 +166,7 @@ const defaultProfile: ProfileData = {
   resume_data: null,
   hidePhoto: false,
   activePersona: "general",
+  fontConfig: { size: 'base', isBold: false, isItalic: false, isUnderline: false, alignment: 'left' },
   narrativeVariants: {
     general: { bio: "", headline: "" },
     startup: { bio: "", headline: "" },
@@ -195,8 +205,17 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         vaultData.forEach((v: any) => vaultMap.set(v.project_id, v));
       }
 
-      const workExp = Array.isArray(data.work_experience) ? (data.work_experience as unknown as WorkExperience[]) : [];
-      let proj = Array.isArray(data.projects) ? (data.projects as unknown as Project[]) : [];
+      let workExp: WorkExperience[] = [];
+      try {
+        const parsed = typeof data.work_experience === 'string' ? JSON.parse(data.work_experience) : data.work_experience;
+        if (Array.isArray(parsed)) workExp = parsed;
+      } catch (e) {}
+
+      let proj: Project[] = [];
+      try {
+        const parsed = typeof data.projects === 'string' ? JSON.parse(data.projects) : data.projects;
+        if (Array.isArray(parsed)) proj = parsed;
+      } catch (e) {}
 
       proj = proj.map(p => {
         const v = vaultMap.get(p.id);
@@ -244,6 +263,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         resume_data: (data as any).resume_data || null,
         profileStrength: (data as any).resume_data?.profileStrength || 0,
         activePersona: (data as any).active_persona || "general",
+        fontConfig: (data as any).font_config || { size: 'base', isBold: false, isItalic: false, isUnderline: false, alignment: 'left' },
         narrativeVariants: (data as any).narrative_variants || {
           general: { bio: data.bio || "", headline: data.headline || "" },
           startup: { bio: "", headline: "" },
@@ -413,6 +433,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         selected_template: data.selectedTemplate,
         resume_data: { ...(data.resume_data || {}), profileStrength: data.profileStrength },
         active_persona: data.activePersona,
+        font_config: data.fontConfig,
         narrative_variants: data.narrativeVariants,
       } as any)
       .eq("user_id", user.id);

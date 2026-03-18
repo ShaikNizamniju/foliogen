@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
-import { ArrowUpRight, Mail, MapPin, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin, ExternalLink, UserCircle } from 'lucide-react';
 
 interface NakulaTemplateProps {
   profile?: ProfileData;
@@ -104,7 +104,15 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
             Designing brands that{' '}
             <span className="italic">resonate</span>{' '}
             <span className="inline-block w-16 md:w-24 h-8 md:h-12 rounded-full overflow-hidden align-middle mx-1">
-              <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+              {(!profile || !profile.hidePhoto) ? (
+                 profile?.photoUrl ? (
+                   <img src={profile.photoUrl} alt="" className="w-full h-full object-cover" />
+                 ) : (
+                   <div className="w-full h-full bg-[#E8E8E4] flex items-center justify-center">
+                     <UserCircle className="w-6 h-6 md:w-8 md:h-8 text-[#999]" />
+                   </div>
+                 )
+              ) : null}
             </span>{' '}
             and inspire.
           </motion.h1>
@@ -138,7 +146,15 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-1">
-              <img src={photoUrl} alt={name} className="w-full aspect-[4/5] object-cover rounded-2xl" />
+              {(!profile || !profile.hidePhoto) ? (
+                 profile?.photoUrl ? (
+                   <img src={profile.photoUrl} alt={name} className="w-full aspect-[4/5] object-cover rounded-2xl" />
+                 ) : (
+                   <div className="w-full aspect-[4/5] bg-[#E8E8E4] rounded-2xl flex items-center justify-center">
+                     <UserCircle className="w-24 h-24 text-[#999]" />
+                   </div>
+                 )
+              ) : null}
             </div>
             <div className="md:col-span-2 flex flex-col justify-center">
               <span className="text-xs tracking-[0.2em] uppercase mb-4" style={{ color: '#999' }}>About</span>

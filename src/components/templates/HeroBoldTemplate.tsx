@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
+import { UserCircle } from 'lucide-react';
 
 interface HeroBoldTemplateProps {
   profile?: ProfileData;
@@ -73,18 +74,31 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
 
       {/* Bio strip */}
       <section className="border-t border-b px-8 md:px-20 py-16 md:py-24" style={{ borderColor: '#27272A' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="max-w-3xl"
-        >
-          <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ color: '#71717A' }}>About</span>
-          <p className="text-2xl md:text-3xl font-light leading-relaxed" style={{ color: '#D4D4D8' }}>
-            {bio}
-          </p>
-        </motion.div>
+        <div className="flex flex-col md:flex-row gap-12 items-center md:items-start max-w-5xl">
+            {(!profile?.hidePhoto) && (
+              <div className="shrink-0">
+                {profile?.photoUrl ? (
+                  <img src={profile.photoUrl} alt={name} className="w-32 h-32 md:w-48 md:h-48 rounded-2xl object-cover grayscale opacity-90 border" style={{ borderColor: '#27272A' }} />
+                ) : (
+                  <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl bg-[#111113] border flex items-center justify-center" style={{ borderColor: '#27272A' }}>
+                    <UserCircle className="w-16 h-16 md:w-24 md:h-24 text-[#71717A]" />
+                  </div>
+                )}
+              </div>
+            )}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="max-w-3xl"
+            >
+              <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ color: '#71717A' }}>About</span>
+              <p className="text-2xl md:text-3xl font-light leading-relaxed" style={{ color: '#D4D4D8' }}>
+                {bio}
+              </p>
+            </motion.div>
+        </div>
       </section>
 
       {/* Experience */}

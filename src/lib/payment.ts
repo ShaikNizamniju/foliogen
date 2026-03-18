@@ -57,8 +57,12 @@ export async function handlePayment(
     });
 
     if (error || !data?.url) {
-      
-      toast({ title: "Payment Error", description: "Failed to initialize secure checkout. Please try again.", variant: "destructive" });
+      const errorMessage = error?.message || '';
+      if (errorMessage.includes('Failed to send a request to the Edge Function') || errorMessage.includes('offline')) {
+        toast({ title: "Payment System Offline", description: "The checkout server is currently unreachable. Please try again later.", variant: "destructive" });
+      } else {
+        toast({ title: "Payment Error", description: "Failed to initialize secure checkout. Please try again.", variant: "destructive" });
+      }
       return;
     }
 

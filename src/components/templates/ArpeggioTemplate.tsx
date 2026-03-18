@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
-import { ArrowUpRight, Mail, MapPin, Github, Linkedin, Twitter } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin, Github, Linkedin, Twitter, UserCircle } from 'lucide-react';
 
 interface ArpeggioTemplateProps {
   profile?: ProfileData;
@@ -114,7 +114,15 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
           {/* Right — Photo with grid overlay */}
           <motion.div variants={fadeUp} className="md:col-span-5 relative">
             <div className="relative overflow-hidden" style={{ border: '2px solid #222' }}>
-              <img src={photoUrl} alt={name} className="w-full aspect-[4/5] object-cover grayscale" />
+              {(!profile || !profile.hidePhoto) ? (
+                 profile?.photoUrl && profile.photoUrl !== 'https://picsum.photos/seed/arp-profile/400/400' ? (
+                   <img src={profile.photoUrl} alt={name} className="w-full aspect-[4/5] object-cover grayscale" />
+                 ) : (
+                   <div className="w-full aspect-[4/5] bg-[#111] flex items-center justify-center">
+                     <UserCircle className="w-24 h-24 text-[#333]" />
+                   </div>
+                 )
+              ) : null}
               {/* Grid overlay */}
               <div className="absolute inset-0" style={{
                 backgroundImage: 'linear-gradient(#FAFAFA08 1px, transparent 1px), linear-gradient(90deg, #FAFAFA08 1px, transparent 1px)',

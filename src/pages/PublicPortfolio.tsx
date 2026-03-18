@@ -141,14 +141,32 @@ export default function PublicPortfolio() {
              supabase.from('chameleon_links').update({ views: (chameleonResult.data.views || 0) + 1 }).eq('slug', identifier).then();
           }, 500);
         } else {
-          // Fallback to username URL lookup
-          const result = await supabase
-            .from('profiles_public')
+          // Check custom_slug next for sequential URLs Reqs
+          const customSlugResult = await supabase
+            .from('portfolios')
             .select('*')
-            .eq('username', identifier.toLowerCase())
+            .eq('custom_slug', identifier.toLowerCase())
             .maybeSingle();
-          data = result.data;
-          fetchError = result.error;
+            
+          if (customSlugResult.data) {
+            data = {
+              id: customSlugResult.data.user_id,
+              views: customSlugResult.data.views,
+              published_data: {
+                ...customSlugResult.data.data_json,
+                selected_template: customSlugResult.data.template_name
+              }
+            };
+          } else {
+            // Fallback to username URL lookup
+            const result = await supabase
+              .from('profiles_public')
+              .select('*')
+              .eq('username', identifier.toLowerCase())
+              .maybeSingle();
+            data = result.data;
+            fetchError = result.error;
+          }
         }
       }
     }

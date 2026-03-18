@@ -38,16 +38,18 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
   const [slug, setSlug] = useState('');
   const [slugError, setSlugError] = useState<string | null>(null);
   const [isCheckingSlug, setIsCheckingSlug] = useState(false);
-
-  // Determine base identifier (username or user id)
-  const identifier = profile?.username || user?.id || '';
+  const [customSlug, setCustomSlug] = useState<string | null>(null);
 
   // Generate portfolio URL based on slug
   const portfolioUrl = useMemo(() => {
     if (!user?.id) return '';
+    if (customSlug) return `https://www.foliogen.in/u/${customSlug}`;
+    
+    // Legacy mapping (before custom_slug is finalized)
+    const identifier = profile?.username || user?.id || '';
     const finalSlug = slug.trim() || 'default';
     return `https://www.foliogen.in/p/${identifier}/${finalSlug}`;
-  }, [user?.id, identifier, slug]);
+  }, [user?.id, profile?.username, slug, customSlug]);
 
   // Check if profile has minimum required content
   const hasMinimumContent = useMemo(() => {
@@ -95,6 +97,22 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
     setSlug(value);
     setSlugError(null);
+  };
+
+  const generateGlobalSequentialSlug = async (): Promise<string> => {
+    const { count: dbCount } = await supabase.from('portfolios').select('*', { count: 'exact', head: true });
+    let count = dbCount || 0;
+    
+    while (true) {
+      let candidate = '';
+      if (count < 26) candidate = String.fromCharCode(97 + count);
+      else if (count < 52) candidate = 'a' + String.fromCharCode(97 + count - 26);
+      else candidate = 'a' + (count - 51);
+      
+      const { data } = await supabase.from('portfolios').select('id').eq('custom_slug', candidate).maybeSingle();
+      if (!data) return candidate;
+      count++;
+    }
   };
 
   const handlePublish = async () => {
@@ -152,11 +170,25 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       hide_photo: profile.hidePhoto
     };
 
+    let generatedCustomSlug = customSlug;
+
+    // Check existing portfolio for custom_slug
+    const { data: existing } = await supabase.from('portfolios').select('id, slug, custom_slug').eq('user_id', user.id).limit(1);
+    
+    if (existing && existing.length > 0 && existing[0].custom_slug) {
+      generatedCustomSlug = existing[0].custom_slug;
+    } else {
+      setIsPublishing(true);
+      generatedCustomSlug = await generateGlobalSequentialSlug();
+      setCustomSlug(generatedCustomSlug);
+    }
+
     if (isPro) {
       // Pro: Insert directly (with conflict resolution if they typed an existing slug)
       const { error: portError } = await supabase.from('portfolios').upsert({
         user_id: user.id,
         slug: normalizedSlug,
+        custom_slug: generatedCustomSlug,
         template_name: profile.selectedTemplate || 'minimalist',
         data_json: dataJson
       }, { onConflict: 'user_id,slug' });
@@ -168,13 +200,12 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       }
     } else {
       // Free: Overwrite existing logic. Need to find their existing portfolio (if any) and overwrite.
-      const { data: existing } = await supabase.from('portfolios').select('id, slug').eq('user_id', user.id).limit(1);
-
       if (existing && existing.length > 0) {
         // Upsert on their existing slug
         const targetSlug = existing[0].slug;
         const { error: portError } = await supabase.from('portfolios').update({
           template_name: profile.selectedTemplate || 'minimalist',
+          custom_slug: generatedCustomSlug,
           data_json: dataJson
         }).eq('id', existing[0].id);
 
@@ -191,6 +222,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
         const { error: portError } = await supabase.from('portfolios').insert({
           user_id: user.id,
           slug: normalizedSlug,
+          custom_slug: generatedCustomSlug,
           template_name: profile.selectedTemplate || 'minimalist',
           data_json: dataJson
         });
@@ -208,7 +240,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     triggerCelebration();
     toast({
       title: 'Identity Deployed 🚀',
-      description: `Your portfolio is live at https://www.foliogen.in/p/${identifier}/${normalizedSlug}`,
+      description: `Your portfolio is live at https://www.foliogen.in/u/${generatedCustomSlug}`,
     });
   };
 
@@ -290,7 +322,7 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
               <Label htmlFor="slug">Choose a unique URL slug</Label>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground whitespace-nowrap">
-                  foliogen.in/p/{identifier}/
+                  foliogen.in/p/{profile?.username || user?.id || 'id'}/
                 </span>
                 <Input
                   id="slug"

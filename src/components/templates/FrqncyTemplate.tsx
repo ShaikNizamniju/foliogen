@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
+import { UserCircle } from 'lucide-react';
 
 interface FrqncyTemplateProps {
   profile?: ProfileData;
@@ -137,7 +138,15 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="rounded-2xl overflow-hidden relative"
           >
-            <img src={photoUrl || 'https://picsum.photos/seed/frq-profile/400/400'} alt={name} className="w-full h-full object-cover min-h-[280px]" />
+            {(!profile?.hidePhoto) && (
+              profile?.photoUrl ? (
+                 <img src={profile.photoUrl} alt={name} className="w-full h-full object-cover min-h-[280px]" />
+              ) : (
+                 <div className="w-full h-full min-h-[280px] bg-[#E5E5E5] flex items-center justify-center">
+                   <UserCircle className="w-24 h-24 text-[#CCCCCC]" />
+                 </div>
+              )
+            )}
             <div className="absolute inset-0" style={{ backgroundColor: '#CDFF64', mixBlendMode: 'multiply', opacity: 0.45 }} />
           </motion.div>
 
