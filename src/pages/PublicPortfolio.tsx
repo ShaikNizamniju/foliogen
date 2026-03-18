@@ -374,7 +374,7 @@ export default function PublicPortfolio() {
           {/* 1. Executive Headline */}
             <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-6 md:pb-8 gap-4 md:gap-6">
             <div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">
+                <h1 className="text-3xl md:text-4xl lg:text-6xl font-black tracking-tighter mb-3 md:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">
                 {profile.fullName}
               </h1>
               <p className="text-lg md:text-xl text-blue-400 font-mono uppercase tracking-widest max-w-2xl">
