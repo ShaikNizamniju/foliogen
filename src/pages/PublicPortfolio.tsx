@@ -551,7 +551,7 @@ export default function PublicPortfolio() {
       </div>
 
       <div
-        className="min-h-screen"
+        className="min-h-screen px-0">
         style={{
           fontFamily: (() => {
             const fontOption = FONT_OPTIONS.find(f => f.id === profile.selectedFont);
