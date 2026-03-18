@@ -16,6 +16,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import { usePro } from '@/contexts/ProContext';
 import { ProVaultWaitlistModal } from '@/components/dashboard/ProVaultWaitlistModal';
 import { FoundersFeedback } from '@/components/dashboard/FoundersFeedback';
+import { MobileSprintCTA } from '@/components/ui/MobileSprintCTA';
 
 // Global Data Context to avoid loading spinners on tab switch
 export const GlobalDataContext = createContext<any>(null);
@@ -163,6 +164,9 @@ function DashboardInner() {
         onClose={() => setWaitlistOpen(false)}
         userEmail={user?.email}
       />
+
+      {/* Floating mobile CTA for non-pro users */}
+      {!isBasicOrAbove && <MobileSprintCTA />}
     </SidebarProvider>
   );
 }

@@ -167,6 +167,73 @@ body {
 
 @layer utilities {
 
+  /* ── Mobile-First Typography & Touch Targets ───────────────────────── */
+  
+  /* Enforce minimum 16px body text on mobile */
+  @media (max-width: 767px) {
+    body {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* No font below 14px anywhere */
+    p, span, li, a, label, input, textarea, select, td, th, caption, figcaption, small {
+      font-size: max(0.875rem, 14px) !important;
+    }
+
+    /* Generous horizontal padding on mobile containers */
+    .mobile-container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    /* Max character width for readability */
+    p, li, .prose {
+      max-width: 65ch;
+    }
+
+    /* Touch-friendly buttons: 44px minimum */
+    button, a[role="button"], [role="button"], .btn, 
+    input[type="submit"], input[type="button"] {
+      min-height: 44px;
+    }
+
+    /* Force single-column stacks */
+    .mobile-stack {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    /* Convert tables to stacked list */
+    table.mobile-stack-table {
+      display: block;
+    }
+    table.mobile-stack-table thead { display: none; }
+    table.mobile-stack-table tbody, 
+    table.mobile-stack-table tr, 
+    table.mobile-stack-table td {
+      display: block;
+      width: 100%;
+    }
+    table.mobile-stack-table tr {
+      margin-bottom: 1rem;
+      border: 1px solid hsl(var(--border));
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+  }
+
+  /* Headings: bold + tight tracking globally */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+  /* Project description line-height boost */
+  .project-description, .experience-description {
+    line-height: 1.75;
+  }
+
   /* Gradient utilities */
   .bg-gradient-primary {
     background: var(--gradient-primary);

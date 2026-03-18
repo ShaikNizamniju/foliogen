@@ -369,12 +369,12 @@ export default function PublicPortfolio() {
     const allSkills = profile.skills || [];
 
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white p-8 md:p-16 selection:bg-blue-500/30 font-sans">
-        <div className="max-w-6xl mx-auto flex flex-col gap-16 animate-in fade-in duration-700">
+      <div className="min-h-screen bg-[#0a0a0a] text-white p-4 px-6 md:p-8 md:p-16 selection:bg-blue-500/30 font-sans">
+        <div className="max-w-6xl mx-auto flex flex-col gap-10 md:gap-16 animate-in fade-in duration-700">
           {/* 1. Executive Headline */}
-          <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-8 gap-6">
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-6 md:pb-8 gap-4 md:gap-6">
             <div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">
+                <h1 className="text-3xl md:text-4xl lg:text-6xl font-black tracking-tighter mb-3 md:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">
                 {profile.fullName}
               </h1>
               <p className="text-lg md:text-xl text-blue-400 font-mono uppercase tracking-widest max-w-2xl">
@@ -390,10 +390,10 @@ export default function PublicPortfolio() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {/* 2. Biggest Win (Metric-First) */}
             {biggestWin && (
-              <div className="col-span-1 lg:col-span-2 bg-gradient-to-br from-white/5 to-transparent border border-white/10 p-8 rounded-3xl flex flex-col justify-between group hover:border-white/20 transition-all">
+              <div className="col-span-1 lg:col-span-2 bg-gradient-to-br from-white/5 to-transparent border border-white/10 p-5 md:p-8 rounded-2xl md:rounded-3xl flex flex-col justify-between group hover:border-white/20 transition-all">
                 <div>
                   <div className="flex items-center gap-3 mb-6">
                     <div className="text-xs font-bold text-white bg-blue-600 px-3 py-1 rounded-full uppercase tracking-widest">
@@ -412,7 +412,7 @@ export default function PublicPortfolio() {
             )}
 
             {/* 3. Tech Stack (Categorized) */}
-            <div className="col-span-1 bg-white/5 border border-white/10 p-8 rounded-3xl">
+            <div className="col-span-1 bg-white/5 border border-white/10 p-5 md:p-8 rounded-2xl md:rounded-3xl">
               <div className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-6">
                 Technical Stack
               </div>
@@ -433,14 +433,14 @@ export default function PublicPortfolio() {
             </div>
 
             {/* 4. Verified Links */}
-            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-8 rounded-3xl">
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/5 border border-white/10 p-5 md:p-8 rounded-2xl md:rounded-3xl">
               <div className="flex items-center gap-3 mb-8">
                 <div className="text-xs font-bold text-green-400 uppercase tracking-widest">
                   Proof of Impact
                 </div>
                 <div className="h-px bg-white/10 flex-1"></div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
                 {[...projects].sort((a, b) => (b.metricDensityScore || 0) - (a.metricDensityScore || 0)).map((project, i) => {
                   const isVerified = project.isVerified || project.verifiedImpact || project.proofValidationScore === 50;
                   return (
@@ -534,10 +534,10 @@ export default function PublicPortfolio() {
         );
       })()}
 
-        {/* Recruiter Mode Toggle */}
-      <div className="fixed top-6 left-6 z-[60] flex items-center gap-3 bg-black/40 backdrop-blur-md p-2 pl-4 pr-2 rounded-full border border-white/10 shadow-2xl">
-        <span className="text-xs font-bold text-white uppercase tracking-widest">
-          Recruiter Mode
+      {/* Recruiter Mode Toggle */}
+      <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[60] flex items-center gap-2 md:gap-3 bg-black/40 backdrop-blur-md p-1.5 pl-3 pr-1.5 md:p-2 md:pl-4 md:pr-2 rounded-full border border-white/10 shadow-2xl">
+        <span className="text-[10px] md:text-xs font-bold text-white uppercase tracking-widest">
+          Recruiter
         </span>
         <label className="relative inline-flex items-center cursor-pointer group">
           <input
