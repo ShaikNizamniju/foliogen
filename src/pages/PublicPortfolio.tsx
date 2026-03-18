@@ -393,7 +393,7 @@ export default function PublicPortfolio() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {/* 2. Biggest Win (Metric-First) */}
             {biggestWin && (
-              <div className="col-span-1 lg:col-span-2 bg-gradient-to-br from-white/5 to-transparent border border-white/10 p-8 rounded-3xl flex flex-col justify-between group hover:border-white/20 transition-all">
+              <div className="col-span-1 lg:col-span-2 bg-gradient-to-br from-white/5 to-transparent border border-white/10 p-5 md:p-8 rounded-2xl md:rounded-3xl flex flex-col justify-between group hover:border-white/20 transition-all">
                 <div>
                   <div className="flex items-center gap-3 mb-6">
                     <div className="text-xs font-bold text-white bg-blue-600 px-3 py-1 rounded-full uppercase tracking-widest">
