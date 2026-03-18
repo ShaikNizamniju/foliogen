@@ -192,6 +192,80 @@ export function OverviewSection() {
         </p>
       </motion.div>
 
+      {/* Onboarding Checklist */}
+      <motion.div variants={fadeUp}>
+        <div className="rounded-2xl border border-indigo-500/30 bg-indigo-500/5 p-6 shadow-[0_0_20px_rgba(99,102,241,0.05)]">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+              <Zap className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-foreground uppercase tracking-widest">Quick Start</h2>
+              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Your launch sequence</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {[
+              { 
+                id: 'resume', 
+                label: 'Resume Upload', 
+                desc: 'Import your career history',
+                isDone: profile.workExperience.length > 0,
+                action: () => setIsParserOpen(true)
+              },
+              { 
+                id: 'template', 
+                label: 'Template Select', 
+                desc: 'Choose your visual dialect',
+                isDone: !!profile.selectedTemplate,
+                action: () => navigate('/dashboard?section=templates')
+              },
+              { 
+                id: 'url', 
+                label: 'Claim URL', 
+                desc: 'Deploy your identity',
+                isDone: isLive,
+                action: () => navigate('/dashboard?section=profile') // Assuming they can publish from profile
+              }
+            ].map((step, idx) => (
+              <motion.div
+                key={step.id}
+                whileHover={{ y: -2 }}
+                onClick={step.action}
+                className={`relative cursor-pointer p-4 rounded-xl border transition-all duration-300 ${
+                  step.isDone 
+                  ? 'bg-emerald-500/5 border-emerald-500/20' 
+                  : 'bg-indigo-500/5 border-indigo-500/20 hover:border-indigo-500/40'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className={`text-[10px] font-bold uppercase tracking-widest ${step.isDone ? 'text-emerald-500' : 'text-indigo-400'}`}>
+                    Step {idx + 1}
+                  </span>
+                  {step.isDone ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <Circle className="h-4 w-4 text-indigo-500/30" />
+                  )}
+                </div>
+                <h3 className={`text-sm font-bold ${step.isDone ? 'text-emerald-200/80 line-through opacity-60' : 'text-foreground'}`}>
+                  {step.label}
+                </h3>
+                <p className="text-[11px] text-muted-foreground mt-1 leading-tight">
+                  {step.desc}
+                </p>
+                {step.isDone && (
+                  <div className="absolute top-0 right-0 p-2 pointer-events-none">
+                    <CheckCircle2 className="h-12 w-12 text-emerald-500/10" />
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
       {/* Portfolio Strength Score */}
       <motion.div variants={fadeUp}>
         <div className="rounded-2xl border border-border/60 bg-card p-6">

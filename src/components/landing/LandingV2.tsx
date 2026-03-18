@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './LandingV2.css';
 import PricingEngine from '@/components/pricing/PricingEngine';
 import { Testimonials } from '@/components/landing/Testimonials';
+import { IdentityTicker } from '@/components/landing/IdentityTicker';
 
 export function LandingV2() {
     const [navScrolled, setNavScrolled] = useState(false);
@@ -262,6 +263,9 @@ export function LandingV2() {
                     </div>
                 </div>
             </section>
+
+            {/* ─── IDENTITY TICKER ─── */}
+            <IdentityTicker />
 
             {/* ─── STATS TICKER ─── */}
             <div className="ticker" role="region" aria-label="Key statistics">

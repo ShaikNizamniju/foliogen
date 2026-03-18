@@ -436,11 +436,14 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
               </div>
 
               {/* ── Professional URL Highlight ─────────────────────────── */}
-              <div className="w-full bg-primary/5 border border-primary/20 rounded-xl p-4 text-center">
-                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Your Live URL</p>
-                <p className="text-lg font-mono font-bold text-primary">
-                  foliogen.in/u/{customSlug}
-                </p>
+              <div className="w-full bg-primary/5 border border-primary/20 rounded-xl p-5 text-center">
+                <p className="text-xs text-muted-foreground uppercase tracking-[0.2em] mb-2 font-bold opacity-60">Your Identity is Live!</p>
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs text-muted-foreground font-mono">Claimed URL:</span>
+                  <p className="text-xl font-mono font-bold text-primary tracking-tight">
+                    foliogen.in/u/{customSlug}
+                  </p>
+                </div>
               </div>
 
               <p className="text-sm text-center text-muted-foreground w-full">

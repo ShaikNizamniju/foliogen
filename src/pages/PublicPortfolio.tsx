@@ -259,16 +259,14 @@ export default function PublicPortfolio() {
   };
   const activePersonaLabel = personaLabels[profile.activePersona] || 'Professional';
 
-  const pageTitle = profile.fullName && profile.headline
-    ? `${profile.fullName} | ${profile.headline}`
-    : `${profile.fullName} | Portfolio`;
+  const pageTitle = `${profile.fullName} | Professional Identity via Foliogen`;
     
   const pageDescription = profile.headline 
     ? `${profile.headline}. ${profile.bio?.slice(0, 160)}`
     : profile.bio || `Professional portfolio of ${profile.fullName}`;
 
-  const ogTitle = `${profile.fullName} | ${activePersonaLabel} Portfolio`;
-  const ogDescription = profile.bio || pageDescription;
+  const ogTitle = `${profile.fullName} | Professional Identity via Foliogen`;
+  const ogDescription = `View my verified project narratives and career dialect.`;
   const pageImage = profile.photoUrl || 'https://www.foliogen.in/og-premium-placeholder.png';
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
