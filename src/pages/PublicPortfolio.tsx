@@ -534,10 +534,10 @@ export default function PublicPortfolio() {
         );
       })()}
 
-        {/* Recruiter Mode Toggle */}
-      <div className="fixed top-6 left-6 z-[60] flex items-center gap-3 bg-black/40 backdrop-blur-md p-2 pl-4 pr-2 rounded-full border border-white/10 shadow-2xl">
-        <span className="text-xs font-bold text-white uppercase tracking-widest">
-          Recruiter Mode
+      {/* Recruiter Mode Toggle */}
+      <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[60] flex items-center gap-2 md:gap-3 bg-black/40 backdrop-blur-md p-1.5 pl-3 pr-1.5 md:p-2 md:pl-4 md:pr-2 rounded-full border border-white/10 shadow-2xl">
+        <span className="text-[10px] md:text-xs font-bold text-white uppercase tracking-widest">
+          Recruiter
         </span>
         <label className="relative inline-flex items-center cursor-pointer group">
           <input
