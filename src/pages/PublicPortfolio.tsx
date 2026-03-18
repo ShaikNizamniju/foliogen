@@ -372,7 +372,7 @@ export default function PublicPortfolio() {
       <div className="min-h-screen bg-[#0a0a0a] text-white p-4 px-6 md:p-8 md:p-16 selection:bg-blue-500/30 font-sans">
         <div className="max-w-6xl mx-auto flex flex-col gap-10 md:gap-16 animate-in fade-in duration-700">
           {/* 1. Executive Headline */}
-          <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-8 gap-6">
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between border-b border-white/10 pb-6 md:pb-8 gap-4 md:gap-6">
             <div>
               <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-neutral-500">
                 {profile.fullName}
