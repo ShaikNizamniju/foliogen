@@ -12,6 +12,7 @@ import {
   type TierKey,
   type TierConfig,
 } from './constants.ts';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // ─── CORS ──────────────────────────────────────────────────────────────────────
 export const corsHeaders = {
@@ -306,4 +307,36 @@ export function getClientIP(req: Request): string {
   return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
     || req.headers.get('cf-connecting-ip')
     || 'unknown';
+}
+/**
+ * Log security-critical events to the security_audit_logs table.
+ */
+export async function logSecurityEvent(
+  eventType: 'auth_attempt' | 'api_error' | 'rate_limit_hit' | 'suspicious_activity',
+  severity: 'info' | 'warning' | 'critical',
+  component: string,
+  metadata: Record<string, any> = {},
+  userId?: string,
+  req?: Request
+) {
+  try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+    const ipAddress = req ? getClientIP(req) : 'unknown';
+    const userAgent = req ? req.headers.get('user-agent') : 'unknown';
+
+    await adminClient.from('security_audit_logs').insert({
+      user_id: userId,
+      event_type: eventType,
+      severity,
+      component,
+      metadata,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+    });
+  } catch (error) {
+    console.error('Failed to log security event:', error);
+  }
 }

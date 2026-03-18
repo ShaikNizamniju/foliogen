@@ -7,6 +7,7 @@ import {
   validateText,
   validationError,
   errorResponse,
+  logSecurityEvent,
 } from "../_shared/security.ts";
 
 Deno.serve(async (req) => {
@@ -17,10 +18,13 @@ Deno.serve(async (req) => {
   try {
     // Token-bucket rate limit: 100 req / 15 min per IP
     const ip = getClientIP(req);
-    const { allowed, retryAfterSeconds } = checkRateLimit(`verify-pw:${ip}`, 20, 15 * 60 * 1000);
-    if (!allowed) return rateLimitedResponse(retryAfterSeconds);
-
     const { profileUserId, projectId, password } = await req.json();
+    const { allowed, retryAfterSeconds } = checkRateLimit(`verify-pw:${ip}`, 20, 15 * 60 * 1000);
+
+    if (!allowed) {
+      await logSecurityEvent('rate_limit_hit', 'warning', 'verify-project-password', { ip, projectId }, profileUserId, req);
+      return rateLimitedResponse(retryAfterSeconds);
+    }
 
     // ── Allow-list validation ────────────────────────────────────────────
     const userIdCheck = validateText(profileUserId, "Profile User ID", 100);
@@ -72,6 +76,7 @@ Deno.serve(async (req) => {
     const isValid = diff === 0;
 
     if (!isValid) {
+      await logSecurityEvent('auth_attempt', 'warning', 'verify-project-password', { ip, projectId, success: false }, profileUserId, req);
       return new Response(
         JSON.stringify({ success: false, error: "Incorrect password" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
