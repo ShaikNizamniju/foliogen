@@ -147,12 +147,12 @@ export function LandingV2() {
                         <ul className="nav-links hidden md:flex" role="list">
                             <li><a href="#features">Features</a></li>
                             <li><a href="#templates">Templates</a></li>
-                            <li><a href="#pricing">Pricing</a></li>
+                            <li><a href="#pricing">Beta Status</a></li>
                             <li><a href="#faq">FAQ</a></li>
                         </ul>
                         <div className="nav-actions">
                             <Link to="/auth" className="nav-signin hidden sm:block">Sign in</Link>
-                            <Link to="/auth" className="btn btn-cobalt">Get started free</Link>
+                            <Link to="/auth" className="btn btn-cobalt">Start Free Audit</Link>
                         </div>
                     </div>
                 </div>
@@ -163,27 +163,30 @@ export function LandingV2() {
                 <div className="hero-left">
                     <div className="hero-badge">
                         <span className="badge">
-                            <span className="badge-dot" aria-hidden="true"></span>
-                            AI-powered · 12,400+ narratives engineered
+                            <span className="badge-dot" aria-hidden="true" style={{ background: '#3DFF9A' }}></span>
+                            🎉 Open Beta — 100% Free for Early Adopters
                         </span>
                     </div>
                     <h1 className="headline hero-headline">
-                        Your professional<br />
-                        identity,<br />
-                        <em>re-engineered.</em>
+                        Agentic AI<br />
+                        Portfolio &<br />
+                        <em>Recruiter Audits.</em>
                     </h1>
                     <p className="body-lg hero-sub">
-                        Re-engineered for the job you want. Our AI builds a world-class portfolio in minutes — no design skills, no code, no compromise.
+                        Foliogen uses agentic AI to audit your resume against high-intent Job Descriptions. Build a world-class portfolio that actually converts.
                     </p>
                     <div className="hero-actions">
                         <Link to="/auth" className="btn btn-cobalt">
-                            Build my portfolio
+                            Start Your Free Audit
                             <span aria-hidden="true">→</span>
                         </Link>
                         <a href="#features" className="btn btn-ghost">
                             See how it works <span className="arrow" aria-hidden="true">→</span>
                         </a>
                     </div>
+                    <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-[0.2em] mt-4 ml-1">
+                        No credit card required · Universal Pro access enabled
+                    </p>
                     <div className="hero-social-proof">
                         <div className="avatar-stack" aria-hidden="true">
                             <div className="avatar-item" style={{ background: 'linear-gradient(135deg,#1A44C8,#7B61FF)' }}>R</div>
@@ -685,9 +688,35 @@ export function LandingV2() {
                 </div>
             </section>
 
-            {/* ─── PRICING ─── */}
-            <section id="pricing">
-                <PricingEngine />
+            <section id="pricing" className="py-24 bg-white/5 border-t border-white/5">
+                <div className="container max-w-4xl mx-auto">
+                    <div className="bg-gradient-to-br from-[#1A44C8]/10 to-transparent border border-[#1A44C8]/30 rounded-[2rem] p-10 md:p-16 text-center shadow-2xl relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <span className="text-8xl" aria-hidden="true">🎁</span>
+                        </div>
+                        
+                        <div className="label mb-6 mx-auto">Founders' Invitation</div>
+                        <h2 className="text-4xl md:text-5xl font-serif text-white mb-8 tracking-tight">
+                            Free forever for our <br />
+                            <em>beta cohort.</em>
+                        </h2>
+                        <p className="text-xl text-neutral-300 leading-relaxed mb-10 max-w-2xl mx-auto font-light">
+                            Foliogen is currently in Open Beta. All Pro features—including the 
+                            <strong> Recruiter Audit</strong>, <strong>Neural Memory</strong>, and <strong>Premium Templates</strong>—are 
+                            unlocked for free. Help us build the future of career agents.
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                            <Link to="/auth" className="btn btn-cobalt h-14 px-10 text-lg">
+                                Claim My Free Pro Access
+                            </Link>
+                            <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase tracking-widest">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Live Now · No Card Needed
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
 
@@ -721,16 +750,16 @@ export function LandingV2() {
                         <div className="faq-list sr sr-d1">
                             {[
                                 {
-                                    q: "What is the Sprint Pass?",
-                                    a: "The Sprint Pass is a 90-day access plan designed to match the average job search lifecycle. For a one-time payment, you unlock our entire 19+ exclusive template suite, full AI writing features, and advanced recruiter tracking analytics."
+                                    q: "Why is Foliogen free right now?",
+                                    a: "We are currently in Open Beta. To gather the best data on how our Recruiter Audit engine performs in real-world job hunts, we've unlocked all Pro features for our early cohort of users."
                                 },
                                 {
-                                    q: "Is my payment secure?",
-                                    a: "Yes. All transactions are securely processed via Stripe with 256-bit AES encryption. Foliogen never stores your credit card details directly."
+                                    q: "Will I lose my data after Beta?",
+                                    a: "No. All portfolios created during the beta will remain active. Early adopters will be grandfathered into special terms once the platform moves to its GA (General Availability) phase."
                                 },
                                 {
-                                    q: "Can I cancel anytime?",
-                                    a: "Since the Sprint Pass is a one-time payment for 90 days of access, there are no recurring subscriptions to cancel. You get full access for the entire duration without worrying about hidden bills."
+                                    q: "What is the 'Audit-to-Fix' tool?",
+                                    a: "It's our flagship agentic feature. You paste a job description, and the AI audits your entire portfolio vs. that specific role, providing 'one-click fixes' to align your skills and projects with what that specific company is looking for."
                                 }
                             ].map((faq, i) => (
                                 <div key={i} className={`faq-item ${faqStates[i] ? 'open' : ''}`}>
@@ -793,9 +822,12 @@ export function LandingV2() {
                         </h2>
                         <p className="cta-sub sr sr-d2">Your professional identity deserves more than a PDF. Start free — no credit card, no commitment, no compromise.</p>
                         <div className="cta-actions sr sr-d3">
-                            <Link to="/auth" className="btn btn-white">Build my portfolio →</Link>
+                            <Link to="/auth" className="btn btn-white">Start Your Free Audit →</Link>
                             <a href="#templates" className="btn btn-dark-outline">Browse templates</a>
                         </div>
+                        <p className="mt-6 text-[10px] text-white/40 font-mono uppercase tracking-[0.2em]">
+                            Open Beta Cohort · No credit card required
+                        </p>
                     </div>
                 </div>
             </section>
