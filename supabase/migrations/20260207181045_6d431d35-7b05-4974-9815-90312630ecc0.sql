@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.favorites (
 ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
 
 -- Create policy for users to manage their own favorites
+DROP POLICY IF EXISTS "Users can manage their own favorites" ON public.favorites;
 CREATE POLICY "Users can manage their own favorites" 
 ON public.favorites 
 FOR ALL 

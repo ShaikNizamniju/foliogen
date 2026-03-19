@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS public.portfolio_views (
 ALTER TABLE public.portfolio_views ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Only the owner of the profile can read their analytics
+DROP POLICY IF EXISTS "Owners can view their own portfolio analytics" ON public.portfolio_views;
 CREATE POLICY "Owners can view their own portfolio analytics"
   ON public.portfolio_views
   FOR SELECT
@@ -26,6 +27,7 @@ CREATE POLICY "Owners can view their own portfolio analytics"
   );
 
 -- Policy: Allow anonymous insertions for tracking views
+DROP POLICY IF EXISTS "Allow anonymous view logging" ON public.portfolio_views;
 CREATE POLICY "Allow anonymous view logging"
   ON public.portfolio_views
   FOR INSERT

@@ -11,12 +11,14 @@ CREATE TABLE IF NOT EXISTS public.visit_logs (
 ALTER TABLE public.visit_logs ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Anyone can insert (for anonymous tracking)
+DROP POLICY IF EXISTS "Anyone can insert visit logs" ON public.visit_logs;
 CREATE POLICY "Anyone can insert visit logs"
 ON public.visit_logs
 FOR INSERT
 WITH CHECK (true);
 
 -- Policy: Users can only view their own visit logs
+DROP POLICY IF EXISTS "Users can view their own visit logs" ON public.visit_logs;
 CREATE POLICY "Users can view their own visit logs"
 ON public.visit_logs
 FOR SELECT

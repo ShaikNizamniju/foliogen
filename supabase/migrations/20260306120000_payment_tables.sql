@@ -31,9 +31,11 @@ CREATE TABLE IF NOT EXISTS user_subscriptions (
 ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_subscriptions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users read own payments" ON payments;
 CREATE POLICY "Users read own payments"
   ON payments FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users read own subscription" ON user_subscriptions;
 CREATE POLICY "Users read own subscription"
   ON user_subscriptions FOR SELECT USING (auth.uid() = user_id);
 

@@ -14,15 +14,19 @@ CREATE TABLE IF NOT EXISTS public.portfolios (
 -- RLS Policies
 ALTER TABLE public.portfolios ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Portfolios are viewable by everyone." ON public.portfolios;
 CREATE POLICY "Portfolios are viewable by everyone." ON public.portfolios
     FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Users can insert their own portfolios." ON public.portfolios;
 CREATE POLICY "Users can insert their own portfolios." ON public.portfolios
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own portfolios." ON public.portfolios;
 CREATE POLICY "Users can update their own portfolios." ON public.portfolios
     FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete their own portfolios." ON public.portfolios;
 CREATE POLICY "Users can delete their own portfolios." ON public.portfolios
     FOR DELETE USING (auth.uid() = user_id);
 

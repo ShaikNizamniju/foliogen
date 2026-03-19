@@ -14,16 +14,20 @@ CREATE TABLE IF NOT EXISTS public.identity_vault (
 -- RLS Policies
 ALTER TABLE public.identity_vault ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own identity vault" ON public.identity_vault;
 CREATE POLICY "Users can view own identity vault" ON public.identity_vault
     FOR SELECT USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own identity vault" ON public.identity_vault;
 CREATE POLICY "Users can insert own identity vault" ON public.identity_vault
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Explicitly ban UPDATEs from authenticated users to prevent client-side spoofing.
 -- The edge function uses service_role or trigger logic to update this.
+DROP POLICY IF EXISTS "Users cannot arbitrarily update composite score" ON public.identity_vault;
 CREATE POLICY "Users cannot arbitrarily update composite score" ON public.identity_vault
     FOR UPDATE USING (false);
 
+DROP POLICY IF EXISTS "Users can delete own identity vault" ON public.identity_vault;
 CREATE POLICY "Users can delete own identity vault" ON public.identity_vault
     FOR DELETE USING (auth.uid() = user_id);

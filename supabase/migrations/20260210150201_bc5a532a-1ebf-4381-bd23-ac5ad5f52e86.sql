@@ -43,6 +43,7 @@ CREATE POLICY "Users can update own project documents"
 ON storage.objects FOR UPDATE TO authenticated
 USING (bucket_id = 'project_documents' AND auth.uid()::text = (storage.foldername(name))[1]);
 
+DROP POLICY IF EXISTS "Users can delete own project documents" ON storage.objects;
 CREATE POLICY "Users can delete own project documents"
 ON storage.objects FOR DELETE TO authenticated
 USING (bucket_id = 'project_documents' AND auth.uid()::text = (storage.foldername(name))[1]);
@@ -55,6 +56,7 @@ CREATE POLICY "Users can update their own resumes"
 ON storage.objects FOR UPDATE TO authenticated
 USING (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
 
+DROP POLICY IF EXISTS "Users can delete their own resumes" ON storage.objects;
 CREATE POLICY "Users can delete their own resumes"
 ON storage.objects FOR DELETE TO authenticated
 USING (bucket_id = 'resumes' AND auth.uid()::text = (storage.foldername(name))[1]);
@@ -67,6 +69,7 @@ CREATE POLICY "Users can update their own profile photos"
 ON storage.objects FOR UPDATE TO authenticated
 USING (bucket_id = 'profile_photos' AND auth.uid()::text = (storage.foldername(name))[1]);
 
+DROP POLICY IF EXISTS "Users can delete their own profile photos" ON storage.objects;
 CREATE POLICY "Users can delete their own profile photos"
 ON storage.objects FOR DELETE TO authenticated
 USING (bucket_id = 'profile_photos' AND auth.uid()::text = (storage.foldername(name))[1]);

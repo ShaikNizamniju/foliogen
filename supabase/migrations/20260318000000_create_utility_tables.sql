@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.user_feedback (
 ALTER TABLE public.user_feedback ENABLE ROW LEVEL SECURITY;
 
 -- Allow users to insert their own feedback
+DROP POLICY IF EXISTS "Users can insert their own feedback" ON public.user_feedback;
 CREATE POLICY "Users can insert their own feedback" 
 ON public.user_feedback FOR INSERT 
 TO authenticated 
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS public.error_logs (
 ALTER TABLE public.error_logs ENABLE ROW LEVEL SECURITY;
 
 -- Allow users to insert their own error logs
+DROP POLICY IF EXISTS "Users can insert their own error logs" ON public.error_logs;
 CREATE POLICY "Users can insert their own error logs" 
 ON public.error_logs FOR INSERT 
 TO authenticated 

@@ -4,12 +4,14 @@ VALUES ('profile_photos', 'profile_photos', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Allow anyone to view profile photos (public bucket)
+DROP POLICY IF EXISTS "Public read access for profile photos" ON storage.objects;
 CREATE POLICY "Public read access for profile photos"
 ON storage.objects
 FOR SELECT
 USING (bucket_id = 'profile_photos');
 
 -- Allow authenticated users to upload their own photos
+DROP POLICY IF EXISTS "Users can upload their own profile photos" ON storage.objects;
 CREATE POLICY "Users can upload their own profile photos"
 ON storage.objects
 FOR INSERT
@@ -19,6 +21,7 @@ WITH CHECK (
 );
 
 -- Allow users to update their own photos
+DROP POLICY IF EXISTS "Users can update their own profile photos" ON storage.objects;
 CREATE POLICY "Users can update their own profile photos"
 ON storage.objects
 FOR UPDATE
@@ -28,6 +31,7 @@ USING (
 );
 
 -- Allow users to delete their own photos
+DROP POLICY IF EXISTS "Users can delete their own profile photos" ON storage.objects;
 CREATE POLICY "Users can delete their own profile photos"
 ON storage.objects
 FOR DELETE

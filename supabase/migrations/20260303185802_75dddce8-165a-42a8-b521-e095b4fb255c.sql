@@ -16,12 +16,14 @@ CREATE TABLE IF NOT EXISTS public.chat_queries (
 ALTER TABLE public.chat_queries ENABLE ROW LEVEL SECURITY;
 
 -- Owner can view their chat queries
+DROP POLICY IF EXISTS "Users can view their own chat queries" ON public.chat_queries;
 CREATE POLICY "Users can view their own chat queries"
 ON public.chat_queries
 FOR SELECT
 USING (auth.uid() = profile_user_id);
 
 -- No direct insert from client - edge function uses service role
+DROP POLICY IF EXISTS "Service role can insert chat queries" ON public.chat_queries;
 CREATE POLICY "Service role can insert chat queries"
 ON public.chat_queries
 FOR INSERT

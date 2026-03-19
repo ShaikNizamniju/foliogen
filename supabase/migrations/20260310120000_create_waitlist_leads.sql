@@ -8,5 +8,6 @@ CREATE TABLE IF NOT EXISTS waitlist_leads (
 ALTER TABLE waitlist_leads ENABLE ROW LEVEL SECURITY;
 
 -- Allow insert for authenticated users
+DROP POLICY IF EXISTS "Allow authenticated inserts on waitlist_leads" ON waitlist_leads;
 CREATE POLICY "Allow authenticated inserts on waitlist_leads" ON waitlist_leads
     FOR INSERT WITH CHECK (auth.role() = 'authenticated');

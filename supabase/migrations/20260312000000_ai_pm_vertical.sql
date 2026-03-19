@@ -4,6 +4,7 @@ DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_n
 -- Update RLS on portfolios table
 DROP POLICY IF EXISTS "Portfolios are viewable by everyone." ON public.portfolios;
 
+DROP POLICY IF EXISTS "Portfolios are viewable by everyone if published" ON public.portfolios;
 CREATE POLICY "Portfolios are viewable by everyone if published" ON public.portfolios
 FOR SELECT USING (
   status = 'published' 

@@ -13,15 +13,19 @@ CREATE TABLE IF NOT EXISTS public.chameleon_links (
 
 ALTER TABLE public.chameleon_links ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "everyone can view active chameleon links" ON public.chameleon_links;
 CREATE POLICY "everyone can view active chameleon links" 
 ON public.chameleon_links FOR SELECT USING (is_active = true);
 
+DROP POLICY IF EXISTS "users can insert their own links" ON public.chameleon_links;
 CREATE POLICY "users can insert their own links" 
 ON public.chameleon_links FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "users can update their own links" ON public.chameleon_links;
 CREATE POLICY "users can update their own links" 
 ON public.chameleon_links FOR UPDATE USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "users can delete their own links" ON public.chameleon_links;
 CREATE POLICY "users can delete their own links" 
 ON public.chameleon_links FOR DELETE USING (auth.uid() = user_id);
 
@@ -39,9 +43,11 @@ CREATE TABLE IF NOT EXISTS public.visit_logs (
 
 ALTER TABLE public.visit_logs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "users can view their visit logs" ON public.visit_logs;
 CREATE POLICY "users can view their visit logs"
 ON public.visit_logs FOR SELECT USING (auth.uid() = user_id);
 
 -- allow inserting visit logs safely from public client
+DROP POLICY IF EXISTS "anyone can insert visit logs" ON public.visit_logs;
 CREATE POLICY "anyone can insert visit logs"
 ON public.visit_logs FOR INSERT WITH CHECK (true);

@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS public.job_applications (
 ALTER TABLE public.job_applications ENABLE ROW LEVEL SECURITY;
 
 -- Users can only CRUD their own job applications
+DROP POLICY IF EXISTS "Users can manage their own job applications" ON public.job_applications;
 CREATE POLICY "Users can manage their own job applications"
 ON public.job_applications
 FOR ALL
