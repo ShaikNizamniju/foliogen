@@ -185,6 +185,6 @@ ${resumeText.substring(0, 15000)}`
 
   } catch (error: any) {
     console.error("FATAL SERVER CRASH:", error);
-    return errorResponse(`Crash: ${error.message || error}`, 500);
+    return errorResponse('Resume parsing failed. Please try again.', 500);
   }
 });
