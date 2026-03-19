@@ -18,6 +18,7 @@ import {
   Sun,
   Moon,
   CreditCard,
+  ShieldAlert,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import profilePhoto from '@/assets/profile-photo.jpeg';
