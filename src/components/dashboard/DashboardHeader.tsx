@@ -40,7 +40,7 @@ export function DashboardHeader() {
     }
     await navigator.clipboard.writeText(url);
     setCopied(true);
-    toast({ title: "Link copied!", description: url });
+    toast({ title: "Link Copied! 🎉", description: "Ready to share your professional story." });
     setTimeout(() => setCopied(false), 2000);
   };
 

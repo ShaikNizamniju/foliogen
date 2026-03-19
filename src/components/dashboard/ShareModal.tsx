@@ -111,8 +111,8 @@ export function ShareModal({ open, onOpenChange, defaultUrl }: ShareModalProps) 
       setCopied(true);
       
       // Custom Noir Toast as requested
-      toast.success("Link copied to clipboard", {
-        description: targetUrl,
+      toast.success("Link Copied! 🎉", {
+        description: "Ready to share your professional story.",
         style: { 
           background: '#0a0a0a', 
           border: '1px solid rgba(59, 130, 246, 0.5)', 

@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase_v2";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { trackEvent } from "@/lib/analytics";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -164,6 +165,12 @@ export function RecruiterAuditSection() {
     setDeclinedIndices(new Set());
     setActiveDiff(null);
 
+    // Track North Star Metric: Audit Started
+    trackEvent('audit_started', { 
+      jd_char_count: jobDescription.length,
+      timestamp: new Date().toISOString()
+    });
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
@@ -313,6 +320,13 @@ export function RecruiterAuditSection() {
       setFixedIndices(prev => new Set(prev).add(index));
       setActiveDiff(null);
       toast.success(`"${sectionLabels[section] || section}" updated successfully!`);
+
+      // Track North Star Metric: Mission Accepted (Conversion)
+      trackEvent('mission_accepted', {
+        section,
+        mission_title: truths[index]?.title,
+        severity: truths[index]?.severity
+      });
     } catch {
       toast.error("Something went wrong applying the fix.");
     } finally {

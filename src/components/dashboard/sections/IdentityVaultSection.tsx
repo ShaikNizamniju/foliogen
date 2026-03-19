@@ -69,8 +69,8 @@ export function IdentityVaultSection() {
             const url = `https://www.foliogen.in/u/${customSlug}`;
             await navigator.clipboard.writeText(url);
             toast({
-                title: 'Link Copied',
-                description: `Professional URL copied: foliogen.in/u/${customSlug}`,
+                title: 'Link Copied! 🎉',
+                description: `Ready to share your professional story.`,
             });
             return;
         }
@@ -85,8 +85,8 @@ export function IdentityVaultSection() {
 
         await navigator.clipboard.writeText(url);
         toast({
-            title: 'Link Copied',
-            description: 'Portfolio link copied to clipboard.',
+            title: 'Link Copied! 🎉',
+            description: 'Ready to share your professional story.',
         });
     };
 

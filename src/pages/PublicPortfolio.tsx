@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -624,6 +625,29 @@ export default function PublicPortfolio() {
           industryContext={undefined}
         />
       )}
+
+      {/* Foliogen Branding Badge */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] pointer-events-auto">
+        <a 
+          href="https://foliogen.in" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="group flex items-center gap-2.5 px-4 py-2 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full hover:bg-black/80 hover:border-indigo-500/50 transition-all duration-300 shadow-2xl"
+        >
+          <div className="flex -space-x-1">
+            <div className="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center shadow-glow-sm">
+              <Sparkles className="w-2.5 h-2.5 text-white" />
+            </div>
+          </div>
+          <div className="flex flex-col items-start leading-none">
+            <span className="text-[10px] font-bold text-white/50 group-hover:text-indigo-400 transition-colors uppercase tracking-widest">Powered by</span>
+            <span className="text-[11px] font-black text-white flex items-center gap-1.5">
+              Foliogen Agentic AI 
+              <span className="text-white/30 group-hover:text-white/60 transition-colors">— Get audited for free</span>
+            </span>
+          </div>
+        </a>
+      </div>
     </>
   );
 }
