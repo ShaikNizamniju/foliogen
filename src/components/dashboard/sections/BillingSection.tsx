@@ -114,33 +114,20 @@ export function BillingSection() {
       description: `Redirecting to Stripe for the ${planKey.replace('_', ' ')} (${selectedPrice} ${currency}).`
     });
 
-    // Alert Fallback if redirect takes too long
-    const alertTimeout = setTimeout(() => {
-      window.alert("Proceeding to secure checkout for " + planKey + ". If you are not redirected automatically, please check your popup blocker.");
-    }, 2000);
 
     try {
-      const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-        body: { 
-          planId: planKey.toLowerCase(),
-          userId: user.id,
-          priceId: priceId,
-          successUrl: window.location.origin + '/dashboard?section=billing&status=success'
-        }
-      });
-
-      clearTimeout(alertTimeout);
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("No checkout URL returned");
-      }
+      const { handlePayment } = await import('@/lib/payment');
+      const internalPlanKey = planKey === 'STARTER' ? 'BASIC' : 'PRO';
+      
+      await handlePayment(
+        { id: user.id, email: user.email || '' },
+        internalPlanKey as any,
+        () => {}
+      );
     } catch (error: any) {
-      clearTimeout(alertTimeout);
       console.error("Checkout error:", error);
       toast.error("Checkout failed", { 
-        description: error.message || "Failed to initiate secure checkout. Please try again." 
+        description: error.message || "Failed to initialize secure checkout. Please try again." 
       });
       setPayingPlan(null);
     }

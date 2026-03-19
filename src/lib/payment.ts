@@ -20,10 +20,18 @@ export const PLANS = {
   PRO: {
     id: 'pro',
     amount: 99900,
-    label: 'Pro',
-    description: '1 Year Access — Foliogen Pro',
-    duration: '1 year',
-    durationMonths: 12,
+    label: 'Sprint Pass (90 days)',
+    description: '90 Days Access — Foliogen Pro',
+    duration: '3 months',
+    durationMonths: 3,
+  },
+  GLOBAL: {
+    id: 'global',
+    amount: 1999, // USD centric or high tier fallback
+    label: 'Global Pass',
+    description: 'Lifetime Access — Foliogen Global',
+    duration: 'unlimited',
+    durationMonths: 1200,
   },
 } as const;
 
@@ -38,10 +46,19 @@ export async function handlePayment(
     const plan = PLANS[planKey];
     toast({ title: "Initializing secure checkout...", description: "Please wait." });
 
+    const payload = {
+      planId: plan.id,
+      userId: user.id,
+      successUrl: window.location.origin + '/dashboard?section=billing&status=success',
+      cancelUrl: window.location.origin + '/dashboard?section=billing&checkout_status=cancelled'
+    };
+
+    console.log("Payload sent to Edge Function:", payload);
+
     const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-      body: {
-        planId: plan.id,
-        userId: user.id
+      body: payload,
+      headers: {
+        'Content-Type': 'application/json'
       }
     });
 
