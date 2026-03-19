@@ -8,6 +8,7 @@ import { JobsSection } from './sections/JobsSection';
 import { InterviewPrepSection } from './sections/InterviewPrepSection';
 import { ChatLogSection } from './sections/ChatLogSection';
 import { BillingSection } from './sections/BillingSection';
+import { RecruiterAuditSection } from './sections/RecruiterAuditSection';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
