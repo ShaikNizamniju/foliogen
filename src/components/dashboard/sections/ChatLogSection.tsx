@@ -43,7 +43,10 @@ export function ChatLogSection() {
           .order('created_at', { ascending: false })
           .limit(100);
         
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase Error Details [ChatLog Fetch]:", error.message, error.details, error.hint);
+          throw error;
+        }
         setQueriesState((data as ChatQuery[]) || []);
       } catch (error: any) {
         console.error("[ChatLog] Fetch Error:", error.message || error);

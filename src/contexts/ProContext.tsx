@@ -58,6 +58,10 @@ export function ProProvider({ children }: { children: ReactNode }) {
       .eq("user_id", user.id)
       .maybeSingle();
 
+    if (error) {
+      console.error("Supabase Error Details [Pro Status Fetch]:", error.message, error.details, error.hint);
+    }
+
     if (data && !error) {
       setIsPro((data as any).is_pro || false);
       setSubscriptionId((data as any).subscription_id || null);

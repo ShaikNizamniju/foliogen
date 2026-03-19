@@ -322,7 +322,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
     setLoading(true);
     const { data, error } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
-    const { data: vaultData } = await supabase.from("identity_vault").select("*").eq("user_id", user.id);
+    const { data: vaultData, error: vaultError } = await supabase.from("identity_vault").select("*").eq("user_id", user.id);
+
+    if (error) {
+      console.error("Supabase Error Details [Profile Fetch]:", error.message, error.details, error.hint);
+    }
+
+    if (vaultError) {
+      console.error("Supabase Error Details [Identity Vault Fetch]:", vaultError.message, vaultError.details, vaultError.hint);
+    }
 
     if (data && !error) {
       const vaultMap = new Map<string, Record<string, unknown>>();
