@@ -5,6 +5,7 @@ import Stripe from "https://esm.sh/stripe@14.15.0?target=deno";
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
@@ -14,53 +15,79 @@ serve(async (req) => {
     }
 
     try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+        const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+        
         // 1. Authenticate user from JWT
         const supabaseClient = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+            supabaseUrl,
+            supabaseAnonKey,
             { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
         );
 
         const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
         if (authError || !user) {
+            console.error("[Stripe Checkout] Authentication error:", authError);
             return new Response(JSON.stringify({ error: "Unauthorized" }), {
                 status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        const { planId, userId, priceId, successUrl } = await req.json();
+        const { planId, userId, successUrl, cancelUrl } = await req.json();
 
+        // Security check: Ensure the user is requesting a checkout for themselves
         if (user.id !== userId) {
-            console.error(`[Stripe Checkout] User mismatch! JWT: ${user.id}, Payload: ${userId}`);
-            return new Response(JSON.stringify({ error: "Unauthorized - User mismatch" }), {
+            console.error(`[Stripe Checkout] User ID mismatch: JWT ${user.id} vs Payload ${userId}`);
+            return new Response(JSON.stringify({ error: "Forbidden: User ID mismatch" }), {
                 status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
 
-        const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
-        if (!stripeKey) {
-            console.error('[Stripe Checkout] STRIPE_SECRET_KEY is missing from environment variables');
-            throw new Error('STRIPE_SECRET_KEY is missing');
+        const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+        if (!stripeSecretKey) {
+            console.error("[Stripe Checkout] STRIPE_SECRET_KEY missing from environment");
+            return new Response(JSON.stringify({ error: "Configuration Error: Stripe Key missing" }), {
+                status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
         }
 
-        // Hardcoded fallback for Sprint Pass if env vars are missing
-        const FALLBACK_PRICE_ID = 'price_1RUVhrSBybGMwBbxhxd9KHUD';
-
+        // 2. Map Plan IDs to Environment Secret Price IDs
+        let selectedPriceId: string | undefined;
+        
         const priceBasic = Deno.env.get('STRIPE_PRICE_BASIC');
         const pricePro = Deno.env.get('STRIPE_PRICE_PRO');
+        const priceGlobal = Deno.env.get('STRIPE_PRICE_GLOBAL');
 
-        const selectedPriceId = priceId || (planId === 'pro' ? pricePro : priceBasic) || FALLBACK_PRICE_ID;
+        if (planId === 'basic') {
+            selectedPriceId = priceBasic;
+        } else if (planId === 'pro' || planId === 'sprint_pass') {
+            selectedPriceId = pricePro;
+        } else if (planId === 'global') {
+            selectedPriceId = priceGlobal;
+        }
 
-        console.log("Attempting checkout with Price ID:", selectedPriceId);
+        if (!selectedPriceId) {
+            console.error(`[Stripe Checkout] No Price ID found for plan: ${planId}`);
+            // Fallback to pro if something goes wrong but plan specifically exists
+            selectedPriceId = pricePro; 
+        }
 
-        const stripe = new Stripe(stripeKey, {
+        if (!selectedPriceId) {
+             return new Response(JSON.stringify({ error: "Configuration Error: Invalid Price ID Mapping" }), {
+                status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        console.log(`[Stripe Checkout] Initializing session for User ${userId}, Plan ${planId}, Price ${selectedPriceId}`);
+
+        const stripe = new Stripe(stripeSecretKey, {
             apiVersion: '2023-10-16',
             httpClient: Stripe.createFetchHttpClient(),
         });
 
+        // 3. Create Checkout Session
         const origin = 'https://www.foliogen.in';
-        const dashboardUrl = `${origin}/dashboard`;
-
+        
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             billing_address_collection: 'required',
@@ -73,8 +100,8 @@ serve(async (req) => {
                 },
             ],
             mode: 'payment',
-            success_url: successUrl || `${origin}/?success=true&plan=${planId}&session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${dashboardUrl}?checkout_status=cancelled`,
+            success_url: successUrl || `${origin}/dashboard?checkout_status=success&session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: cancelUrl || `${origin}/dashboard?checkout_status=cancelled`,
             client_reference_id: userId,
             metadata: {
                 userId: userId,
@@ -83,25 +110,22 @@ serve(async (req) => {
             },
         });
 
-
-
-        // 5. Insert pending payment record via Database (Using Service Role for inserts)
-        const serviceClient = createClient(
-            Deno.env.get('SUPABASE_URL') ?? '',
-            Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-        );
-
+        // 4. Record pending payment (using Service Role for bypass)
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+        const serviceClient = createClient(supabaseUrl, supabaseServiceKey);
 
         await serviceClient
             .from('payments')
             .insert({
                 user_id: userId,
-                razorpay_order_id: session.id, // we hijack the column for Stripe session ID
+                razorpay_order_id: session.id, // Reusing column for Stripe session
                 plan_id: planId,
                 status: 'pending',
+                amount: session.amount_total || 0,
+                currency: session.currency || 'inr'
             });
 
-
+        console.log(`[Stripe Checkout] Session created: ${session.id}`);
 
         return new Response(JSON.stringify({ url: session.url }), {
             status: 200,
@@ -109,22 +133,14 @@ serve(async (req) => {
         });
 
     } catch (error: any) {
-        console.error("stripe-checkout error:", error?.message || error);
-        console.error("Stripe Error Details:", error);
+        console.error("[Stripe Checkout] Fatal Error:", error);
         
-        // Handle specific Stripe errors
-        if (error?.type === 'StripeInvalidRequestError') {
-            return new Response(JSON.stringify({ 
-                error: "INVALID_REQUEST", 
-                message: "Stripe rejected the request. Check Price IDs and API Keys.",
-                details: error.message
-            }), {
-                status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-            });
-        }
-
-        return new Response(JSON.stringify({ error: "INTERNAL_ERROR", message: error?.message || "Internal Server Error" }), {
-            status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        return new Response(JSON.stringify({ 
+            error: "STRIPE_ERROR", 
+            message: error.message || "Failed to create checkout session",
+            details: error 
+        }), {
+            status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
     }
 });
