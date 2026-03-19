@@ -13,10 +13,9 @@ CREATE TABLE IF NOT EXISTS public.portfolios (
 );
 
 -- 2. Add plan and subscription columns to profiles if missing
-ALTER TABLE public.profiles 
-ADD COLUMN IF NOT EXISTS plan_type text DEFAULT 'free',
-ADD COLUMN IF NOT EXISTS subscription_id text,
-ADD COLUMN IF NOT EXISTS is_pro boolean DEFAULT false;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='plan_type') THEN ALTER TABLE public.profiles ADD COLUMN plan_type text DEFAULT 'free'; END IF; END$$;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='subscription_id') THEN ALTER TABLE public.profiles ADD COLUMN subscription_id text; END IF; END$$;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='is_pro') THEN ALTER TABLE public.profiles ADD COLUMN is_pro boolean DEFAULT false; END IF; END$$;
 
 -- 3. Create job_applications table if not exists (failing relation fix)
 CREATE TABLE IF NOT EXISTS public.job_applications (

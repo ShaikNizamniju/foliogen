@@ -1,3 +1,2 @@
 -- Add key_highlights column to profiles table
-ALTER TABLE public.profiles
-ADD COLUMN IF NOT EXISTS key_highlights text[] DEFAULT '{}';
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='key_highlights') THEN ALTER TABLE public.profiles ADD COLUMN key_highlights text[] DEFAULT '{}'; END IF; END$$;

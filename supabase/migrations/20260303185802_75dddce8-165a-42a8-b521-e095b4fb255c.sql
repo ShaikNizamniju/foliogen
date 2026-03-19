@@ -1,9 +1,9 @@
 
 -- Add predicted_domain column to profiles
-ALTER TABLE public.profiles ADD COLUMN predicted_domain text;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='predicted_domain') THEN ALTER TABLE public.profiles ADD COLUMN predicted_domain text; END IF; END$$;
 
 -- Create chat_queries table
-CREATE TABLE public.chat_queries (
+CREATE TABLE IF NOT EXISTS public.chat_queries (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_user_id uuid NOT NULL,
   visitor_company text,

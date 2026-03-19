@@ -1,5 +1,5 @@
 -- Create job_applications table for Kanban board
-CREATE TABLE public.job_applications (
+CREATE TABLE IF NOT EXISTS public.job_applications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,
   company text NOT NULL,
@@ -23,7 +23,7 @@ USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 
 -- Add index for faster queries
-CREATE INDEX idx_job_applications_user_status ON public.job_applications (user_id, status);
+CREATE INDEX IF NOT EXISTS idx_job_applications_user_status ON public.job_applications (user_id, status);
 
 -- Add trigger for updated_at
 CREATE TRIGGER update_job_applications_updated_at

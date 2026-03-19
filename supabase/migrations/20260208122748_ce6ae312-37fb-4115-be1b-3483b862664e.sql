@@ -1,5 +1,5 @@
 -- Add resume_url column to profiles table
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS resume_url text;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='resume_url') THEN ALTER TABLE public.profiles ADD COLUMN resume_url text; END IF; END$$;
 
 -- Create resumes storage bucket
 INSERT INTO storage.buckets (id, name, public)

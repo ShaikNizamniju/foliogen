@@ -1,5 +1,5 @@
 -- Payments audit log
-CREATE TABLE payments (
+CREATE TABLE IF NOT EXISTS payments (
   id                  UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id             UUID NOT NULL REFERENCES auth.users(id),
   razorpay_order_id   TEXT NOT NULL UNIQUE,
@@ -15,7 +15,7 @@ CREATE TABLE payments (
 );
 
 -- User subscriptions
-CREATE TABLE user_subscriptions (
+CREATE TABLE IF NOT EXISTS user_subscriptions (
   id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id     UUID NOT NULL UNIQUE REFERENCES auth.users(id),
   plan_id     TEXT NOT NULL CHECK (plan_id IN ('basic', 'pro')),

@@ -1,6 +1,6 @@
 
 -- Add selected_font column to profiles
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS selected_font TEXT DEFAULT NULL;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='selected_font') THEN ALTER TABLE public.profiles ADD COLUMN selected_font TEXT DEFAULT NULL; END IF; END$$;
 
 -- Recreate the profiles_public view to include selected_font and keep password stripping
 DROP VIEW IF EXISTS public.profiles_public;

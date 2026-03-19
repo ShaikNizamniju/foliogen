@@ -1,9 +1,8 @@
 -- Add username column for custom portfolio URLs
-ALTER TABLE public.profiles 
-ADD COLUMN username text UNIQUE;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='username') THEN ALTER TABLE public.profiles ADD COLUMN username text UNIQUE; END IF; END$$;
 
 -- Add index for faster username lookups
-CREATE INDEX idx_profiles_username ON public.profiles(username) WHERE username IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_profiles_username ON public.profiles(username) WHERE username IS NOT NULL;
 
 -- Update profiles_public view to include username
 DROP VIEW IF EXISTS public.profiles_public;

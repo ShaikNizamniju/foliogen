@@ -1,3 +1,2 @@
 -- Add ai_prep column to store interview preparation data
-ALTER TABLE public.job_applications 
-ADD COLUMN IF NOT EXISTS ai_prep jsonb DEFAULT NULL;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='job_applications' AND column_name='ai_prep') THEN ALTER TABLE public.job_applications ADD COLUMN ai_prep jsonb DEFAULT NULL; END IF; END$$;

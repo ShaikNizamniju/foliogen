@@ -1,5 +1,5 @@
 -- Create visit_logs table for tracking recruiter visits with personalized links
-CREATE TABLE public.visit_logs (
+CREATE TABLE IF NOT EXISTS public.visit_logs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   profile_user_id uuid NOT NULL,
   company_name text,
@@ -23,4 +23,4 @@ FOR SELECT
 USING (auth.uid() = profile_user_id);
 
 -- Add index for faster queries by profile and date
-CREATE INDEX idx_visit_logs_profile_created ON public.visit_logs (profile_user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_visit_logs_profile_created ON public.visit_logs (profile_user_id, created_at DESC);

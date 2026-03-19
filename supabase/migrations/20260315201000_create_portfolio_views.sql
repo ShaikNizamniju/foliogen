@@ -1,5 +1,5 @@
 -- Create portfolio_views table for tracking visits
-CREATE TABLE public.portfolio_views (
+CREATE TABLE IF NOT EXISTS public.portfolio_views (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   viewer_ip TEXT,
@@ -32,5 +32,5 @@ CREATE POLICY "Allow anonymous view logging"
   WITH CHECK (true);
 
 -- Index for performance on the dashboard
-CREATE INDEX idx_portfolio_views_profile_id ON public.portfolio_views(profile_id);
-CREATE INDEX idx_portfolio_views_created_at ON public.portfolio_views(created_at);
+CREATE INDEX IF NOT EXISTS idx_portfolio_views_profile_id ON public.portfolio_views(profile_id);
+CREATE INDEX IF NOT EXISTS idx_portfolio_views_created_at ON public.portfolio_views(created_at);

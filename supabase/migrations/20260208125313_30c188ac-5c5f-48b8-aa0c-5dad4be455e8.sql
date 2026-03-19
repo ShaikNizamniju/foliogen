@@ -1,6 +1,5 @@
 -- Add calendly_url to profiles table for booking integration
-ALTER TABLE public.profiles 
-ADD COLUMN IF NOT EXISTS calendly_url text;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='calendly_url') THEN ALTER TABLE public.profiles ADD COLUMN calendly_url text; END IF; END$$;
 
 -- Update the profiles_public view to include calendly_url
 DROP VIEW IF EXISTS public.profiles_public;

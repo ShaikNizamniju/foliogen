@@ -1,8 +1,7 @@
 -- Add Pro tier columns to profiles table
-ALTER TABLE public.profiles 
-ADD COLUMN IF NOT EXISTS is_pro boolean DEFAULT false,
-ADD COLUMN IF NOT EXISTS subscription_id text,
-ADD COLUMN IF NOT EXISTS pro_since timestamp with time zone;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='is_pro') THEN ALTER TABLE public.profiles ADD COLUMN is_pro boolean DEFAULT false; END IF; END$$;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='subscription_id') THEN ALTER TABLE public.profiles ADD COLUMN subscription_id text; END IF; END$$;
+DO $$BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='profiles' AND column_name='pro_since') THEN ALTER TABLE public.profiles ADD COLUMN pro_since timestamp with time zone; END IF; END$$;
 
 -- Update the profiles_public view to include is_pro (but not sensitive subscription data)
 DROP VIEW IF EXISTS public.profiles_public;

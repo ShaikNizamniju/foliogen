@@ -1,5 +1,5 @@
 -- Create favorites table for storing user template preferences
-CREATE TABLE public.favorites (
+CREATE TABLE IF NOT EXISTS public.favorites (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid NOT NULL,
   template_id text NOT NULL,
