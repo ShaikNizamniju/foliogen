@@ -40,13 +40,12 @@ serve(async (req) => {
     const { allowed, retryAfterSeconds } = checkTieredRateLimit(`audit:${user.id || ip}`, tier);
     if (!allowed) return rateLimitedResponse(retryAfterSeconds, tier);
 
-    const { action, jobDescription, profileData, truthIndex, truth } = await req.json();
+    const { action, jobDescription, profileData, truth } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
     if (!LOVABLE_API_KEY) return errorResponse("AI service not configured", 500);
 
     if (action === "audit") {
-      // ── Audit: find 3 hard truths ──
       const jdCheck = validateText(jobDescription, "Job description", 8000, 20);
       if (!jdCheck.valid) return validationError(jdCheck.error!);
 
@@ -59,6 +58,9 @@ For each truth, specify:
 - "title": a short, punchy gap title (max 8 words)
 - "explanation": 2-3 sentences explaining the gap and why it matters
 - "severity": "critical" | "major" | "minor"
+- "recommended_fix": A 1-sentence actionable instruction for what to change. If data is missing, prefix with "[Metric Gap]" and suggest what the user should add manually.
+
+HARD CONSTRAINT: Never invent metrics, numbers, or achievements. If the portfolio lacks quantifiable data, return a "[Metric Gap]" warning in recommended_fix rather than fabricating statistics.
 
 Return ONLY valid JSON array of 3 objects. No markdown, no filler.`;
 
@@ -93,8 +95,9 @@ Return ONLY valid JSON array of 3 objects. No markdown, no filler.`;
                         title: { type: "string" },
                         explanation: { type: "string" },
                         severity: { type: "string", enum: ["critical", "major", "minor"] },
+                        recommended_fix: { type: "string" },
                       },
-                      required: ["section", "title", "explanation", "severity"],
+                      required: ["section", "title", "explanation", "severity", "recommended_fix"],
                       additionalProperties: false,
                     },
                   },
@@ -129,26 +132,27 @@ Return ONLY valid JSON array of 3 objects. No markdown, no filler.`;
     }
 
     if (action === "fix") {
-      // ── Fix: rewrite the specified section ──
       if (!truth || !profileData) return errorResponse("Missing truth or profile data", 400);
 
       const section = truth.section;
       const currentValue = profileData[section];
 
-      const systemPrompt = `You are a Career Infrastructure AI specializing in portfolio optimization for Product Managers.
+      const systemPrompt = `You are a Career Infrastructure AI specializing in portfolio optimization.
 
 The recruiter identified this gap: "${truth.title}" — ${truth.explanation}
+Recommended fix direction: ${truth.recommended_fix || "Address the gap directly."}
 
 Your task: Rewrite the "${section}" section of the portfolio to directly address this gap.
 
 RULES:
-1. Use STAR/HEART/RICE frameworks where applicable.
-2. Never invent metrics. If the original has no numbers, write "Impact: High-complexity feature orchestration" instead.
-3. Never use words like 'passionate', 'collaborative', 'synergy'.
-4. Return ONLY the rewritten content — no commentary, no labels.
-5. For array fields (skills, keyHighlights), return a JSON array of strings.
-6. For workExperience/projects, return the full JSON array with the improved descriptions.
-7. For string fields (bio, headline), return plain text.`;
+1. Use STAR (Situation, Task, Action, Result) method where applicable.
+2. NEVER invent metrics, numbers, percentages, or achievements. If the original has no numbers, write qualitative impact statements like "Led high-complexity feature orchestration" instead.
+3. If data is missing that you cannot infer, include a "[Metric Gap: describe what to add]" placeholder so the user knows to fill it in.
+4. Never use words like 'passionate', 'collaborative', 'synergy', 'leveraged'.
+5. Return ONLY the rewritten content — no commentary, no labels.
+6. For array fields (skills, keyHighlights), return a JSON array of strings.
+7. For workExperience/projects, return the full JSON array with the improved descriptions.
+8. For string fields (bio, headline), return plain text.`;
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -180,7 +184,6 @@ RULES:
 
     return errorResponse("Invalid action", 400);
   } catch (error: any) {
-    console.error("Recruiter audit error:", error);
     return errorResponse("An unexpected error occurred", 500);
   }
 });
