@@ -47,6 +47,7 @@ const menuItems = [
   { title: 'Career Hub', icon: Briefcase, section: 'jobs' },
   { title: 'Interview Prep', icon: Target, section: 'interview-prep' },
   { title: 'Templates', icon: Palette, section: 'templates' },
+  { title: 'Recruiter Audit', icon: ShieldAlert, section: 'recruiter-audit' },
   { title: 'Identity Vault', icon: Vault, section: 'identity-vault' },
   { title: 'Billing & Subscription', icon: CreditCard, section: 'billing' },
   { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },

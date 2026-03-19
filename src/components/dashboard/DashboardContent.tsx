@@ -57,6 +57,7 @@ export function DashboardContent() {
       case 'jobs': return <JobsSection />;
       case 'interview-prep': return <InterviewPrepSection />;
       case 'templates': return <TemplatesSection />;
+      case 'recruiter-audit': return <RecruiterAuditSection />;
       case 'chat-log': return <ChatLogSection />;
       case 'identity-vault': return <IdentityVaultSection />;
       case 'settings': return <SettingsSection />;
