@@ -7,19 +7,24 @@ import { supabase } from '@/lib/supabase_v2';
  */
 export function useWelcomeEmail() {
     const triggerWelcomeEmail = useCallback(
-        async (email: string, name: string, provider: 'email' | 'google' = 'email') => {
+        async (name: string, provider: 'email' | 'google' = 'email') => {
             try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session?.access_token) return;
+
                 await fetch(
                     `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/on-auth-success`,
                     {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, name, provider }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.access_token}`,
+                        },
+                        body: JSON.stringify({ name, provider }),
                     }
                 );
             } catch (e) {
                 // Non-blocking – email failure should never block auth flow
-
             }
         },
         []
