@@ -131,7 +131,7 @@ export default function Auth() {
           );
         } else {
           toast.success('Account created! Welcome to Foliogen.');
-          triggerWelcomeEmail(email, fullName, 'email');
+          triggerWelcomeEmail(fullName, 'email');
           navigate('/dashboard?section=overview');
         }
       }
