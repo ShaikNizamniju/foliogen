@@ -137,7 +137,7 @@ export function InterviewPrepSection() {
                     </p>
                     <Button
                         onClick={() => handleGeneratePrep(selectedJob)}
-                        disabled={isGenerating || !isProUser}
+                        disabled={isGenerating}
                         className="shadow-glow"
                     >
                         {isGenerating ? (
@@ -146,11 +146,9 @@ export function InterviewPrepSection() {
                             <><Sparkles className="h-4 w-4 mr-2" /> Generate Interview Prep</>
                         )}
                     </Button>
-                    {!isProUser && (
-                        <p className="text-xs text-amber-500 mt-4 font-medium">
-                            Interview Prep is a Pro feature. Upgrade to unlock.
-                        </p>
-                    )}
+                    <p className="text-xs text-emerald-500 mt-4 font-medium">
+                        Pro Features Unlocked for Beta. Practice unlimited questions.
+                    </p>
                 </Card>
             )}
 

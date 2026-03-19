@@ -91,16 +91,12 @@ export function IdentityVaultSection() {
     };
 
     const handleGenerateClick = () => {
-        if (!isPro && portfolios.length >= 1) {
-            setFreeWarningOpen(true);
-        } else {
-            // Pro user (or Free with 0 portfolios) -> go to profile editor
-            navigate('/dashboard?section=profile');
-            toast({
-                title: 'New Identity',
-                description: 'Update your data and click Publish to create a new portfolio slug.',
-            });
-        }
+        // All users are treated as Pro in Beta
+        navigate('/dashboard?section=profile');
+        toast({
+            title: 'New Identity',
+            description: 'Update your data and click Publish to create a new portfolio slug.',
+        });
     };
 
     const confirmDelete = (portfolio: any) => {
@@ -245,36 +241,7 @@ export function IdentityVaultSection() {
                 </div>
             )}
 
-            {/* Free User Warning Modal */}
-            <Dialog open={freeWarningOpen} onOpenChange={setFreeWarningOpen}>
-                <DialogContent className="border-border bg-card text-foreground sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="font-instrument text-2xl flex items-center gap-2 text-foreground">
-                            <ShieldAlert className="h-6 w-6 text-amber-500" />
-                            Overwrite Warning
-                        </DialogTitle>
-                        <DialogDescription className="text-muted-foreground pt-3 text-base">
-                            Your existing portfolio will be <strong>overwritten</strong>. Upgrade to Pro to host multiple unique links simultaneously without losing your current identity.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex flex-col gap-3 pt-4">
-                        <Button
-                            onClick={() => { setFreeWarningOpen(false); navigate('/dashboard?section=profile'); }}
-                            variant="outline"
-                            className="w-full bg-secondary border-border text-foreground hover:bg-accent"
-                        >
-                            Continue & Overwrite
-                        </Button>
-                        <Button
-                            onClick={() => { setFreeWarningOpen(false); navigate('/dashboard#pricing'); }}
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-glow"
-                        >
-                            <Sparkles className="h-4 w-4 mr-2" />
-                            Upgrade to Pro
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+
 
             {/* Delete Confirmation Modal */}
             <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>

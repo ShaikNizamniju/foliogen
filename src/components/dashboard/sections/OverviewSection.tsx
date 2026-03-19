@@ -4,7 +4,7 @@ import { useProfile } from '@/contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePro } from '@/contexts/ProContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck, Lock, Target } from 'lucide-react';
+import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
@@ -366,35 +366,9 @@ export function OverviewSection() {
           variants={fadeUp}
           whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400 } }}
           className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 cursor-default"
-          onClick={() => !isPro ? setIsPulseModalOpen(true) : navigate('/dashboard?section=billing')}
+          onClick={() => setIsPulseModalOpen(false)}
         >
-          {!isPro && (
-            <div className="absolute inset-0 z-20 backdrop-blur-md bg-black/40 flex flex-col items-start p-4 overflow-hidden">
-               <div className="absolute inset-0 flex flex-col items-center justify-center z-30 pointer-events-none">
-                <div className="bg-popover/80 border border-border p-4 rounded-xl shadow-2xl backdrop-blur-sm scale-90 group-hover:scale-100 transition-transform duration-300">
-                  <Lock className="h-6 w-6 text-amber-500 mx-auto mb-2" />
-                  <p className="text-sm font-bold text-white text-center">Unlock Insights</p>
-                  <p className="text-[10px] text-zinc-400 mt-1 uppercase tracking-widest text-center">Sprint Pass Required</p>
-                </div>
-              </div>
-              
-              {/* Teaser Data Feed */}
-              <div className="w-full space-y-2 opacity-20 select-none pointer-events-none mt-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center justify-between p-2 bg-white/5 rounded-lg border border-white/10">
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-blue-500/50" />
-                      <div className="flex flex-col gap-1">
-                        <div className="h-1.5 w-24 bg-zinc-600 rounded" />
-                        <div className="text-[8px] text-zinc-500 font-mono">VISITOR FROM [REDACTED COMPANY]</div>
-                      </div>
-                    </div>
-                    <div className="h-2 w-8 bg-zinc-800 rounded" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
@@ -427,7 +401,7 @@ export function OverviewSection() {
               </motion.p>
             </div>
             <div className="mt-2 space-y-1">
-              {isPro && pulseViews.length > 0 ? pulseViews.slice(0, 3).map((view, idx) => {
+              {pulseViews.length > 0 ? pulseViews.slice(0, 3).map((view, idx) => {
                 const city = (typeof view.viewer_region === 'string' ? view.viewer_region.split(',')[0] : null) || 'Unknown City';
                 const displayLocation = view.viewer_company && view.viewer_company !== 'Individual Visitor' 
                   ? `🏢 ${view.viewer_company}` 
@@ -674,7 +648,7 @@ export function OverviewSection() {
           <div className="absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-indigo-400/[0.05] to-transparent -translate-x-full animate-[shimmer_5s_infinite_linear] pointer-events-none" />
           
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
-            <Lock className="h-12 w-12 text-indigo-400" />
+            <ShieldCheck className="h-12 w-12 text-indigo-400" />
           </div>
           
           <div className="flex items-center gap-3 mb-4">

@@ -49,7 +49,7 @@ const menuItems = [
   { title: 'Templates', icon: Palette, section: 'templates' },
   { title: 'Recruiter Audit', icon: ShieldAlert, section: 'recruiter-audit' },
   { title: 'Identity Vault', icon: Vault, section: 'identity-vault' },
-  { title: 'Billing & Subscription', icon: CreditCard, section: 'billing' },
+  { title: 'Beta Status', icon: CreditCard, section: 'billing' },
   { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },
   { title: 'Settings', icon: Settings, section: 'settings' },
 ];

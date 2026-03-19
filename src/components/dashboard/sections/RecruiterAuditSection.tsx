@@ -67,32 +67,7 @@ function formatValueForDisplay(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
-function ProGateOverlay() {
-  const navigate = useNavigate();
-  return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-background/60 rounded-xl">
-      <div className="text-center space-y-4 max-w-sm px-6">
-        <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
-          <Lock className="h-7 w-7 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight text-foreground">
-          Unlock Recruiter Audit
-        </h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Get brutally honest gap analysis against any job description with AI-powered auto-fix.
-        </p>
-        <Button
-          onClick={() => navigate("/dashboard?section=billing")}
-          className="gap-2 min-h-[44px] bg-indigo-600 hover:bg-indigo-700 shadow-xl"
-        >
-          <Crown className="h-4 w-4" />
-          Upgrade to Unlock — ₹999
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
-}
+
 
 function DiffView({ diff, onAccept, onDecline, accepting }: {
   diff: DiffPreview;
@@ -358,13 +333,7 @@ export function RecruiterAuditSection() {
 
   return (
     <div className="space-y-6 relative">
-      {/* Pro Gate Overlay */}
-      {!isPro && (
-        <ProGateOverlay />
-      )}
-
-      <div className={!isPro ? "blur-sm pointer-events-none select-none" : ""}>
-        <div>
+      <div>
           <h1 className="text-2xl font-bold tracking-tight">Recruiter Audit</h1>
           <p className="text-muted-foreground mt-1">
             Paste a job description and get brutally honest feedback on your portfolio gaps.
@@ -532,7 +501,6 @@ export function RecruiterAuditSection() {
 
         {/* Audit History Memory Layer */}
         <AuditHistoryTimeline />
-      </div>
     </div>
   );
 }

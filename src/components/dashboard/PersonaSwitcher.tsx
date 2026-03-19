@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ChevronDown, Sparkles, Building2, Rocket, Landmark, Lock } from "lucide-react";
+import { ChevronDown, Sparkles, Building2, Rocket, Landmark } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,17 +37,6 @@ export function PersonaSwitcher() {
   }, []);
 
   const handleSelect = (id: Persona) => {
-    const persona = PERSONAS.find(p => p.id === id);
-    if (persona?.isPro && !isPro) {
-      toast.error("Sprint Pass Required", { 
-        description: "Upgrade to unlock target-industry personas.",
-        action: {
-          label: "Upgrade",
-          onClick: () => window.dispatchEvent(new CustomEvent("navigate-to-billing"))
-        }
-      });
-      return;
-    }
     if (id === activePersona) return;
     
     // Optimistic UI updates
@@ -96,7 +85,6 @@ export function PersonaSwitcher() {
                   <div className="flex flex-col">
                     <div className="flex items-center gap-1.5">
                       <span className={cn("font-medium", isActive ? "font-semibold" : "")}>{ind.label}</span>
-                      {ind.isPro && !isPro && <Lock className="w-2.5 h-2.5 text-amber-500/60" />}
                     </div>
                     <span className="text-[10px] text-neutral-500">{ind.description}</span>
                   </div>
