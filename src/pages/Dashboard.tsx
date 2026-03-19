@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProfileProvider, useProfile } from '@/contexts/ProfileContext';
@@ -17,6 +17,7 @@ import { usePro } from '@/contexts/ProContext';
 import { ProVaultWaitlistModal } from '@/components/dashboard/ProVaultWaitlistModal';
 import { FoundersFeedback } from '@/components/dashboard/FoundersFeedback';
 import { MobileSprintCTA } from '@/components/ui/MobileSprintCTA';
+import { toast } from "sonner";
 
 // Global Data Context to avoid loading spinners on tab switch
 export const GlobalDataContext = createContext<any>(null);
@@ -114,7 +115,48 @@ function DashboardInner() {
   const { profile } = useProfile();
   const { user } = useAuth();
   const { isBasicOrAbove } = usePro();
+  const navigate = useNavigate();
   const [waitlistOpen, setWaitlistOpen] = useState(false);
+
+  // Proactive Identity Watcher Agency
+  const prevCounts = useRef<{ projects: number; experiences: number } | null>(null);
+  const triggeredRef = useRef(false);
+
+  useEffect(() => {
+    if (!profile || triggeredRef.current) return;
+
+    const currentProjectCount = profile.projects?.length || 0;
+    const currentExperienceCount = profile.workExperience?.length || 0;
+
+    // Set baseline on first valid profile load
+    if (prevCounts.current === null) {
+      prevCounts.current = {
+        projects: currentProjectCount,
+        experiences: currentExperienceCount
+      };
+      return;
+    }
+
+    const addedProject = currentProjectCount > prevCounts.current.projects;
+    const addedExperience = currentExperienceCount > prevCounts.current.experiences;
+
+    if (addedProject || addedExperience) {
+      toast("New Identity Detected", {
+        description: "Your portfolio might be out of sync. Run a Recruiter Audit to optimize for the market?",
+        action: {
+          label: "Audit Now",
+          onClick: () => navigate("/dashboard?section=recruiter-audit")
+        },
+      });
+      triggeredRef.current = true;
+    }
+
+    // Update baseline to track future additions within the same session
+    prevCounts.current = {
+      projects: currentProjectCount,
+      experiences: currentExperienceCount
+    };
+  }, [profile?.projects?.length, profile?.workExperience?.length, navigate]);
 
   // 60-second activity timer
   useEffect(() => {
