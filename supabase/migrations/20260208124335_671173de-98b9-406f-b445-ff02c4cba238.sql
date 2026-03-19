@@ -1,3 +1,12 @@
+-- Create missing helper function
+CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
 -- Create job_applications table for Kanban board
 CREATE TABLE IF NOT EXISTS public.job_applications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
