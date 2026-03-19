@@ -18,6 +18,7 @@ import {
   Sun,
   Moon,
   CreditCard,
+  ShieldAlert,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 import profilePhoto from '@/assets/profile-photo.jpeg';
@@ -46,6 +47,7 @@ const menuItems = [
   { title: 'Career Hub', icon: Briefcase, section: 'jobs' },
   { title: 'Interview Prep', icon: Target, section: 'interview-prep' },
   { title: 'Templates', icon: Palette, section: 'templates' },
+  { title: 'Recruiter Audit', icon: ShieldAlert, section: 'recruiter-audit' },
   { title: 'Identity Vault', icon: Vault, section: 'identity-vault' },
   { title: 'Billing & Subscription', icon: CreditCard, section: 'billing' },
   { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },

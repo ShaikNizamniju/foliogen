@@ -8,6 +8,7 @@ import { JobsSection } from './sections/JobsSection';
 import { InterviewPrepSection } from './sections/InterviewPrepSection';
 import { ChatLogSection } from './sections/ChatLogSection';
 import { BillingSection } from './sections/BillingSection';
+import { RecruiterAuditSection } from './sections/RecruiterAuditSection';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
@@ -56,6 +57,7 @@ export function DashboardContent() {
       case 'jobs': return <JobsSection />;
       case 'interview-prep': return <InterviewPrepSection />;
       case 'templates': return <TemplatesSection />;
+      case 'recruiter-audit': return <RecruiterAuditSection />;
       case 'chat-log': return <ChatLogSection />;
       case 'identity-vault': return <IdentityVaultSection />;
       case 'settings': return <SettingsSection />;
