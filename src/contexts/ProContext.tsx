@@ -40,9 +40,8 @@ export function ProProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // VIP bypass: grant Pro locally for whitelisted beta testers
-    const userEmail = user.email?.toLowerCase();
-    if (userEmail && VIP_WHITELIST.includes(userEmail)) {
+    // BETA BYPASS: Universal Pro access for all logged-in testers
+    if (user) {
       setIsPro(true);
       setPlanType("sprint_pass");
       setSubscriptionStatus("active");
