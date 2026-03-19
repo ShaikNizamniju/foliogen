@@ -42,9 +42,20 @@ function GlobalDataProvider({ children }: { children: ReactNode }) {
 
       // Fetch Chats
       setGlobalData(prev => ({ ...prev, jobsStatus: 'success', jobs: jobs || [], chatStatus: 'loading' }));
-      const { data: chats } = await supabase.from('chat_queries').select('*').eq('profile_user_id', user.id).order('created_at', { ascending: false }).limit(100);
-
-      setGlobalData(prev => ({ ...prev, chatStatus: 'success', chats: chats || [] }));
+      try {
+        const { data: chats, error: chatError } = await supabase
+          .from('chat_queries')
+          .select('*')
+          .eq('profile_user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(100);
+        
+        if (chatError) throw chatError;
+        setGlobalData(prev => ({ ...prev, chatStatus: 'success', chats: chats || [] }));
+      } catch (error: any) {
+        console.error("[Dashboard] Global Chat Fetch Error:", error.message || error);
+        setGlobalData(prev => ({ ...prev, chatStatus: 'error', chats: [] }));
+      }
     };
     fetchGlobalData();
   }, [user]);

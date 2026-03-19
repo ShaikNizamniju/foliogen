@@ -35,14 +35,21 @@ export function ChatLogSection() {
     }
     const fetchQueries = async () => {
       if (!globalData) setLocalLoading(true);
-      const { data } = await supabase
-        .from('chat_queries')
-        .select('*')
-        .eq('profile_user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(100);
-      setQueriesState((data as ChatQuery[]) || []);
-      if (!globalData) setLocalLoading(false);
+      try {
+        const { data, error } = await supabase
+          .from('chat_queries')
+          .select('*')
+          .eq('profile_user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(100);
+        
+        if (error) throw error;
+        setQueriesState((data as ChatQuery[]) || []);
+      } catch (error: any) {
+        console.error("[ChatLog] Fetch Error:", error.message || error);
+      } finally {
+        if (!globalData) setLocalLoading(false);
+      }
     };
     fetchQueries();
   }, [user, globalData, setQueriesState]);
