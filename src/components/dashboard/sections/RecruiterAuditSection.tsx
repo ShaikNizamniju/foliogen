@@ -83,10 +83,10 @@ function ProGateOverlay() {
         </p>
         <Button
           onClick={() => navigate("/dashboard?section=billing")}
-          className="gap-2 min-h-[44px]"
+          className="gap-2 min-h-[44px] bg-indigo-600 hover:bg-indigo-700 shadow-xl"
         >
           <Crown className="h-4 w-4" />
-          Upgrade to Sprint Pass
+          Upgrade to Unlock — ₹999
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
@@ -529,10 +529,10 @@ export function RecruiterAuditSection() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
 
-      {/* Audit History Memory Layer */}
-      <AuditHistoryTimeline />
+        {/* Audit History Memory Layer */}
+        <AuditHistoryTimeline />
+      </div>
     </div>
   );
 }
