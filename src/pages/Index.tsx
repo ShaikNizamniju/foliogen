@@ -28,7 +28,7 @@ const SuccessOverlay = () => {
       </div>
       <h1 className="text-4xl md:text-6xl font-serif text-white mb-4 tracking-tight">Identity, Engineered.</h1>
       <p className="text-muted-foreground text-lg mb-12 max-w-md mx-auto">
-        {planFromUrl === "sprint_pass" ? "Welcome to the Sprint Pass" : "Welcome to the Free Tier"}
+        Welcome to the Open Beta — Pro Features Unlocked!
       </p>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-2">
         <button
