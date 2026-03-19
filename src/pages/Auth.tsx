@@ -118,7 +118,7 @@ export default function Auth() {
           }
         } else {
           toast.success('Welcome back!');
-          triggerWelcomeEmail(email, email.split('@')[0], 'email');
+          triggerWelcomeEmail(email.split('@')[0], 'email');
           navigate('/dashboard?section=overview');
         }
       } else {
