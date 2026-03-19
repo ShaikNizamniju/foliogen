@@ -24,6 +24,7 @@ import {
   Eye,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AuditHistoryTimeline } from "./AuditHistoryTimeline";
 
 interface HardTruth {
   section: string;
@@ -529,6 +530,9 @@ export function RecruiterAuditSection() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Audit History Memory Layer */}
+      <AuditHistoryTimeline />
     </div>
   );
 }

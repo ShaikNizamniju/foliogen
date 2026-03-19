@@ -3,7 +3,7 @@ import { OverviewSection } from './sections/OverviewSection';
 import { ProfileSection } from './sections/ProfileSection';
 import { TemplatesSection } from './sections/TemplatesSection';
 import { SettingsSection } from './sections/SettingsSection';
-import { JobMatchSection } from './sections/JobMatchSection';
+import { RecruiterAuditSection as JobMatchSection } from './sections/RecruiterAuditSection';
 import { JobsSection } from './sections/JobsSection';
 import { InterviewPrepSection } from './sections/InterviewPrepSection';
 import { ChatLogSection } from './sections/ChatLogSection';

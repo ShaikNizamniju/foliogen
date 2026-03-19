@@ -43,7 +43,7 @@ import { cn } from '@/lib/utils';
 const menuItems = [
   { title: 'Overview', icon: LayoutDashboard, section: 'overview' },
   { title: 'Profile', icon: User, section: 'profile' },
-  { title: 'Job Match', icon: Sparkles, section: 'job-match' },
+  { title: 'Recruiter Audit', icon: Sparkles, section: 'job-match' },
   { title: 'Career Hub', icon: Briefcase, section: 'jobs' },
   { title: 'Interview Prep', icon: Target, section: 'interview-prep' },
   { title: 'Templates', icon: Palette, section: 'templates' },
