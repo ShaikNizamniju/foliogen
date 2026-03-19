@@ -105,6 +105,8 @@ export interface ProfileData {
   fontConfig?: FontConfig;
   username?: string;
   isPro?: boolean;
+  plan_type?: string;
+  subscription_id?: string;
   predictedDomain?: string;
   hidePhoto?: boolean;
   selectedTemplate:
@@ -321,7 +323,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     setLoading(true);
-    const { data, error } = await supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle();
+    const { data, error } = await supabase.from("profiles").select("*, plan_type, subscription_id").eq("user_id", user.id).maybeSingle();
     const { data: vaultData, error: vaultError } = await supabase.from("identity_vault").select("*").eq("user_id", user.id);
 
     if (error) {

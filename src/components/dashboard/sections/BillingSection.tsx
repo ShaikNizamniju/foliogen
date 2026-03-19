@@ -155,8 +155,13 @@ export function BillingSection() {
   }
 
   const isLevelActive = (level: 'free' | 'starter' | 'sprint_pass') => {
-    if (level === 'sprint_pass') return isPro || planType === 'sprint_pass';
-    if (level === 'starter') return isPro || planType === 'starter' || planType === 'sprint_pass';
+    // profile.isPro can be coming from ProfileContext which we've synced
+    // but ProProvider uses isPro from its own internal state. 
+    // We'll use a local check to be extra safe
+    const isActuallyPro = isPro || planType === 'pro' || planType === 'sprint_pass' || planType === 'starter';
+
+    if (level === 'sprint_pass') return isActuallyPro; 
+    if (level === 'starter') return isActuallyPro;
     return true;
   };
 
