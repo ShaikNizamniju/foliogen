@@ -102,7 +102,7 @@ export function ProGate({
           ) : (
             <>
               <Sparkles className="h-4 w-4 mr-2" />
-              Get Pro for ₹999
+              Claim Free Pro Access
             </>
           )}
         </Button>
@@ -148,7 +148,7 @@ export function ProGate({
             ) : (
               <>
                 <Sparkles className="h-4 w-4 mr-2" />
-                Get Pro for ₹999
+                Claim Free Pro Access
               </>
             )}
           </Button>

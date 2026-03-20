@@ -44,39 +44,56 @@ export async function handlePayment(
 ): Promise<void> {
   try {
     const plan = PLANS[planKey];
-    toast({ title: "Initializing secure checkout...", description: "Please wait." });
-
-    const payload = {
-      planId: plan.id,
-      userId: user.id,
-      successUrl: window.location.origin + '/dashboard?section=billing&status=success',
-      cancelUrl: window.location.origin + '/dashboard?section=billing&checkout_status=cancelled'
-    };
-
-    console.log("Payload sent to Edge Function:", payload);
-
-    const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-      body: payload,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    
+    // ──────── PIVOT: FREE MODEL ────────
+    // This part is modified to bypass the Stripe checkout and grant Pro access directly.
+    toast({ 
+      title: "Activating Your Free Pro Access! 🚀", 
+      description: "Enjoy Foliogen! All Pro features are completely free during our early testing phase." 
     });
 
-    if (error || !data?.url) {
-      const errorMessage = error?.message || '';
-      console.error('[Payment] Checkout failed:', { error, data, errorMessage });
-      if (errorMessage.includes('Failed to send a request to the Edge Function') || errorMessage.includes('offline')) {
-        toast({ title: "Payment System Offline", description: "The checkout server is currently unreachable. Please try again later.", variant: "destructive" });
-      } else {
-        toast({ title: "Payment Error", description: "Failed to initialize secure checkout. Please try again.", variant: "destructive" });
-      }
+    const now = new Date();
+    const renewalDate = new Date();
+    renewalDate.setFullYear(now.getFullYear() + 10); // Grant 10 years for peace of mind
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        is_pro: true,
+        plan_type: plan.id,
+        subscription_status: 'active',
+        pro_since: now.toISOString(),
+        next_renewal_date: renewalDate.toISOString(),
+        subscription_id: `free_testing_${user.id}_${Date.now()}`
+      } as any) // Type cast to handle cases where types might be stale
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('[Payment Bypass] Failed to activate free pro:', error);
+      toast({ 
+        title: "Activation Error", 
+        description: "Something went wrong activating your free account. Please refresh and try again.", 
+        variant: "destructive" 
+      });
       return;
     }
 
-    window.location.href = data.url;
+    // Success Ceremony
+    triggerCelebration();
+    toast({ 
+      title: "Welcome to Pro! 🎉", 
+      description: `You've been successfully upgraded to the ${plan.label} plan for free.` 
+    });
+
+    // Call success callback
+    setTimeout(() => {
+      onSuccess(plan.id);
+      window.location.href = '/dashboard?section=billing&status=success&mode=free_testing';
+    }, 1500);
+
   } catch (err: any) {
-    console.error('[Payment] Unexpected error:', err?.message, err);
-    toast({ title: "Payment Error", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
+    console.error('[Payment] Unexpected error during free pivot:', err?.message, err);
+    toast({ title: "Activation Error", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
   }
 }
 

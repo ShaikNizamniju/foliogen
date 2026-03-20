@@ -73,8 +73,8 @@ export function ProUpsellBanner() {
                         <div className="flex flex-col mb-6">
                             <span className="text-sm font-medium text-muted-foreground line-through decoration-red-500/50">₹499/month</span>
                             <div className="flex items-baseline gap-1">
-                                <span className="text-4xl font-extrabold text-foreground">₹199</span>
-                                <span className="text-sm text-muted-foreground font-medium">/ month</span>
+                                <span className="text-4xl font-extrabold text-foreground">FREE</span>
+                                <span className="text-sm text-muted-foreground font-medium">/ testing period</span>
                             </div>
                         </div>
 
@@ -103,8 +103,8 @@ export function ProUpsellBanner() {
                         <div className="flex flex-col mb-6">
                             <span className="text-sm font-medium text-muted-foreground line-through decoration-[#4f46e5]/50">₹2,388/year</span>
                             <div className="flex items-baseline gap-1">
-                                <span className="text-4xl font-extrabold text-white">₹999</span>
-                                <span className="text-sm text-white/70 font-medium">/ year</span>
+                                <span className="text-4xl font-extrabold text-white">FREE</span>
+                                <span className="text-sm text-white/70 font-medium">/ testing period</span>
                             </div>
                         </div>
 
