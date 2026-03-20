@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.chameleon_links (
     created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
+ALTER TABLE public.chameleon_links ADD COLUMN IF NOT EXISTS is_active boolean DEFAULT true;
 ALTER TABLE public.chameleon_links ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "everyone can view active chameleon links" ON public.chameleon_links;

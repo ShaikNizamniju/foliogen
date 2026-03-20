@@ -32,6 +32,7 @@ CREATE POLICY "Users can delete their own portfolios." ON public.portfolios
 
 -- Migration logic: Move existing published data from profiles_public/profiles
 -- If they have a username, use it as default slug, otherwise use 'default'.
+/*
 INSERT INTO public.portfolios (user_id, slug, template_name, data_json, views)
 SELECT 
     id as user_id, 
@@ -60,3 +61,4 @@ SELECT
     views
 FROM public.profiles
 ON CONFLICT (user_id, slug) DO NOTHING;
+*/

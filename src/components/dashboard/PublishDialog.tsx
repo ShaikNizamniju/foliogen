@@ -90,27 +90,34 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
     setIsCheckingSlug(true);
     setSlugError(null);
 
-    const { data, error } = await supabase
-      .from('portfolios')
-      .select('user_id')
-      .eq('slug', normalized)
-      .eq('user_id', user?.id)
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from('portfolios')
+        .select('user_id')
+        .eq('slug', normalized)
+        .eq('user_id', user?.id)
+        .maybeSingle();
 
-    setIsCheckingSlug(false);
+      if (error) {
+        console.error("Slug check error:", error);
+        setSlugError('Failed to check availability. Please try again.');
+        return false;
+      }
 
-    if (error) {
-      setSlugError('Failed to check availability');
+      if (data) {
+        setSlugError('You already have a portfolio with this slug');
+        return false;
+      }
+
+      setSlugError(null);
+      return true;
+    } catch (err) {
+      console.error("Slug check exception:", err);
+      setSlugError('Connection error while checking slug.');
       return false;
+    } finally {
+      setIsCheckingSlug(false);
     }
-
-    if (data) {
-      setSlugError('You already have a portfolio with this slug');
-      return false;
-    }
-
-    setSlugError(null);
-    return true;
   };
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,27 +136,22 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       return;
     }
 
-    // Check slug availability if provided
-    const normalizedSlug = slug.trim().toLowerCase() || 'default';
-    if (normalizedSlug !== 'default') {
-      const isAvailable = await checkSlugAvailability(normalizedSlug);
-      if (!isAvailable) return;
-    }
+    try {
+      // Check slug availability if provided
+      const normalizedSlug = slug.trim().toLowerCase() || 'default';
+      if (normalizedSlug !== 'default') {
+        const isAvailable = await checkSlugAvailability(normalizedSlug);
+        if (!isAvailable) return;
+      }
 
-    setIsPublishing(true);
+      setIsPublishing(true);
 
-    // First save the profile edits globally
-    const { error: saveError } = await saveProfile();
+      // First save the profile edits globally
+      const { error: saveError } = await saveProfile();
 
-    if (saveError) {
-      setIsPublishing(false);
-      toast({
-        title: 'Error',
-        description: 'Failed to save profile. Please try again.',
-        variant: 'destructive',
-      });
-      return;
-    }
+      if (saveError) {
+        throw saveError;
+      }
 
     // Build the data payload
     const dataJson = {
@@ -241,13 +243,22 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       }
     }
 
-    setIsPublishing(false);
-    setIsPublished(true);
-    triggerCelebration();
-    toast({
-      title: 'Identity Deployed 🚀',
-      description: `Your portfolio is live at foliogen.in/u/${generatedCustomSlug}`,
-    });
+      setIsPublished(true);
+      triggerCelebration();
+      toast({
+        title: 'Identity Deployed 🚀',
+        description: `Your portfolio is live at foliogen.in/u/${generatedCustomSlug}`,
+      });
+    } catch (err: any) {
+      console.error("Publish error:", err);
+      toast({
+        title: 'Deployment Failed ❌',
+        description: err.message || 'An unexpected error occurred during deployment.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
   const handleCopy = async () => {

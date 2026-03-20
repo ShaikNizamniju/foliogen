@@ -373,7 +373,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const saveProfile = async (overrides?: Partial<ProfileData>) => {
+  const saveProfile = async (overrides?: Partial<ProfileData>): Promise<{ error: Error | null }> => {
     if (!user) return { error: new Error("Not authenticated") };
 
     // Merge overrides with current profile so callers can save freshly-set data
@@ -479,37 +479,48 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
        }
     } catch(e) {}
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        full_name: data.fullName,
-        photo_url: data.photoUrl,
-        bio: data.bio,
-        headline: data.headline,
-        location: data.location,
-        email: data.email,
-        website: data.website,
-        linkedin_url: data.linkedinUrl,
-        github_url: data.githubUrl,
-        twitter_url: data.twitterUrl,
-        work_experience: sanitizeWorkExp(data.workExperience) as unknown as Json,
-        projects: sanitizedProjects as unknown as Json,
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        key_highlights: Array.isArray(data.keyHighlights) ? data.keyHighlights : [],
-        resume_url: data.resumeUrl,
-        calendly_url: data.calendlyUrl,
-        hide_photo: data.hidePhoto,
-        selected_font: data.selectedFont,
-        selected_template: data.selectedTemplate,
-        resume_data: { ...(data.resume_data || {}), profileStrength: data.profileStrength },
-        active_persona: data.activePersona,
-        font_config: data.fontConfig,
-        narrative_variants: data.narrativeVariants,
-      } as any)
-      .eq("user_id", user.id);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          full_name: data.fullName,
+          photo_url: data.photoUrl,
+          bio: data.bio,
+          headline: data.headline,
+          location: data.location,
+          email: data.email,
+          website: data.website,
+          linkedin_url: data.linkedinUrl,
+          github_url: data.githubUrl,
+          twitter_url: data.twitterUrl,
+          work_experience: sanitizeWorkExp(data.workExperience) as unknown as Json,
+          projects: sanitizedProjects as unknown as Json,
+          skills: Array.isArray(data.skills) ? data.skills : [],
+          key_highlights: Array.isArray(data.keyHighlights) ? data.keyHighlights : [],
+          resume_url: data.resumeUrl,
+          calendly_url: data.calendlyUrl,
+          hide_photo: data.hidePhoto,
+          selected_font: data.selectedFont,
+          selected_template: data.selectedTemplate,
+          resume_data: { ...(data.resume_data || {}), profileStrength: data.profileStrength },
+          active_persona: data.activePersona,
+          font_config: data.fontConfig,
+          narrative_variants: data.narrativeVariants,
+        } as any)
+        .eq("user_id", user.id);
 
-    setSaving(false);
-    return { error: error as Error | null };
+      if (error) {
+        console.error("Profile save error:", error);
+        return { error: new Error(error.message || "Failed to save profile") };
+      }
+
+      return { error: null };
+    } catch (err: any) {
+      console.error("Profile save exception:", err);
+      return { error: err instanceof Error ? err : new Error(err?.message || "An unexpected error occurred") };
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
