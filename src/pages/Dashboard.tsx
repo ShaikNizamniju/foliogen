@@ -192,7 +192,9 @@ function DashboardInner() {
           <DashboardHeader />
           <div className="flex-1 flex overflow-hidden">
             <DashboardContent />
-            <TemplatePreview />
+            <div className="hidden lg:flex">
+              <TemplatePreview />
+            </div>
           </div>
         </div>
       </div>

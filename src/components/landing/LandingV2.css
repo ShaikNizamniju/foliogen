@@ -2253,3 +2253,154 @@ body {
     transform-origin: center right;
   }
 }
+
+/* ────────────────────────────────────────────
+   MOBILE RESPONSIVENESS  (< 768px)
+   Priority 1 fixes — no horizontal scroll
+──────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Container: reduce gutters */
+  .landing-v2 .container {
+    padding: 0 var(--sp-2);
+  }
+
+  /* Hero: stack vertically, full-width left column */
+  .landing-v2 .hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding-top: 72px;
+  }
+
+  .landing-v2 .hero-left {
+    padding: var(--sp-5) var(--sp-2) var(--sp-4) var(--sp-2);
+  }
+
+  /* h1 capped at 2rem on mobile */
+  .landing-v2 .headline {
+    font-size: clamp(1.8rem, 7vw, 2rem);
+    line-height: 1.1;
+  }
+
+  /* h2 capped at 1.5rem on mobile */
+  .landing-v2 .section-title {
+    font-size: clamp(1.3rem, 5.5vw, 1.5rem);
+  }
+
+  .landing-v2 .body-lg {
+    font-size: 1rem;
+  }
+
+  /* CTA buttons full-width vertically stacked */
+  .landing-v2 .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-2);
+  }
+
+  .landing-v2 .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Hide the hero-right mock panel on mobile */
+  .landing-v2 .hero-right {
+    display: none;
+  }
+
+  /* Social proof: hidden on smallest screens if present */
+  .landing-v2 .hero-social-proof {
+    display: none;
+  }
+
+  /* Stats ticker: stack into 2 columns */
+  .landing-v2 .ticker-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--ink-10);
+  }
+
+  .landing-v2 .ticker-item {
+    padding: var(--sp-3) var(--sp-2);
+    border-right: none;
+    background: var(--canvas-alt);
+  }
+
+  .landing-v2 .ticker-num {
+    font-size: var(--text-xl);
+  }
+
+  /* How-it-works / steps: single column */
+  .landing-v2 .steps-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Why grid: single column */
+  .landing-v2 .why-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Features grid: single column */
+  .landing-v2 .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-v2 .feat-cell.span2 {
+    grid-column: span 1 !important;
+  }
+
+  /* Templates scroll: reduce card width on small screens */
+  .landing-v2 .template-card {
+    min-width: 220px;
+    width: 220px;
+  }
+
+  /* Section padding: reduce vertical white space */
+  .landing-v2 .how-section,
+  .landing-v2 .why-section,
+  .landing-v2 .features-section,
+  .landing-v2 .templates-section,
+  .landing-v2 .testi-section,
+  .landing-v2 .faq-section {
+    padding: var(--sp-7) 0;
+  }
+
+  /* FAQ layout: single column */
+  .landing-v2 .faq-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Nav: keep it tight on mobile */
+  .landing-v2 .nav-inner {
+    height: 52px;
+  }
+}
+
+/* Tablet / medium screens (768px – 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .landing-v2 .container {
+    padding: 0 var(--sp-4);
+  }
+
+  .landing-v2 .hero {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .landing-v2 .hero-right {
+    display: flex;
+  }
+
+  .landing-v2 .headline {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+  }
+
+  /* Features: 2-col grid on tablet */
+  .landing-v2 .features-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Step layout: 2 columns on tablet */
+  .landing-v2 .steps-layout {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}

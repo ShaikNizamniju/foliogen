@@ -73,14 +73,18 @@ export function DashboardHeader() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="flex items-center gap-4">
-          <SidebarTrigger className="md:hidden mr-2" />
-          <h1 className="text-lg font-semibold text-foreground tracking-tight">Dashboard</h1>
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg border border-border/50">
-            <Eye className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-sm font-medium tabular-nums">{profile.views ?? 0}</span>
-            <span className="text-xs text-muted-foreground">views</span>
-          </div>
+      <div className="flex items-center gap-2 md:gap-4">
+          <SidebarTrigger className="md:hidden mr-1" />
+          <h1 className="text-base md:text-lg font-semibold text-foreground tracking-tight">Dashboard</h1>
+          {(profile.views ?? 0) > 0 ? (
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg border border-border/50">
+              <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+              <span className="text-sm font-medium tabular-nums">{profile.views}</span>
+              <span className="text-xs text-muted-foreground">views</span>
+            </div>
+          ) : (
+            <span className="hidden sm:block text-xs text-muted-foreground/60 italic">Share your portfolio to start tracking views</span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <PersonaSwitcher />

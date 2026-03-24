@@ -168,36 +168,24 @@ export function LandingV2() {
                         </span>
                     </div>
                     <h1 className="headline hero-headline">
-                        Agentic AI<br />
-                        Portfolio &<br />
-                        <em>Recruiter Audits.</em>
+                        Your portfolio.<br />
+                        Built by AI.<br />
+                        <em>Loved by recruiters.</em>
                     </h1>
                     <p className="body-lg hero-sub">
-                        Foliogen uses agentic AI to audit your resume against high-intent Job Descriptions. Build a world-class portfolio that actually converts.
+                        Drop your resume. Get a live portfolio, a recruiter gap analysis, and interview prep — in under 10 minutes.
                     </p>
                     <div className="hero-actions">
                         <Link to="/auth" className="btn btn-cobalt">
-                            Start Your Free Audit
-                            <span aria-hidden="true">→</span>
+                            Build My Portfolio Free →
                         </Link>
-                        <a href="#features" className="btn btn-ghost">
-                            See how it works <span className="arrow" aria-hidden="true">→</span>
+                        <a href="#templates" className="btn btn-ghost">
+                            See a live example <span className="arrow" aria-hidden="true">→</span>
                         </a>
                     </div>
                     <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-[0.2em] mt-4 ml-1">
                         No credit card required · Universal Pro access enabled
                     </p>
-                    <div className="hero-social-proof">
-                        <div className="avatar-stack" aria-hidden="true">
-                            <div className="avatar-item" style={{ background: 'linear-gradient(135deg,#1A44C8,#7B61FF)' }}>R</div>
-                            <div className="avatar-item" style={{ background: 'linear-gradient(135deg,#0E7A52,#3DFF9A)' }}>A</div>
-                            <div className="avatar-item" style={{ background: 'linear-gradient(135deg,#9C2B2B,#FF6B6B)' }}>L</div>
-                            <div className="avatar-item" style={{ background: 'linear-gradient(135deg,#6B4C00,#F5A623)' }}>M</div>
-                        </div>
-                        <p className="social-text">
-                            <strong>340+</strong> professionals got hired this month
-                        </p>
-                    </div>
                 </div>
 
                 <div className="hero-right">
@@ -274,24 +262,22 @@ export function LandingV2() {
             <div className="ticker" role="region" aria-label="Key statistics">
                 <div className="ticker-inner">
                     <div className="ticker-item">
-                        <div className="ticker-num"><span id="count1">0</span><span>k+</span></div>
                         <div className="ticker-text">
-                            <div className="ticker-label">Portfolios generated</div>
-                            <div className="ticker-sub">AND COUNTING</div>
+                            <div className="ticker-label">Built for ambitious professionals</div>
+                            <div className="ticker-sub">RESUME TO PORTFOLIO</div>
                         </div>
                     </div>
                     <div className="ticker-item">
                         <div className="ticker-num"><span id="count2">0</span><span>+</span></div>
                         <div className="ticker-text">
-                            <div className="ticker-label">Design systems</div>
+                            <div className="ticker-label">Professional templates</div>
                             <div className="ticker-sub">INDUSTRY-STANDARD</div>
                         </div>
                     </div>
                     <div className="ticker-item">
-                        <div className="ticker-num"><span id="count3">0</span><span>%</span></div>
                         <div className="ticker-text">
-                            <div className="ticker-label">User satisfaction</div>
-                            <div className="ticker-sub">BASED ON 2024 SURVEY</div>
+                            <div className="ticker-label">Resume → Portfolio in minutes</div>
+                            <div className="ticker-sub">ZERO SETUP</div>
                         </div>
                     </div>
                     <div className="ticker-item">
@@ -727,8 +713,10 @@ export function LandingV2() {
                     <h2 className="section-title sr sr-d1" id="testi-title">
                         What professionals<br /><em>actually say.</em>
                     </h2>
-                    <div className="mt-8 md:mt-12 sr sr-d2">
-                        <Testimonials />
+                    <div className="mt-8 md:mt-12 sr sr-d2 text-center py-16 border border-dashed border-white/10 rounded-2xl text-neutral-500">
+                        <p className="text-lg">Beta user testimonials coming soon.</p>
+                        <p className="text-sm mt-2 text-neutral-600">Join us and be featured here.</p>
+                        <Link to="/auth" className="btn btn-cobalt mt-6 inline-flex">Join the Beta →</Link>
                     </div>
                 </div>
             </section>

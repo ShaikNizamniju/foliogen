@@ -153,9 +153,10 @@ export function IdentityVaultSection() {
                 <motion.div variants={fadeUp} initial="hidden" animate="visible" className="text-center py-20 border border-border rounded-2xl bg-card">
                     <ShieldAlert className="h-10 w-10 text-muted-foreground mx-auto mb-4 opacity-50" />
                     <h3 className="text-xl font-instrument text-foreground mb-2">No active identities found</h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">You haven't published any portfolios yet. Head over to the Profile section to build and deploy your first identity.</p>
+                    <p className="text-muted-foreground mb-2 max-w-md mx-auto">You haven't published any portfolios yet. Head over to the Profile section to build and deploy your first identity.</p>
+                    <p className="text-xs text-muted-foreground/60 mb-6">Your portfolio goes live instantly with a shareable link.</p>
                     <Button onClick={handleGenerateClick} variant="outline" className="border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-400">
-                        Create Portfolio
+                        Publish Your First Portfolio →
                     </Button>
                 </motion.div>
             ) : (

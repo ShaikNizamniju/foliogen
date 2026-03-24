@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase_v2';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BrainCircuit, Loader2, Target, CheckCircle2, AlertTriangle, MessageSquareText, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
@@ -25,6 +26,9 @@ export function InterviewPrepSection() {
     const [answer, setAnswer] = useState('');
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [feedback, setFeedback] = useState<any>(null);
+    const [manualRole, setManualRole] = useState('');
+    const [manualPrep, setManualPrep] = useState<AiPrep | null>(null);
+    const [isGeneratingManual, setIsGeneratingManual] = useState(false);
 
     const selectedJob = appliedJobs.find(j => j.id === selectedJobId);
 
@@ -122,9 +126,50 @@ export function InterviewPrepSection() {
                 </Select>
 
                 {appliedJobs.length === 0 && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                        You must add a job to your Career Hub and move it to "Applied" or later to unlock interview prep.
-                    </p>
+                    <div className="mt-4 space-y-3">
+                        <p className="text-sm text-muted-foreground">
+                            No applied jobs found. Add a job to Career Hub first — or practice manually below.
+                        </p>
+                        <div className="border-t border-border/30 pt-4">
+                            <label className="text-sm font-medium mb-2 block text-muted-foreground">Or enter a role manually to practice</label>
+                            <div className="flex gap-2">
+                                <Input
+                                    placeholder="e.g. Product Manager at Stripe"
+                                    value={manualRole}
+                                    onChange={(e) => setManualRole(e.target.value)}
+                                    className="flex-1"
+                                />
+                                <Button
+                                    size="sm"
+                                    disabled={!manualRole.trim() || isGeneratingManual}
+                                    onClick={async () => {
+                                        setIsGeneratingManual(true);
+                                        setManualPrep(null);
+                                        setActiveQuestion('');
+                                        setFeedback(null);
+                                        const parts = manualRole.split(' at ');
+                                        const role = parts[0]?.trim() || manualRole;
+                                        const company = parts[1]?.trim() || 'the company';
+                                        try {
+                                            const { data, error } = await supabase.functions.invoke('generate-interview-prep', {
+                                                body: { company, role },
+                                            });
+                                            if (error) throw new Error(error.message);
+                                            if (data.error) throw new Error(data.error);
+                                            setManualPrep({ company_summary: data.company_summary, likely_questions: data.likely_questions, questions_to_ask: data.questions_to_ask });
+                                            toast.success('Interview Prep Generated!');
+                                        } catch (err: any) {
+                                            toast.error(err.message || 'Failed to generate prep');
+                                        } finally {
+                                            setIsGeneratingManual(false);
+                                        }
+                                    }}
+                                >
+                                    {isGeneratingManual ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </Card>
 
@@ -251,6 +296,70 @@ export function InterviewPrepSection() {
                             </Card>
                         ) : (
                             <Card className="h-full min-h-[400px] flex flex-col items-center justify-center p-6 text-center border-dashed border-border/50 text-muted-foreground bg-card/30">
+                                <Target className="h-10 w-10 mb-4 opacity-20" />
+                                <p>Select a question from the left to start practicing</p>
+                            </Card>
+                        )}
+                    </div>
+                </div>
+            )}
+            {/* Manual Prep Results */}
+            {manualPrep && appliedJobs.length === 0 && (
+                <div className="grid md:grid-cols-12 gap-6">
+                    <div className="md:col-span-4 space-y-4">
+                        <h3 className="font-semibold flex items-center gap-2">
+                            <Target className="h-4 w-4 text-indigo-500" />
+                            Practice Questions
+                        </h3>
+                        <div className="space-y-2">
+                            {manualPrep.likely_questions.map((q, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => selectQuestion(q)}
+                                    className={`w-full text-left p-4 rounded-xl text-sm transition-all border ${activeQuestion === q
+                                        ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-600 font-medium shadow-sm'
+                                        : 'bg-card border-border/50 text-muted-foreground hover:bg-muted'
+                                        }`}
+                                >
+                                    <p className="line-clamp-2">{q}</p>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="md:col-span-8">
+                        {activeQuestion ? (
+                            <Card className="p-6 bg-card border-border/50 h-full flex flex-col">
+                                <div className="flex items-start gap-4 mb-4">
+                                    <div className="p-2 rounded-lg bg-indigo-500/10 shrink-0">
+                                        <MessageSquareText className="h-4 w-4 text-indigo-500" />
+                                    </div>
+                                    <h4 className="font-semibold text-foreground text-lg leading-snug">{activeQuestion}</h4>
+                                </div>
+                                <Textarea
+                                    placeholder="Type your response here using the STAR method..."
+                                    value={answer}
+                                    onChange={(e) => setAnswer(e.target.value)}
+                                    className="min-h-[200px] resize-y mb-4 bg-muted/30 flex-1"
+                                />
+                                <div className="flex justify-end mb-6">
+                                    <Button onClick={handleAnalyzeAnswer} disabled={isAnalyzing || !answer.trim()} className="shadow-glow">
+                                        {isAnalyzing ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Evaluating...</> : <><BrainCircuit className="h-4 w-4 mr-2" /> Analyze with AI</>}
+                                    </Button>
+                                </div>
+                                {feedback && (
+                                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                        <div className="flex items-center justify-between p-4 bg-muted/40 rounded-xl border border-border/50">
+                                            <span className="font-semibold">Answer Score</span>
+                                            <span className={`text-2xl font-bold ${feedback.score >= 80 ? 'text-emerald-500' : feedback.score >= 50 ? 'text-amber-500' : 'text-red-500'}`}>{feedback.score}/100</span>
+                                        </div>
+                                        <div className="p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
+                                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{feedback.idealFramework}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </Card>
+                        ) : (
+                            <Card className="h-full min-h-[300px] flex flex-col items-center justify-center p-6 text-center border-dashed border-border/50 text-muted-foreground bg-card/30">
                                 <Target className="h-10 w-10 mb-4 opacity-20" />
                                 <p>Select a question from the left to start practicing</p>
                             </Card>

@@ -84,11 +84,11 @@ export function KanbanColumn({
               <span className="text-xl opacity-50">{emoji}</span>
             </div>
             <p className="text-sm font-medium text-foreground">
-              {status === 'saved' ? 'Add your first application' : `No ${status} jobs`}
+              {status === 'saved' ? 'Track every job you apply to.' : `No ${status} jobs`}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               {status === 'saved'
-                ? 'Track your next career move here.'
+                ? 'Add your first role to get started.'
                 : 'Drag and drop a job card here.'}
             </p>
           </div>
