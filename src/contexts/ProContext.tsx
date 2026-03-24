@@ -40,16 +40,6 @@ export function ProProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // BETA BYPASS: Universal Pro access for all logged-in testers
-    if (user) {
-      setIsPro(true);
-      setPlanType("sprint_pass");
-      setSubscriptionStatus("active");
-      setProSince(new Date());
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     const { data, error } = await supabase
       .from("profiles")
