@@ -45,51 +45,32 @@ export async function handlePayment(
   try {
     const plan = PLANS[planKey];
     
-    // ──────── PIVOT: FREE MODEL ────────
-    // This part is modified to bypass the Stripe checkout and grant Pro access directly.
+    // Initiate server-side checkout via Stripe edge function
     toast({ 
-      title: "Activating Your Free Pro Access! 🚀", 
-      description: "Enjoy Foliogen! All Pro features are completely free during our early testing phase." 
+      title: "Redirecting to checkout…", 
+      description: `Setting up your ${plan.label} plan.` 
     });
 
-    const now = new Date();
-    const renewalDate = new Date();
-    renewalDate.setFullYear(now.getFullYear() + 10); // Grant 10 years for peace of mind
+    const { data, error } = await supabase.functions.invoke('stripe-checkout', {
+      body: {
+        planId: plan.id,
+        userId: user.id,
+        email: user.email,
+      },
+    });
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        is_pro: true,
-        plan_type: plan.id,
-        subscription_status: 'active',
-        pro_since: now.toISOString(),
-        next_renewal_date: renewalDate.toISOString(),
-        subscription_id: `free_testing_${user.id}_${Date.now()}`
-      } as any) // Type cast to handle cases where types might be stale
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('[Payment Bypass] Failed to activate free pro:', error);
+    if (error || !data?.url) {
+      console.error('[Payment] Checkout error:', error, data);
       toast({ 
-        title: "Activation Error", 
-        description: "Something went wrong activating your free account. Please refresh and try again.", 
+        title: "Checkout Error", 
+        description: "Could not start checkout. Please try again.", 
         variant: "destructive" 
       });
       return;
     }
 
-    // Success Ceremony
-    triggerCelebration();
-    toast({ 
-      title: "Welcome to Pro! 🎉", 
-      description: `You've been successfully upgraded to the ${plan.label} plan for free.` 
-    });
-
-    // Call success callback
-    setTimeout(() => {
-      onSuccess(plan.id);
-      window.location.href = '/dashboard?section=billing&status=success&mode=free_testing';
-    }, 1500);
+    // Redirect to Stripe-hosted checkout
+    window.location.href = data.url;
 
   } catch (err: any) {
     console.error('[Payment] Unexpected error during free pivot:', err?.message, err);

@@ -173,7 +173,8 @@ serve(async (req) => {
 
         if (!resendRes.ok) {
             const err = await resendRes.text();
-            return new Response(JSON.stringify({ error: 'Failed to send email', detail: err }), {
+            console.error('[on-auth-success] Resend API error:', err);
+            return new Response(JSON.stringify({ error: 'Failed to send email' }), {
                 status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             });
         }

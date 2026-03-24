@@ -16,12 +16,6 @@ interface ProContextType {
 
 const ProContext = createContext<ProContextType | undefined>(undefined);
 
-// VIP beta testers — bypass payment gate locally
-const VIP_WHITELIST: string[] = [
-  'shaiknizamniju@gmail.com',
-  'grv1979@gmail.com',
-  'eshan.tiwari16@gmail.com',
-];
 
 export function ProProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -36,16 +30,6 @@ export function ProProvider({ children }: { children: ReactNode }) {
   const fetchProStatus = useCallback(async () => {
     if (!user) {
       setIsPro(false);
-      setLoading(false);
-      return;
-    }
-
-    // BETA BYPASS: Universal Pro access for all logged-in testers
-    if (user) {
-      setIsPro(true);
-      setPlanType("sprint_pass");
-      setSubscriptionStatus("active");
-      setProSince(new Date());
       setLoading(false);
       return;
     }

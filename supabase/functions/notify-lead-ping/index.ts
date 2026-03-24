@@ -1,12 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/security.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 /**
  * notify-lead-ping
  * ─────────────────────────────────────────────────────────────────────
  * Real-Time Webhook Notification Bridge.
  *
- * Trigger: Called when a new recruiter ping is recorded in visit_logs.
+ * Trigger: Called by authenticated users or database webhook with signature.
  * Payload: Dispatches a formatted Noir notification to WEBHOOK_URL.
  *
  * Env: WEBHOOK_URL (set via `supabase secrets set WEBHOOK_URL=...`)
@@ -18,6 +19,29 @@ serve(async (req) => {
   }
 
   try {
+    // ── Authenticate the caller ──────────────────────────────────────
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const webhookUrl = Deno.env.get("WEBHOOK_URL");
     if (!webhookUrl) {
       return new Response(
@@ -38,59 +62,35 @@ serve(async (req) => {
     }
 
     // ── Extract & sanitize fields ─────────────────────────────────────
-    const companyName = record.company?.trim() || "Confidential/Stealth Entity";
-    const contactMethod = record.contact_method?.trim() || "Not Provided";
-    const industryRaw = record.industry_context?.trim() || "General";
+    const companyName = String(record.company || "Confidential/Stealth Entity").trim().slice(0, 200);
+    const contactMethod = String(record.contact_method || "Not Provided").trim().slice(0, 200);
+    const industryRaw = String(record.industry_context || "General").trim().slice(0, 100);
     const industryContext =
       industryRaw === "none" ? "General Fit" :
       industryRaw.charAt(0).toUpperCase() + industryRaw.slice(1);
     const timestamp = record.created_at || new Date().toISOString();
-    const deviceType = record.device_type || "Unknown";
+    const deviceType = String(record.device_type || "Unknown").slice(0, 50);
 
     // ── Build Noir notification body ──────────────────────────────────
     const webhookPayload = {
-      // Discord-compatible embed structure
       content: null,
       embeds: [
         {
           title: "🌑 TARGET ACQUIRED: New Recruiter Ping",
-          color: 0x3B82F6, // Neon Blue
+          color: 0x3B82F6,
           fields: [
-            {
-              name: "▸ Source",
-              value: `\`${companyName}\``,
-              inline: true,
-            },
-            {
-              name: "▸ Context",
-              value: `\`${industryContext} Persona\``,
-              inline: true,
-            },
-            {
-              name: "▸ Channel",
-              value: `\`${contactMethod}\``,
-              inline: false,
-            },
-            {
-              name: "▸ Device",
-              value: `\`${deviceType}\``,
-              inline: true,
-            },
-            {
-              name: "▸ Timestamp",
-              value: `\`${timestamp}\``,
-              inline: true,
-            },
+            { name: "▸ Source", value: `\`${companyName}\``, inline: true },
+            { name: "▸ Context", value: `\`${industryContext} Persona\``, inline: true },
+            { name: "▸ Channel", value: `\`${contactMethod}\``, inline: false },
+            { name: "▸ Device", value: `\`${deviceType}\``, inline: true },
+            { name: "▸ Timestamp", value: `\`${timestamp}\``, inline: true },
           ],
-          footer: {
-            text: "Return to the Dashboard to engage: foliogen.in/dashboard",
-          },
+          footer: { text: "Return to the Dashboard to engage: foliogen.in/dashboard" },
           timestamp: timestamp,
         },
       ],
     };
 
-    // ── Dispatch to webhook (non-blocking safety) ─────────────────────
     const webhookResponse = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -98,17 +98,15 @@ serve(async (req) => {
     });
 
     if (!webhookResponse.ok) {
-      const errText = await webhookResponse.text().catch(() => "");
-      console.error(`Webhook dispatch failed: ${webhookResponse.status} ${errText}`);
+      console.error(`Webhook dispatch failed: ${webhookResponse.status}`);
     }
 
     return new Response(
-      JSON.stringify({ dispatched: true, company: companyName }),
+      JSON.stringify({ dispatched: true }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
   } catch (error: any) {
-    // Silent failure — never block the upstream DB operation
     console.error("notify-lead-ping error:", error?.message || error);
     return new Response(
       JSON.stringify({ error: "Internal" }),
