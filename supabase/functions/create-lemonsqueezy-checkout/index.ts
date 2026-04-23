@@ -101,7 +101,7 @@ serve(async (req) => {
 
         if (!response.ok) {
             console.error("LemonSqueezy API Error:", result);
-            return new Response(JSON.stringify({ error: "Failed to create checkout", details: result }), {
+            return new Response(JSON.stringify({ error: "Failed to create checkout" }), {
                 status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
