@@ -55,7 +55,7 @@ serve(async (req) => {
                 !Deno.env.get('RAZORPAY_KEY_SECRET') && !Deno.env.get('RAZORPAY_SECRET_KEY') ? 'RAZORPAY_KEY_SECRET' : null,
             ].filter(Boolean);
             console.error('Missing Razorpay secrets:', missingVars.join(', '));
-            return new Response(JSON.stringify({ error: "MISSING_CREDENTIALS", message: `Missing Supabase secrets: ${missingVars.join(', ')}. Add them in Supabase → Edge Functions → Secrets.` }), {
+            return new Response(JSON.stringify({ error: "MISSING_CREDENTIALS", message: "Payment provider not configured. Please contact support." }), {
                 status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
