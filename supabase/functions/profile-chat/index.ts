@@ -30,7 +30,14 @@ serve(async (req) => {
 
     userQuery = sanitize(userQuery, 1000);
     
-    if (!Array.isArray(conversationHistory)) conversationHistory = [];
+    // Filter conversation history — only allow user/assistant roles to prevent system-prompt injection
+    const ALLOWED_ROLES = new Set(['user', 'assistant']);
+    conversationHistory = Array.isArray(conversationHistory)
+      ? conversationHistory
+          .filter((m: any) => m && ALLOWED_ROLES.has(m.role) && typeof m.content === 'string')
+          .map((m: any) => ({ role: m.role, content: String(m.content).substring(0, 2000) }))
+          .slice(-10)
+      : [];
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
