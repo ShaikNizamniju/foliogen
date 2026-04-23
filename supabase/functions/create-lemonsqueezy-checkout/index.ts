@@ -115,7 +115,7 @@ serve(async (req) => {
 
     } catch (error: any) {
         console.error("create-lemonsqueezy-checkout error:", error);
-        return new Response(JSON.stringify({ error: "Internal Server Error", message: error.message }), {
+        return new Response(JSON.stringify({ error: "An unexpected error occurred. Please try again." }), {
             status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
     }
