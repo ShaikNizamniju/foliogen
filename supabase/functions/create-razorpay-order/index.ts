@@ -119,7 +119,7 @@ serve(async (req) => {
 
     } catch (error: any) {
         console.error("create-razorpay-order error:", error?.message || error);
-        return new Response(JSON.stringify({ error: "INTERNAL_ERROR", message: error?.message || "Internal Server Error" }), {
+        return new Response(JSON.stringify({ error: "INTERNAL_ERROR", message: "An unexpected error occurred. Please try again." }), {
             status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
     }
