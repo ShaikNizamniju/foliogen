@@ -101,7 +101,7 @@ serve(async (req) => {
 
         if (!response.ok) {
             console.error("LemonSqueezy API Error:", result);
-            return new Response(JSON.stringify({ error: "Failed to create checkout", details: result }), {
+            return new Response(JSON.stringify({ error: "Failed to create checkout" }), {
                 status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
@@ -115,7 +115,7 @@ serve(async (req) => {
 
     } catch (error: any) {
         console.error("create-lemonsqueezy-checkout error:", error);
-        return new Response(JSON.stringify({ error: "Internal Server Error", message: error.message }), {
+        return new Response(JSON.stringify({ error: "An unexpected error occurred. Please try again." }), {
             status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
     }
