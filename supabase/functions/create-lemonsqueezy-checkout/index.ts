@@ -13,7 +13,37 @@ serve(async (req) => {
     }
 
     try {
-        const { variantId, userId, email, planId } = await req.json();
+        // Require JWT authentication — never trust userId/email from request body
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader?.startsWith('Bearer ')) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        const supabase = createClient(
+            Deno.env.get('SUPABASE_URL')!,
+            Deno.env.get('SUPABASE_ANON_KEY')!,
+            { global: { headers: { Authorization: authHeader } } }
+        );
+
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        const { variantId, planId } = await req.json();
+        // Always use authenticated user's identity — never trust body
+        const userId = user.id;
+        const email = user.email;
+
+        if (!variantId || typeof variantId !== 'string') {
+            return new Response(JSON.stringify({ error: 'Invalid variantId' }), {
+                status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
 
         const LS_API_KEY = Deno.env.get('LEMONSQUEEZY_API_KEY');
         const LS_STORE_ID = Deno.env.get('LEMONSQUEEZY_STORE_ID');
