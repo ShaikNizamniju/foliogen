@@ -11,6 +11,25 @@
   --text-muted: #7A7570;
   --border-gold: rgba(200, 164, 90, 0.15);
   --border-subtle: rgba(242, 237, 228, 0.08);
+  --gold-hover: rgba(200, 164, 90, 0.02);
+  --gold-faint: rgba(200, 164, 90, 0.12);
+  --gold-gradient: rgba(200, 164, 90, 0.06);
+}
+
+[data-theme='light'] {
+  --bg-primary: #F2EDE4;
+  --bg-secondary: #EAE3D7;
+  --bg-tertiary: #DFD5C5;
+  --gold: #8A6E35;
+  --gold-light: #A57F3A;
+  --gold-dim: #6B5428;
+  --text-off-white: #080808;
+  --text-muted: #5A5550;
+  --border-gold: rgba(138, 110, 53, 0.2);
+  --border-subtle: rgba(8, 8, 8, 0.1);
+  --gold-hover: rgba(138, 110, 53, 0.05);
+  --gold-faint: rgba(138, 110, 53, 0.12);
+  --gold-gradient: rgba(138, 110, 53, 0.06);
 }
 
 .landing-luxury {
@@ -111,13 +130,13 @@
 
 .btn-cta:hover, .btn-primary:hover {
   background-color: var(--gold);
-  color: #000;
+  color: var(--bg-primary);
   transform: translateY(-1px);
 }
 
 .btn-primary {
   background-color: var(--gold);
-  color: #000;
+  color: var(--bg-primary);
 }
 
 .btn-primary:hover {
@@ -150,9 +169,7 @@
 }
 
 .navbar.scrolled {
-  background-color: rgba(8, 8, 8, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -231,7 +248,7 @@
   right: 10%;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(200,164,90,0.06) 0%, rgba(8,8,8,0) 70%);
+  background: radial-gradient(circle, var(--gold-gradient) 0%, transparent 70%);
   transform: translateY(-50%);
   pointer-events: none;
   z-index: 0;
@@ -304,21 +321,21 @@
 }
 
 .hero-mockup {
-  perspective: 1000px;
+  /* perspective removed for performance */
 }
 
 .mockup-frame {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-gold);
   border-radius: 4px;
-  transform: rotateY(-5deg) rotateX(2deg);
-  box-shadow: 20px 20px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   overflow: hidden;
-  transition: transform 0.5s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .mockup-frame:hover {
-  transform: rotateY(0deg) rotateX(0deg);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
 .mockup-header {
@@ -332,7 +349,7 @@
 .mock-avatar {
   width: 48px;
   height: 48px;
-  background-color: rgba(200, 164, 90, 0.1);
+  background-color: var(--gold-faint);
   color: var(--gold);
   border-radius: 50%;
   display: flex;
@@ -509,13 +526,13 @@
 }
 
 .process-step:hover {
-  background-color: rgba(200, 164, 90, 0.02);
+  background-color: var(--gold-hover);
 }
 
 .step-num {
   font-family: 'Playfair Display', serif;
   font-size: 4rem;
-  color: rgba(200, 164, 90, 0.12);
+  color: var(--gold-faint);
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
@@ -691,14 +708,14 @@
 }
 
 .feat-card {
-  background-color: #000;
+  background-color: var(--bg-primary);
   padding: 2.5rem 2rem;
   transition: background-color 0.3s ease;
   position: relative;
 }
 
 .feat-card:hover {
-  background-color: #111;
+  background-color: var(--bg-secondary);
 }
 
 .feat-icon {
@@ -714,7 +731,7 @@
 
 .gold-border {
   border-color: var(--gold);
-  background-color: rgba(200, 164, 90, 0.1);
+  background-color: var(--gold-faint);
 }
 
 .feat-title {
@@ -746,7 +763,7 @@
 .tag-gold {
   color: var(--gold);
   border-color: var(--gold);
-  background-color: rgba(200, 164, 90, 0.1);
+  background-color: var(--gold-faint);
 }
 
 .feat-audit {

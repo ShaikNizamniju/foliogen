@@ -6,6 +6,7 @@ export function LandingV2() {
     const [navScrolled, setNavScrolled] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [faqStates, setFaqStates] = useState<{ [key: number]: boolean }>({});
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
     // Toggle FAQ
     const toggleFaq = (index: number) => {
@@ -14,6 +15,17 @@ export function LandingV2() {
             nextStates[index] = !prev[index];
             return nextStates;
         });
+    };
+
+    useEffect(() => {
+        document.body.setAttribute('data-theme', theme);
+        return () => {
+            document.body.removeAttribute('data-theme');
+        };
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
     };
 
     useEffect(() => {
@@ -91,6 +103,9 @@ export function LandingV2() {
                         <a href="#faq">FAQ</a>
                     </div>
                     <div className="nav-actions">
+                        <button onClick={toggleTheme} className="nav-link-sign hidden sm:block" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0}}>
+                            {theme === 'dark' ? '☀ LIGHT' : '☾ DARK'}
+                        </button>
                         <Link to="/auth" className="nav-link-sign hidden sm:block">SIGN IN</Link>
                         <Link to="/auth" className="btn-cta">Start Free Audit</Link>
                     </div>
