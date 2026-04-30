@@ -1,494 +1,502 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | Foliogen</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In | Foliogen</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,900;1,900&display=swap');
 
-        :root {
-            --black: #080808;
-            --black2: #111111;
-            --black3: #1A1A1A;
-            --gold: #C8A45A;
-            --gold-light: #E8C880;
-            --offwhite: #F2EDE4;
-            --muted: #7A7570;
-            --border-subtle: rgba(242,237,228,0.15);
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-shadow: none !important;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+body {
+    font-family: 'DM Sans', Arial;
+    background-color: #080808;
+    color: #F2EDE4;
+    min-height: 100vh;
+    display: flex;
+    margin: 0;
+}
 
-        body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--black);
-            color: var(--offwhite);
-            min-height: 100vh;
-            display: flex;
-        }
+.split-layout {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
 
-        .split-layout {
-            display: flex;
-            width: 100%;
-            min-height: 100vh;
-        }
+/* LEFT COLUMN */
+.left-column {
+    width: 50%;
+    background-color: #080808;
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+}
 
-        .left-panel {
-            flex: 1;
-            background-color: var(--black);
-            position: relative;
-            padding: 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow: hidden;
-        }
+.logo {
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    color: #C8A45A;
+    letter-spacing: 0.18em;
+    font-size: 1rem;
+    font-weight: 400;
+}
 
-        .right-panel {
-            flex: 1;
-            background-color: var(--black2);
-            padding: 4rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
+.left-center-content {
+    margin: auto 0;
+    max-width: 540px;
+}
 
-        /* Typography */
-        .playfair { font-family: 'Playfair Display', serif; }
-        .mono { font-family: 'DM Mono', monospace; }
+.eyebrow {
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    color: #C8A45A;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
 
-        .gold-text { color: var(--gold); }
-        .muted-text { color: var(--muted); }
+.gold-line {
+    width: 24px;
+    height: 1px;
+    background-color: #C8A45A;
+}
 
-        .eyebrow {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-        }
+.heading-playfair {
+    font-family: 'Playfair Display', Georgia;
+    font-weight: 900;
+    font-size: 2.4rem;
+    color: #F2EDE4;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
 
-        .gold-rule {
-            width: 24px;
-            height: 1px;
-            background-color: var(--gold);
-        }
+.heading-playfair .italic-gold {
+    font-style: italic;
+    color: #C8A45A;
+    display: block;
+}
 
-        /* Left Panel Specifics */
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-            letter-spacing: 0.15em;
-            color: var(--gold);
-        }
+.body-text {
+    font-family: 'DM Sans', Arial;
+    font-weight: 300;
+    color: #7A7570;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 3rem;
+}
 
-        .logo-mark {
-            width: 12px;
-            height: 12px;
-            border: 1px solid var(--gold);
-        }
+.stats-strip {
+    display: flex;
+    border: 0.5px solid rgba(200,164,90,0.15);
+    margin-bottom: 3rem;
+}
 
-        .left-content {
-            max-width: 480px;
-            z-index: 1;
-            margin: auto 0;
-        }
+.stat-cell {
+    flex: 1;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-right: 0.5px solid rgba(200,164,90,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
 
-        .left-headline {
-            font-size: 4rem;
-            line-height: 1.1;
-            font-weight: 900;
-            margin: 2rem 0 1.5rem;
-        }
+.stat-cell:last-child {
+    border-right: none;
+}
 
-        .left-body {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 3rem;
-        }
+.stat-number {
+    font-family: 'Playfair Display', Georgia;
+    color: #C8A45A;
+    font-size: 1.8rem;
+    font-weight: 900;
+}
 
-        .stat-strip {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            border: 1px solid var(--gold);
-            padding: 1.5rem;
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-            background-color: rgba(20, 20, 20, 0.5);
-            backdrop-filter: blur(10px);
-        }
+.stat-label {
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    color: #7A7570;
+    font-size: 0.65rem;
+}
 
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+.testimonial-card {
+    background-color: #111111;
+    border: 0.5px solid rgba(200,164,90,0.15);
+    padding: 1.2rem;
+}
 
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--offwhite);
-        }
+.stars {
+    color: #C8A45A;
+    letter-spacing: 0.1em;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
 
-        .stat-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--gold);
-        }
+.quote {
+    font-family: 'DM Sans', Arial;
+    color: rgba(242, 237, 228, 0.85);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
 
-        .testimonial {
-            background-color: var(--black2);
-            border: 1px solid rgba(200,164,90,0.3);
-            padding: 2rem;
-            position: relative;
-        }
+.author-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 
-        .stars {
-            color: var(--gold);
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-            letter-spacing: 0.2rem;
-        }
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #080808;
+    color: #C8A45A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    border: 0.5px solid rgba(200,164,90,0.3);
+}
 
-        .quote {
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            font-style: italic;
-        }
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
 
-        .author {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+.author-name {
+    font-family: 'DM Sans', Arial;
+    color: #F2EDE4;
+    font-size: 0.9rem;
+}
 
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid var(--gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gold);
-            font-size: 0.8rem;
-        }
+.author-role {
+    font-family: 'DM Sans', Arial;
+    color: #7A7570;
+    font-size: 0.75rem;
+    margin-top: 0.2rem;
+}
 
-        .author-info {
-            display: flex;
-            flex-direction: column;
-        }
+.left-footer {
+    font-family: 'DM Mono', monospace;
+    color: #7A7570;
+    font-size: 0.75rem;
+    margin-top: auto;
+}
 
-        .author-name {
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+/* RIGHT COLUMN */
+.right-column {
+    width: 50%;
+    background-color: #111111;
+    padding: 3rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 
-        .author-role {
-            font-size: 0.75rem;
-            color: var(--muted);
-            margin-top: 0.2rem;
-        }
+.right-content {
+    max-width: 440px;
+    width: 100%;
+    margin: 0 auto;
+}
 
-        .copyright {
-            font-size: 0.75rem;
-            z-index: 1;
-        }
+.subtext {
+    font-family: 'DM Sans', Arial;
+    color: #7A7570;
+    margin-bottom: 2.5rem;
+    font-size: 1rem;
+}
 
-        .glow {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(200,164,90,0.07) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
+.btn-google {
+    width: 100%;
+    background-color: transparent;
+    border: 0.5px solid rgba(242,237,228,0.15);
+    color: #F2EDE4;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: 'DM Sans', Arial;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    transition: border-color 0.3s;
+    border-radius: 0;
+}
 
-        .glow-1 { top: -10%; left: -20%; }
-        .glow-2 { bottom: -20%; right: -10%; }
+.btn-google:hover {
+    border-color: #C8A45A;
+}
 
-        /* Right Panel Specifics */
-        .form-container {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
 
-        .right-headline {
-            font-size: 3rem;
-            line-height: 1.1;
-            font-weight: 900;
-            margin: 1rem 0;
-        }
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: rgba(242,237,228,0.10);
+}
 
-        .btn-google {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            width: 100%;
-            padding: 1rem;
-            background: transparent;
-            border: 1px solid var(--border-subtle);
-            color: var(--offwhite);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+.divider-text {
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    color: #7A7570;
+    font-size: 0.75rem;
+}
 
-        .btn-google:hover {
-            border-color: rgba(200,164,90,0.5);
-            background-color: rgba(200,164,90,0.05);
-        }
+.input-group {
+    margin-bottom: 1.5rem;
+}
 
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.75rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            margin: 1rem 0;
-        }
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
 
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background-color: var(--border-subtle);
-        }
+.input-label {
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    color: #F2EDE4;
+    font-size: 0.75rem;
+}
 
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+.forgot-link {
+    color: #C8A45A;
+    text-decoration: none;
+    font-family: 'DM Sans', Arial;
+    font-size: 0.85rem;
+}
 
-        .input-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.forgot-link:hover {
+    text-decoration: underline;
+}
 
-        .input-label {
-            font-size: 0.75rem;
-            color: var(--offwhite);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+.input-wrapper {
+    position: relative;
+}
 
-        .forgot-link {
-            font-size: 0.75rem;
-            color: var(--gold);
-            text-decoration: none;
-        }
+.form-input {
+    width: 100%;
+    background-color: #1A1A1A;
+    border: 0.5px solid rgba(242,237,228,0.10);
+    color: #F2EDE4;
+    padding: 1rem;
+    font-family: 'DM Sans', Arial;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+    border-radius: 0;
+}
 
-        .forgot-link:hover { text-decoration: underline; }
+.form-input::placeholder {
+    color: #7A7570;
+}
 
-        .input-wrapper {
-            position: relative;
-        }
+.form-input:focus {
+    border-color: #C8A45A;
+}
 
-        .input-field {
-            width: 100%;
-            padding: 1rem;
-            background-color: var(--black3);
-            border: 1px solid var(--border-subtle);
-            color: var(--offwhite);
-            font-family: 'DM Sans', sans-serif;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
+.eye-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7A7570;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
 
-        .input-field::placeholder { color: var(--muted); }
-        .input-field:focus { border-color: var(--gold); }
+.eye-icon:hover {
+    color: #C8A45A;
+}
 
-        .eye-icon {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--muted);
-            cursor: pointer;
-            background: none;
-            border: none;
-        }
+.btn-submit {
+    width: 100%;
+    background-color: #C8A45A;
+    color: #080808;
+    font-family: 'DM Sans', Arial;
+    font-weight: 500;
+    text-transform: uppercase;
+    border: none;
+    padding: 1.2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0;
+    transition: background-color 0.3s;
+}
 
-        .eye-icon:hover { color: var(--gold); }
+.btn-submit:hover {
+    background-color: #E8C880;
+}
 
-        .btn-submit {
-            width: 100%;
-            padding: 1.2rem;
-            background-color: var(--gold);
-            color: var(--black);
-            border: none;
-            font-family: 'DM Sans', sans-serif;
-            font-weight: 500;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.bottom-links {
+    font-family: 'DM Sans', Arial;
+    color: #7A7570;
+    font-size: 0.85rem;
+    text-align: center;
+    line-height: 1.8;
+}
 
-        .btn-submit:hover { background-color: var(--gold-light); }
+.bottom-links a {
+    color: #C8A45A;
+    text-decoration: none;
+}
 
-        .micro-links {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin-top: 2rem;
-            font-size: 0.85rem;
-        }
+.bottom-links a:hover {
+    text-decoration: underline;
+}
 
-        .micro-links a {
-            color: var(--gold);
-            text-decoration: none;
-        }
+.right-footer {
+    margin-top: auto;
+    padding-top: 3rem;
+}
 
-        .micro-links a:hover { text-decoration: underline; }
+.right-footer-line {
+    height: 1px;
+    background-color: rgba(242,237,228,0.10);
+    margin-bottom: 1.5rem;
+}
 
-        .trust-bar {
-            margin-top: auto;
-            padding-top: 4rem;
-            font-size: 0.75rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            text-align: center;
-        }
+.right-footer-text {
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    color: #7A7570;
+    font-size: 0.7rem;
+    text-align: center;
+    letter-spacing: 0.05em;
+}
 
-        @media (max-width: 900px) {
-            .split-layout { flex-direction: column; }
-            .left-panel { padding: 3rem 2rem; }
-            .right-panel { padding: 4rem 2rem; }
-            .left-headline { font-size: 3rem; }
-            .stat-strip { grid-template-columns: 1fr; }
-            .trust-bar { padding-top: 2rem; }
-        }
-    </style>
+@media (max-width: 900px) {
+    .split-layout {
+        flex-direction: column;
+    }
+    .left-column, .right-column {
+        width: 100%;
+        padding: 3rem 2rem;
+    }
+}
+</style>
 </head>
 <body>
     <div class="split-layout">
-        <!-- Left Panel -->
-        <div class="left-panel">
-            <div class="glow glow-1"></div>
-            <div class="glow glow-2"></div>
+        <!-- LEFT COLUMN -->
+        <div class="left-column">
+            <div class="logo">FOLIOGEN</div>
             
-            <div class="logo mono">
-                <div class="logo-mark"></div>
-                FOLIOGEN
-            </div>
-
-            <div class="left-content">
-                <div class="eyebrow mono gold-text">
-                    <div class="gold-rule"></div>
-                    AUTHENTICATION
+            <div class="left-center-content">
+                <div class="eyebrow">
+                    <div class="gold-line"></div>
+                    AI-POWERED PORTFOLIOS
                 </div>
                 
-                <h1 class="left-headline playfair">
+                <h1 class="heading-playfair">
                     Your work,<br>
-                    <span class="playfair gold-text" style="font-style: italic;">beautifully told.</span>
+                    <span class="italic-gold">beautifully told.</span>
                 </h1>
                 
-                <p class="left-body muted-text">
-                    Join the premier platform for high-impact professionals. Seamlessly transform your career narrative into a compelling digital presence.
+                <p class="body-text">
+                    Turn your career into a compelling story that makes recruiters stop scrolling and start calling.
                 </p>
-
-                <div class="stat-strip mono">
-                    <div class="stat-item">
-                        <div class="stat-value playfair">12,400+</div>
-                        <div class="stat-label">PORTFOLIOS</div>
+                
+                <div class="stats-strip">
+                    <div class="stat-cell">
+                        <div class="stat-number">12,400+</div>
+                        <div class="stat-label">Portfolios</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value playfair">3.2×</div>
-                        <div class="stat-label">INTERVIEW RATE</div>
+                    <div class="stat-cell">
+                        <div class="stat-number">3.2x</div>
+                        <div class="stat-label">More Views</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value playfair">89%</div>
-                        <div class="stat-label">TOP TIER FIT</div>
+                    <div class="stat-cell">
+                        <div class="stat-number">89%</div>
+                        <div class="stat-label">Interview Boost</div>
                     </div>
                 </div>
-
-                <div class="testimonial">
+                
+                <div class="testimonial-card">
                     <div class="stars">★★★★★</div>
-                    <p class="quote playfair offwhite">"Foliogen completely redefined my professional identity. Within a week of publishing my new portfolio, I secured three interviews at FAANG."</p>
-                    <div class="author">
-                        <div class="avatar mono">JL</div>
+                    <p class="quote">"Landed 4 interviews in 2 weeks after switching to my Foliogen portfolio. The AI descriptions are next-level."</p>
+                    <div class="author-row">
+                        <div class="avatar">SN</div>
                         <div class="author-info">
-                            <span class="author-name">Jessica Lin</span>
-                            <span class="author-role mono">SENIOR PRODUCT DESIGNER</span>
+                            <div class="author-name">Shaik N.</div>
+                            <div class="author-role">AI Product Manager at Foliogen</div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="copyright mono muted-text">
-                &copy; 2026 Foliogen Inc. All rights reserved.
+            
+            <div class="left-footer">
+                © 2025 Foliogen · Built for ambitious professionals.
             </div>
         </div>
-
-        <!-- Right Panel -->
-        <div class="right-panel">
-            <div class="form-container">
-                <div>
-                    <div class="eyebrow mono gold-text">
-                        <div class="gold-rule"></div>
-                        WELCOME BACK
-                    </div>
-                    <h2 class="right-headline playfair">
-                        Sign in to <span class="playfair gold-text" style="font-style: italic;">continue.</span>
-                    </h2>
-                    <p class="muted-text" style="margin-bottom: 2rem;">Securely access your portfolio and recruiter analytics.</p>
+        
+        <!-- RIGHT COLUMN -->
+        <div class="right-column">
+            <div class="right-content">
+                <div class="eyebrow" style="margin-bottom: 1rem;">
+                    <div class="gold-line"></div>
+                    WELCOME BACK
                 </div>
-
+                
+                <h2 class="heading-playfair" style="margin-bottom: 0.5rem; font-size: 2.8rem;">
+                    Sign in to<br>
+                    <span class="italic-gold">continue.</span>
+                </h2>
+                
+                <p class="subtext">
+                    Pick up where you left off. Your portfolio is waiting.
+                </p>
+                
                 <button class="btn-google">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.16v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.16C1.43 8.55 1 10.22 1 12s.43 3.45 1.16 4.93l3.68-2.84z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.16 7.07l3.68 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.16v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.16C1.43 8.55 1 10.22 1 12s.43 3.45 1.16 4.93l3.68-2.84z"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.16 7.07l3.68 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
                     Continue with Google
                 </button>
-
-                <div class="divider mono">or with email</div>
-
-                <div class="input-group">
-                    <div class="input-header">
-                        <label class="input-label mono">Email</label>
-                    </div>
-                    <div class="input-wrapper">
-                        <input type="email" class="input-field" placeholder="name@company.com">
-                    </div>
+                
+                <div class="divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-text">OR WITH EMAIL</div>
+                    <div class="divider-line"></div>
                 </div>
-
+                
                 <div class="input-group">
-                    <div class="input-header">
-                        <label class="input-label mono">Password</label>
-                        <a href="#" class="forgot-link mono">Forgot password?</a>
+                    <div class="label-row">
+                        <label class="input-label">EMAIL ADDRESS</label>
+                    </div>
+                    <input type="email" class="form-input" placeholder="admin@foliogen.in">
+                </div>
+                
+                <div class="input-group">
+                    <div class="label-row">
+                        <label class="input-label">PASSWORD</label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
                     </div>
                     <div class="input-wrapper">
-                        <input type="password" class="input-field" placeholder="••••••••">
+                        <input type="password" class="form-input" placeholder="Minimum 6 characters">
                         <button class="eye-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -497,21 +505,23 @@
                         </button>
                     </div>
                 </div>
-
+                
                 <button class="btn-submit">
-                    SIGN IN <span>&rarr;</span>
+                    SIGN IN &rarr;
                 </button>
-
-                <div class="micro-links">
-                    <a href="#">Create account</a>
-                    <a href="#">Terms</a>
-                    <a href="#">Privacy</a>
-                    <a href="#">Report bug</a>
+                
+                <div class="bottom-links">
+                    Don't have an account? <a href="#">Create one free</a><br>
+                    <span style="margin: 1rem 0; display: inline-block;">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></span><br>
+                    Found a bug? <a href="#">Help us improve &rarr;</a>
                 </div>
             </div>
             
-            <div class="trust-bar mono">
-                Join 500+ pros &middot; 90-day sprint pass &middot; No subscriptions &middot; Just results
+            <div class="right-footer">
+                <div class="right-footer-line"></div>
+                <div class="right-footer-text">
+                    JOIN 500+ PROS &middot; 90-DAY SPRINT PASS &middot; NO SUBSCRIPTIONS &middot; JUST RESULTS
+                </div>
             </div>
         </div>
     </div>
