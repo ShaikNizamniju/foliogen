@@ -1,23 +1,29 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './LandingV2.css';
-import PricingEngine from '@/components/pricing/PricingEngine';
-import { Testimonials } from '@/components/landing/Testimonials';
-import { IdentityTicker } from '@/components/landing/IdentityTicker';
 
 export function LandingV2() {
     const [navScrolled, setNavScrolled] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [faqStates, setFaqStates] = useState<{ [key: number]: boolean }>({});
+
+    // Toggle FAQ
+    const toggleFaq = (index: number) => {
+        setFaqStates((prev) => {
+            const nextStates = { ...prev };
+            nextStates[index] = !prev[index];
+            return nextStates;
+        });
+    };
 
     useEffect(() => {
-        // Nav scroll state
         const handleScroll = () => {
-            setNavScrolled(window.scrollY > 16);
+            setNavScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
-
-        // Scroll reveal observer
-        const srEls = document.querySelectorAll('.sr');
+        
+        // Scroll reveal
+        const srEls = document.querySelectorAll('.fade-up');
         const srObserver = new IntersectionObserver((entries) => {
             entries.forEach((e) => {
                 if (e.isIntersecting) {
@@ -25,78 +31,17 @@ export function LandingV2() {
                     srObserver.unobserve(e.target);
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-        srEls.forEach((el) => srObserver.observe(el));
-
-        // Skill bar animation on visibility
-        const skillBars = document.querySelectorAll('.skill-bar-fill');
-        const barObserver = new IntersectionObserver((entries) => {
-            entries.forEach((e) => {
-                if (e.isIntersecting) {
-                    setTimeout(() => e.target.classList.add('animated'), 200);
-                    barObserver.unobserve(e.target);
-                }
-            });
-        }, { threshold: 0.3 });
-        skillBars.forEach((b) => barObserver.observe(b));
-
-        // Counter animation
-        const animCounter = (el: Element, target: number, duration: number = 1800) => {
-            let start: number | null = null;
-            const step = (ts: number) => {
-                if (!start) start = ts;
-                const progress = Math.min((ts - start) / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3);
-                el.innerHTML = String(Math.floor(eased * target));
-                if (progress < 1) requestAnimationFrame(step);
-                else el.innerHTML = String(target);
-            };
-            requestAnimationFrame(step);
-        };
-
-        const counterTargets = [
-            { id: 'count1', val: 12 },
-            { id: 'count2', val: 19 },
-            { id: 'count3', val: 97 },
-            { id: 'count4', val: 4 },
-        ];
-
-        const tickerObs = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                counterTargets.forEach((c) => {
-                    const el = document.getElementById(c.id);
-                    if (el) animCounter(el, c.val, 1600);
-                });
-                tickerObs.disconnect();
-            }
-        }, { threshold: 0.5 });
-
-        const ticker = document.querySelector('.ticker');
-        if (ticker) tickerObs.observe(ticker);
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        
+        srEls.forEach(el => srObserver.observe(el));
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
             srObserver.disconnect();
-            barObserver.disconnect();
-            tickerObs.disconnect();
         };
     }, []);
 
-    const [faqStates, setFaqStates] = useState<{ [key: number]: boolean }>({});
-
-    const toggleFaq = (index: number) => {
-        setFaqStates((prev) => {
-            // close all others, open clicked
-            const nextStates = Object.keys(prev).reduce((acc, key) => {
-                acc[Number(key)] = false;
-                return acc;
-            }, {} as { [key: number]: boolean });
-            nextStates[index] = !prev[index];
-            return nextStates;
-        });
-    };
-
-    // Draggable template scroll logic
+    // Scroll drag for templates
     useEffect(() => {
         const scrollEl = scrollRef.current;
         if (!scrollEl) return;
@@ -134,713 +79,456 @@ export function LandingV2() {
     }, []);
 
     return (
-        <div className="landing-v2 min-h-screen bg-canvas">
-
-            {/* ─── NAV ─── */}
-            <nav className={`nav ${navScrolled ? 'scrolled' : ''}`} id="nav" role="navigation" aria-label="Main navigation">
-                <div className="container">
-                    <div className="nav-inner">
-                        <Link to="/" className="nav-logo" aria-label="Foliogen home">
-                            <div className="nav-logo-mark" aria-hidden="true">F</div>
-                            Foliogen
-                        </Link>
-                        <ul className="nav-links hidden md:flex" role="list">
-                            <li><a href="#features">Features</a></li>
-                            <li><a href="#templates">Templates</a></li>
-                            <li><a href="#pricing">Beta Status</a></li>
-                            <li><a href="#faq">FAQ</a></li>
-                        </ul>
-                        <div className="nav-actions">
-                            <Link to="/auth" className="nav-signin hidden sm:block">Sign in</Link>
-                            <Link to="/auth" className="btn btn-cobalt">Start Free Audit</Link>
-                        </div>
+        <div className="landing-luxury">
+            {/* Navbar */}
+            <nav className={`navbar ${navScrolled ? 'scrolled' : ''}`}>
+                <div className="nav-container">
+                    <Link to="/" className="nav-logo">FOLIOGEN</Link>
+                    <div className="nav-links hidden md:flex">
+                        <a href="#process">Process</a>
+                        <a href="#features">Features</a>
+                        <a href="#templates">Templates</a>
+                        <a href="#faq">FAQ</a>
+                    </div>
+                    <div className="nav-actions">
+                        <Link to="/auth" className="nav-link-sign hidden sm:block">SIGN IN</Link>
+                        <Link to="/auth" className="btn-cta">Start Free Audit</Link>
                     </div>
                 </div>
             </nav>
 
-            {/* ─── HERO ─── */}
-            <section className="hero" aria-label="Hero">
-                <div className="hero-left">
-                    <div className="hero-badge">
-                        <span className="badge">
-                            <span className="badge-dot" aria-hidden="true" style={{ background: '#3DFF9A' }}></span>
-                            🎉 Open Beta — 100% Free for Early Adopters
-                        </span>
-                    </div>
-                    <h1 className="headline hero-headline">
-                        Your portfolio.<br />
-                        Built by AI.<br />
-                        <em>Loved by recruiters.</em>
-                    </h1>
-                    <p className="body-lg hero-sub">
-                        Drop your resume. Get a live portfolio, a recruiter gap analysis, and interview prep — in under 10 minutes.
-                    </p>
-                    <div className="hero-actions">
-                        <Link to="/auth" className="btn btn-cobalt">
-                            Build My Portfolio Free →
-                        </Link>
-                        <a href="#templates" className="btn btn-ghost">
-                            See a live example <span className="arrow" aria-hidden="true">→</span>
-                        </a>
-                    </div>
-                    <p className="text-[10px] text-neutral-500 font-mono uppercase tracking-[0.2em] mt-4 ml-1">
-                        No credit card required · Universal Pro access enabled
-                    </p>
-                </div>
-
-                <div className="hero-right">
-                    <div className="portfolio-mock" role="img" aria-label="Portfolio preview mockup">
-                        <div className="mock-topbar">
-                            <div className="mock-circle" style={{ background: '#FF5F57' }} aria-hidden="true"></div>
-                            <div className="mock-circle" style={{ background: '#FEBC2E' }} aria-hidden="true"></div>
-                            <div className="mock-circle" style={{ background: '#28C840' }} aria-hidden="true"></div>
-                            <div className="mock-url-bar">foliogen.in/shaik-nizamuddin</div>
+            {/* Hero */}
+            <section className="hero-section">
+                <div className="hero-glow"></div>
+                <div className="hero-container">
+                    <div className="hero-copy">
+                        <div className="eyebrow fade-up" style={{ animationDelay: '0s' }}>
+                            <div className="gold-line"></div>
+                            THE PROFESSIONAL STANDARD
                         </div>
-                        <div className="mock-body">
-                            <div className="mock-profile-row">
-                                <div className="mock-avatar-lg" aria-hidden="true">S</div>
-                                <div className="mock-profile-info">
+                        <h1 className="fade-up" style={{ animationDelay: '0.1s' }}>
+                            Your portfolio.<br />
+                            Built by AI.<br />
+                            <em className="gold-italic">Loved by recruiters.</em>
+                        </h1>
+                        <p className="hero-sub fade-up" style={{ animationDelay: '0.2s' }}>
+                            Drop your resume. Get a live portfolio, a recruiter gap analysis, and interview prep — in under 10 minutes.
+                        </p>
+                        <div className="hero-btns fade-up" style={{ animationDelay: '0.3s' }}>
+                            <Link to="/auth" className="btn-primary">Build My Portfolio</Link>
+                            <a href="#demo" className="btn-ghost">▶ Watch Demo</a>
+                        </div>
+                        <div className="hero-stats fade-up" style={{ animationDelay: '0.4s' }}>
+                            <div className="stat-item">
+                                <div className="stat-val">79+</div>
+                                <div className="stat-label">INSIGHT SIGNALS</div>
+                            </div>
+                            <div className="stat-item">
+                                <div className="stat-val">4min</div>
+                                <div className="stat-label">AVG. BUILD TIME</div>
+                            </div>
+                            <div className="stat-item">
+                                <div className="stat-val">19+</div>
+                                <div className="stat-label">DESIGN SYSTEMS</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="hero-mockup fade-up" style={{ animationDelay: '0.2s' }}>
+                        <div className="mockup-frame">
+                            <div className="mockup-header">
+                                <div className="mock-avatar">SN</div>
+                                <div className="mock-info">
                                     <div className="mock-name">Shaik Nizamuddin</div>
-                                    <div className="mock-title">AI Product Manager</div>
-                                    <div className="mock-location">📍 Bengaluru, India</div>
+                                    <div className="mock-role">AI Product Manager</div>
+                                </div>
+                                <div className="mock-score">
+                                    <div className="score-val">94</div>
+                                    <div className="score-label">PORTFOLIO SCORE</div>
                                 </div>
                             </div>
-                            <div className="mock-skills">
-                                <span className="mock-skill">Figma</span>
-                                <span className="mock-skill">User Research</span>
-                                <span className="mock-skill">Design Systems</span>
-                                <span className="mock-skill">Prototyping</span>
-                                <span className="mock-skill">A/B Testing</span>
-                            </div>
-                            <div className="mock-section-label">Featured Work</div>
-                            <div className="mock-projects-list">
-                                <div className="mock-proj">
-                                    <div>
-                                        <div className="mock-proj-name">Redesigned checkout — 34% CVR lift</div>
-                                        <div className="mock-proj-meta">Razorpay · 2024</div>
-                                    </div>
-                                    <span className="mock-proj-tag">CASE STUDY</span>
+                            <div className="mockup-body">
+                                <div className="mock-skills">
+                                    <span>Product Strategy</span>
+                                    <span>AI/ML</span>
+                                    <span>Growth</span>
+                                    <span>UX</span>
                                 </div>
-                                <div className="mock-proj">
-                                    <div>
-                                        <div className="mock-proj-name">Design System at Scale</div>
-                                        <div className="mock-proj-meta">Swiggy · 2023</div>
-                                    </div>
-                                    <span className="mock-proj-tag">SYSTEM</span>
+                                <div className="mock-fit">
+                                    <div className="fit-label">RECRUITER FIT</div>
+                                    <div className="fit-bar"><div className="fit-fill" style={{width: '94%'}}></div></div>
                                 </div>
-                                <div className="mock-proj">
-                                    <div>
-                                        <div className="mock-proj-name">Mobile onboarding revamp</div>
-                                        <div className="mock-proj-meta">CRED · 2023</div>
-                                    </div>
-                                    <span className="mock-proj-tag">UI/UX</span>
+                                <div className="mock-projects">
+                                    <div className="mock-proj"></div>
+                                    <div className="mock-proj"></div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div className="mock-float-card" aria-hidden="true">
-                        <div className="float-label">This Week</div>
-                        <div className="float-stat">1,248</div>
-                        <div className="float-change">↑ 23% portfolio views</div>
-                        <div className="float-sparkline">
-                            <div className="sparkbar" style={{ height: '35%' }}></div>
-                            <div className="sparkbar" style={{ height: '50%' }}></div>
-                            <div className="sparkbar" style={{ height: '42%' }}></div>
-                            <div className="sparkbar" style={{ height: '70%' }}></div>
-                            <div className="sparkbar" style={{ height: '60%' }}></div>
-                            <div className="sparkbar" style={{ height: '80%' }}></div>
-                            <div className="sparkbar" style={{ height: '100%' }}></div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* ─── IDENTITY TICKER ─── */}
-            <IdentityTicker />
-
-            {/* ─── STATS TICKER ─── */}
-            <div className="ticker" role="region" aria-label="Key statistics">
-                <div className="ticker-inner">
-                    <div className="ticker-item">
-                        <div className="ticker-text">
-                            <div className="ticker-label">Built for ambitious professionals</div>
-                            <div className="ticker-sub">RESUME TO PORTFOLIO</div>
+            {/* Marquee */}
+            <div className="marquee-strip">
+                <div className="marquee-track">
+                    {/* Items */}
+                    {[...Array(2)].map((_, i) => (
+                        <div key={i} className="marquee-group">
+                            <span className="gold-dot">✦</span><span>GOOGLE</span>
+                            <span className="gold-dot">✦</span><span>AMAZON</span>
+                            <span className="gold-dot">✦</span><span>MICROSOFT</span>
+                            <span className="gold-dot">✦</span><span>FLIPKART</span>
+                            <span className="gold-dot">✦</span><span>RAZORPAY</span>
+                            <span className="gold-dot">✦</span><span>SWIGGY</span>
+                            <span className="gold-dot">✦</span><span>CRED</span>
+                            <span className="gold-dot">✦</span><span>ATLASSIAN</span>
+                            <span className="gold-dot">✦</span><span>STRIPE</span>
+                            <span className="gold-dot">✦</span><span>META</span>
+                            <span className="gold-dot">✦</span><span>NETFLIX</span>
+                            <span className="gold-dot">✦</span><span>AIRBNB</span>
                         </div>
-                    </div>
-                    <div className="ticker-item">
-                        <div className="ticker-num"><span id="count2">0</span><span>+</span></div>
-                        <div className="ticker-text">
-                            <div className="ticker-label">Professional templates</div>
-                            <div className="ticker-sub">INDUSTRY-STANDARD</div>
-                        </div>
-                    </div>
-                    <div className="ticker-item">
-                        <div className="ticker-text">
-                            <div className="ticker-label">Resume → Portfolio in minutes</div>
-                            <div className="ticker-sub">ZERO SETUP</div>
-                        </div>
-                    </div>
-                    <div className="ticker-item">
-                        <div className="ticker-num"><span id="count4">0</span><span>min</span></div>
-                        <div className="ticker-text">
-                            <div className="ticker-label">Avg. build time</div>
-                            <div className="ticker-sub">RESUME TO LIVE</div>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
 
-            {/* ─── HOW IT WORKS ─── */}
-            <section className="how-section" id="how" aria-labelledby="how-title">
+            {/* Process Section */}
+            <section className="process-section" id="process">
                 <div className="container">
-                    <div className="section-header">
-                        <div>
-                            <div className="label sr">Process</div>
-                            <h2 className="section-title sr sr-d1" id="how-title">
-                                From resume to portfolio<br />in <em>4 precise steps.</em>
-                            </h2>
-                        </div>
-                        <p className="body-base sr sr-d2" style={{ maxWidth: '280px', textAlign: 'right' }}>
-                            We handle every decision.<br />You take all the credit.
-                        </p>
-                    </div>
-                    <div className="steps-layout" role="list">
-                        <div className="step-item sr" role="listitem">
-                            <div className="process-line hidden md:block" />
-                            <div className="step-number-wrap">
-                                <span className="step-icon" aria-hidden="true">🔄</span>
-                            </div>
-                            <div className="step-name">Sync</div>
-                            <p className="step-desc">Connect your LinkedIn PDF. Our "Auto-Sync" engine ensures your portfolio never goes stale as your career grows.</p>
-                        </div>
-                        <div className="step-item sr sr-d1" role="listitem">
-                            <div className="process-line hidden md:block" />
-                            <div className="step-number-wrap">
-                                <span className="step-icon" aria-hidden="true">⚡</span>
-                            </div>
-                            <div className="step-name">Synthesize</div>
-                            <p className="step-desc">AI extracts skills, projects, and achievements — then rewrites them in language that resonates with recruiters.</p>
-                        </div>
-                        <div className="step-item sr sr-d2" role="listitem">
-                            <div className="process-line hidden md:block" />
-                            <div className="step-number-wrap">
-                                <span className="step-icon" aria-hidden="true">🎨</span>
-                            </div>
-                            <div className="step-name">Design</div>
-                            <p className="step-desc">Choose from 19+ professional design systems built for your industry and role. Every layout is pixel-perfect.</p>
-                        </div>
-                        <div className="step-item sr sr-d3" role="listitem">
-                            <div className="step-number-wrap">
-                                <span className="step-icon" aria-hidden="true">🚀</span>
-                            </div>
-                            <div className="step-name">Publish</div>
-                            <p className="step-desc">Go live with one click. Custom domain, blazing-fast hosting, built-in analytics, and an ATS-ready resume export.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ─── WHY FOLIOGEN ─── */}
-            <section className="why-section" aria-labelledby="why-title">
-                <div className="container">
-                    <div className="why-grid">
-                        <div className="why-left">
-                            <div className="label sr">Why Foliogen</div>
-                            <h2 className="section-title sr sr-d1" id="why-title">
-                                Not a resume tool.<br />
-                                A <em>career accelerator.</em>
-                            </h2>
-                            <p className="body-base sr sr-d2" style={{ marginTop: 'var(--sp-3)' }}>
-                                Foliogen is the only platform that understands how to present professionals — not just format them. Built by designers, for careers.
-                            </p>
-                            <div className="why-list">
-                                <div className="why-item sr">
-                                    <div className="why-item-icon" aria-hidden="true">🎭</div>
-                                    <div className="why-item-text">
-                                        <div className="why-item-title">Narrative Transmutation</div>
-                                        <p className="why-item-desc">Use the Persona Switcher to flip your portfolio between Startup, Big Tech, and Fintech modes instantly. Same facts, different focus.</p>
-                                    </div>
-                                </div>
-                                <div className="why-item sr sr-d1">
-                                    <div className="why-item-icon" aria-hidden="true">📡</div>
-                                    <div className="why-item-text">
-                                        <div className="why-item-title">Recruiter Pulse Tracking</div>
-                                        <p className="why-item-desc">Real-time analytics with company-level tracking. Know if a recruiter from Google or Amazon is viewing your work right now.</p>
-                                    </div>
-                                </div>
-                                <div className="why-item sr sr-d2">
-                                    <div className="why-item-icon" aria-hidden="true">🏛️</div>
-                                    <div className="why-item-text">
-                                        <div className="why-item-title">LinkedIn Auto-Sync</div>
-                                        <p className="why-item-desc">Upload your latest LinkedIn export and our AI will "diff" your profile, adding new wins automatically without overwriting your manual edits.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="why-right sr sr-d2 hidden md:block">
-                            <div className="why-visual-main">
-                                <div className="why-visual-header">
-                                    <div>
-                                        <div className="why-visual-title">AI Skill Analysis</div>
-                                        <div className="why-visual-subtitle">Derived from your resume · Updated live</div>
-                                    </div>
-                                    <div className="badge"><span className="badge-dot"></span> Live</div>
-                                </div>
-                                <div className="why-visual-body">
-                                    <div className="skills-chart" id="skillsChart">
-                                        <div className="skill-row">
-                                            <div className="skill-name">UI Design</div>
-                                            <div className="skill-bar-track">
-                                                <div className="skill-bar-fill" style={{ width: '94%' }}></div>
-                                            </div>
-                                            <div className="skill-pct">94%</div>
-                                        </div>
-                                        <div className="skill-row">
-                                            <div className="skill-name">User Research</div>
-                                            <div className="skill-bar-track">
-                                                <div className="skill-bar-fill" style={{ width: '82%' }}></div>
-                                            </div>
-                                            <div className="skill-pct">82%</div>
-                                        </div>
-                                        <div className="skill-row">
-                                            <div className="skill-name">Prototyping</div>
-                                            <div className="skill-bar-track">
-                                                <div className="skill-bar-fill" style={{ width: '88%' }}></div>
-                                            </div>
-                                            <div className="skill-pct">88%</div>
-                                        </div>
-                                        <div className="skill-row">
-                                            <div className="skill-name">Design Systems</div>
-                                            <div className="skill-bar-track">
-                                                <div className="skill-bar-fill" style={{ width: '76%' }}></div>
-                                            </div>
-                                            <div className="skill-pct">76%</div>
-                                        </div>
-                                        <div className="skill-row">
-                                            <div className="skill-name">Strategy</div>
-                                            <div className="skill-bar-track">
-                                                <div className="skill-bar-fill" style={{ width: '65%' }}></div>
-                                            </div>
-                                            <div className="skill-pct">65%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="why-float" aria-hidden="true">
-                                <div className="why-float-label">Interviews This Month</div>
-                                <div className="why-float-value">7 calls</div>
-                                <div className="why-float-sub">↑ 3× increase post-portfolio</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ─── FEATURES ─── */}
-            <section className="features-section" id="features" aria-labelledby="features-title">
-                <div className="container">
-                    <div className="label sr">Features</div>
-                    <h2 className="section-title sr sr-d1" id="features-title">
-                        Everything you need<br />to <em>stand out.</em>
+                    <h2 className="section-title text-center fade-up">
+                        From resume to portfolio in <em className="gold-italic">4 precise steps.</em>
                     </h2>
-                    <div className="features-grid">
-                        {/* Resume → Portfolio */}
-                        <div className="feat-cell span2 sr">
-                            <div className="feat-eyebrow">Core Engine</div>
-                            <div className="feat-title">Resume to Portfolio,<br />in minutes.</div>
-                            <p className="feat-desc">Upload any resume format. Our AI synthesizes your experience, projects, and achievements into a compelling professional narrative.</p>
-                            <div className="feat-visual">
-                                <div className="resume-viz">
-                                    <div className="doc-mock">
-                                        <div className="doc-line l"></div>
-                                        <div className="doc-line m"></div>
-                                        <div className="doc-line s"></div>
-                                        <div className="doc-line l"></div>
-                                        <div className="doc-line m"></div>
-                                    </div>
-                                    <div className="doc-arrow" aria-hidden="true">⟶</div>
-                                    <div className="portfolio-mini">
-                                        <div className="portfolio-mini-header">
-                                            <div className="portfolio-mini-avatar" aria-hidden="true">S</div>
-                                            <div className="portfolio-mini-name">Shaik Nizamuddin</div>
-                                        </div>
-                                        <div className="portfolio-mini-tags">
-                                            <span className="portfolio-mini-tag">UX</span>
-                                            <span className="portfolio-mini-tag">FIGMA</span>
-                                            <span className="portfolio-mini-tag">RESEARCH</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="process-grid fade-up">
+                        <div className="process-step">
+                            <div className="step-num">01</div>
+                            <div className="step-icon">⎔</div>
+                            <h3 className="step-title">Scan</h3>
+                            <p className="step-desc">Connect your LinkedIn PDF. Our "Auto-Sync" engine ensures your portfolio never goes stale.</p>
                         </div>
-                        {/* Design Systems */}
-                        <div className="feat-cell sr sr-d1">
-                            <div className="feat-eyebrow">Templates</div>
-                            <div className="feat-title">19+ Design<br />Systems</div>
-                            <p className="feat-desc">Industry-crafted templates for tech, finance, creative, and consulting roles.</p>
-                            <div className="feat-visual">
-                                <div className="themes-mini">
-                                    <div className="theme-swatch" style={{ background: 'linear-gradient(135deg,#0C0C0B,#1a1a2e)' }}>
-                                        <div className="theme-swatch-label">Dev Dark</div>
-                                    </div>
-                                    <div className="theme-swatch" style={{ background: '#F8F6F0' }}>
-                                        <div className="theme-swatch-label" style={{ background: 'rgba(0,0,0,0.15)', color: '#333' }}>Editorial</div>
-                                    </div>
-                                    <div className="theme-swatch" style={{ background: 'linear-gradient(135deg,#0f2027,#2c5364)' }}>
-                                        <div className="theme-swatch-label">Executive</div>
-                                    </div>
-                                    <div className="theme-swatch" style={{ background: '#fdf6ec' }}>
-                                        <div className="theme-swatch-label" style={{ background: 'rgba(0,0,0,0.15)', color: '#333' }}>Warm</div>
-                                    </div>
-                                    <div className="theme-swatch" style={{ background: '#0a0a0a' }}>
-                                        <div className="theme-swatch-label" style={{ color: 'rgba(61,255,154,0.9)' }}>Terminal</div>
-                                    </div>
-                                    <div className="theme-swatch" style={{ background: 'linear-gradient(135deg,#1A44C8,#7B61FF)' }}>
-                                        <div className="theme-swatch-label">Cobalt</div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="process-step">
+                            <div className="step-num">02</div>
+                            <div className="step-icon">⚡</div>
+                            <h3 className="step-title">Synthesise</h3>
+                            <p className="step-desc">AI extracts skills, projects, and achievements — then rewrites them for maximum impact.</p>
                         </div>
-                        {/* Analytics */}
-                        <div className="feat-cell sr">
-                            <div className="feat-eyebrow">Insights</div>
-                            <div className="feat-title">Portfolio<br />Analytics</div>
-                            <p className="feat-desc">Know exactly who viewed your portfolio, where they came from, and what they engaged with.</p>
-                            <div className="feat-visual analytics-mini">
-                                <div className="analytics-bar-row">
-                                    <div className="analytics-bar-label">LinkedIn</div>
-                                    <div className="analytics-bar-track"><div className="analytics-bar-fill" style={{ width: '78%' }}></div></div>
-                                    <div className="analytics-bar-val">78%</div>
-                                </div>
-                                <div className="analytics-bar-row">
-                                    <div className="analytics-bar-label">Direct</div>
-                                    <div className="analytics-bar-track"><div className="analytics-bar-fill" style={{ width: '54%' }}></div></div>
-                                    <div className="analytics-bar-val">54%</div>
-                                </div>
-                                <div className="analytics-bar-row">
-                                    <div className="analytics-bar-label">Email</div>
-                                    <div className="analytics-bar-track"><div className="analytics-bar-fill" style={{ width: '32%' }}></div></div>
-                                    <div className="analytics-bar-val">32%</div>
-                                </div>
-                                <div className="analytics-bar-row">
-                                    <div className="analytics-bar-label">Twitter</div>
-                                    <div className="analytics-bar-track"><div className="analytics-bar-fill" style={{ width: '18%' }}></div></div>
-                                    <div className="analytics-bar-val">18%</div>
-                                </div>
-                            </div>
+                        <div className="process-step">
+                            <div className="step-num">03</div>
+                            <div className="step-icon">◒</div>
+                            <h3 className="step-title">Design</h3>
+                            <p className="step-desc">Choose from 19+ professional design systems built for your industry and specific role.</p>
                         </div>
-                        {/* Publishing */}
-                        <div className="feat-cell sr sr-d1">
-                            <div className="feat-eyebrow">Deployment</div>
-                            <div className="feat-title">Precision<br />Publishing</div>
-                            <p className="feat-desc">Custom domain support, global CDN, automatic HTTPS, and specialized recruiter filters — all included in your pass.</p>
-                        </div>
-                        {/* ATS Resume */}
-                        <div className="feat-cell sr sr-d2">
-                            <div className="feat-eyebrow">Resume</div>
-                            <div className="feat-title">ATS-Optimised<br />Resume</div>
-                            <p className="feat-desc">AI-generated resume formatted to pass modern applicant tracking systems. Download in one click, anytime.</p>
+                        <div className="process-step">
+                            <div className="step-num">04</div>
+                            <div className="step-icon">↗</div>
+                            <h3 className="step-title">Publish</h3>
+                            <p className="step-desc">Go live with one click. Custom domain, blazing-fast hosting, and built-in analytics.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* ─── TEMPLATES ─── */}
-            <section className="templates-section" id="templates" aria-labelledby="templates-title">
-                <div className="container">
-                    <div className="label sr">Design Systems</div>
-                    <h2 className="section-title sr sr-d1" id="templates-title">
-                        19+ industry-standard<br /><em>design systems.</em>
-                    </h2>
-                    <p className="body-base sr sr-d2" style={{ marginTop: 'var(--sp-2)' }}>Drag to explore. Every template is built for a specific professional context — not generic, never generic.</p>
-                </div>
-                <div className="templates-scroll" id="templatesScroll" aria-label="Template carousel" role="region" ref={scrollRef}>
-                    {/* Card 1 */}
-                    <div className="template-card">
-                        <div className="template-preview" style={{ background: '#0C0C0B', padding: '16px' }}>
-                            <div style={{ fontFamily: '"Geist Mono", monospace', fontSize: '9px', color: 'rgba(61,255,154,0.7)', marginBottom: '4px' }}>$ whoami</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#fff', fontStyle: 'italic' }}>Developer</div>
-                            <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)', marginTop: '6px', fontFamily: '"Geist Mono", monospace' }}>Full-stack Engineer</div>
-                            <div style={{ display: 'flex', gap: '4px', marginTop: '10px', flexWrap: 'wrap' }}>
-                                <span style={{ border: '1px solid rgba(61,255,154,0.25)', padding: '2px 6px', fontSize: '8px', color: 'rgba(61,255,154,0.7)', fontFamily: '"Geist Mono", monospace', borderRadius: '2px' }}>React</span>
-                                <span style={{ border: '1px solid rgba(61,255,154,0.25)', padding: '2px 6px', fontSize: '8px', color: 'rgba(61,255,154,0.7)', fontFamily: '"Geist Mono", monospace', borderRadius: '2px' }}>Node</span>
-                            </div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">Terminal Dark</div>
-                            <div className="template-type">ENGINEERING</div>
-                        </div>
-                    </div>
-                    {/* Card 2 */}
-                    <div className="template-card">
-                        <div className="template-preview" style={{ background: '#F8F6F0', padding: '16px' }}>
-                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: '#999', letterSpacing: '0.1em', marginBottom: '6px' }}>PORTFOLIO</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '18px', color: '#0C0C0B', fontStyle: 'italic', lineHeight: 1.2 }}>Editorial<br />Light</div>
-                            <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
-                                <div style={{ width: '20px', height: '20px', background: '#0C0C0B', borderRadius: '50%' }}></div>
-                                <div style={{ width: '20px', height: '20px', background: '#d4c5a9', borderRadius: '50%' }}></div>
-                                <div style={{ width: '20px', height: '20px', background: '#a08b6e', borderRadius: '50%' }}></div>
-                            </div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">Editorial Light</div>
-                            <div className="template-type">CREATIVE / DESIGN</div>
-                        </div>
-                    </div>
-                    {/* Card 3 */}
-                    <div className="template-card">
-                        <div className="template-preview" style={{ background: 'linear-gradient(135deg,#0f2027 0%, #2c5364 100%)', padding: '16px' }}>
-                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: 'rgba(255,255,255,0.35)', marginBottom: '4px' }}>EXECUTIVE</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#fff' }}>Strategic<br />Director</div>
-                            <div style={{ marginTop: '10px', border: '1px solid rgba(255,255,255,0.1)', padding: '6px 8px', borderRadius: '2px' }}>
-                                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', fontFamily: '"Geist Mono", monospace' }}>LEVEL: SENIOR ──────</div>
-                            </div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">Executive Elite</div>
-                            <div className="template-type">STRATEGY / LEADERSHIP</div>
-                        </div>
-                    </div>
-                    {/* Card 4 */}
-                    <div className="template-card">
-                        <div className="template-preview" style={{ background: '#1A44C8', padding: '16px' }}>
-                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>COBALT</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#fff', fontStyle: 'italic' }}>Product<br />Manager</div>
-                            <div style={{ marginTop: '10px', display: 'flex', gap: '4px' }}>
-                                <div style={{ flex: 1, height: '16px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px' }}></div>
-                                <div style={{ flex: 1, height: '16px', background: 'rgba(255,255,255,0.25)', borderRadius: '2px' }}></div>
-                            </div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">Cobalt PM</div>
-                            <div className="template-type">PRODUCT / STRATEGY</div>
-                        </div>
-                    </div>
-                    {/* Card 5 */}
-                    <div className="template-card">
-                        <div className="template-preview" style={{ background: '#fdf6ec', padding: '16px' }}>
-                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: '#c68642', marginBottom: '6px' }}>WARM STUDIO</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#2d1b00', lineHeight: 1.2 }}>Creative<br />Director</div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px', marginTop: '12px' }}>
-                                <div style={{ height: '22px', background: 'rgba(198,134,66,0.2)', borderRadius: '2px' }}></div>
-                                <div style={{ height: '22px', background: 'rgba(198,134,66,0.4)', borderRadius: '2px' }}></div>
-                            </div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">Warm Cream</div>
-                            <div className="template-type">CREATIVE / ART</div>
-                        </div>
-                    </div>
-                    {/* Card 6 */}
-                    <div className="template-card">
-                        <div className="template-preview" style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', padding: '16px' }}>
-                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: '#7ec8e3', marginBottom: '4px' }}>DEEP OCEAN</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#fff', fontStyle: 'italic' }}>Data<br />Scientist</div>
-                            <div style={{ marginTop: '10px', height: '24px', background: 'rgba(126,200,227,0.1)', borderRadius: '2px', position: 'relative', overflow: 'hidden' }}>
-                                <div style={{ position: 'absolute', bottom: 0, left: 0, height: '100%', width: '65%', background: 'rgba(126,200,227,0.3)' }}></div>
-                            </div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">Deep Ocean</div>
-                            <div className="template-type">DATA / ANALYTICS</div>
-                        </div>
-                    </div>
-                    {/* Card 7 */}
-                    <div className="template-card">
-                        <div className="template-preview" style={{ background: '#fff', borderBottom: '1px solid #eee', padding: '16px' }}>
-                            <div style={{ fontSize: '9px', fontFamily: '"Geist Mono", monospace', color: '#ccc', marginBottom: '4px' }}>MINIMAL</div>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '16px', color: '#0C0C0B' }}>UX Researcher</div>
-                            <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <div style={{ height: '4px', background: '#f0f0f0', borderRadius: '2px', width: '80%' }}></div>
-                                <div style={{ height: '4px', background: '#f0f0f0', borderRadius: '2px', width: '60%' }}></div>
-                                <div style={{ height: '4px', background: '#f0f0f0', borderRadius: '2px', width: '70%' }}></div>
-                            </div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">Ultra Minimal</div>
-                            <div className="template-type">RESEARCH / ACADEMIC</div>
-                        </div>
-                    </div>
-                    {/* Repeat for marquee effect */}
-                    <div className="template-card" aria-hidden="true">
-                        <div className="template-preview" style={{ background: '#0C0C0B', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <div style={{ fontFamily: '"Instrument Serif", serif', color: 'rgba(255,255,255,0.2)', fontSize: '40px', fontStyle: 'italic' }}>+12</div>
-                        </div>
-                        <div className="template-info">
-                            <div className="template-name">12 more templates</div>
-                            <div className="template-type">ALL PLANS</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="pricing" className="py-24 bg-white/5 border-t border-white/5">
-                <div className="container max-w-4xl mx-auto">
-                    <div className="bg-gradient-to-br from-[#1A44C8]/10 to-transparent border border-[#1A44C8]/30 rounded-[2rem] p-10 md:p-16 text-center shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <span className="text-8xl" aria-hidden="true">🎁</span>
-                        </div>
-                        
-                        <div className="label mb-6 mx-auto">Founders' Invitation</div>
-                        <h2 className="text-4xl md:text-5xl font-serif text-white mb-8 tracking-tight">
-                            Free forever for our <br />
-                            <em>beta cohort.</em>
+            {/* Accelerator Section */}
+            <section className="accelerator-section" id="features">
+                <div className="container accel-grid">
+                    <div className="accel-left fade-up">
+                        <h2 className="section-title">
+                            Not a resume tool.<br />A <em className="gold-italic">career accelerator.</em>
                         </h2>
-                        <p className="text-xl text-neutral-300 leading-relaxed mb-10 max-w-2xl mx-auto font-light">
-                            Foliogen is currently in Open Beta. All Pro features—including the 
-                            <strong> Recruiter Audit</strong>, <strong>Neural Memory</strong>, and <strong>Premium Templates</strong>—are 
-                            unlocked for free. Help us build the future of career agents.
-                        </p>
-                        
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                            <Link to="/auth" className="btn btn-cobalt h-14 px-10 text-lg">
-                                Claim My Free Pro Access
-                            </Link>
-                            <div className="flex items-center gap-2 text-emerald-400 font-mono text-xs uppercase tracking-widest">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                Live Now · No Card Needed
+                        <div className="accel-features">
+                            <div className="accel-row">
+                                <div className="accel-icon">⚲</div>
+                                <div className="accel-text">
+                                    <div className="accel-title">Narrative Transmutation</div>
+                                    <p className="accel-desc">Flip your portfolio between Startup, Big Tech, and Fintech modes instantly.</p>
+                                </div>
+                            </div>
+                            <div className="accel-row">
+                                <div className="accel-icon">◎</div>
+                                <div className="accel-text">
+                                    <div className="accel-title">Recruiter Pulse Tracking</div>
+                                    <p className="accel-desc">Real-time analytics. Know if a recruiter from Google is viewing your work right now.</p>
+                                </div>
+                            </div>
+                            <div className="accel-row">
+                                <div className="accel-icon">⇋</div>
+                                <div className="accel-text">
+                                    <div className="accel-title">LinkedIn Auto-Sync</div>
+                                    <p className="accel-desc">Upload your latest export and our AI will "diff" your profile, adding new wins.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accel-right fade-up">
+                        <div className="accel-card">
+                            <div className="accel-card-header">AI Recruiter Analysis</div>
+                            <div className="accel-skills">
+                                <div className="accel-skill">
+                                    <div className="skill-name">Product Strategy</div>
+                                    <div className="skill-pct">94%</div>
+                                    <div className="skill-bar"><div className="skill-fill" style={{width: '94%'}}></div></div>
+                                </div>
+                                <div className="accel-skill">
+                                    <div className="skill-name">UX Research</div>
+                                    <div className="skill-pct">88%</div>
+                                    <div className="skill-bar"><div className="skill-fill" style={{width: '88%'}}></div></div>
+                                </div>
+                                <div className="accel-skill">
+                                    <div className="skill-name">Data Analytics</div>
+                                    <div className="skill-pct">82%</div>
+                                    <div className="skill-bar"><div className="skill-fill" style={{width: '82%'}}></div></div>
+                                </div>
+                                <div className="accel-skill">
+                                    <div className="skill-name">System Design</div>
+                                    <div className="skill-pct">76%</div>
+                                    <div className="skill-bar"><div className="skill-fill" style={{width: '76%'}}></div></div>
+                                </div>
+                                <div className="accel-skill">
+                                    <div className="skill-name">Growth</div>
+                                    <div className="skill-pct">71%</div>
+                                    <div className="skill-bar"><div className="skill-fill" style={{width: '71%'}}></div></div>
+                                </div>
+                            </div>
+                            <div className="accel-card-footer">
+                                <div className="accel-match">87%</div>
+                                <div className="accel-match-label">MATCH SCORE<br/>Top 7% of applicants</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-
-            {/* ─── TESTIMONIALS ─── */}
-            <section className="testi-section" aria-labelledby="testi-title">
+            {/* Features Grid */}
+            <section className="features-grid-section">
                 <div className="container">
-                    <div className="label sr">Testimonials</div>
-                    <h2 className="section-title sr sr-d1" id="testi-title">
-                        What professionals<br /><em>actually say.</em>
+                    <div className="feat-grid fade-up">
+                        <div className="feat-card">
+                            <div className="feat-icon">⚡</div>
+                            <h3 className="feat-title">Lightning Fast</h3>
+                            <p className="feat-desc">Generate your entire professional portfolio in under 4 minutes flat.</p>
+                            <span className="feat-tag">SPEED</span>
+                        </div>
+                        <div className="feat-card">
+                            <div className="feat-icon">✦</div>
+                            <h3 className="feat-title">ATS Optimised</h3>
+                            <p className="feat-desc">Download a perfectly formatted resume guaranteed to pass ATS filters.</p>
+                            <span className="feat-tag">EXPORT</span>
+                        </div>
+                        <div className="feat-card">
+                            <div className="feat-icon">⚲</div>
+                            <h3 className="feat-title">Custom Domains</h3>
+                            <p className="feat-desc">Connect your own domain with automatic SSL encryption and global CDN.</p>
+                            <span className="feat-tag">HOSTING</span>
+                        </div>
+                        <div className="feat-card">
+                            <div className="feat-icon">◎</div>
+                            <h3 className="feat-title">Rich Analytics</h3>
+                            <p className="feat-desc">Detailed visitor insights, engagement metrics, and geographic data.</p>
+                            <span className="feat-tag">DATA</span>
+                        </div>
+                        <div className="feat-card">
+                            <div className="feat-icon">⎔</div>
+                            <h3 className="feat-title">Auto Updates</h3>
+                            <p className="feat-desc">Your portfolio stays fresh automatically via LinkedIn synchronization.</p>
+                            <span className="feat-tag">SYNC</span>
+                        </div>
+                        <div className="feat-card feat-audit">
+                            <div className="feat-icon gold-border">★</div>
+                            <h3 className="feat-title">Recruiter Audit</h3>
+                            <p className="feat-desc">Paste a job description and AI audits your portfolio, providing one-click fixes.</p>
+                            <span className="feat-tag tag-gold">★ Differentiator</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Templates Section */}
+            <section className="templates-section" id="templates">
+                <div className="container">
+                    <div className="eyebrow fade-up"><div className="gold-line"></div>DESIGN SYSTEMS</div>
+                    <h2 className="section-title fade-up">
+                        Curated for <em className="gold-italic">excellence.</em>
                     </h2>
-                    <div className="mt-8 md:mt-12 sr sr-d2 text-center py-16 border border-dashed border-white/10 rounded-2xl text-neutral-500">
-                        <p className="text-lg">Beta user testimonials coming soon.</p>
-                        <p className="text-sm mt-2 text-neutral-600">Join us and be featured here.</p>
-                        <Link to="/auth" className="btn btn-cobalt mt-6 inline-flex">Join the Beta →</Link>
+                </div>
+                <div className="templates-track fade-up" ref={scrollRef}>
+                    <div className="template-card">
+                        <div className="temp-mockup" style={{background: '#080808'}}>
+                            <div className="temp-circle" style={{borderColor: '#C8A45A'}}></div>
+                            <div className="temp-lines">
+                                <div style={{width: '60%', background: '#C8A45A'}}></div>
+                                <div style={{width: '40%', background: '#C8A45A'}}></div>
+                            </div>
+                        </div>
+                        <div className="temp-name">Obsidian</div>
+                        <div className="temp-role">EXECUTIVE / LEADERSHIP</div>
+                    </div>
+                    <div className="template-card">
+                        <div className="temp-mockup" style={{background: '#F2EDE4'}}>
+                            <div className="temp-circle" style={{borderColor: '#111111'}}></div>
+                            <div className="temp-lines">
+                                <div style={{width: '70%', background: '#111111'}}></div>
+                                <div style={{width: '50%', background: '#111111'}}></div>
+                            </div>
+                        </div>
+                        <div className="temp-name">Alabaster</div>
+                        <div className="temp-role">CREATIVE / DESIGN</div>
+                    </div>
+                    <div className="template-card">
+                        <div className="temp-mockup" style={{background: '#0B1320'}}>
+                            <div className="temp-circle" style={{borderColor: '#4A6FA5'}}></div>
+                            <div className="temp-lines">
+                                <div style={{width: '80%', background: '#4A6FA5'}}></div>
+                                <div style={{width: '40%', background: '#4A6FA5'}}></div>
+                            </div>
+                        </div>
+                        <div className="temp-name">Legacy PM</div>
+                        <div className="temp-role">PRODUCT / STRATEGY</div>
+                    </div>
+                    <div className="template-card">
+                        <div className="temp-mockup" style={{background: '#1A0E0B'}}>
+                            <div className="temp-circle" style={{borderColor: '#D45D3A'}}></div>
+                            <div className="temp-lines">
+                                <div style={{width: '50%', background: '#D45D3A'}}></div>
+                                <div style={{width: '70%', background: '#D45D3A'}}></div>
+                            </div>
+                        </div>
+                        <div className="temp-name">Ember</div>
+                        <div className="temp-role">MARKETING / GROWTH</div>
+                    </div>
+                    <div className="template-card">
+                        <div className="temp-mockup" style={{background: '#120B1A'}}>
+                            <div className="temp-circle" style={{borderColor: '#9D65FF'}}></div>
+                            <div className="temp-lines">
+                                <div style={{width: '90%', background: '#9D65FF'}}></div>
+                                <div style={{width: '60%', background: '#9D65FF'}}></div>
+                            </div>
+                        </div>
+                        <div className="temp-name">Nova</div>
+                        <div className="temp-role">ENGINEERING / DEV</div>
+                    </div>
+                    <div className="template-card">
+                        <div className="temp-mockup" style={{background: '#0D1A13'}}>
+                            <div className="temp-circle" style={{borderColor: '#4EA670'}}></div>
+                            <div className="temp-lines">
+                                <div style={{width: '65%', background: '#4EA670'}}></div>
+                                <div style={{width: '85%', background: '#4EA670'}}></div>
+                            </div>
+                        </div>
+                        <div className="temp-name">Sage</div>
+                        <div className="temp-role">RESEARCH / DATA</div>
+                    </div>
+                    <div className="template-card">
+                        <div className="temp-mockup flex-center" style={{background: '#111'}}>
+                            <div className="playfair" style={{fontSize: '2rem', color: '#7A7570'}}>+13</div>
+                        </div>
+                        <div className="temp-name">More Templates</div>
+                        <div className="temp-role">ALL ROLES</div>
                     </div>
                 </div>
             </section>
 
-            {/* ─── FAQ ─── */}
-            <section className="faq-section" id="faq" aria-labelledby="faq-title">
+            {/* Testimonials */}
+            <section className="testimonials-section">
                 <div className="container">
-                    <div className="faq-layout">
-                        <div className="faq-sticky">
-                            <div className="label sr">FAQ</div>
-                            <h2 className="section-title sr sr-d1" id="faq-title">
-                                Frequently<br />asked <em>questions.</em>
-                            </h2>
-                            <p className="body-base sr sr-d2" style={{ marginTop: 'var(--sp-4)' }}>
-                                Can't find what you need?<br />
-                                <a href="mailto:admin@foliogen.in" style={{ color: 'var(--cobalt)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>admin@foliogen.in</a>
-                            </p>
-                        </div>
-                        <div className="faq-list sr sr-d1">
-                            {[
-                                {
-                                    q: "Why is Foliogen free right now?",
-                                    a: "We are currently in Open Beta. To gather the best data on how our Recruiter Audit engine performs in real-world job hunts, we've unlocked all Pro features for our early cohort of users."
-                                },
-                                {
-                                    q: "Will I lose my data after Beta?",
-                                    a: "No. All portfolios created during the beta will remain active. Early adopters will be grandfathered into special terms once the platform moves to its GA (General Availability) phase."
-                                },
-                                {
-                                    q: "What is the 'Audit-to-Fix' tool?",
-                                    a: "It's our flagship agentic feature. You paste a job description, and the AI audits your entire portfolio vs. that specific role, providing 'one-click fixes' to align your skills and projects with what that specific company is looking for."
-                                }
-                            ].map((faq, i) => (
-                                <div key={i} className={`faq-item ${faqStates[i] ? 'open' : ''}`}>
-                                    <button className="faq-q" onClick={() => toggleFaq(i)} aria-expanded={faqStates[i]}>
-                                        <span>{faq.q}</span>
-                                        <span className="faq-icon" aria-hidden="true">+</span>
-                                    </button>
-                                    <div className="faq-a" role="region">{faq.a}</div>
+                    <h2 className="section-title text-center fade-up">
+                        Trusted by <em className="gold-italic">professionals.</em>
+                    </h2>
+                    <div className="testi-grid fade-up">
+                        <div className="testi-card">
+                            <div className="testi-quote">"</div>
+                            <p className="testi-text">Foliogen completely transformed my job hunt. The recruiter audit highlighted gaps in my presentation I hadn't noticed in 5 years of PM work.</p>
+                            <div className="testi-author">
+                                <div className="testi-avatar">AJ</div>
+                                <div className="testi-meta">
+                                    <div className="testi-name">Alex J.</div>
+                                    <div className="testi-company">SENIOR PM @ STRIPE</div>
                                 </div>
-                            ))}
+                            </div>
+                        </div>
+                        <div className="testi-card">
+                            <div className="testi-quote">"</div>
+                            <p className="testi-text">The level of polish on the Alabaster template is unmatched. It feels like I hired a premium design agency to build my personal site.</p>
+                            <div className="testi-author">
+                                <div className="testi-avatar">SR</div>
+                                <div className="testi-meta">
+                                    <div className="testi-name">Sarah R.</div>
+                                    <div className="testi-company">LEAD DESIGNER @ FIGMA</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="testi-card">
+                            <div className="testi-quote">"</div>
+                            <p className="testi-text">As an engineer, I hate building portfolios. This gave me a beautiful, fast, ATS-friendly site in exactly 3 minutes. Incredible tool.</p>
+                            <div className="testi-author">
+                                <div className="testi-avatar">MK</div>
+                                <div className="testi-meta">
+                                    <div className="testi-name">Michael K.</div>
+                                    <div className="testi-company">STAFF ENG @ GOOGLE</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* ─── MARQUEE ─── */}
-            <div className="marquee-section" aria-label="Companies represented">
-                <div className="marquee-label">Professionals from world-class companies</div>
-                <div className="marquee-track" id="marqueeTrack" aria-hidden="true">
-                    <span className="marquee-logo">Google</span>
-                    <span className="marquee-logo">Amazon</span>
-                    <span className="marquee-logo">Microsoft</span>
-                    <span className="marquee-logo">Flipkart</span>
-                    <span className="marquee-logo">Razorpay</span>
-                    <span className="marquee-logo">Swiggy</span>
-                    <span className="marquee-logo">Zerodha</span>
-                    <span className="marquee-logo">CRED</span>
-                    <span className="marquee-logo">Figma</span>
-                    <span className="marquee-logo">Atlassian</span>
-                    <span className="marquee-logo">PhonePe</span>
-                    <span className="marquee-logo">Meesho</span>
-                    <span className="marquee-logo">Ola</span>
-                    <span className="marquee-logo">Paytm</span>
-                    {/* Duplicate for loop */}
-                    <span className="marquee-logo">Google</span>
-                    <span className="marquee-logo">Amazon</span>
-                    <span className="marquee-logo">Microsoft</span>
-                    <span className="marquee-logo">Flipkart</span>
-                    <span className="marquee-logo">Razorpay</span>
-                    <span className="marquee-logo">Swiggy</span>
-                    <span className="marquee-logo">Zerodha</span>
-                    <span className="marquee-logo">CRED</span>
-                    <span className="marquee-logo">Figma</span>
-                    <span className="marquee-logo">Atlassian</span>
-                    <span className="marquee-logo">PhonePe</span>
-                    <span className="marquee-logo">Meesho</span>
-                    <span className="marquee-logo">Ola</span>
-                    <span className="marquee-logo">Paytm</span>
-                </div>
-            </div>
-
-            {/* ─── CTA ─── */}
-            <section className="cta-section" aria-labelledby="cta-title">
-                <div className="cta-grain" aria-hidden="true"></div>
-                <div className="container">
-                    <div className="cta-content">
-                        <div className="cta-label sr">Ready to begin?</div>
-                        <h2 className="cta-headline sr sr-d1" id="cta-title">
-                            Let's build something<br /><em>extraordinary.</em>
+            {/* FAQ Section */}
+            <section className="faq-section" id="faq">
+                <div className="container faq-grid">
+                    <div className="faq-left fade-up">
+                        <h2 className="section-title">
+                            Frequently<br /><em className="gold-italic">asked questions.</em>
                         </h2>
-                        <p className="cta-sub sr sr-d2">Your professional identity deserves more than a PDF. Start free — no credit card, no commitment, no compromise.</p>
-                        <div className="cta-actions sr sr-d3">
-                            <Link to="/auth" className="btn btn-white">Start Your Free Audit →</Link>
-                            <a href="#templates" className="btn btn-dark-outline">Browse templates</a>
-                        </div>
-                        <p className="mt-6 text-[10px] text-white/40 font-mono uppercase tracking-[0.2em]">
-                            Open Beta Cohort · No credit card required
-                        </p>
+                        <a href="mailto:admin@foliogen.in" className="faq-contact">Contact Support →</a>
+                    </div>
+                    <div className="faq-right fade-up">
+                        {[
+                            {q: "Does it work for my specific industry?", a: "Yes. Our AI models are trained on successful portfolios across Tech, Finance, Consulting, and Creative industries. We adapt the narrative tone to match your target role."},
+                            {q: "Is my data safe?", a: "Absolutely. We don't train public models on your private data. Your resume and portfolio details remain entirely yours and can be deleted at any time."},
+                            {q: "Which AI model powers the audit?", a: "We use a customized blend of GPT-4o and Claude 3.5 Sonnet, specifically fine-tuned for recruiter heuristics and ATS parsing logic."},
+                            {q: "How fast is the build time?", a: "The average time from uploading your resume to a live, published portfolio is 4 minutes. The AI synthesis takes about 30 seconds."},
+                            {q: "Can I customize the templates?", a: "Yes. While our design systems provide a perfect starting point, you have full control over colors, typography, layout blocks, and custom domains."}
+                        ].map((faq, i) => (
+                            <div key={i} className={`faq-item ${faqStates[i] ? 'open' : ''}`}>
+                                <button className="faq-btn" onClick={() => toggleFaq(i)}>
+                                    <span className="faq-q">{faq.q}</span>
+                                    <span className="faq-icon">+</span>
+                                </button>
+                                <div className="faq-a">
+                                    <div className="faq-a-inner">{faq.a}</div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* ─── FOOTER ─── */}
-            <footer role="contentinfo">
-                <div className="container">
-                    <div className="footer-inner">
-                        <a href="/" className="footer-logo" aria-label="Foliogen home">
-                            <div className="footer-logo-mark" aria-hidden="true">F</div>
-                            Foliogen
-                        </a>
-                        <nav className="footer-nav" aria-label="Footer navigation">
-                            <a href="#features">Features</a>
-                            <a href="#templates">Templates</a>
-                            <Link to="/contact">Contact</Link>
-                            <Link to="/privacy">Privacy</Link>
-                            <Link to="/terms">Terms</Link>
-                            <Link to="/refunds">Refunds</Link>
-                        </nav>
-                        <div className="footer-copy">© 2026 Foliogen</div>
+            {/* Final CTA */}
+            <section className="final-cta">
+                <div className="cta-glow"></div>
+                <div className="container text-center fade-up">
+                    <h2 className="cta-title">
+                        Let's build something<br />
+                        <em className="gold-italic">extraordinary.</em>
+                    </h2>
+                    <p className="cta-sub">Your professional identity deserves more than a PDF.</p>
+                    <div className="cta-btns">
+                        <Link to="/auth" className="btn-primary">Start Your Free Audit</Link>
+                        <a href="#templates" className="btn-ghost">Explore Templates</a>
                     </div>
+                    <p className="cta-caption">No credit card required · Portfolio live in 4 minutes</p>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="footer">
+                <div className="container footer-grid">
+                    <div className="footer-logo">FOLIOGEN</div>
+                    <div className="footer-links">
+                        <a href="#process">Process</a>
+                        <a href="#features">Features</a>
+                        <a href="#templates">Templates</a>
+                        <Link to="/auth">Sign In</Link>
+                    </div>
+                    <div className="footer-copy">© 2026 Foliogen</div>
                 </div>
             </footer>
-
         </div>
     );
 }
