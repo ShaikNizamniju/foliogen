@@ -346,9 +346,9 @@ export default function Auth() {
 
           {/* Divider */}
           <div className="relative flex items-center gap-4">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-muted-foreground text-xs shrink-0">or with email</span>
-            <div className="flex-1 h-px bg-border" />
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.10)' }} />
+            <span className="text-xs shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}>or with email</span>
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.10)' }} />
           </div>
 
           {/* Form */}
@@ -365,75 +365,68 @@ export default function Auth() {
             />
             {!isLogin && (
               <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-muted-foreground text-sm font-medium">Full Name</Label>
+                <Label htmlFor="fullName" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Full Name</Label>
                 <Input
                   id="fullName"
                   type="text"
                   placeholder="Shaik Nizamuddin"
                   value={fullName}
                   onChange={(e) => { setFullName(e.target.value); setErrors((p) => ({ ...p, fullName: false })); }}
-                  className={cn(
-                    'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20',
-                    errors.fullName && 'border-red-500'
-                  )}
+                  className={cn('auth-field h-12', errors.fullName && 'auth-field-error')}
                   required
                 />
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+              <Label htmlFor="email" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Email address</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="admin@foliogen.in"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: false })); }}
-                className={cn(
-                  'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20',
-                  errors.email && 'border-red-500'
-                )}
+                className={cn('auth-field h-12', errors.email && 'auth-field-error')}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Password</Label>
                 {isLogin && (
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                    className="text-xs transition-colors"
+                    style={{ color: '#a78bfa' }}
                   >
                     Forgot password?
                   </button>
                 )}
               </div>
-              <div className="relative h-11">
+              <div className="relative h-12">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Minimum 6 characters"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: false })); }}
-                  className={cn(
-                    'h-11 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20 pr-10',
-                    errors.password && 'border-red-500'
-                  )}
+                  className={cn('auth-field h-12 pr-10', errors.password && 'auth-field-error')}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-muted-foreground hover:text-foreground transition-all duration-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center transition-all duration-200"
+                  style={{ color: 'rgba(255,255,255,0.5)' }}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {!isLogin && (
-                <p className="text-muted-foreground text-xs">Must be 6–16 chars with uppercase, number & symbol.</p>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Must be 6–16 chars with uppercase, number & symbol.</p>
               )}
             </div>
 
@@ -443,12 +436,12 @@ export default function Auth() {
               onMouseEnter={() => import('./Dashboard')}
               disabled={loading || googleLoading}
               className={cn(
-                'w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200',
-                'text-white shadow-lg shadow-indigo-900/30',
+                'w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 text-white shadow-lg',
                 loading || googleLoading ? 'opacity-60 cursor-not-allowed' : 'hover:brightness-110 active:scale-[0.98]'
               )}
               style={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                background: 'linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%)',
+                boxShadow: '0 8px 24px -8px rgba(91,91,214,0.5)',
               }}
             >
               {loading ? (
@@ -464,12 +457,13 @@ export default function Auth() {
 
           {/* Footer links */}
           <div className="space-y-3 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
               {isLogin ? "Don't have an account? " : 'Already have an account? '}
               <button
                 type="button"
                 onClick={switchMode}
-                className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                className="font-medium transition-colors"
+                style={{ color: '#a78bfa' }}
               >
                 {isLogin ? 'Create account' : 'Sign in'}
               </button>
