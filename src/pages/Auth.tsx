@@ -263,24 +263,52 @@ export default function Auth() {
       </div>
 
       {/* ── RIGHT PANEL ────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 min-h-screen bg-card">
+      <div
+        className="flex-1 flex flex-col items-center justify-between px-4 py-10 min-h-screen relative overflow-hidden"
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,91,214,0.08) 0%, transparent 60%), #080810',
+        }}
+      >
 
         {/* Mobile logo */}
-        <div className="flex lg:hidden items-center justify-center gap-2 mb-8 mx-auto w-full text-center">
-          <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain dark:invert" loading="eager" />
-          <span className="text-foreground font-semibold text-lg">Foliogen</span>
+        <div className="flex lg:hidden items-center justify-center gap-2 mb-4 mx-auto w-full text-center relative z-10">
+          <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain invert" loading="eager" />
+          <span className="text-white font-semibold text-lg">Foliogen</span>
         </div>
 
-        <div className="w-full max-w-[420px] space-y-6 mx-auto">
+        <div
+          className="w-full max-w-[420px] space-y-6 mx-auto my-auto relative z-10 p-6 sm:p-8"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '16px',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+          }}
+        >
           {/* Heading */}
-          <div className="space-y-2 text-center flex flex-col items-center">
-            <h2 className="text-sub px-4 py-1.5 rounded-full border border-border bg-background/50 font-mono text-[10px] tracking-widest uppercase text-indigo-500 mb-2">
+          <div className="space-y-3 text-center flex flex-col items-center">
+            <span
+              className="px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.18em] uppercase mb-1"
+              style={{
+                border: '1px solid #5B5BD6',
+                background: 'rgba(91,91,214,0.10)',
+                color: '#a78bfa',
+              }}
+            >
               AI-Powered Portfolios
-            </h2>
-            <h2 className="text-2xl font-bold text-foreground">
+            </span>
+            <h1
+              className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
+              style={{
+                backgroundImage: 'linear-gradient(90deg, #ffffff 0%, #a78bfa 100%)',
+                letterSpacing: '-0.025em',
+              }}
+            >
               {isLogin ? 'Welcome back' : 'Create your account'}
-            </h2>
-            <p className="text-muted-foreground text-sm max-w-xs text-center">
+            </h1>
+            <p className="text-sm max-w-xs text-center" style={{ color: 'rgba(255,255,255,0.6)' }}>
               {isLogin
                 ? 'Sign in to continue building your portfolio.'
                 : 'Join 12,400+ narrative architects engineering their professional legacy.'}
@@ -294,10 +322,14 @@ export default function Auth() {
             onClick={handleGoogleLogin}
             disabled={googleLoading || loading}
             className={cn(
-              'w-full flex items-center justify-center gap-3 h-12 rounded-xl text-sm font-semibold border transition-all duration-200',
-              'bg-background border-border text-foreground hover:bg-muted',
+              'w-full flex items-center justify-center gap-3 h-12 rounded-xl text-sm font-semibold transition-all duration-200',
               (googleLoading || loading) && 'opacity-60 cursor-not-allowed'
             )}
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.15)',
+              color: '#ffffff',
+            }}
           >
             {googleLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
