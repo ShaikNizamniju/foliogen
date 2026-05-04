@@ -263,24 +263,52 @@ export default function Auth() {
       </div>
 
       {/* ── RIGHT PANEL ────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 min-h-screen bg-card">
+      <div
+        className="flex-1 flex flex-col items-center justify-between px-4 py-10 min-h-screen relative overflow-hidden"
+        style={{
+          background:
+            'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,91,214,0.08) 0%, transparent 60%), #080810',
+        }}
+      >
 
         {/* Mobile logo */}
-        <div className="flex lg:hidden items-center justify-center gap-2 mb-8 mx-auto w-full text-center">
-          <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain dark:invert" loading="eager" />
-          <span className="text-foreground font-semibold text-lg">Foliogen</span>
+        <div className="flex lg:hidden items-center justify-center gap-2 mb-4 mx-auto w-full text-center relative z-10">
+          <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain invert" loading="eager" />
+          <span className="text-white font-semibold text-lg">Foliogen</span>
         </div>
 
-        <div className="w-full max-w-[420px] space-y-6 mx-auto">
+        <div
+          className="w-full max-w-[420px] space-y-6 mx-auto my-auto relative z-10 p-6 sm:p-8"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '16px',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+          }}
+        >
           {/* Heading */}
-          <div className="space-y-2 text-center flex flex-col items-center">
-            <h2 className="text-sub px-4 py-1.5 rounded-full border border-border bg-background/50 font-mono text-[10px] tracking-widest uppercase text-indigo-500 mb-2">
+          <div className="space-y-3 text-center flex flex-col items-center">
+            <span
+              className="px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.18em] uppercase mb-1"
+              style={{
+                border: '1px solid #5B5BD6',
+                background: 'rgba(91,91,214,0.10)',
+                color: '#a78bfa',
+              }}
+            >
               AI-Powered Portfolios
-            </h2>
-            <h2 className="text-2xl font-bold text-foreground">
+            </span>
+            <h1
+              className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
+              style={{
+                backgroundImage: 'linear-gradient(90deg, #ffffff 0%, #a78bfa 100%)',
+                letterSpacing: '-0.025em',
+              }}
+            >
               {isLogin ? 'Welcome back' : 'Create your account'}
-            </h2>
-            <p className="text-muted-foreground text-sm max-w-xs text-center">
+            </h1>
+            <p className="text-sm max-w-xs text-center" style={{ color: 'rgba(255,255,255,0.6)' }}>
               {isLogin
                 ? 'Sign in to continue building your portfolio.'
                 : 'Join 12,400+ narrative architects engineering their professional legacy.'}
@@ -294,10 +322,14 @@ export default function Auth() {
             onClick={handleGoogleLogin}
             disabled={googleLoading || loading}
             className={cn(
-              'w-full flex items-center justify-center gap-3 h-12 rounded-xl text-sm font-semibold border transition-all duration-200',
-              'bg-background border-border text-foreground hover:bg-muted',
+              'w-full flex items-center justify-center gap-3 h-12 rounded-xl text-sm font-semibold transition-all duration-200',
               (googleLoading || loading) && 'opacity-60 cursor-not-allowed'
             )}
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.15)',
+              color: '#ffffff',
+            }}
           >
             {googleLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -314,9 +346,9 @@ export default function Auth() {
 
           {/* Divider */}
           <div className="relative flex items-center gap-4">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-muted-foreground text-xs shrink-0">or with email</span>
-            <div className="flex-1 h-px bg-border" />
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.10)' }} />
+            <span className="text-xs shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}>or with email</span>
+            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.10)' }} />
           </div>
 
           {/* Form */}
@@ -333,75 +365,68 @@ export default function Auth() {
             />
             {!isLogin && (
               <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-muted-foreground text-sm font-medium">Full Name</Label>
+                <Label htmlFor="fullName" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Full Name</Label>
                 <Input
                   id="fullName"
                   type="text"
                   placeholder="Shaik Nizamuddin"
                   value={fullName}
                   onChange={(e) => { setFullName(e.target.value); setErrors((p) => ({ ...p, fullName: false })); }}
-                  className={cn(
-                    'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20',
-                    errors.fullName && 'border-red-500'
-                  )}
+                  className={cn('auth-field h-12', errors.fullName && 'auth-field-error')}
                   required
                 />
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-muted-foreground text-sm font-medium">Email address</Label>
+              <Label htmlFor="email" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Email address</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="admin@foliogen.in"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: false })); }}
-                className={cn(
-                  'h-12 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20',
-                  errors.email && 'border-red-500'
-                )}
+                className={cn('auth-field h-12', errors.email && 'auth-field-error')}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-muted-foreground text-sm font-medium">Password</Label>
+                <Label htmlFor="password" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Password</Label>
                 {isLogin && (
                   <button
                     type="button"
                     onClick={handleForgotPassword}
-                    className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                    className="text-xs transition-colors"
+                    style={{ color: '#a78bfa' }}
                   >
                     Forgot password?
                   </button>
                 )}
               </div>
-              <div className="relative h-11">
+              <div className="relative h-12">
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Minimum 6 characters"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: false })); }}
-                  className={cn(
-                    'h-11 bg-background border-border text-foreground placeholder:text-muted-foreground focus:border-indigo-500 focus:ring-indigo-500/20 pr-10',
-                    errors.password && 'border-red-500'
-                  )}
+                  className={cn('auth-field h-12 pr-10', errors.password && 'auth-field-error')}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center text-muted-foreground hover:text-foreground transition-all duration-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center transition-all duration-200"
+                  style={{ color: 'rgba(255,255,255,0.5)' }}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {!isLogin && (
-                <p className="text-muted-foreground text-xs">Must be 6–16 chars with uppercase, number & symbol.</p>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Must be 6–16 chars with uppercase, number & symbol.</p>
               )}
             </div>
 
@@ -411,12 +436,12 @@ export default function Auth() {
               onMouseEnter={() => import('./Dashboard')}
               disabled={loading || googleLoading}
               className={cn(
-                'w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200',
-                'text-white shadow-lg shadow-indigo-900/30',
+                'w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 text-white shadow-lg',
                 loading || googleLoading ? 'opacity-60 cursor-not-allowed' : 'hover:brightness-110 active:scale-[0.98]'
               )}
               style={{
-                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                background: 'linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%)',
+                boxShadow: '0 8px 24px -8px rgba(91,91,214,0.5)',
               }}
             >
               {loading ? (
@@ -432,23 +457,24 @@ export default function Auth() {
 
           {/* Footer links */}
           <div className="space-y-3 text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
               {isLogin ? "Don't have an account? " : 'Already have an account? '}
               <button
                 type="button"
                 onClick={switchMode}
-                className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+                className="font-medium transition-colors"
+                style={{ color: '#a78bfa' }}
               >
                 {isLogin ? 'Create account' : 'Sign in'}
               </button>
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
               By continuing, you agree to our{' '}
-              <Link to="/terms" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
+              <Link to="/terms" className="transition-colors" style={{ color: '#a78bfa' }}>
                 Terms
               </Link>{' '}
               and{' '}
-              <Link to="/privacy" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
+              <Link to="/privacy" className="transition-colors" style={{ color: '#a78bfa' }}>
                 Privacy Policy
               </Link>.
             </p>
@@ -457,15 +483,26 @@ export default function Auth() {
                 href="https://forms.gle/foliogen_feedback"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-indigo-400 transition-colors"
+                className="transition-colors"
+                style={{ color: 'rgba(255,255,255,0.5)' }}
               >
                 Found a bug? Help us improve. →
               </a>
             </p>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium pt-4 border-t border-border/50">
-              Join 500+ pros using the 90-day Sprint Pass. No subscriptions. Just results.
-            </p>
           </div>
+        </div>
+
+        {/* Bottom marquee/ticker */}
+        <div
+          className="w-full max-w-[420px] mx-auto mt-6 pt-4 text-center relative z-10"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          <p
+            className="text-[10px] uppercase font-medium"
+            style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em' }}
+          >
+            Join 500+ pros · 90-day Sprint Pass · No subscriptions · Just results
+          </p>
         </div>
       </div>
     </div>

@@ -333,6 +333,27 @@ body {
     @apply focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500;
   }
 
+  /* Auth field - homepage glass style */
+  .auth-field {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    border-radius: 10px !important;
+    color: #ffffff !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .auth-field::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .auth-field:focus,
+  .auth-field:focus-visible {
+    border-color: #5B5BD6 !important;
+    box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.15) !important;
+    outline: none !important;
+  }
+  .auth-field-error {
+    border-color: rgba(239, 68, 68, 0.6) !important;
+  }
+
   /* Dashboard content responsive wrapper */
   .dashboard-content {
     @apply w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8;
