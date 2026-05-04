@@ -468,13 +468,13 @@ export default function Auth() {
                 {isLogin ? 'Create account' : 'Sign in'}
               </button>
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
               By continuing, you agree to our{' '}
-              <Link to="/terms" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
+              <Link to="/terms" className="transition-colors" style={{ color: '#a78bfa' }}>
                 Terms
               </Link>{' '}
               and{' '}
-              <Link to="/privacy" className="text-indigo-400/70 hover:text-indigo-400 transition-colors">
+              <Link to="/privacy" className="transition-colors" style={{ color: '#a78bfa' }}>
                 Privacy Policy
               </Link>.
             </p>
@@ -483,15 +483,26 @@ export default function Auth() {
                 href="https://forms.gle/foliogen_feedback"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-indigo-400 transition-colors"
+                className="transition-colors"
+                style={{ color: 'rgba(255,255,255,0.5)' }}
               >
                 Found a bug? Help us improve. →
               </a>
             </p>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium pt-4 border-t border-border/50">
-              Join 500+ pros using the 90-day Sprint Pass. No subscriptions. Just results.
-            </p>
           </div>
+        </div>
+
+        {/* Bottom marquee/ticker */}
+        <div
+          className="w-full max-w-[420px] mx-auto mt-6 pt-4 text-center relative z-10"
+          style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        >
+          <p
+            className="text-[10px] uppercase font-medium"
+            style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em' }}
+          >
+            Join 500+ pros · 90-day Sprint Pass · No subscriptions · Just results
+          </p>
         </div>
       </div>
     </div>
