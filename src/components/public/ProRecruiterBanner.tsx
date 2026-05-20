@@ -1,54 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, Building2, Crown } from 'lucide-react';
-import { supabase } from '@/lib/supabase_v2';
+import { Sparkles, X, Building2 } from 'lucide-react';
 
 interface ProRecruiterBannerProps {
   profileUserId: string;
 }
 
-export function ProRecruiterBanner({ profileUserId }: ProRecruiterBannerProps) {
+export function ProRecruiterBanner({ profileUserId: _profileUserId }: ProRecruiterBannerProps) {
   const [searchParams] = useSearchParams();
   const [dismissed, setDismissed] = useState(false);
-  const [isOwnerPro, setIsOwnerPro] = useState<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
-  
+
   const company = searchParams.get('company');
   const role = searchParams.get('role');
-  
-  // Check if profile owner is Pro
-  useEffect(() => {
-    const checkProStatus = async () => {
-      if (!profileUserId) {
-        setLoading(false);
-        return;
-      }
-      
-      const { data, error } = await supabase
-        .from('profiles_public')
-        .select('is_pro')
-        .eq('user_id', profileUserId)
-        .maybeSingle();
-      
-      if (data && !error) {
-        setIsOwnerPro(data.is_pro || false);
-      }
-      setLoading(false);
-    };
-    
-    checkProStatus();
-  }, [profileUserId]);
-  
+
   // If no personalization params, don't render anything
   if (!company && !role) return null;
   if (dismissed) return null;
-  if (loading) return null;
-  
-  // If profile owner is not Pro, don't show the banner
-  if (!isOwnerPro) return null;
-  
+
   const target = company || role;
+
 
   return (
     <AnimatePresence>
