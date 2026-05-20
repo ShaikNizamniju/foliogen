@@ -55,7 +55,8 @@ serve(async (req) => {
 
     const apiKey = Deno.env.get('OPENAI_API_KEY');
     if (!apiKey) {
-      return errorResponse("Server configuration error: Missing OPENAI_API_KEY", 500);
+      console.error("parse-resume: missing OPENAI_API_KEY secret");
+      return errorResponse("Resume parsing is temporarily unavailable. Please contact support.", 503);
     }
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
