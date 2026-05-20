@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase_v2';
 import { cn } from '@/lib/utils';
 import logoImg from '@/assets/logo.png';
 import { useWelcomeEmail } from '@/hooks/use-welcome-email';
+import { SEO } from '@/components/SEO';
 
 /* ── Validation Schemas ──────────────────────────────────────────────── */
 const emailSchema = z.string().email('Please enter a valid email');
@@ -175,6 +176,11 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex w-full bg-background">
+      <SEO
+        title="Sign in or create your Foliogen account"
+        description="Sign in to Foliogen with email or Google to build, customize, and share your AI-powered professional portfolio."
+        path="/auth"
+      />
       {/* ── LEFT PANEL ────────────────────────────────────────────── */}
       <div className="hidden lg:flex flex-col justify-between w-[52%] relative overflow-hidden p-12 xl:p-16">
         {/* Noise + gradient backdrop */}
