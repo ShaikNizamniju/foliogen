@@ -13,7 +13,17 @@ dotenv.config();
 // https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => {
   // Fetch dynamic user routes for the sitemap
-  let dynamicRoutes: string[] = [];
+  const staticRoutes = [
+    '/',
+    '/auth',
+    '/templates',
+    '/contact',
+    '/founder',
+    '/privacy',
+    '/terms',
+    '/refunds',
+  ];
+  let dynamicRoutes: string[] = [...staticRoutes];
   try {
     const supabaseUrl = process.env.VITE_SUPABASE_URL || "";
     const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || "";
@@ -28,12 +38,9 @@ export default defineConfig(async ({ mode }) => {
         .neq('username', '');
 
       if (!error && data) {
-        dynamicRoutes = ['/', '/pricing', '/about', ...data.map(profile => `/${profile.username}`)];
-      } else {
-        dynamicRoutes = ['/', '/pricing', '/about'];
+        const userRoutes = data.flatMap((p) => [`/u/${p.username}`, `/p/${p.username}`]);
+        dynamicRoutes = [...staticRoutes, ...userRoutes];
       }
-    } else {
-      dynamicRoutes = ['/', '/pricing', '/about'];
     }
   } catch (error) {
     // Failed to fetch dynamic routes for sitemap
