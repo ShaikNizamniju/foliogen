@@ -405,6 +405,15 @@ export default function TemplatesGallery() {
                         : 'border-border hover:border-primary/40'
                     }`}
                     onClick={() => setPreviewId(template.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Preview ${template.name} template`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setPreviewId(template.id);
+                      }
+                    }}
                   >
                     {/* Recommended badge */}
                     {isRecommended && (
@@ -484,6 +493,7 @@ export default function TemplatesGallery() {
                 <button
                   onClick={() => setPreviewId(null)}
                   className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  aria-label="Close preview"
                 >
                   <X className="h-5 w-5 text-foreground" />
                 </button>
