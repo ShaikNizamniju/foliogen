@@ -119,17 +119,17 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           {profile.linkedinUrl && (
-            <a href={profile.linkedinUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.linkedinUrl} aria-label="LinkedIn profile" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Linkedin className="h-4 w-4" />
             </a>
           )}
           {profile.githubUrl && (
-            <a href={profile.githubUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.githubUrl} aria-label="GitHub profile" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Github className="h-4 w-4" />
             </a>
           )}
           {profile.twitterUrl && (
-            <a href={profile.twitterUrl} className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.twitterUrl} aria-label="Twitter profile" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
               <Twitter className="h-4 w-4" />
             </a>
           )}

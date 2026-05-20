@@ -8,6 +8,24 @@ import { toast } from 'sonner';
 import { Loader2, Send } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { supabase } from '@/lib/supabase_v2';
+import { SEO } from '@/components/SEO';
+
+const CONTACT_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "Foliogen",
+  url: "https://www.foliogen.in/contact",
+  email: "admin@foliogen.in",
+  telephone: "+91 98765 43210",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "123 Tech Park, 4th Floor, HSR Layout, Sector 2",
+    addressLocality: "Bengaluru",
+    addressRegion: "Karnataka",
+    postalCode: "560102",
+    addressCountry: "IN",
+  },
+};
 
 const Contact = () => {
     const [name, setName] = useState('');
@@ -44,10 +62,16 @@ const Contact = () => {
 
     return (
         <div className="min-h-screen bg-slate-950">
+            <SEO
+              title="Contact Foliogen — Talk to the team"
+              description="Get in touch with the Foliogen team about AI portfolios, billing, partnerships, or support. We respond within one business day."
+              path="/contact"
+              jsonLd={CONTACT_JSONLD}
+            />
             <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link to="/" className="flex items-center">
-                        <img src={logo} alt="Foliogen" className="h-10 w-auto" />
+                        <img src={logo} alt="Foliogen - AI Portfolio Builder" className="h-10 w-auto" />
                     </Link>
                     <Link
                         to="/"

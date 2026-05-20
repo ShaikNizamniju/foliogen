@@ -275,8 +275,13 @@ export default function TemplatesGallery() {
   return (
     <>
       <Helmet>
-        <title>Template Gallery — The AI PM Identity Vault</title>
-        <meta name="description" content="Browse premium portfolio templates for professionals. From editorial luxury to minimalist elegance." />
+        <title>Portfolio Template Gallery — Foliogen</title>
+        <meta name="description" content="Browse 19+ premium portfolio templates — editorial, brutalist, modern, minimal — built for PMs, designers, and developers." />
+        <link rel="canonical" href="https://www.foliogen.in/templates" />
+        <meta property="og:title" content="Portfolio Template Gallery — Foliogen" />
+        <meta property="og:description" content="Browse 19+ premium portfolio templates built for modern professionals." />
+        <meta property="og:url" content="https://www.foliogen.in/templates" />
+        <meta property="og:type" content="website" />
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </Helmet>
 
@@ -400,6 +405,15 @@ export default function TemplatesGallery() {
                         : 'border-border hover:border-primary/40'
                     }`}
                     onClick={() => setPreviewId(template.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Preview ${template.name} template`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setPreviewId(template.id);
+                      }
+                    }}
                   >
                     {/* Recommended badge */}
                     {isRecommended && (
@@ -479,6 +493,7 @@ export default function TemplatesGallery() {
                 <button
                   onClick={() => setPreviewId(null)}
                   className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  aria-label="Close preview"
                 >
                   <X className="h-5 w-5 text-foreground" />
                 </button>

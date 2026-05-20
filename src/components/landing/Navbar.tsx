@@ -40,7 +40,7 @@ export function Navbar() {
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 group shrink-0">
-          <img src={logo} alt="Foliogen" className="h-10 w-auto transition-transform group-hover:scale-105" />
+          <img src={logo} alt="Foliogen - AI Portfolio Builder" className="h-10 w-auto transition-transform group-hover:scale-105" />
           <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-[0_0_10px_rgba(99,102,241,0.1)]">
             Beta
           </span>

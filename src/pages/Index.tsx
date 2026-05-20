@@ -5,6 +5,29 @@ import { JobMatchDemo } from "@/components/landing/JobMatchDemo";
 import { LandingV2 } from "@/components/landing/LandingV2";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
+import { SEO } from "@/components/SEO";
+
+const HOME_JSONLD = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Foliogen",
+    url: "https://www.foliogen.in",
+    logo: "https://www.foliogen.in/favicon.png",
+    sameAs: ["https://twitter.com/Foliogen"],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Foliogen",
+    url: "https://www.foliogen.in",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://www.foliogen.in/templates?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  },
+];
 
 // Emergency Success Overlay component defined outside the main Index
 const SuccessOverlay = () => {
@@ -70,6 +93,11 @@ const Index = () => {
   if (hasJobMatchParams) {
     return (
       <div className="min-h-screen bg-background">
+        <SEO
+          title="Job Match — Foliogen"
+          description="See how your portfolio matches a target role with Foliogen's AI job-match analysis."
+          path="/"
+        />
         <Navbar />
         <JobMatchDemo />
         <Footer />
@@ -79,6 +107,12 @@ const Index = () => {
 
   return (
     <>
+      <SEO
+        title="Foliogen | AI Portfolio Builder for PMs, Designers & Devs"
+        description="Build an ATS-optimized AI portfolio in minutes. 19+ templates, recruiter chatbot, job-match analysis, and analytics."
+        path="/"
+        jsonLd={HOME_JSONLD}
+      />
       {isSuccess && <SuccessOverlay />}
       <LandingV2 />
     </>

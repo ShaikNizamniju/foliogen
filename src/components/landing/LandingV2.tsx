@@ -112,6 +112,7 @@ export function LandingV2() {
                 </div>
             </nav>
 
+            <main>
             {/* Hero */}
             <section className="hero-section">
                 <div className="hero-glow"></div>
@@ -530,6 +531,7 @@ export function LandingV2() {
                     <p className="cta-caption">No credit card required · Portfolio live in 4 minutes</p>
                 </div>
             </section>
+            </main>
 
             {/* Footer */}
             <footer className="footer">

@@ -89,7 +89,7 @@ export function DashboardSidebar() {
               whileHover={{ scale: 1.1, rotate: -5 }}
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             >
-              <img src={logoImg} alt="Foliogen" className="h-full w-full object-contain mix-blend-multiply" />
+              <img src={logoImg} alt="Foliogen - AI Portfolio Builder" className="h-full w-full object-contain mix-blend-multiply" />
             </motion.div>
             <span
               className={cn(

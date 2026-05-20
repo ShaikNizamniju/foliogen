@@ -177,17 +177,17 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
             {/* Social Links */}
             <div className="flex gap-2">
               {profile.linkedinUrl && (
-                <a href={profile.linkedinUrl} className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
+                <a href={profile.linkedinUrl} aria-label="LinkedIn profile" className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
                   <Linkedin className="h-4 w-4 text-white" />
                 </a>
               )}
               {profile.githubUrl && (
-                <a href={profile.githubUrl} className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
+                <a href={profile.githubUrl} aria-label="GitHub profile" className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
                   <Github className="h-4 w-4 text-white" />
                 </a>
               )}
               {profile.twitterUrl && (
-                <a href={profile.twitterUrl} className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
+                <a href={profile.twitterUrl} aria-label="Twitter profile" className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
                   <Twitter className="h-4 w-4 text-white" />
                 </a>
               )}
@@ -197,7 +197,7 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                     <MessageSquare className="h-4 w-4 text-white" />
                   </button>
                 ) : (
-                  <a href={`mailto:${profile.email}`} className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
+                  <a href={`mailto:${profile.email}`} aria-label="Send email" className="p-2.5 bg-white/5 hover:bg-white/10 rounded-full transition-all hover:scale-110 border border-white/10">
                     <Mail className="h-4 w-4 text-white" />
                   </a>
                 )

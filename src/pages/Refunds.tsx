@@ -1,14 +1,20 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { SEO } from '@/components/SEO';
 
 const Refunds = () => {
     return (
         <div className="min-h-screen bg-slate-950">
+            <SEO
+              title="Refund & Cancellation Policy — Foliogen"
+              description="Foliogen's 24-hour refund window, cancellation steps, and how billing works on Basic and Sprint Pass plans."
+              path="/refunds"
+            />
             <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link to="/" className="flex items-center">
-                        <img src={logo} alt="Foliogen" className="h-10 w-auto" />
+                        <img src={logo} alt="Foliogen - AI Portfolio Builder" className="h-10 w-auto" />
                     </Link>
                     <Link
                         to="/"
