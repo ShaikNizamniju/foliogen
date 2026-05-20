@@ -1,0 +1,30 @@
+# Foliogen
+
+> Foliogen is an AI-powered portfolio builder for product managers, designers, developers, and creators. Upload a resume or LinkedIn PDF and Foliogen generates a recruiter-ready portfolio in minutes, with templates, an AI recruiter chatbot, job-match analysis, and a job application tracker.
+
+## Pages
+
+- [Home](https://www.foliogen.in/): Product overview, features, templates, and pricing.
+- [Templates Gallery](https://www.foliogen.in/templates): Browse 19+ premium portfolio templates across roles and industries.
+- [About the Founder](https://www.foliogen.in/about): Story behind Foliogen and its creator.
+- [Contact](https://www.foliogen.in/contact): Get in touch with the Foliogen team.
+- [Sign in / Sign up](https://www.foliogen.in/auth): Create an account with email or Google to start building.
+- [Dashboard](https://www.foliogen.in/dashboard): Authenticated workspace for editing portfolios, projects, resumes, and analytics.
+- [Pricing & Billing](https://www.foliogen.in/dashboard/billing): Basic (₹199) and Sprint Pass (₹999) plans.
+- [Privacy Policy](https://www.foliogen.in/privacy): How user data and AI processing are handled.
+- [Terms of Service](https://www.foliogen.in/terms): Usage terms under IT Act 2000 jurisdiction.
+- [Refund Policy](https://www.foliogen.in/refunds): 24-hour refund window details.
+
+## Key features
+
+- AI-generated portfolios from resume or LinkedIn PDF (Gemini 2.0 Flash + GPT-4o-mini for parsing).
+- 19+ responsive templates including Minimalist, Creative, Executive, Dev, Brutalist, Studio, Noir, SaaS, and more.
+- AI recruiter chatbot answering questions about the candidate on each public portfolio.
+- Job match analysis: paste a job description to get a fit score and tailored pitch.
+- Job application tracker with Kanban board and AI interview prep.
+- Recruiter Radar analytics with view tracking and session depth.
+- Custom usernames, password-protected projects, and PDF resume export.
+
+## Public portfolios
+
+Public portfolios are served at `https://www.foliogen.in/u/{username}` and contain user-generated content (bio, work experience, projects, skills).
