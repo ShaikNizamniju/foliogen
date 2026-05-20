@@ -86,7 +86,7 @@ export default function AuthCallback() {
             <div className="relative z-10 flex flex-col items-center space-y-6">
                 <div className="relative">
                     <div className="absolute inset-0 rounded-full blur-xl bg-indigo-500/20 animate-pulse" />
-                    <img src={logoImg} alt="Foliogen" className="h-16 w-16 object-contain relative z-10 dark:invert" />
+                    <img src={logoImg} alt="Foliogen - AI Portfolio Builder" className="h-16 w-16 object-contain relative z-10 dark:invert" />
                 </div>
                 <h2 className="text-2xl font-bold tracking-tight text-foreground">
                     Authenticating Identity

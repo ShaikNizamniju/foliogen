@@ -193,7 +193,7 @@ export default function Auth() {
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <img src={logoImg} alt="Foliogen" className="h-9 w-9 object-contain dark:invert" loading="eager" />
+          <img src={logoImg} alt="Foliogen - AI Portfolio Builder" className="h-9 w-9 object-contain dark:invert" loading="eager" />
           <span className="text-foreground font-semibold text-xl tracking-tight">Foliogen</span>
         </div>
 
@@ -273,7 +273,7 @@ export default function Auth() {
 
         {/* Mobile logo */}
         <div className="flex lg:hidden items-center justify-center gap-2 mb-4 mx-auto w-full text-center relative z-10">
-          <img src={logoImg} alt="Foliogen" className="h-8 w-8 object-contain invert" loading="eager" />
+          <img src={logoImg} alt="Foliogen - AI Portfolio Builder" className="h-8 w-8 object-contain invert" loading="eager" />
           <span className="text-white font-semibold text-lg">Foliogen</span>
         </div>
 
