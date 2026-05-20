@@ -112,6 +112,7 @@ export function LandingV2() {
                 </div>
             </nav>
 
+            <main>
             {/* Hero */}
             <section className="hero-section">
                 <div className="hero-glow"></div>
