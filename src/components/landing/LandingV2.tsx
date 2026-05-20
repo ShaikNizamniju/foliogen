@@ -531,6 +531,7 @@ export function LandingV2() {
                     <p className="cta-caption">No credit card required · Portfolio live in 4 minutes</p>
                 </div>
             </section>
+            </main>
 
             {/* Footer */}
             <footer className="footer">
