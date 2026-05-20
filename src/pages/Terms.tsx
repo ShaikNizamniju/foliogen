@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { SEO } from '@/components/SEO';
 
 const Terms = () => {
     return (
         <div className="min-h-screen bg-slate-950">
+            <SEO
+              title="Terms of Service — Foliogen"
+              description="Usage terms for Foliogen, including identity verification, AI narrative responsibility, and IT Act 2000 jurisdiction."
+              path="/terms"
+            />
             <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link to="/" className="flex items-center">

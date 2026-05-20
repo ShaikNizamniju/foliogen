@@ -4,10 +4,17 @@ import { Footer } from '@/components/landing/Footer';
 import { Linkedin, ExternalLink, Briefcase, Zap, Heart, Target, Layers } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import profilePhoto from '@/assets/profile-photo.jpeg';
+import { SEO } from '@/components/SEO';
 
 export default function AboutFounder() {
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary/30">
+      <SEO
+        title="About the Founder — Shaik Nizamuddin | Foliogen"
+        description="Meet Shaik Nizamuddin, AI Product Manager and creator of Foliogen — the AI-powered portfolio engine for modern professionals."
+        path="/founder"
+        type="profile"
+      />
       <Navbar />
       
       <main className="pt-32 pb-24 px-4">

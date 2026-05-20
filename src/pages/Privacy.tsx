@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { SEO } from '@/components/SEO';
 
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-slate-950">
+      <SEO
+        title="Privacy Policy — Foliogen"
+        description="How Foliogen handles your personal data, AI processing, cookies, and 30-day retention windows for portfolio content."
+        path="/privacy"
+      />
       {/* Simple Header */}
       <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
