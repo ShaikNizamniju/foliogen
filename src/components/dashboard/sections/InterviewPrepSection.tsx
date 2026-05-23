@@ -192,7 +192,7 @@ export function InterviewPrepSection() {
                         )}
                     </Button>
                     <p className="text-xs text-emerald-500 mt-4 font-medium">
-                        Pro Features Unlocked for Beta. Practice unlimited questions.
+                        All features free. Practice unlimited questions.
                     </p>
                 </Card>
             )}

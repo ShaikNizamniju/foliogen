@@ -48,7 +48,7 @@ const menuItems = [
   { title: 'Interview Prep', icon: Target, section: 'interview-prep' },
   { title: 'Templates', icon: Palette, section: 'templates' },
   { title: 'Identity Vault', icon: Vault, section: 'identity-vault' },
-  { title: 'Beta Status', icon: CreditCard, section: 'billing' },
+  { title: 'Billing', icon: CreditCard, section: 'billing' },
   { title: 'Chat Log', icon: MessageSquareText, section: 'chat-log' },
   { title: 'Settings', icon: Settings, section: 'settings' },
 ];
@@ -98,9 +98,6 @@ export function DashboardSidebar() {
               )}
             >
               Foliogen
-              <span className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest">
-                Beta
-              </span>
             </span>
           </Link>
           {/* Desktop: ChevronLeft toggle */}

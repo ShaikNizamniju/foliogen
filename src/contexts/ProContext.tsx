@@ -19,48 +19,35 @@ const ProContext = createContext<ProContextType | undefined>(undefined);
 
 export function ProProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  const [isPro, setIsPro] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
   const [proSince, setProSince] = useState<Date | null>(null);
-  const [planType, setPlanType] = useState<string>("free");
-  const [subscriptionStatus, setSubscriptionStatus] = useState<string>("inactive");
   const [nextRenewalDate, setNextRenewalDate] = useState<Date | null>(null);
 
-  const fetchProStatus = useCallback(async () => {
-    if (!user) {
-      setIsPro(false);
-      setLoading(false);
-      return;
-    }
+  // Everything is free — all users have Pro access.
+  const isPro = true;
+  const isBasicOrAbove = true;
+  const loading = false;
+  const planType = "pro";
+  const subscriptionStatus = "active";
 
-    setLoading(true);
-    const { data, error } = await supabase
+  const fetchProStatus = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
       .from("profiles")
-      .select("is_pro, subscription_id, pro_since, plan_type, subscription_status, next_renewal_date")
+      .select("subscription_id, pro_since, next_renewal_date")
       .eq("user_id", user.id)
       .maybeSingle();
-
-    if (error) {
-      console.error("Supabase Error Details [Pro Status Fetch]:", error.message, error.details, error.hint);
-    }
-
-    if (data && !error) {
-      setIsPro((data as any).is_pro || false);
+    if (data) {
       setSubscriptionId((data as any).subscription_id || null);
       setProSince((data as any).pro_since ? new Date((data as any).pro_since) : null);
-      setPlanType((data as any).plan_type || "free");
-      setSubscriptionStatus((data as any).subscription_status || "inactive");
       setNextRenewalDate((data as any).next_renewal_date ? new Date((data as any).next_renewal_date) : null);
     }
-    setLoading(false);
   }, [user]);
 
   useEffect(() => {
     fetchProStatus();
   }, [fetchProStatus]);
 
-  // Force refresh on token refresh or sign-in (catches mid-session upgrades)
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
@@ -73,8 +60,6 @@ export function ProProvider({ children }: { children: ReactNode }) {
   const refreshProStatus = async () => {
     await fetchProStatus();
   };
-
-  const isBasicOrAbove = isPro || planType === 'sprint_pass' || planType === 'pro';
 
   return (
     <ProContext.Provider value={{ isPro, isBasicOrAbove, loading, subscriptionId, proSince, planType, subscriptionStatus, nextRenewalDate, refreshProStatus }}>
