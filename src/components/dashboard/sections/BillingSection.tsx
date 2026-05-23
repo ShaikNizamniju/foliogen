@@ -9,35 +9,33 @@ export function BillingSection() {
 
   return (
     <div className="space-y-12 max-w-4xl mx-auto py-12 px-6">
-      {/* Beta Announcement Card */}
+      {/* Free Forever Announcement */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <Card className="relative overflow-hidden border-indigo-500/30 bg-slate-900 shadow-2xl">
-          {/* Animated Background Shimmer */}
           <div className="absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_5s_infinite_linear] pointer-events-none" />
-          
+
           <CardHeader className="text-center pt-12 pb-6">
             <div className="mx-auto w-20 h-20 bg-indigo-500/10 rounded-full flex items-center justify-center mb-6 border border-indigo-500/20 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
               <PartyPopper className="h-10 w-10 text-indigo-400 animate-bounce" />
             </div>
             <CardTitle className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
-              Foliogen Open Beta <br />
+              Foliogen is Free <br />
               <span className="text-indigo-400">Everything is Unlocked</span>
             </CardTitle>
           </CardHeader>
-          
+
           <CardContent className="space-y-8 pb-12">
             <div className="text-center max-w-2xl mx-auto">
               <p className="text-xl text-slate-300 font-medium leading-relaxed">
-                Foliogen is officially in Open Beta. All Pro features—Recruiter Audits, 
-                Identity Switching, and Premium Templates—are unlocked for early adopters. 
+                Every feature—Recruiter Audits, Identity Switching, all premium templates, and more—is unlocked for everyone, free forever.
               </p>
               <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-sm font-bold uppercase tracking-widest">
                 <ShieldCheck className="h-4 w-4" />
-                Pro Status: Active
+                All Features Active
               </div>
             </div>
 
