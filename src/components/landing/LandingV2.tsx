@@ -132,7 +132,6 @@ export function LandingV2() {
                         </p>
                         <div className="hero-btns fade-up" style={{ animationDelay: '0.3s' }}>
                             <Link to="/auth" className="btn-primary">Build My Portfolio</Link>
-                            <a href="#demo" className="btn-ghost">▶ Watch Demo</a>
                         </div>
                         <div className="hero-stats fade-up" style={{ animationDelay: '0.4s' }}>
                             <div className="stat-item">
