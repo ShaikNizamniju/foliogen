@@ -38,44 +38,18 @@ export const PLANS = {
 export type PlanKey = keyof typeof PLANS;
 
 export async function handlePayment(
-  user: PaymentUser,
-  planKey: PlanKey,
+  _user: PaymentUser,
+  _planKey: PlanKey,
   onSuccess: (planId: string) => void
 ): Promise<void> {
-  try {
-    const plan = PLANS[planKey];
-    
-    // Initiate server-side checkout via Stripe edge function
-    toast({ 
-      title: "Redirecting to checkout…", 
-      description: `Setting up your ${plan.label} plan.` 
-    });
-
-    const { data, error } = await supabase.functions.invoke('stripe-checkout', {
-      body: {
-        planId: plan.id,
-        userId: user.id,
-        email: user.email,
-      },
-    });
-
-    if (error || !data?.url) {
-      console.error('[Payment] Checkout error:', error, data);
-      toast({ 
-        title: "Checkout Error", 
-        description: "Could not start checkout. Please try again.", 
-        variant: "destructive" 
-      });
-      return;
-    }
-
-    // Redirect to Stripe-hosted checkout
-    window.location.href = data.url;
-
-  } catch (err: any) {
-    console.error('[Payment] Unexpected error during free pivot:', err?.message, err);
-    toast({ title: "Activation Error", description: "An unexpected error occurred. Please try again.", variant: "destructive" });
-  }
+  // Foliogen is free forever — no checkout, no Stripe redirect.
+  toast({
+    title: "You're all set — it's free!",
+    description: "Every feature is unlocked for every user. No payment needed.",
+  });
+  try { triggerCelebration(); } catch {}
+  onSuccess('free');
 }
+
 
 
