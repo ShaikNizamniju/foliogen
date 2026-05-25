@@ -1,18 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader2, Eye, EyeOff, ArrowRight, Users, Briefcase, Star } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { supabase } from '@/lib/supabase_v2';
-import { cn } from '@/lib/utils';
-import logoImg from '@/assets/logo.png';
 import { useWelcomeEmail } from '@/hooks/use-welcome-email';
 import { SEO } from '@/components/SEO';
 
-/* ── Validation Schemas ──────────────────────────────────────────────── */
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z
   .string()
@@ -21,13 +16,6 @@ const passwordSchema = z
   .regex(/[A-Z]/, 'Password needs at least 1 uppercase letter')
   .regex(/\d/, 'Password needs at least 1 number')
   .regex(/[^A-Za-z0-9]/, 'Password needs at least 1 symbol');
-
-/* ── Stat Counter data ───────────────────────────────────────────────── */
-const STATS = [
-  { value: '12,400+', label: 'Portfolios Generated', icon: Users },
-  { value: '3.2×', label: 'More Recruiter Views', icon: Star },
-  { value: '89%', label: 'Interview Rate Boost', icon: Briefcase },
-];
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -38,85 +26,108 @@ export default function Auth() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [honeypot, setHoneypot] = useState('');
-  const [errors, setErrors] = useState<{ email?: boolean; password?: boolean; fullName?: boolean }>({});
   const { signIn, signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { triggerWelcomeEmail } = useWelcomeEmail();
 
+  // Animated counters
+  const [c1, setC1] = useState(0);
+  const [c2, setC2] = useState(0);
+  const [c3, setC3] = useState(0);
+
+  // Cursor refs
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!authLoading && user) {
-      // If we already have a section intended, or just default to overview
       const searchParams = new URLSearchParams(window.location.search);
       const section = searchParams.get('section') || 'overview';
       navigate(`/dashboard?section=${section}`, { replace: true });
     }
   }, [user, authLoading, navigate]);
 
+  // Counter animation
+  useEffect(() => {
+    const targets = [12400, 3.2, 89];
+    const duration = 1600;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setC1(Math.floor(targets[0] * ease));
+      setC2(Number((targets[1] * ease).toFixed(1)));
+      setC3(Math.floor(targets[2] * ease));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  // Custom cursor (desktop only)
+  useEffect(() => {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    let mx = 0, my = 0, rx = 0, ry = 0, raf = 0;
+    const move = (e: MouseEvent) => {
+      mx = e.clientX; my = e.clientY;
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${mx - 4}px`;
+        cursorRef.current.style.top = `${my - 4}px`;
+      }
+    };
+    const anim = () => {
+      rx += (mx - rx - 14) * 0.12;
+      ry += (my - ry - 14) * 0.12;
+      if (ringRef.current) {
+        ringRef.current.style.left = `${rx}px`;
+        ringRef.current.style.top = `${ry}px`;
+      }
+      raf = requestAnimationFrame(anim);
+    };
+    document.addEventListener('mousemove', move);
+    raf = requestAnimationFrame(anim);
+    return () => {
+      document.removeEventListener('mousemove', move);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
   const handleGoogleLogin = useCallback(async () => {
     setGoogleLoading(true);
-    // Pre-fetch intent
     import('./Dashboard');
-    
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin + '/dashboard?section=overview',
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
+          queryParams: { access_type: 'offline', prompt: 'consent' },
         },
       });
       if (error) throw error;
-      // Note: signInWithOAuth redirects the window, so no navigate is needed here on success
     } catch (error: any) {
       const isNetworkError = error?.message?.toLowerCase().includes('fetch') || error?.message?.toLowerCase().includes('network error');
-      if (isNetworkError) {
-        toast.error("Network Error: Cannot connect to the Identity Vault. Please ensure your adblocker is disabled and try again.");
-      } else {
-        toast.error(error?.message || 'Google login failed');
-      }
+      toast.error(isNetworkError ? 'Network Error: Cannot connect. Please disable your adblocker and try again.' : (error?.message || 'Google login failed'));
       setGoogleLoading(false);
     }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (honeypot) {
-      toast.error('Automated behavior detected. Request blocked.');
-      return;
-    }
-    const newErrors: typeof errors = {};
-    try { emailSchema.parse(email); } catch { newErrors.email = true; }
-    try { passwordSchema.parse(password); } catch { newErrors.password = true; }
-    if (!isLogin && !fullName.trim()) newErrors.fullName = true;
+    if (honeypot) { toast.error('Automated behavior detected. Request blocked.'); return; }
+    try { emailSchema.parse(email); } catch { toast.error('Please enter a valid email'); return; }
+    try { passwordSchema.parse(password); } catch { toast.error('Password needs uppercase + number + symbol'); return; }
+    if (!isLogin && !fullName.trim()) { toast.error('Please enter your full name'); return; }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      const firstErr = newErrors.email
-        ? 'Please enter a valid email'
-        : newErrors.password
-          ? 'Password needs uppercase + number + symbol'
-          : 'Please enter your full name';
-      toast.error(firstErr);
-      return;
-    }
-
-    setErrors({});
     setLoading(true);
     try {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
           const msg = error.message?.toLowerCase() || '';
-          if (msg.includes('invalid') || msg.includes('credentials')) {
-            toast.error('Invalid email or password. Please try again.');
-          } else if (msg.includes('not confirmed') || msg.includes('email not confirmed')) {
-            toast.error('Please confirm your email address before signing in.');
-          } else {
-            toast.error(error.message || 'Failed to sign in');
-          }
+          if (msg.includes('invalid') || msg.includes('credentials')) toast.error('Invalid email or password. Please try again.');
+          else if (msg.includes('not confirmed')) toast.error('Please confirm your email address before signing in.');
+          else toast.error(error.message || 'Failed to sign in');
         } else {
           toast.success('Welcome back!');
           triggerWelcomeEmail(email.split('@')[0], 'email');
@@ -125,11 +136,9 @@ export default function Auth() {
       } else {
         const { error } = await signUp(email, password, fullName);
         if (error) {
-          toast.error(
-            error.message?.includes('already registered')
-              ? 'This email is already registered. Please sign in instead.'
-              : error.message || 'Failed to create account'
-          );
+          toast.error(error.message?.includes('already registered')
+            ? 'This email is already registered. Please sign in instead.'
+            : error.message || 'Failed to create account');
         } else {
           toast.success('Account created! Welcome to Foliogen.');
           triggerWelcomeEmail(fullName, 'email');
@@ -137,12 +146,7 @@ export default function Auth() {
         }
       }
     } catch (err: any) {
-      const isNetworkError = err?.message?.toLowerCase().includes('fetch') || err?.message?.toLowerCase().includes('network error');
-      if (isNetworkError) {
-        toast.error("Network Error: Cannot connect to the Identity Vault. Please ensure your adblocker is disabled and try again.");
-      } else {
-        toast.error(err?.message || 'An unexpected error occurred. Please try again.');
-      }
+      toast.error(err?.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -151,7 +155,6 @@ export default function Auth() {
   const handleForgotPassword = async () => {
     if (!email) { toast.error('Please enter your email first.'); return; }
     try { emailSchema.parse(email); } catch { toast.error('Please enter a valid email.'); return; }
-    
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -160,357 +163,304 @@ export default function Auth() {
       if (error) throw error;
       toast.success('Password reset email sent! Check your inbox.');
     } catch (error: any) {
-      toast.error('PASSWORD RESET FAILED', {
-        description: error?.message || 'Failed to send reset email. Please verify your connection.',
-        style: { background: '#7f1d1d', border: '1px solid #ef4444', color: 'white' }
-      });
+      toast.error(error?.message || 'Failed to send reset email.');
     } finally {
       setLoading(false);
     }
   };
 
-  const switchMode = () => {
-    setIsLogin((v) => !v);
-    setErrors({});
-  };
-
   return (
-    <div className="min-h-screen flex w-full bg-background">
+    <div className="foliogen-auth-v2">
       <SEO
         title="Sign in or create your Foliogen account"
         description="Sign in to Foliogen with email or Google to build, customize, and share your AI-powered professional portfolio."
         path="/auth"
       />
-      {/* ── LEFT PANEL ────────────────────────────────────────────── */}
-      <div className="hidden lg:flex flex-col justify-between w-[52%] relative overflow-hidden p-12 xl:p-16">
-        {/* Noise + gradient backdrop */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--cobalt)) 40%, hsl(var(--sidebar-background)) 70%, hsl(var(--background)) 100%)',
-          }}
-        />
-        {/* Decorative glow blobs */}
-        <div className="absolute top-1/4 left-1/3 w-72 h-72 rounded-full blur-3xl opacity-20"
-          style={{ background: 'radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-56 h-56 rounded-full blur-3xl opacity-15"
-          style={{ background: 'radial-gradient(circle, hsl(var(--gold)) 0%, transparent 70%)' }} />
 
-        {/* Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <img src={logoImg} alt="Foliogen - AI Portfolio Builder" className="h-9 w-9 object-contain dark:invert" loading="eager" />
-          <span className="text-foreground font-semibold text-xl tracking-tight">Foliogen</span>
-        </div>
+      <div ref={cursorRef} className="fg-cursor" aria-hidden="true" />
+      <div ref={ringRef} className="fg-cursor-ring" aria-hidden="true" />
 
-        {/* Hero copy */}
-        <div className="relative z-10 space-y-8">
-          <div className="space-y-4">
-            <p className="text-indigo-600 dark:text-indigo-400 font-medium text-sm uppercase tracking-widest">
-              AI-Powered Portfolios
-            </p>
-            <h1 className="text-5xl xl:text-6xl font-bold leading-tight text-foreground">
-              Your work,<br />
-              <span
-                className="bg-clip-text text-transparent"
-                style={{
-                  backgroundImage: 'linear-gradient(90deg, hsl(var(--gold)) 0%, hsl(var(--gold-light)) 50%, hsl(var(--gold)) 100%)',
-                }}
-              >
-                beautifully told.
-              </span>
+      <div className="fg-layout">
+        {/* LEFT */}
+        <div className="fg-left">
+          <div className="fg-left-deco">Folio</div>
+
+          <div className="fg-header">
+            <Link to="/" className="fg-logo">
+              <div className="fg-logo-box">F</div>
+              <div className="fg-logo-text">Foliogen</div>
+            </Link>
+            <div className="fg-nav-tag">www.foliogen.in</div>
+          </div>
+
+          <div className="fg-hero">
+            <div className="fg-issue-line">AI-Powered Portfolios · Est. 2024</div>
+
+            <h1 className="fg-h1">
+              <span className="fg-word"><span>Your</span></span>{' '}
+              <span className="fg-word fg-italic fg-red"><span>Work,</span></span>
+              <br />
+              <span className="fg-word"><span>Beautifully</span></span>{' '}
+              <span className="fg-word fg-italic"><span>Told.</span></span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-sm leading-relaxed">
+
+            <p className="fg-sub">
               Turn your career into a compelling story that makes recruiters stop scrolling and start calling.
             </p>
-          </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-4">
-            {STATS.map(({ value, label, icon: Icon }) => (
-              <div
-                key={label}
-                className="rounded-2xl p-4 border border-border backdrop-blur-sm bg-background/40"
-              >
-                <Icon className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mb-2" />
-                <p className="text-foreground font-bold text-xl">{value}</p>
-                <p className="text-muted-foreground text-xs mt-0.5 leading-snug">{label}</p>
+            <div className="fg-stats">
+              <div className="fg-stat">
+                <div className="fg-stat-n">{c1.toLocaleString()}<em>+</em></div>
+                <div className="fg-stat-l">Portfolios Built</div>
               </div>
-            ))}
-          </div>
-
-          {/* Floating testimonial card */}
-          <div
-            className="rounded-2xl p-5 border border-border max-w-sm bg-background/60 backdrop-blur-[16px]"
-          >
-            <div className="flex items-center gap-1 mb-3">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star key={s} className="h-3.5 w-3.5" style={{ fill: 'hsl(var(--gold))', color: 'hsl(var(--gold))' }} />
-              ))}
+              <div className="fg-stat">
+                <div className="fg-stat-n">{c2}<em>×</em></div>
+                <div className="fg-stat-l">Recruiter Views</div>
+              </div>
+              <div className="fg-stat">
+                <div className="fg-stat-n">{c3}<em>%</em></div>
+                <div className="fg-stat-l">Interview Boost</div>
+              </div>
             </div>
-            <p className="text-foreground/80 text-sm leading-relaxed italic">
-              "Landed 4 interviews in 2 weeks after switching to my Foliogen portfolio. The AI descriptions are next-level."
-            </p>
-            <div className="flex items-center gap-3 mt-4">
-              <div className="h-8 w-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-300 text-sm font-bold">
-                R
-              </div>
+
+            <div className="fg-quote-block">
+              <div className="fg-quote-mark">&ldquo;</div>
               <div>
-                <p className="text-foreground text-sm font-medium">Shaik N.</p>
-                <p className="text-muted-foreground text-xs">AI Product Manager @ Foliogen</p>
+                <p className="fg-quote-text">Landed 4 interviews in 2 weeks after switching to my Foliogen portfolio. The AI descriptions are next-level.</p>
+                <div className="fg-quote-attr">Shaik N. · AI Product Manager · Foliogen</div>
               </div>
             </div>
           </div>
+
+          <div className="fg-left-footer">© 2025 Foliogen · Built for ambitious professionals</div>
         </div>
 
-        <p className="relative z-10 text-[#4a5568] text-xs">
-          © 2025 Foliogen · Built with ❤ for ambitious professionals
-        </p>
-      </div>
+        {/* RIGHT */}
+        <div className="fg-right">
+          <div className="fg-scan-line" />
+          <div className="fg-corner-tl" />
+          <div className="fg-corner-br" />
 
-      {/* ── RIGHT PANEL ────────────────────────────────────────────── */}
-      <div
-        className="flex-1 flex flex-col items-center justify-between px-4 py-10 min-h-screen relative overflow-hidden"
-        style={{
-          background:
-            'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(91,91,214,0.08) 0%, transparent 60%), #080810',
-        }}
-      >
+          <div className="fg-right-inner">
+            <div className="fg-r-eyebrow"><span /> AI-Powered Portfolios</div>
 
-        {/* Mobile logo */}
-        <div className="flex lg:hidden items-center justify-center gap-2 mb-4 mx-auto w-full text-center relative z-10">
-          <img src={logoImg} alt="Foliogen - AI Portfolio Builder" className="h-8 w-8 object-contain invert" loading="eager" />
-          <span className="text-white font-semibold text-lg">Foliogen</span>
-        </div>
-
-        <div
-          className="w-full max-w-[420px] space-y-6 mx-auto my-auto relative z-10 p-6 sm:p-8"
-          style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: '16px',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-          }}
-        >
-          {/* Heading */}
-          <div className="space-y-3 text-center flex flex-col items-center">
-            <span
-              className="px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.18em] uppercase mb-1"
-              style={{
-                border: '1px solid #5B5BD6',
-                background: 'rgba(91,91,214,0.10)',
-                color: '#a78bfa',
-              }}
-            >
-              AI-Powered Portfolios
-            </span>
-            <h1
-              className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent"
-              style={{
-                backgroundImage: 'linear-gradient(90deg, #ffffff 0%, #a78bfa 100%)',
-                letterSpacing: '-0.025em',
-              }}
-            >
-              {isLogin ? 'Welcome back' : 'Create your account'}
-            </h1>
-            <p className="text-sm max-w-xs text-center" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {isLogin
-                ? 'Sign in to continue building your portfolio.'
-                : 'Join 12,400+ narrative architects engineering their professional legacy.'}
-            </p>
-          </div>
-
-          {/* Google button */}
-          <button
-            type="button"
-            onMouseEnter={() => import('./Dashboard')}
-            onClick={handleGoogleLogin}
-            disabled={googleLoading || loading}
-            className={cn(
-              'w-full flex items-center justify-center gap-3 h-12 rounded-xl text-sm font-semibold transition-all duration-200',
-              (googleLoading || loading) && 'opacity-60 cursor-not-allowed'
-            )}
-            style={{
-              background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.15)',
-              color: '#ffffff',
-            }}
-          >
-            {googleLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-              </svg>
-            )}
-            Continue with Google
-          </button>
-
-          {/* Divider */}
-          <div className="relative flex items-center gap-4">
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.10)' }} />
-            <span className="text-xs shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }}>or with email</span>
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.10)' }} />
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Honeypot field for bot protection */}
-            <input
-              type="text"
-              name="b_firstname"
-              tabIndex={-1}
-              autoComplete="off"
-              style={{ position: 'absolute', opacity: 0, height: 0, width: 0, zIndex: -1 }}
-              value={honeypot}
-              onChange={(e) => setHoneypot(e.target.value)}
-            />
-            {!isLogin && (
-              <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Full Name</Label>
-                <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="Shaik Nizamuddin"
-                  value={fullName}
-                  onChange={(e) => { setFullName(e.target.value); setErrors((p) => ({ ...p, fullName: false })); }}
-                  className={cn('auth-field h-12', errors.fullName && 'auth-field-error')}
-                  required
-                />
-              </div>
-            )}
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@foliogen.in"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: false })); }}
-                className={cn('auth-field h-12', errors.email && 'auth-field-error')}
-                required
-              />
+            <div className="fg-r-title">
+              {isLogin ? <>Welcome<br /><em>Back.</em></> : <>Create<br /><em>Account.</em></>}
+            </div>
+            <div className="fg-r-sub">
+              {isLogin ? 'Sign in to continue building your portfolio.' : 'Join 12,400+ professionals telling their story.'}
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.75)' }}>Password</Label>
-                {isLogin && (
-                  <button
-                    type="button"
-                    onClick={handleForgotPassword}
-                    className="text-xs transition-colors"
-                    style={{ color: '#a78bfa' }}
-                  >
-                    Forgot password?
-                  </button>
-                )}
-              </div>
-              <div className="relative h-12">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Minimum 6 characters"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: false })); }}
-                  className={cn('auth-field h-12 pr-10', errors.password && 'auth-field-error')}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center transition-all duration-200"
-                  style={{ color: 'rgba(255,255,255,0.5)' }}
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {!isLogin && (
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Must be 6–16 chars with uppercase, number & symbol.</p>
+            <button className="fg-btn-g" type="button" onClick={handleGoogleLogin} disabled={googleLoading || loading} onMouseEnter={() => import('./Dashboard')}>
+              {googleLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
+                <svg className="fg-g-icon" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                </svg>
               )}
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              onMouseEnter={() => import('./Dashboard')}
-              disabled={loading || googleLoading}
-              className={cn(
-                'w-full h-12 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 text-white shadow-lg',
-                loading || googleLoading ? 'opacity-60 cursor-not-allowed' : 'hover:brightness-110 active:scale-[0.98]'
-              )}
-              style={{
-                background: 'linear-gradient(135deg, #5B5BD6 0%, #7C3AED 100%)',
-                boxShadow: '0 8px 24px -8px rgba(91,91,214,0.5)',
-              }}
-            >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  {isLogin ? 'Sign in' : 'Create account'}
-                  <ArrowRight className="h-4 w-4" />
-                </>
-              )}
+              Continue with Google
             </button>
-          </form>
 
-          {/* Footer links */}
-          <div className="space-y-3 text-center">
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              {isLogin ? "Don't have an account? " : 'Already have an account? '}
-              <button
-                type="button"
-                onClick={switchMode}
-                className="font-medium transition-colors"
-                style={{ color: '#a78bfa' }}
-              >
-                {isLogin ? 'Create account' : 'Sign in'}
+            <div className="fg-divider"><span>or with email</span></div>
+
+            <form onSubmit={handleSubmit}>
+              {/* Honeypot */}
+              <input
+                type="text" name="b_firstname" tabIndex={-1} autoComplete="off"
+                style={{ position: 'absolute', opacity: 0, height: 0, width: 0, zIndex: -1 }}
+                value={honeypot} onChange={(e) => setHoneypot(e.target.value)}
+              />
+
+              {!isLogin && (
+                <div className="fg-field">
+                  <div className="fg-field-top"><div className="fg-f-label">Full Name</div></div>
+                  <div className="fg-inp-wrap">
+                    <input type="text" placeholder="Shaik Nizamuddin" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
+                  </div>
+                </div>
+              )}
+
+              <div className="fg-field">
+                <div className="fg-field-top"><div className="fg-f-label">Email address</div></div>
+                <div className="fg-inp-wrap">
+                  <input type="email" placeholder="you@company.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                </div>
+              </div>
+
+              <div className="fg-field">
+                <div className="fg-field-top">
+                  <div className="fg-f-label">Password</div>
+                  {isLogin && (
+                    <button type="button" className="fg-f-link" onClick={handleForgotPassword}>Forgot?</button>
+                  )}
+                </div>
+                <div className="fg-inp-wrap">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder={isLogin ? 'Min. 6 characters' : '6–16 chars, A1!'}
+                    autoComplete={isLogin ? 'current-password' : 'new-password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button type="button" className="fg-eye" aria-label="Toggle password" onClick={() => setShowPassword((v) => !v)}>
+                    {showPassword ? (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-10-8-10-8a18.45 18.45 0 014.06-5.94M9.9 4.24A10.94 10.94 0 0112 4c7 0 10 8 10 8a18.5 18.5 0 01-3.17 4.19M1 1l22 22" />
+                        <path d="M14.12 14.12A3 3 0 119.88 9.88" />
+                      </svg>
+                    ) : (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" className="fg-btn-cta" disabled={loading || googleLoading} onMouseEnter={() => import('./Dashboard')}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
+                  <>
+                    {isLogin ? 'Sign In' : 'Create Account'}
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
               </button>
-            </p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              By continuing, you agree to our{' '}
-              <Link to="/terms" className="transition-colors" style={{ color: '#a78bfa' }}>
-                Terms
-              </Link>{' '}
-              and{' '}
-              <Link to="/privacy" className="transition-colors" style={{ color: '#a78bfa' }}>
-                Privacy Policy
-              </Link>.
-            </p>
-            <p className="text-xs">
-              <a
-                href="https://forms.gle/foliogen_feedback"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors"
-                style={{ color: 'rgba(255,255,255,0.5)' }}
-              >
-                Found a bug? Help us improve. →
-              </a>
-            </p>
+            </form>
+
+            <div className="fg-r-footer">
+              <p>
+                {isLogin ? "Don't have an account? " : 'Already have an account? '}
+                <button type="button" onClick={() => setIsLogin((v) => !v)}>
+                  {isLogin ? 'Create one →' : 'Sign in →'}
+                </button>
+              </p>
+              <div className="fg-r-legal">
+                By continuing you agree to our <Link to="/terms">Terms</Link> &amp; <Link to="/privacy">Privacy Policy</Link>.<br />
+                <a href="/contact">Found a bug? Help us improve →</a>
+              </div>
+            </div>
+
+            <div className="fg-pill-row">
+              <div className="fg-pill">500+ Pros</div>
+              <div className="fg-pill">Free Forever</div>
+              <div className="fg-pill">No Subscriptions</div>
+              <div className="fg-pill">Just Results</div>
+            </div>
           </div>
         </div>
-
-        {/* Bottom marquee/ticker */}
-        <div
-          className="w-full max-w-[420px] mx-auto mt-6 pt-4 text-center relative z-10"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
-        >
-          <p
-            className="text-[10px] uppercase font-medium"
-            style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.18em' }}
-          >
-            Join 500+ pros · 90-day Sprint Pass · No subscriptions · Just results
-          </p>
-        </div>
       </div>
+
+      <style>{`
+        .foliogen-auth-v2 { --bg:#f0ede6; --ink:#111010; --accent:#e8401a; --muted:#7a7670; --border:#c8c3b8;
+          min-height:100vh; background:var(--bg); color:var(--ink);
+          font-family:'Syne','Inter',system-ui,sans-serif; position:relative; overflow:hidden; }
+        .foliogen-auth-v2::before {
+          content:''; position:fixed; inset:0;
+          background-image: radial-gradient(circle, #c0bbb2 1px, transparent 1px);
+          background-size: 28px 28px; opacity:0.55; z-index:0; pointer-events:none;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap');
+
+        .fg-layout { position:relative; z-index:1; display:grid; grid-template-columns: 1fr 440px; min-height:100vh; }
+        @media (max-width: 960px) { .fg-layout { grid-template-columns: 1fr; } .fg-left { padding:32px 24px !important; } .fg-left-deco { display:none; } }
+
+        /* LEFT */
+        .fg-left { display:flex; flex-direction:column; padding:40px 52px; position:relative; overflow:hidden; }
+        .fg-left-deco { position:absolute; bottom:-40px; left:-10px; font-family:'Playfair Display',serif; font-weight:900; font-style:italic; font-size:clamp(120px,18vw,240px); line-height:1; color:transparent; -webkit-text-stroke:1px var(--border); pointer-events:none; user-select:none; white-space:nowrap; opacity:0; animation:fg-fadeIn 1.2s 0.8s ease forwards; }
+        .fg-header { display:flex; align-items:center; justify-content:space-between; opacity:0; animation:fg-fadeDown 0.6s 0.1s ease forwards; }
+        .fg-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+        .fg-logo-box { width:34px; height:34px; background:var(--ink); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-weight:900; font-size:16px; color:var(--bg); }
+        .fg-logo-text { font-family:'Syne',sans-serif; font-weight:700; font-size:16px; color:var(--ink); letter-spacing:-0.01em; }
+        .fg-nav-tag { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-family:'JetBrains Mono',monospace; font-weight:300; }
+        .fg-hero { flex:1; display:flex; flex-direction:column; justify-content:center; padding:60px 0; }
+        .fg-issue-line { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); margin-bottom:20px; display:flex; align-items:center; gap:10px; opacity:0; animation:fg-fadeUp 0.6s 0.35s ease forwards; }
+        .fg-issue-line::before { content:''; width:20px; height:2px; background:var(--accent); flex-shrink:0; }
+        .fg-h1 { font-family:'Playfair Display',serif; font-weight:900; font-size:clamp(44px,6vw,86px); line-height:0.95; letter-spacing:-0.02em; color:var(--ink); max-width:600px; margin-bottom:28px; }
+        .fg-word { display:inline-block; overflow:hidden; vertical-align:top; }
+        .fg-word > span { display:inline-block; transform:translateY(110%); animation:fg-slideUp 0.85s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .fg-word:nth-child(1) > span { animation-delay:0.4s; }
+        .fg-word:nth-child(2) > span { animation-delay:0.5s; }
+        .fg-word:nth-child(3) > span { animation-delay:0.6s; }
+        .fg-word:nth-child(4) > span { animation-delay:0.7s; }
+        .fg-italic > span { font-style:italic; }
+        .fg-red > span { color:var(--accent); }
+        .fg-sub { font-size:14px; line-height:1.75; color:var(--muted); max-width:400px; margin-bottom:44px; opacity:0; animation:fg-fadeUp 0.6s 0.9s ease forwards; }
+        .fg-stats { display:flex; border-top:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink); opacity:0; animation:fg-fadeUp 0.6s 1.05s ease forwards; }
+        .fg-stat { flex:1; padding:18px 0; }
+        .fg-stat + .fg-stat { border-left:1.5px solid var(--ink); padding-left:20px; }
+        .fg-stat-n { font-family:'Playfair Display',serif; font-weight:700; font-size:32px; line-height:1; letter-spacing:-0.02em; color:var(--ink); }
+        .fg-stat-n em { font-style:normal; color:var(--accent); font-size:0.7em; }
+        .fg-stat-l { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); font-family:'JetBrains Mono',monospace; margin-top:4px; }
+        .fg-quote-block { margin-top:32px; display:flex; gap:16px; align-items:flex-start; opacity:0; animation:fg-fadeUp 0.6s 1.2s ease forwards; }
+        .fg-quote-mark { font-family:'Playfair Display',serif; font-size:56px; font-weight:900; line-height:0.7; color:var(--accent); flex-shrink:0; margin-top:4px; }
+        .fg-quote-text { font-size:13px; font-style:italic; line-height:1.65; color:var(--ink); margin-bottom:8px; font-family:'Playfair Display',serif; }
+        .fg-quote-attr { font-size:10px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+        .fg-left-footer { font-size:10px; font-family:'JetBrains Mono',monospace; letter-spacing:0.1em; color:var(--muted); opacity:0; animation:fg-fadeIn 0.5s 1.5s ease forwards; }
+
+        /* RIGHT */
+        .fg-right { background:var(--ink); display:flex; flex-direction:column; position:relative; overflow:hidden; }
+        .fg-scan-line { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg, transparent, rgba(232,64,26,0.5), transparent); animation:fg-scan 3.5s ease-in-out infinite; z-index:0; pointer-events:none; }
+        @keyframes fg-scan { 0%{top:-2px;opacity:0;} 5%{opacity:1;} 95%{opacity:1;} 100%{top:101%;opacity:0;} }
+        .fg-corner-tl, .fg-corner-br { position:absolute; width:28px; height:28px; z-index:2; }
+        .fg-corner-tl { top:20px; left:20px; border-top:1.5px solid var(--accent); border-left:1.5px solid var(--accent); }
+        .fg-corner-br { bottom:20px; right:20px; border-bottom:1.5px solid var(--accent); border-right:1.5px solid var(--accent); }
+        .fg-right-inner { position:relative; z-index:1; flex:1; display:flex; flex-direction:column; justify-content:center; padding:48px 44px; opacity:0; transform:translateX(20px); animation:fg-slideLeft 0.8s 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .fg-r-eyebrow { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+        .fg-r-eyebrow span { width:16px; height:1px; background:var(--accent); display:block; }
+        .fg-r-title { font-family:'Playfair Display',serif; font-weight:900; font-size:40px; line-height:1; letter-spacing:-0.02em; color:#f0ede6; margin-bottom:6px; }
+        .fg-r-title em { font-style:italic; color:var(--accent); }
+        .fg-r-sub { font-size:12px; color:rgba(240,237,230,0.4); margin-bottom:32px; }
+        .fg-btn-g { width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:13px 18px; background:transparent; border:1px solid rgba(240,237,230,0.15); color:rgba(240,237,230,0.9); font-family:'Syne',sans-serif; font-size:13px; font-weight:500; cursor:pointer; letter-spacing:0.02em; transition:background 0.2s, border-color 0.2s; margin-bottom:24px; }
+        .fg-btn-g:hover:not(:disabled) { border-color:rgba(240,237,230,0.3); background:rgba(240,237,230,0.04); }
+        .fg-btn-g:disabled { opacity:0.6; cursor:not-allowed; }
+        .fg-g-icon { width:16px; height:16px; flex-shrink:0; }
+        .fg-divider { display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+        .fg-divider::before, .fg-divider::after { content:''; flex:1; height:1px; background:rgba(240,237,230,0.08); }
+        .fg-divider span { font-size:9px; letter-spacing:0.16em; text-transform:uppercase; font-family:'JetBrains Mono',monospace; color:rgba(240,237,230,0.25); }
+        .fg-field { margin-bottom:14px; }
+        .fg-field-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+        .fg-f-label { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(240,237,230,0.35); }
+        .fg-f-link { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); background:none; border:none; cursor:pointer; opacity:0.8; transition:opacity 0.2s; padding:0; }
+        .fg-f-link:hover { opacity:1; }
+        .fg-inp-wrap { position:relative; }
+        .fg-inp-wrap input { width:100%; padding:12px 14px; background:rgba(240,237,230,0.04); border:1px solid rgba(240,237,230,0.1); color:#f0ede6; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:300; outline:none; transition:border-color 0.2s, background 0.2s; border-radius:0; -webkit-appearance:none; }
+        .fg-inp-wrap input::placeholder { color:rgba(240,237,230,0.18); }
+        .fg-inp-wrap input:focus { border-color:var(--accent); background:rgba(232,64,26,0.04); }
+        .fg-eye { position:absolute; right:13px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:rgba(240,237,230,0.3); display:flex; align-items:center; padding:0; transition:color 0.2s; }
+        .fg-eye:hover { color:rgba(240,237,230,0.8); }
+        .fg-btn-cta { width:100%; padding:15px 20px; background:var(--accent); border:none; color:#fff; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:10px; transition:background 0.2s; border-radius:0; margin-top:6px; }
+        .fg-btn-cta::after { content:''; position:absolute; top:0; left:-100%; width:40%; height:100%; background:rgba(255,255,255,0.15); transform:skewX(-20deg); transition:left 0.45s ease; }
+        .fg-btn-cta:hover:not(:disabled) { background:#cf3214; }
+        .fg-btn-cta:hover:not(:disabled)::after { left:160%; }
+        .fg-btn-cta:disabled { opacity:0.7; cursor:not-allowed; }
+        .fg-btn-cta svg { transition:transform 0.3s; }
+        .fg-btn-cta:hover:not(:disabled) svg { transform:translateX(4px); }
+        .fg-r-footer { margin-top:22px; text-align:center; }
+        .fg-r-footer p { font-size:11px; color:rgba(240,237,230,0.3); margin-bottom:4px; font-family:'Syne',sans-serif; }
+        .fg-r-footer button { color:#f0ede6; background:none; border:none; cursor:pointer; font-weight:600; transition:color 0.2s; font-family:'Syne',sans-serif; font-size:11px; padding:0; }
+        .fg-r-footer button:hover { color:var(--accent); }
+        .fg-r-legal { font-size:9px; font-family:'JetBrains Mono',monospace; color:rgba(240,237,230,0.2); margin-top:14px; letter-spacing:0.06em; line-height:1.8; }
+        .fg-r-legal a { color:rgba(240,237,230,0.35); text-decoration:underline; text-underline-offset:2px; }
+        .fg-pill-row { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; margin-top:18px; padding-top:16px; border-top:1px solid rgba(240,237,230,0.06); }
+        .fg-pill { font-size:8px; letter-spacing:0.14em; text-transform:uppercase; font-family:'JetBrains Mono',monospace; color:rgba(240,237,230,0.3); padding:3px 8px; border:1px solid rgba(240,237,230,0.08); }
+
+        /* Cursor */
+        .fg-cursor { position:fixed; width:8px; height:8px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:9999; mix-blend-mode:difference; transition:transform 0.2s ease; }
+        .fg-cursor-ring { position:fixed; width:28px; height:28px; border:1px solid var(--accent); border-radius:50%; pointer-events:none; z-index:9998; opacity:0.6; }
+        @media (pointer: coarse) { .fg-cursor, .fg-cursor-ring { display:none; } }
+
+        @keyframes fg-fadeDown { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
+        @keyframes fg-fadeUp { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+        @keyframes fg-fadeIn { from{opacity:0;} to{opacity:1;} }
+        @keyframes fg-slideUp { from{transform:translateY(110%);} to{transform:translateY(0);} }
+        @keyframes fg-slideLeft { from{opacity:0;transform:translateX(20px);} to{opacity:1;transform:translateX(0);} }
+      `}</style>
     </div>
   );
 }
