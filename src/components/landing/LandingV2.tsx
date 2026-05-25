@@ -107,7 +107,7 @@ export function LandingV2() {
                             {theme === 'dark' ? '☀ LIGHT' : '☾ DARK'}
                         </button>
                         <Link to="/auth" className="nav-link-sign hidden sm:block">SIGN IN</Link>
-                        <Link to="/auth" className="btn-cta">Start Free Audit</Link>
+                        <Link to="/auth" className="btn-cta">Build My Portfolio — Free in 60s ⚡</Link>
                     </div>
                 </div>
             </nav>
@@ -525,7 +525,7 @@ export function LandingV2() {
                     </h2>
                     <p className="cta-sub">Your professional identity deserves more than a PDF.</p>
                     <div className="cta-btns">
-                        <Link to="/auth" className="btn-primary">Start Your Free Audit</Link>
+                        <Link to="/auth" className="btn-primary">Launch My Portfolio Free 🚀</Link>
                         <a href="#templates" className="btn-ghost">Explore Templates</a>
                     </div>
                     <p className="cta-caption">No credit card required · Portfolio live in 4 minutes</p>
