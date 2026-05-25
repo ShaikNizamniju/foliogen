@@ -1,62 +1,30 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { CreditCard, ShieldCheck } from 'lucide-react';
-import PricingEngine from '@/components/pricing/PricingEngine';
+import { ShieldCheck, Sparkles } from 'lucide-react';
 
 const Billing = () => {
   return (
     <div className="min-h-screen bg-transparent p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-3xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Billing & Subscription</h1>
-          <p className="text-muted-foreground mt-2">Manage your plan, billing history, and payment methods.</p>
+          <h1 className="text-3xl font-bold text-foreground">Billing</h1>
+          <p className="text-muted-foreground mt-2">Foliogen is 100% free — no plans, no checkout, no credit card.</p>
         </div>
 
-        {/* Plan Overview Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-2xl border border-[rgba(17,17,16,0.09)] p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <ShieldCheck className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-foreground">Current Plan</h3>
-                  <p className="text-xs text-muted-foreground">You are currently on the Free plan</p>
-                </div>
-              </div>
-              <div className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                Active
-              </div>
+        <div className="rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <ShieldCheck className="h-5 w-5 text-primary" />
             </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Plan Price</span>
-                <span className="font-medium">₹0 / month</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Next Billing Date</span>
-                <span className="font-medium">—</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-secondary rounded-2xl p-6 text-foreground shadow-xl flex flex-col justify-between">
             <div>
-              <CreditCard className="h-8 w-8 text-primary mb-4" />
-              <h3 className="text-lg font-bold mb-2">Upgrade to Pro</h3>
-              <p className="text-sm text-zinc-400">Unlock unlimited portfolios, advanced analytics, and custom domain support.</p>
+              <h3 className="font-bold text-foreground">Free Forever</h3>
+              <p className="text-xs text-muted-foreground">All features unlocked for every user.</p>
             </div>
-            <button className="w-full mt-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-bold transition-all duration-200">
-              Go Pro Now
-            </button>
           </div>
-        </div>
-
-        {/* Pricing Selection */}
-        <div className="bg-white dark:bg-zinc-900/40 rounded-[28px] border border-[rgba(17,17,16,0.09)] overflow-hidden shadow-inner">
-          <PricingEngine showTitle={false} />
+          <ul className="space-y-2 text-sm text-foreground/90">
+            <li className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> All 19+ premium templates</li>
+            <li className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Recruiter Audit & Identity Switching</li>
+            <li className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Unlimited portfolios, custom domain, analytics</li>
+          </ul>
         </div>
       </div>
     </div>
