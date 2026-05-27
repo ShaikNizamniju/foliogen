@@ -8,51 +8,68 @@ export function LandingEditorial() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
 
-  // Counter animation
+  // Counter animation — deferred until browser idle so it never blocks first paint
   useEffect(() => {
     const targets = [12400, 3.2, 89];
     const duration = 1600;
-    const start = performance.now();
     let raf = 0;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setC1(Math.floor(targets[0] * ease));
-      setC2(Number((targets[1] * ease).toFixed(1)));
-      setC3(Math.floor(targets[2] * ease));
-      if (p < 1) raf = requestAnimationFrame(tick);
+    const run = () => {
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / duration);
+        const ease = 1 - Math.pow(1 - p, 3);
+        setC1(Math.floor(targets[0] * ease));
+        setC2(Number((targets[1] * ease).toFixed(1)));
+        setC3(Math.floor(targets[2] * ease));
+        if (p < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    const ric: any = (window as any).requestIdleCallback || ((cb: any) => setTimeout(cb, 200));
+    const id = ric(run);
+    return () => {
+      cancelAnimationFrame(raf);
+      const cic: any = (window as any).cancelIdleCallback;
+      if (cic) cic(id); else clearTimeout(id);
+    };
   }, []);
 
-  // Custom cursor (desktop only)
+  // Custom cursor (desktop only) — deferred to idle, respects reduced motion
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (window.matchMedia('(pointer: coarse)').matches) return;
-    let mx = 0, my = 0, rx = 0, ry = 0, raf = 0;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let mx = 0, my = 0, rx = 0, ry = 0, raf = 0, started = false;
     const move = (e: MouseEvent) => {
       mx = e.clientX; my = e.clientY;
       if (cursorRef.current) {
         cursorRef.current.style.left = `${mx - 4}px`;
         cursorRef.current.style.top = `${my - 4}px`;
       }
-    };
-    const anim = () => {
-      rx += (mx - rx - 14) * 0.12;
-      ry += (my - ry - 14) * 0.12;
-      if (ringRef.current) {
-        ringRef.current.style.left = `${rx}px`;
-        ringRef.current.style.top = `${ry}px`;
+      if (!started) {
+        started = true;
+        const anim = () => {
+          rx += (mx - rx - 14) * 0.12;
+          ry += (my - ry - 14) * 0.12;
+          if (ringRef.current) {
+            ringRef.current.style.left = `${rx}px`;
+            ringRef.current.style.top = `${ry}px`;
+          }
+          raf = requestAnimationFrame(anim);
+        };
+        raf = requestAnimationFrame(anim);
       }
-      raf = requestAnimationFrame(anim);
     };
-    document.addEventListener('mousemove', move);
-    raf = requestAnimationFrame(anim);
+    const ric: any = (window as any).requestIdleCallback || ((cb: any) => setTimeout(cb, 400));
+    const id = ric(() => document.addEventListener('mousemove', move, { passive: true }));
     return () => {
       document.removeEventListener('mousemove', move);
       cancelAnimationFrame(raf);
+      const cic: any = (window as any).cancelIdleCallback;
+      if (cic) cic(id); else clearTimeout(id);
     };
   }, []);
+
 
   const features = [
     { n: '01', t: 'AI Resume Parser', d: 'Drop your PDF. Our AI extracts every role, skill, and metric into a structured story.' },
