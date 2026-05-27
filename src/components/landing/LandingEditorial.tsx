@@ -248,7 +248,9 @@ export function LandingEditorial() {
       </footer>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap');
+        /* Fonts loaded via index.html with display=swap for instant paint */
+
+
 
         .foliogen-landing-v2 {
           --bg:#f0ede6; --ink:#111010; --accent:#e8401a; --muted:#7a7670; --border:#c8c3b8;
