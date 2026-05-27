@@ -340,7 +340,21 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         vaultData.forEach((v: Record<string, unknown>) => vaultMap.set(v.project_id as string, v));
       }
 
-      setProfile(migrateProfileData(data as Record<string, unknown>, vaultMap));
+      // Merge any client-only fields persisted to localStorage (active_persona, font_config,
+      // narrative_variants, resume_data) — these aren't columns in the profiles table.
+      const rawRow: Record<string, unknown> = { ...(data as Record<string, unknown>) };
+      try {
+        const extrasRaw = localStorage.getItem(`profile_extras_${user.id}`);
+        if (extrasRaw) {
+          const extras = JSON.parse(extrasRaw) as Record<string, unknown>;
+          if (extras.activePersona && rawRow.active_persona == null) rawRow.active_persona = extras.activePersona;
+          if (extras.fontConfig && rawRow.font_config == null) rawRow.font_config = extras.fontConfig;
+          if (extras.narrativeVariants && rawRow.narrative_variants == null) rawRow.narrative_variants = extras.narrativeVariants;
+          if (extras.resume_data && rawRow.resume_data == null) rawRow.resume_data = extras.resume_data;
+        }
+      } catch {}
+
+      setProfile(migrateProfileData(rawRow, vaultMap));
     }
     setLoading(false);
   };
