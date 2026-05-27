@@ -200,22 +200,124 @@ export function LandingEditorial() {
           <h2 className="fl-h2">Nineteen <em>templates</em>.<br />Zero <em>paywalls.</em></h2>
         </div>
         <div className="fl-template-grid">
-          {['Noir', 'Swiss', 'Brutalist', 'Studio', 'Executive', 'Dev', 'Creative', 'Academic'].map((t, i) => (
-            <div key={t} className="fl-template" style={{ animationDelay: `${i * 0.05}s` }}>
-              <div className="fl-template-frame">
-                <div className="fl-template-bar" />
-                <div className="fl-template-bar fl-template-bar-short" />
-                <div className="fl-template-block" />
-                <div className="fl-template-row">
-                  <div className="fl-template-square" />
-                  <div className="fl-template-square" />
-                </div>
+          {[
+            { name: 'Noir', variant: 'noir' },
+            { name: 'Swiss', variant: 'swiss' },
+            { name: 'Brutalist', variant: 'brutalist' },
+            { name: 'Studio', variant: 'studio' },
+            { name: 'Executive', variant: 'executive' },
+            { name: 'Dev', variant: 'dev' },
+            { name: 'Creative', variant: 'creative' },
+            { name: 'Academic', variant: 'academic' },
+          ].map((t, i) => (
+            <div key={t.name} className="fl-template" style={{ animationDelay: `${i * 0.05}s` }}>
+              <div className={`fl-tpl fl-tpl-${t.variant}`}>
+                {t.variant === 'noir' && (
+                  <>
+                    <div className="fl-noir-left">
+                      <div className="fl-noir-mono">N° 01</div>
+                      <div className="fl-noir-title">NOIR</div>
+                      <div className="fl-noir-rule" />
+                      <div className="fl-noir-line" />
+                      <div className="fl-noir-line short" />
+                    </div>
+                    <div className="fl-noir-right">
+                      <div className="fl-noir-dot" />
+                    </div>
+                  </>
+                )}
+                {t.variant === 'swiss' && (
+                  <div className="fl-swiss">
+                    <div className="fl-swiss-num">01</div>
+                    <div className="fl-swiss-bar" />
+                    <div className="fl-swiss-grid">
+                      <div className="fl-swiss-h">Form / Function</div>
+                      <div className="fl-swiss-l" />
+                      <div className="fl-swiss-l short" />
+                      <div className="fl-swiss-l" />
+                    </div>
+                    <div className="fl-swiss-foot">
+                      <span>EST. 2026</span><span>—</span><span>CH</span>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'brutalist' && (
+                  <div className="fl-brut">
+                    <div className="fl-brut-tag">PORTFOLIO//RAW</div>
+                    <div className="fl-brut-stack">
+                      <div className="fl-brut-box fl-brut-yellow" />
+                      <div className="fl-brut-box fl-brut-black">PROJECTS</div>
+                    </div>
+                    <div className="fl-brut-grid">
+                      <div className="fl-brut-cell">01</div>
+                      <div className="fl-brut-cell solid">02</div>
+                      <div className="fl-brut-cell">03</div>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'studio' && (
+                  <div className="fl-studio">
+                    <div className="fl-studio-meta"><span>STUDIO</span><span>↗</span></div>
+                    <div className="fl-studio-frame">
+                      <div className="fl-studio-mark">S</div>
+                    </div>
+                    <div className="fl-studio-caption">
+                      <div className="fl-studio-cap-t">Untitled, 2026</div>
+                      <div className="fl-studio-cap-s">Selected Works</div>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'executive' && (
+                  <div className="fl-exec">
+                    <div className="fl-exec-crest" />
+                    <div className="fl-exec-name">EXECUTIVE</div>
+                    <div className="fl-exec-sub">Curriculum Vitæ</div>
+                    <div className="fl-exec-rule" />
+                    <div className="fl-exec-row"><span>2024</span><span>—</span><span>Present</span></div>
+                    <div className="fl-exec-row"><span>2020</span><span>—</span><span>2024</span></div>
+                  </div>
+                )}
+                {t.variant === 'dev' && (
+                  <div className="fl-dev">
+                    <div className="fl-dev-bar">
+                      <span /><span /><span /><b>~/portfolio</b>
+                    </div>
+                    <div className="fl-dev-body">
+                      <div><span className="fl-dev-p">$</span> whoami</div>
+                      <div className="fl-dev-out">→ engineer</div>
+                      <div><span className="fl-dev-p">$</span> ls projects/</div>
+                      <div className="fl-dev-out">api/ web/ ml/</div>
+                      <div><span className="fl-dev-p">$</span> <span className="fl-dev-cursor">█</span></div>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'creative' && (
+                  <div className="fl-creative">
+                    <div className="fl-creative-blob fl-cb1" />
+                    <div className="fl-creative-blob fl-cb2" />
+                    <div className="fl-creative-blob fl-cb3" />
+                    <div className="fl-creative-text">make<br /><em>stuff.</em></div>
+                  </div>
+                )}
+                {t.variant === 'academic' && (
+                  <div className="fl-acad">
+                    <div className="fl-acad-h">A Treatise on Design</div>
+                    <div className="fl-acad-byline">— by the Author</div>
+                    <div className="fl-acad-col">
+                      <div className="fl-acad-l" /><div className="fl-acad-l" /><div className="fl-acad-l short" />
+                    </div>
+                    <div className="fl-acad-col">
+                      <div className="fl-acad-l" /><div className="fl-acad-l short" /><div className="fl-acad-l" />
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="fl-template-name">{t}</div>
+              <div className="fl-template-name">{t.name}</div>
               <div className="fl-template-tag">FREE</div>
             </div>
           ))}
         </div>
+
       </section>
 
       {/* PRICING */}
