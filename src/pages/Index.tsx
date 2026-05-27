@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { JobMatchDemo } from "@/components/landing/JobMatchDemo";
-import { LandingV2 } from "@/components/landing/LandingV2";
+import { LandingEditorial } from "@/components/landing/LandingEditorial";
 import { Navbar } from "@/components/landing/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
@@ -114,7 +114,7 @@ const Index = () => {
         jsonLd={HOME_JSONLD}
       />
       {isSuccess && <SuccessOverlay />}
-      <LandingV2 />
+      <LandingEditorial />
     </>
   );
 };
