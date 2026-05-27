@@ -114,7 +114,7 @@ export function LandingEditorial() {
         <div className="fl-hero-deco">Folio</div>
 
         <div className="fl-hero-inner">
-          <div className="fl-issue-line">AI-Powered Portfolios · Issue Nº 01 · Est. 2024</div>
+          <div className="fl-issue-line">AI-Powered Portfolios · Est. 2026</div>
 
           <h1 className="fl-h1">
             <span className="fl-word"><span>Your</span></span>{' '}
