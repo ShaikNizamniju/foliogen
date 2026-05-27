@@ -200,22 +200,124 @@ export function LandingEditorial() {
           <h2 className="fl-h2">Nineteen <em>templates</em>.<br />Zero <em>paywalls.</em></h2>
         </div>
         <div className="fl-template-grid">
-          {['Noir', 'Swiss', 'Brutalist', 'Studio', 'Executive', 'Dev', 'Creative', 'Academic'].map((t, i) => (
-            <div key={t} className="fl-template" style={{ animationDelay: `${i * 0.05}s` }}>
-              <div className="fl-template-frame">
-                <div className="fl-template-bar" />
-                <div className="fl-template-bar fl-template-bar-short" />
-                <div className="fl-template-block" />
-                <div className="fl-template-row">
-                  <div className="fl-template-square" />
-                  <div className="fl-template-square" />
-                </div>
+          {[
+            { name: 'Noir', variant: 'noir' },
+            { name: 'Swiss', variant: 'swiss' },
+            { name: 'Brutalist', variant: 'brutalist' },
+            { name: 'Studio', variant: 'studio' },
+            { name: 'Executive', variant: 'executive' },
+            { name: 'Dev', variant: 'dev' },
+            { name: 'Creative', variant: 'creative' },
+            { name: 'Academic', variant: 'academic' },
+          ].map((t, i) => (
+            <div key={t.name} className="fl-template" style={{ animationDelay: `${i * 0.05}s` }}>
+              <div className={`fl-tpl fl-tpl-${t.variant}`}>
+                {t.variant === 'noir' && (
+                  <>
+                    <div className="fl-noir-left">
+                      <div className="fl-noir-mono">N° 01</div>
+                      <div className="fl-noir-title">NOIR</div>
+                      <div className="fl-noir-rule" />
+                      <div className="fl-noir-line" />
+                      <div className="fl-noir-line short" />
+                    </div>
+                    <div className="fl-noir-right">
+                      <div className="fl-noir-dot" />
+                    </div>
+                  </>
+                )}
+                {t.variant === 'swiss' && (
+                  <div className="fl-swiss">
+                    <div className="fl-swiss-num">01</div>
+                    <div className="fl-swiss-bar" />
+                    <div className="fl-swiss-grid">
+                      <div className="fl-swiss-h">Form / Function</div>
+                      <div className="fl-swiss-l" />
+                      <div className="fl-swiss-l short" />
+                      <div className="fl-swiss-l" />
+                    </div>
+                    <div className="fl-swiss-foot">
+                      <span>EST. 2026</span><span>—</span><span>CH</span>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'brutalist' && (
+                  <div className="fl-brut">
+                    <div className="fl-brut-tag">PORTFOLIO//RAW</div>
+                    <div className="fl-brut-stack">
+                      <div className="fl-brut-box fl-brut-yellow" />
+                      <div className="fl-brut-box fl-brut-black">PROJECTS</div>
+                    </div>
+                    <div className="fl-brut-grid">
+                      <div className="fl-brut-cell">01</div>
+                      <div className="fl-brut-cell solid">02</div>
+                      <div className="fl-brut-cell">03</div>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'studio' && (
+                  <div className="fl-studio">
+                    <div className="fl-studio-meta"><span>STUDIO</span><span>↗</span></div>
+                    <div className="fl-studio-frame">
+                      <div className="fl-studio-mark">S</div>
+                    </div>
+                    <div className="fl-studio-caption">
+                      <div className="fl-studio-cap-t">Untitled, 2026</div>
+                      <div className="fl-studio-cap-s">Selected Works</div>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'executive' && (
+                  <div className="fl-exec">
+                    <div className="fl-exec-crest" />
+                    <div className="fl-exec-name">EXECUTIVE</div>
+                    <div className="fl-exec-sub">Curriculum Vitæ</div>
+                    <div className="fl-exec-rule" />
+                    <div className="fl-exec-row"><span>2024</span><span>—</span><span>Present</span></div>
+                    <div className="fl-exec-row"><span>2020</span><span>—</span><span>2024</span></div>
+                  </div>
+                )}
+                {t.variant === 'dev' && (
+                  <div className="fl-dev">
+                    <div className="fl-dev-bar">
+                      <span /><span /><span /><b>~/portfolio</b>
+                    </div>
+                    <div className="fl-dev-body">
+                      <div><span className="fl-dev-p">$</span> whoami</div>
+                      <div className="fl-dev-out">→ engineer</div>
+                      <div><span className="fl-dev-p">$</span> ls projects/</div>
+                      <div className="fl-dev-out">api/ web/ ml/</div>
+                      <div><span className="fl-dev-p">$</span> <span className="fl-dev-cursor">█</span></div>
+                    </div>
+                  </div>
+                )}
+                {t.variant === 'creative' && (
+                  <div className="fl-creative">
+                    <div className="fl-creative-blob fl-cb1" />
+                    <div className="fl-creative-blob fl-cb2" />
+                    <div className="fl-creative-blob fl-cb3" />
+                    <div className="fl-creative-text">make<br /><em>stuff.</em></div>
+                  </div>
+                )}
+                {t.variant === 'academic' && (
+                  <div className="fl-acad">
+                    <div className="fl-acad-h">A Treatise on Design</div>
+                    <div className="fl-acad-byline">— by the Author</div>
+                    <div className="fl-acad-col">
+                      <div className="fl-acad-l" /><div className="fl-acad-l" /><div className="fl-acad-l short" />
+                    </div>
+                    <div className="fl-acad-col">
+                      <div className="fl-acad-l" /><div className="fl-acad-l short" /><div className="fl-acad-l" />
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="fl-template-name">{t}</div>
+              <div className="fl-template-name">{t.name}</div>
               <div className="fl-template-tag">FREE</div>
             </div>
           ))}
         </div>
+
       </section>
 
       {/* PRICING */}
@@ -367,12 +469,89 @@ export function LandingEditorial() {
         @media (max-width: 500px) { .fl-template-grid { grid-template-columns:1fr; } }
         .fl-template { background:#fff; border:1px solid var(--border); padding:18px; position:relative; opacity:0; animation:fl-fadeUp 0.5s ease forwards; transition:transform 0.3s, border-color 0.3s; }
         .fl-template:hover { transform:translateY(-6px); border-color:var(--ink); }
-        .fl-template-frame { aspect-ratio:3/4; background:#faf8f3; padding:16px; display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
-        .fl-template-bar { height:8px; background:var(--ink); width:60%; }
-        .fl-template-bar-short { width:35%; opacity:0.5; }
-        .fl-template-block { height:80px; background:var(--accent); margin-top:6px; opacity:0.85; }
-        .fl-template-row { display:flex; gap:8px; flex:1; margin-top:6px; }
-        .fl-template-square { flex:1; background:var(--border); }
+        .fl-tpl { aspect-ratio:3/4; margin-bottom:14px; overflow:hidden; position:relative; }
+
+        /* NOIR — split black/white, cinematic */
+        .fl-tpl-noir { display:flex; background:#0a0a0a; color:#f4f1ea; }
+        .fl-noir-left { flex:1.2; padding:14px; display:flex; flex-direction:column; gap:8px; background:#0a0a0a; }
+        .fl-noir-right { flex:1; background:#f4f1ea; position:relative; border-left:1px solid #f4f1ea; }
+        .fl-noir-mono { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.2em; opacity:0.6; }
+        .fl-noir-title { font-family:'Playfair Display',serif; font-style:italic; font-size:22px; line-height:1; margin-top:auto; }
+        .fl-noir-rule { height:1px; background:#f4f1ea; opacity:0.4; margin:6px 0; }
+        .fl-noir-line { height:3px; background:#f4f1ea; width:70%; opacity:0.85; }
+        .fl-noir-line.short { width:40%; opacity:0.5; }
+        .fl-noir-dot { position:absolute; bottom:14px; right:14px; width:10px; height:10px; background:#0a0a0a; border-radius:50%; }
+
+        /* SWISS — cream, grid, asymmetric typographic */
+        .fl-tpl-swiss { background:#f1ede2; padding:14px; display:flex; flex-direction:column; gap:10px; color:#111; }
+        .fl-swiss-num { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.2em; }
+        .fl-swiss-bar { height:6px; background:#d8453a; width:45%; }
+        .fl-swiss-grid { display:flex; flex-direction:column; gap:6px; margin-top:auto; }
+        .fl-swiss-h { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; letter-spacing:-0.01em; line-height:1.05; }
+        .fl-swiss-l { height:2px; background:#111; width:80%; opacity:0.85; }
+        .fl-swiss-l.short { width:45%; opacity:0.5; }
+        .fl-swiss-foot { display:flex; gap:6px; font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.18em; border-top:1px solid #111; padding-top:8px; }
+
+        /* BRUTALIST — raw, thick borders, harsh */
+        .fl-tpl-brut { background:#f4f1ea; padding:10px; display:flex; flex-direction:column; gap:8px; border:3px solid #000; }
+        .fl-brut-tag { font-family:'JetBrains Mono',monospace; font-size:8px; font-weight:700; letter-spacing:0.1em; background:#000; color:#f4f1ea; padding:3px 6px; align-self:flex-start; }
+        .fl-brut-stack { display:flex; flex-direction:column; gap:6px; }
+        .fl-brut-box { height:30px; border:3px solid #000; }
+        .fl-brut-yellow { background:#fde047; }
+        .fl-brut-black { background:#000; color:#fde047; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; display:flex; align-items:center; padding:0 8px; letter-spacing:0.14em; }
+        .fl-brut-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; flex:1; }
+        .fl-brut-cell { border:3px solid #000; background:#f4f1ea; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+        .fl-brut-cell.solid { background:#e8401a; color:#fff; }
+
+        /* STUDIO — gallery, generous whitespace, thin lines */
+        .fl-tpl-studio { background:#fff; padding:16px; display:flex; flex-direction:column; gap:12px; border:1px solid #e5e2db; }
+        .fl-studio-meta { display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.2em; color:#777; }
+        .fl-studio-frame { flex:1; border:1px solid #d8d4ca; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#f7f4ee,#ece8df); }
+        .fl-studio-mark { font-family:'Playfair Display',serif; font-style:italic; font-size:48px; color:#bcb6a8; }
+        .fl-studio-caption { border-top:1px solid #e5e2db; padding-top:8px; }
+        .fl-studio-cap-t { font-family:'Playfair Display',serif; font-style:italic; font-size:12px; color:#222; }
+        .fl-studio-cap-s { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.18em; color:#999; margin-top:2px; }
+
+        /* EXECUTIVE — formal CV, crest, ruled */
+        .fl-tpl-exec { background:#fbf9f3; padding:14px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:6px; color:#1a1a1a; border:1px solid #d8d4ca; }
+        .fl-exec-crest { width:24px; height:24px; border:1.5px solid #1a1a1a; transform:rotate(45deg); margin-top:4px; position:relative; }
+        .fl-exec-crest::after { content:''; position:absolute; inset:4px; border:1px solid #1a1a1a; }
+        .fl-exec-name { font-family:'Playfair Display',serif; font-weight:700; font-size:14px; letter-spacing:0.18em; margin-top:6px; }
+        .fl-exec-sub { font-family:'Playfair Display',serif; font-style:italic; font-size:10px; color:#666; }
+        .fl-exec-rule { width:60%; height:1px; background:#1a1a1a; margin:6px 0; }
+        .fl-exec-row { display:flex; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#333; }
+
+        /* DEV — terminal */
+        .fl-tpl-dev { background:#0d1117; color:#7ee787; font-family:'JetBrains Mono',monospace; font-size:9px; display:flex; flex-direction:column; }
+        .fl-dev-bar { background:#161b22; padding:6px 8px; display:flex; align-items:center; gap:4px; color:#8b949e; font-size:8px; }
+        .fl-dev-bar span { width:7px; height:7px; border-radius:50%; background:#30363d; }
+        .fl-dev-bar span:nth-child(1) { background:#ff5f57; }
+        .fl-dev-bar span:nth-child(2) { background:#febc2e; }
+        .fl-dev-bar span:nth-child(3) { background:#28c840; }
+        .fl-dev-bar b { margin-left:auto; font-weight:500; }
+        .fl-dev-body { padding:10px; display:flex; flex-direction:column; gap:4px; flex:1; }
+        .fl-dev-p { color:#e8401a; margin-right:4px; }
+        .fl-dev-out { color:#8b949e; padding-left:10px; }
+        .fl-dev-cursor { animation:fl-blink 1s infinite; color:#7ee787; }
+        @keyframes fl-blink { 50% { opacity:0; } }
+
+        /* CREATIVE — playful blobs */
+        .fl-tpl-creative { background:#fff4e6; padding:14px; position:relative; overflow:hidden; }
+        .fl-creative-blob { position:absolute; border-radius:50%; filter:blur(1px); }
+        .fl-cb1 { width:70px; height:70px; background:#e8401a; top:-10px; right:-10px; }
+        .fl-cb2 { width:50px; height:50px; background:#fde047; bottom:30px; left:-12px; }
+        .fl-cb3 { width:40px; height:40px; background:#7c3aed; bottom:-10px; right:30px; }
+        .fl-creative-text { position:relative; font-family:'Playfair Display',serif; font-weight:900; font-size:32px; line-height:0.95; color:#1a1a1a; margin-top:auto; padding-top:60%; }
+        .fl-creative-text em { font-style:italic; color:#e8401a; }
+
+        /* ACADEMIC — journal columns */
+        .fl-tpl-acad { background:#fbfaf5; padding:14px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto 1fr; gap:6px 10px; color:#1a1a1a; border:1px solid #e0ddd2; }
+        .fl-acad-h { grid-column:1/-1; font-family:'Playfair Display',serif; font-style:italic; font-size:13px; line-height:1.1; border-bottom:1px solid #1a1a1a; padding-bottom:4px; }
+        .fl-acad-byline { grid-column:1/-1; font-family:'Playfair Display',serif; font-size:8px; color:#666; }
+        .fl-acad-col { display:flex; flex-direction:column; gap:4px; }
+        .fl-acad-l { height:2px; background:#1a1a1a; opacity:0.7; }
+        .fl-acad-l.short { width:60%; opacity:0.4; }
+
         .fl-template-name { font-family:'Playfair Display',serif; font-weight:700; font-size:18px; }
         .fl-template-tag { position:absolute; top:14px; right:14px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.16em; color:var(--accent); background:var(--bg); padding:4px 8px; }
 
