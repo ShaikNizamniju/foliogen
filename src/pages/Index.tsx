@@ -109,9 +109,11 @@ const Index = () => {
           description="See how your portfolio matches a target role with Foliogen's AI job-match analysis."
           path="/"
         />
-        <Navbar />
-        <JobMatchDemo />
-        <Footer />
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+          <Navbar />
+          <JobMatchDemo />
+          <Footer />
+        </Suspense>
       </div>
     );
   }
@@ -125,9 +127,12 @@ const Index = () => {
         jsonLd={HOME_JSONLD}
       />
       {isSuccess && <SuccessOverlay />}
-      <LandingEditorial />
+      <Suspense fallback={<div style={{ minHeight: "100vh", background: "#f0ede6" }} />}>
+        <LandingEditorial />
+      </Suspense>
     </>
   );
 };
+
 
 export default Index;
