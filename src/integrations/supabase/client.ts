@@ -1,33 +1,34 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = 'https://fjmcjsffeycwygicflfk.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbWNqc2ZmZXljd3lnaWNmbGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMzA0MjYsImV4cCI6MjA4NTYwNjQyNn0.blzGaOlPRVyM90RWoA7tshfGBXFPdkY6XWaspMdOou8';
+const FALLBACK_URL = 'https://abcrgpmwoqsfwtmliqwo.supabase.co';
+const FALLBACK_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY3JncG13b3FzZnd0bWxpcXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTUyNTcsImV4cCI6MjA4NTI3MTI1N30.GhQ9vE3KkA73nCXATFQtQCQIVdowXpK6utCWoG-4T-Y';
+
+const envUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim();
+const envKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined)?.trim();
+
+const BAD_REF = 'fjmcjsffeycwygicflfk';
+const SUPABASE_URL =
+  envUrl && /^https:\/\/[a-z0-9]+\.supabase\.co\/?$/i.test(envUrl) && !envUrl.includes(BAD_REF)
+    ? envUrl.replace(/\/$/, '')
+    : FALLBACK_URL;
+const SUPABASE_KEY = envKey && envKey.length > 60 ? envKey : FALLBACK_KEY;
 
 let supabaseInstance: any = null;
 
 export const supabase = new Proxy({} as any, {
-  get: (target, prop) => {
+  get: (_target, prop) => {
     if (!supabaseInstance) {
-      try {
-        supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
-          auth: {
-            storage: typeof window !== 'undefined' ? localStorage : undefined,
-            persistSession: true,
-            autoRefreshToken: true,
-            detectSessionInUrl: true,
-          }
-        });
-      } catch (e) {
-        console.error("CRITICAL: Supabase manual override initialization failed (client.ts).", e);
-        // Direct creation as absolute fallback
-        supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
-          auth: {
-            persistSession: true,
-          }
-        });
-      }
+      supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+          storage: typeof window !== 'undefined' ? localStorage : undefined,
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+        },
+      });
     }
     return supabaseInstance[prop];
-  }
+  },
 });
