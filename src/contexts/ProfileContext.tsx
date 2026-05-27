@@ -479,6 +479,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
        }
     } catch(e) {}
 
+    // Persist client-only fields (not present in DB schema) to localStorage so we don't
+    // break the Supabase mutation with unknown columns like active_persona/font_config/etc.
+    try {
+      const localExtras = {
+        activePersona: data.activePersona,
+        fontConfig: data.fontConfig,
+        narrativeVariants: data.narrativeVariants,
+        resume_data: data.resume_data,
+        profileStrength: data.profileStrength,
+      };
+      localStorage.setItem(`profile_extras_${user.id}`, JSON.stringify(localExtras));
+    } catch {}
+
     try {
       const { error } = await supabase
         .from("profiles")
@@ -502,10 +515,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
           hide_photo: data.hidePhoto,
           selected_font: data.selectedFont,
           selected_template: data.selectedTemplate,
-          resume_data: { ...(data.resume_data || {}), profileStrength: data.profileStrength },
-          active_persona: data.activePersona,
-          font_config: data.fontConfig,
-          narrative_variants: data.narrativeVariants,
         } as any)
         .eq("user_id", user.id);
 
