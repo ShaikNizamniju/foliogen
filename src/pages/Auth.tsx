@@ -194,7 +194,7 @@ export default function Auth() {
           </div>
 
           <div className="fg-hero">
-            <div className="fg-issue-line">AI-Powered Portfolios · Est. 2024</div>
+            <div className="fg-issue-line">AI-Powered Portfolios · Est. 2026</div>
 
             <h1 className="fg-h1">
               <span className="fg-word"><span>Your</span></span>{' '}
