@@ -1,11 +1,22 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { JobMatchDemo } from "@/components/landing/JobMatchDemo";
-import { LandingEditorial } from "@/components/landing/LandingEditorial";
-import { Navbar } from "@/components/landing/Navbar";
-import { Footer } from "@/components/landing/Footer";
 import { SEO } from "@/components/SEO";
+
+// Code-split below-the-fold + secondary routes so the landing chunk stays minimal.
+const LandingEditorial = lazy(() =>
+  import("@/components/landing/LandingEditorial").then((m) => ({ default: m.LandingEditorial }))
+);
+const JobMatchDemo = lazy(() =>
+  import("@/components/landing/JobMatchDemo").then((m) => ({ default: m.JobMatchDemo }))
+);
+const Navbar = lazy(() =>
+  import("@/components/landing/Navbar").then((m) => ({ default: m.Navbar }))
+);
+const Footer = lazy(() =>
+  import("@/components/landing/Footer").then((m) => ({ default: m.Footer }))
+);
+
 
 const HOME_JSONLD = [
   {
@@ -98,9 +109,11 @@ const Index = () => {
           description="See how your portfolio matches a target role with Foliogen's AI job-match analysis."
           path="/"
         />
-        <Navbar />
-        <JobMatchDemo />
-        <Footer />
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+          <Navbar />
+          <JobMatchDemo />
+          <Footer />
+        </Suspense>
       </div>
     );
   }
@@ -114,9 +127,12 @@ const Index = () => {
         jsonLd={HOME_JSONLD}
       />
       {isSuccess && <SuccessOverlay />}
-      <LandingEditorial />
+      <Suspense fallback={<div style={{ minHeight: "100vh", background: "#f0ede6" }} />}>
+        <LandingEditorial />
+      </Suspense>
     </>
   );
 };
+
 
 export default Index;
