@@ -66,13 +66,24 @@ export function ResumeUpload() {
         id: p.id || crypto.randomUUID(),
       }));
 
+      // STEP 1: Clear identity-bound fields first so stale values from a
+      // previous resume don't survive when the new PDF lacks them.
+      const cleared = {
+        photoUrl: '',
+        email: '',
+        linkedinUrl: '',
+        website: '',
+      };
+
       const updates = {
+        ...cleared,
         fullName: data.fullName,
         headline: data.headline,
         bio: data.bio,
         location: data.location,
-        email: data.email,
-        linkedinUrl: data.linkedinUrl,
+        email: data.email ?? '',
+        linkedinUrl: data.linkedinUrl ?? '',
+        website: data.website ?? '',
         skills: data.skills || [],
         workExperience: safeWorkExperience,
         projects: safeProjects,
@@ -80,17 +91,18 @@ export function ResumeUpload() {
 
       updateProfile(updates);
 
-      // Auto-save to database (pass overrides to avoid stale state)
+      // STEP 2: Persist using the same saveProfile used by "Save Changes".
       try {
         const { error: saveError } = await saveProfile(updates);
         if (saveError) {
-          toast.success('Resume parsed! Please click "Save Changes" to persist.');
+          toast.error('Parse failed. Please try again.');
         } else {
-          toast.success('Resume parsed & saved!');
+          toast.success('Resume parsed. Review and save your updated profile.');
         }
       } catch {
-        toast.success('Resume parsed! Please save manually.');
+        toast.error('Parse failed. Please try again.');
       }
+
 
     } catch (error: any) {
       const errorMessage = error?.message || 'Failed to parse resume';
