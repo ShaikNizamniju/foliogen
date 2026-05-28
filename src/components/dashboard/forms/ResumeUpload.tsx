@@ -52,19 +52,44 @@ export function ResumeUpload() {
       }
       if (data?.error) throw new Error(data.error);
 
-      // Ensure IDs on work experience and projects
+      // 🔍 DIAGNOSTIC: full raw payload from the parser. Helps verify schema
+      // alignment with ProfileContext primitives (timeline / cards / pill-cloud /
+      // badge-grid). Safe to keep — only logs in the user's own browser.
+      console.log('[ResumeUpload] Raw parser payload →', data);
+
+      // ── Schema mapping (parser camelCase → ProfileContext primitives) ──
+      // timeline       ← workExperience
+      // cards          ← projects
+      // pill-cloud     ← skills
+      // badge-grid     ← keyHighlights
       const safeWorkExperience = (data.workExperience || []).map((w: any) => ({
+        jobTitle: w.jobTitle || w.title || '',
+        company: w.company || '',
+        startDate: w.startDate || '',
+        endDate: w.endDate || '',
+        current: !!w.current,
+        description: typeof w.description === 'string'
+          ? w.description
+          : Array.isArray(w.description) ? w.description.join(' ') : '',
         ...w,
         id: w.id || crypto.randomUUID(),
       }));
       const safeProjects = (data.projects || []).map((p: any) => ({
         title: p.title || '',
-        description: p.description || '',
+        description: typeof p.description === 'string'
+          ? p.description
+          : Array.isArray(p.description) ? p.description.join(' ') : '',
         link: p.link || '',
         imageUrl: p.imageUrl || '',
         ...p,
         id: p.id || crypto.randomUUID(),
       }));
+
+      // Fall back to narrativeVariants.general for headline/bio when the
+      // top-level fields are absent (older parser responses).
+      const general = data.narrativeVariants?.general || {};
+      const headline = data.headline || general.headline || '';
+      const bio = data.bio || general.bio || '';
 
       // STEP 1: Clear identity-bound fields first so stale values from a
       // previous resume don't survive when the new PDF lacks them.
@@ -75,23 +100,30 @@ export function ResumeUpload() {
         website: '',
       };
 
-      const updates = {
+      const updates: any = {
         ...cleared,
-        fullName: data.fullName,
-        headline: data.headline,
-        bio: data.bio,
-        location: data.location,
+        fullName: data.fullName || '',
+        headline,
+        bio,
+        location: data.location || '',
         email: data.email ?? '',
         linkedinUrl: data.linkedinUrl ?? '',
         website: data.website ?? '',
-        skills: data.skills || [],
+        skills: Array.isArray(data.skills) ? data.skills : [],
+        keyHighlights: Array.isArray(data.keyHighlights) ? data.keyHighlights : [],
         workExperience: safeWorkExperience,
         projects: safeProjects,
       };
+      if (data.narrativeVariants) updates.narrativeVariants = data.narrativeVariants;
+      if (data.predictedDomain) updates.predictedDomain = data.predictedDomain;
 
+      console.log('[ResumeUpload] Mapped profile updates →', updates);
+
+      // STEP 2: Push to state IMMEDIATELY so the live preview re-renders
+      // before the network round-trip to Supabase completes.
       updateProfile(updates);
 
-      // STEP 2: Persist using the same saveProfile used by "Save Changes".
+      // STEP 3: Persist using the same saveProfile used by "Save Changes".
       try {
         const { error: saveError } = await saveProfile(updates);
         if (saveError) {
@@ -102,6 +134,7 @@ export function ResumeUpload() {
       } catch {
         toast.error('Parse failed. Please try again.');
       }
+
 
 
     } catch (error: any) {
