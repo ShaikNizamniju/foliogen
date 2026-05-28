@@ -186,7 +186,7 @@ function DashboardInner() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-muted/30">
+      <div className="dashboard-shell min-h-screen flex w-full">
         <DashboardSidebar />
         <div className="flex-1 flex flex-col">
           <DashboardHeader />
