@@ -777,3 +777,4 @@ body {
 @media (min-width: 1280px) {
   .tpl-grid { grid-template-columns: repeat(3, 1fr); }
 }
+.just-selected-wrap > .tpl-card { animation: tpl-pulse 200ms ease-out; }
