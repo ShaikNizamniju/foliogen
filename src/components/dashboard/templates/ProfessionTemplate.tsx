@@ -1,5 +1,10 @@
 import { ProfileData } from '@/contexts/ProfileContext';
-import { getProfessionTemplate, ProfessionTemplate as TemplateMeta } from '@/lib/professionTemplates';
+import {
+  getProfessionTemplate,
+  ProfessionTemplate as TemplateMeta,
+  SectionBlock,
+  SampleItem,
+} from '@/lib/professionTemplates';
 import * as Icons from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -9,13 +14,9 @@ interface Props {
 }
 
 /**
- * Universal renderer for the 20 profession templates.
- * Picks a base layout (clinical/technical/executive/trades) from the
- * template registry and decorates it with profession-specific section labels
- * and accent color.
- *
- * One component, four visually distinct base layouts — keeps the registry
- * lightweight while shipping 20 differentiated previews.
+ * Chameleon Engine — one component, four structurally distinct base layouts
+ * (Clinical / Technical / Executive / Trades), each rendering a different
+ * structural sub-component grammar driven by section.kind in the registry.
  */
 export function ProfessionTemplate({ profile, templateId }: Props) {
   const meta = getProfessionTemplate(templateId);
@@ -35,42 +36,335 @@ export function ProfessionTemplate({ profile, templateId }: Props) {
   }
 }
 
-/* ── Shared bits ───────────────────────────────────────────────────────── */
+/* ── Shared helpers ────────────────────────────────────────────────────── */
 
 function ProfessionIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (Icons as any)[name] ?? Icons.Sparkles;
   return <Icon className={className} />;
 }
 
-function SectionShell({
+/**
+ * Returns the items to render for a section. Prefers populated profile data
+ * when semantically aligned; otherwise falls back to bespoke sample copy
+ * from the registry so every preview feels rich on a fresh profile.
+ */
+function itemsFor(block: SectionBlock, profile: ProfileData, meta: TemplateMeta): SampleItem[] {
+  const sample = meta.samples[block.key] ?? [];
+
+  if (block.kind === 'timeline' && profile.workExperience?.length) {
+    const mapped = profile.workExperience.slice(0, 6).map((w) => ({
+      title: `${w.jobTitle}${w.company ? ` · ${w.company}` : ''}`,
+      caption: w.description?.slice(0, 120),
+      meta: `${w.startDate || ''}${w.current ? ' — Now' : w.endDate ? ` — ${w.endDate}` : ''}`.trim(),
+    }));
+    return mapped.length ? mapped : sample;
+  }
+
+  if (block.kind === 'cards' && profile.projects?.length) {
+    const mapped = profile.projects.slice(0, 4).map((p) => ({
+      title: p.title,
+      caption: p.description?.slice(0, 160),
+    }));
+    return mapped.length ? mapped : sample;
+  }
+
+  if (block.kind === 'pill-cloud' && profile.skills?.length) {
+    return profile.skills.slice(0, 14).map((s) => ({ title: s }));
+  }
+
+  if (block.kind === 'badge-grid' && profile.keyHighlights?.length) {
+    return profile.keyHighlights.slice(0, 8).map((s) => ({ title: s }));
+  }
+
+  return sample;
+}
+
+/* ── Structural primitives (theme-aware via parent's text/bg classes) ──── */
+
+function PillCloud({ items, dark }: { items: SampleItem[]; dark?: boolean }) {
+  if (!items.length) return <EmptyHint />;
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((it, i) => (
+        <span
+          key={i}
+          className="text-[11px] font-medium px-2.5 py-1 rounded-full border"
+          style={{
+            borderColor: `hsl(var(--tpl-accent) / 0.45)`,
+            color: dark ? 'rgba(255,255,255,0.92)' : `hsl(var(--tpl-accent))`,
+            background: `hsl(var(--tpl-accent) / 0.10)`,
+          }}
+        >
+          {it.title}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function BadgeGrid({ items, dark }: { items: SampleItem[]; dark?: boolean }) {
+  if (!items.length) return <EmptyHint />;
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+      {items.map((it, i) => (
+        <div
+          key={i}
+          className={`rounded-md border px-3 py-2.5 ${
+            dark ? 'border-white/15 bg-white/[0.04]' : 'border-slate-200 bg-white'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className="h-1.5 w-1.5 rounded-full shrink-0"
+              style={{ background: `hsl(var(--tpl-accent))` }}
+            />
+            <p className={`text-[12px] font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>
+              {it.title}
+            </p>
+          </div>
+          {it.caption && (
+            <p className={`text-[10.5px] mt-1 ml-3.5 ${dark ? 'text-white/55' : 'text-slate-500'}`}>
+              {it.caption}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MetricGrid({ items, dark }: { items: SampleItem[]; dark?: boolean }) {
+  if (!items.length) return <EmptyHint />;
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {items.map((it, i) => (
+        <div
+          key={i}
+          className={`rounded-lg p-4 border ${
+            dark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-slate-50/60'
+          }`}
+        >
+          <p
+            className="text-2xl font-semibold tabular-nums tracking-tight"
+            style={{ color: `hsl(var(--tpl-accent))` }}
+          >
+            {it.title}
+          </p>
+          {it.caption && (
+            <p className={`text-[11px] mt-1.5 ${dark ? 'text-white/60' : 'text-slate-600'}`}>
+              {it.caption}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Checklist({ items, dark }: { items: SampleItem[]; dark?: boolean }) {
+  if (!items.length) return <EmptyHint />;
+  return (
+    <ul className={`divide-y ${dark ? 'divide-white/10' : 'divide-slate-200'}`}>
+      {items.map((it, i) => (
+        <li key={i} className="flex items-center justify-between gap-3 py-2.5">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <Icons.CheckCircle2
+              className="h-3.5 w-3.5 shrink-0"
+              style={{ color: `hsl(var(--tpl-accent))` }}
+            />
+            <p className={`text-[13px] truncate ${dark ? 'text-white/90' : 'text-slate-800'}`}>
+              {it.title}
+            </p>
+          </div>
+          {it.meta && (
+            <span
+              className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full"
+              style={{
+                color: `hsl(var(--tpl-accent))`,
+                background: `hsl(var(--tpl-accent) / 0.10)`,
+              }}
+            >
+              {it.meta}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function CardsGrid({ items, dark }: { items: SampleItem[]; dark?: boolean }) {
+  if (!items.length) return <EmptyHint />;
+  return (
+    <div className="grid sm:grid-cols-2 gap-3">
+      {items.map((it, i) => (
+        <div
+          key={i}
+          className={`p-4 rounded-md border ${
+            dark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-white'
+          }`}
+          style={{ borderLeft: `2px solid hsl(var(--tpl-accent))` }}
+        >
+          <p className={`text-[13px] font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>
+            {it.title}
+          </p>
+          {it.caption && (
+            <p className={`text-[12px] leading-relaxed mt-1 ${dark ? 'text-white/65' : 'text-slate-600'}`}>
+              {it.caption}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function VerticalTimeline({ items, dark }: { items: SampleItem[]; dark?: boolean }) {
+  if (!items.length) return <EmptyHint />;
+  return (
+    <ol className="relative ml-2 pl-5 space-y-5 border-l" style={{ borderColor: `hsl(var(--tpl-accent) / 0.35)` }}>
+      {items.map((it, i) => (
+        <li key={i} className="relative">
+          <span
+            className="absolute -left-[27px] top-1 h-2.5 w-2.5 rounded-full ring-4"
+            style={{
+              background: `hsl(var(--tpl-accent))`,
+              boxShadow: `0 0 0 4px ${dark ? 'rgba(15,23,42,1)' : '#ffffff'}`,
+            }}
+          />
+          <div className="flex items-baseline justify-between gap-4">
+            <p className={`text-[13px] font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>
+              {it.title}
+            </p>
+            {it.meta && (
+              <span className={`text-[10.5px] tabular-nums whitespace-nowrap ${dark ? 'text-white/50' : 'text-slate-500'}`}>
+                {it.meta}
+              </span>
+            )}
+          </div>
+          {it.caption && (
+            <p className={`text-[12px] leading-relaxed mt-0.5 ${dark ? 'text-white/65' : 'text-slate-600'}`}>
+              {it.caption}
+            </p>
+          )}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function CodeBlock({ items }: { items: SampleItem[] }) {
+  if (!items.length) return <EmptyHint />;
+  return (
+    <div className="rounded-lg border border-white/10 bg-black/60 overflow-hidden font-mono">
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-white/10 bg-white/[0.03]">
+        <span className="h-2 w-2 rounded-full bg-red-400/70" />
+        <span className="h-2 w-2 rounded-full bg-yellow-400/70" />
+        <span className="h-2 w-2 rounded-full bg-emerald-400/70" />
+        <span className="ml-2 text-[10px] text-white/40 tracking-wider">~/stack.ts</span>
+      </div>
+      <pre className="px-4 py-3.5 text-[12px] leading-relaxed text-zinc-100 whitespace-pre-wrap">
+        {items.map((it, i) => (
+          <div key={i} className="grid grid-cols-[1.25rem_1fr] gap-3">
+            <span className="text-zinc-600 select-none text-right">{(i + 1).toString().padStart(2, '0')}</span>
+            <div>
+              <span style={{ color: `hsl(var(--tpl-accent))` }}>const </span>
+              <span className="text-zinc-100">stack_{i + 1}</span>
+              <span className="text-zinc-500"> = </span>
+              <span className="text-emerald-300">"{it.title}"</span>
+              {it.caption && <div className="text-zinc-500">{`// ${it.caption}`}</div>}
+            </div>
+          </div>
+        ))}
+      </pre>
+    </div>
+  );
+}
+
+function EmptyHint() {
+  return <p className="text-[12px] text-muted-foreground italic">Add content to populate this section.</p>;
+}
+
+function renderByKind(block: SectionBlock, items: SampleItem[], dark: boolean) {
+  switch (block.kind) {
+    case 'pill-cloud': return <PillCloud items={items} dark={dark} />;
+    case 'badge-grid': return <BadgeGrid items={items} dark={dark} />;
+    case 'metric-grid': return <MetricGrid items={items} dark={dark} />;
+    case 'checklist': return <Checklist items={items} dark={dark} />;
+    case 'cards': return <CardsGrid items={items} dark={dark} />;
+    case 'timeline': return <VerticalTimeline items={items} dark={dark} />;
+    case 'code-block': return <CodeBlock items={items} />;
+  }
+}
+
+/* ── Section header (layout-aware styling) ─────────────────────────────── */
+
+function SectionHeader({
   label,
-  children,
-  accent,
+  variant = 'default',
+  dark,
 }: {
   label: string;
-  accent?: boolean;
-  children: React.ReactNode;
+  variant?: 'default' | 'serif' | 'mono' | 'industrial';
+  dark?: boolean;
 }) {
-  return (
-    <motion.section
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.4, ease: 'easeOut' }}
-      className="border-t border-border/60 pt-8 mt-8"
-    >
-      <h3
-        className="text-[11px] font-semibold tracking-[0.18em] uppercase mb-4"
-        style={accent ? { color: 'hsl(var(--tpl-accent))' } : undefined}
-      >
+  if (variant === 'serif') {
+    return (
+      <h3 className={`font-serif text-2xl tracking-tight mb-5 ${dark ? 'text-white' : 'text-slate-900'}`}>
         {label}
       </h3>
+    );
+  }
+  if (variant === 'mono') {
+    return (
+      <h3 className="font-mono text-[11px] tracking-[0.18em] uppercase mb-4 flex items-center gap-2">
+        <span style={{ color: `hsl(var(--tpl-accent))` }}>$</span>
+        <span className={dark ? 'text-white/85' : 'text-slate-700'}>{label}</span>
+      </h3>
+    );
+  }
+  if (variant === 'industrial') {
+    return (
+      <div className="flex items-center gap-3 mb-5">
+        <span
+          className="text-[10px] font-black tracking-[0.22em] uppercase text-stone-900 px-2 py-0.5"
+          style={{ background: `hsl(var(--tpl-accent))` }}
+        >
+          {label}
+        </span>
+        <span className="h-px flex-1 bg-stone-900/20" />
+      </div>
+    );
+  }
+  return (
+    <h3
+      className="text-[11px] font-semibold tracking-[0.18em] uppercase mb-4"
+      style={{ color: `hsl(var(--tpl-accent))` }}
+    >
+      {label}
+    </h3>
+  );
+}
+
+function SectionShell({ children, dark }: { children: React.ReactNode; dark?: boolean }) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 10 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
+      className={`pt-8 mt-8 border-t ${dark ? 'border-white/10' : 'border-slate-200/80'}`}
+    >
       {children}
     </motion.section>
   );
 }
 
-/* ── Base 1: Clinical (Healthcare) ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   BASE 1 — CLINICAL
+   Sterile, trust-first multi-column profile. Sidebar for certifications,
+   vertical timeline for clinical experience. Always white-canvas.
+   ══════════════════════════════════════════════════════════════════════ */
 
 function ClinicalBase({
   profile,
@@ -81,56 +375,89 @@ function ClinicalBase({
   meta: TemplateMeta;
   style: React.CSSProperties;
 }) {
+  const sidebarSection = meta.sections.find((s) => s.kind === 'badge-grid');
+  const mainSections = meta.sections.filter((s) => s !== sidebarSection);
+
   return (
-    <div
-      style={style}
-      className="min-h-full bg-white text-slate-900 px-8 md:px-14 py-12 font-sans"
-    >
-      {/* Hero — trust-first medical layout */}
-      <header className="flex items-start gap-6 pb-10 border-b border-slate-200">
-        {profile.photoUrl && !profile.hidePhoto && (
-          <img
-            src={profile.photoUrl}
-            alt={profile.fullName}
-            className="h-20 w-20 rounded-full object-cover border-2"
-            style={{ borderColor: 'hsl(var(--tpl-accent))' }}
-          />
-        )}
-        <div className="flex-1 min-w-0">
-          <div
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase mb-2"
-            style={{ background: `hsl(var(--tpl-accent) / 0.1)`, color: `hsl(var(--tpl-accent))` }}
-          >
-            <ProfessionIcon name={meta.icon} className="h-3 w-3" />
-            {meta.name}
-          </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
-            {profile.fullName || 'Your Name'}
-          </h1>
-          <p className="text-sm text-slate-600 mt-1">{profile.headline || meta.description}</p>
-          {profile.location && (
-            <p className="text-xs text-slate-500 mt-2">{profile.location}</p>
+    <div style={style} className="min-h-full bg-white text-slate-900 font-sans">
+      {/* Sterile header bar */}
+      <div className="border-b border-slate-200">
+        <div className="px-8 md:px-14 py-10 flex items-start gap-6">
+          {profile.photoUrl && !profile.hidePhoto && (
+            <img
+              src={profile.photoUrl}
+              alt={profile.fullName}
+              className="h-24 w-24 rounded-full object-cover border-2"
+              style={{ borderColor: 'hsl(var(--tpl-accent))' }}
+            />
           )}
+          <div className="flex-1 min-w-0">
+            <div
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase mb-2.5"
+              style={{ background: `hsl(var(--tpl-accent) / 0.10)`, color: `hsl(var(--tpl-accent))` }}
+            >
+              <ProfessionIcon name={meta.icon} className="h-3 w-3" />
+              {meta.name}
+            </div>
+            <h1 className="text-[34px] font-semibold tracking-tight text-slate-900 leading-tight">
+              {profile.fullName || 'Your Name'}
+            </h1>
+            <p className="text-[15px] text-slate-600 mt-1.5">{profile.headline || meta.tagline}</p>
+            {profile.location && (
+              <p className="text-[12px] text-slate-500 mt-2 flex items-center gap-1.5">
+                <Icons.MapPin className="h-3 w-3" />
+                {profile.location}
+              </p>
+            )}
+          </div>
         </div>
-      </header>
+      </div>
 
-      {profile.bio && (
-        <p className="mt-6 text-[15px] leading-relaxed text-slate-700 max-w-3xl">
-          {profile.bio}
-        </p>
-      )}
+      {/* Two-column body */}
+      <div className="px-8 md:px-14 py-10 grid lg:grid-cols-[1fr_280px] gap-10">
+        <div className="min-w-0">
+          {profile.bio && (
+            <p className="text-[15px] leading-relaxed text-slate-700 max-w-2xl">{profile.bio}</p>
+          )}
+          {mainSections.map((s) => (
+            <SectionShell key={s.key}>
+              <SectionHeader label={s.label} variant="default" />
+              {renderByKind(s, itemsFor(s, profile, meta), false)}
+            </SectionShell>
+          ))}
+        </div>
 
-      {/* Profession-specific sections from registry */}
-      {meta.sections.map((s) => (
-        <SectionShell key={s.key} label={s.label} accent>
-          {renderSection(s.key, profile)}
-        </SectionShell>
-      ))}
+        {/* Sterile sidebar */}
+        {sidebarSection && (
+          <aside className="lg:sticky lg:top-6 self-start">
+            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-5">
+              <p
+                className="text-[10px] font-semibold tracking-[0.2em] uppercase mb-3"
+                style={{ color: `hsl(var(--tpl-accent))` }}
+              >
+                {sidebarSection.label}
+              </p>
+              <div className="space-y-2">
+                {itemsFor(sidebarSection, profile, meta).map((it, i) => (
+                  <div key={i} className="rounded-md bg-white border border-slate-200 px-3 py-2">
+                    <p className="text-[12px] font-semibold text-slate-900">{it.title}</p>
+                    {it.caption && <p className="text-[10.5px] text-slate-500 mt-0.5">{it.caption}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
+        )}
+      </div>
     </div>
   );
 }
 
-/* ── Base 2: Technical (Tech / AI) ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   BASE 2 — TECHNICAL
+   Sleek, high-contrast terminal grid with code-syntax accents and data
+   streams. Mono headers. Dark canvas.
+   ══════════════════════════════════════════════════════════════════════ */
 
 function TechnicalBase({
   profile,
@@ -144,45 +471,55 @@ function TechnicalBase({
   return (
     <div
       style={style}
-      className="min-h-full bg-[#0a0a0b] text-zinc-100 px-8 md:px-14 py-12 font-mono"
+      className="min-h-full bg-[#0b0b0d] text-zinc-100 px-8 md:px-14 py-12 font-sans"
     >
-      {/* Hero — terminal aesthetic */}
+      {/* Terminal-style hero */}
       <header>
-        <div className="flex items-center gap-2 text-[11px] text-zinc-500 mb-4">
-          <span className="h-2 w-2 rounded-full" style={{ background: `hsl(var(--tpl-accent))` }} />
+        <div className="flex items-center gap-2 text-[11px] text-zinc-500 mb-5 font-mono">
+          <span className="h-2 w-2 rounded-full animate-pulse" style={{ background: `hsl(var(--tpl-accent))` }} />
           <span>~/portfolio</span>
-          <span>·</span>
+          <span className="text-zinc-700">›</span>
           <ProfessionIcon name={meta.icon} className="h-3.5 w-3.5" />
-          <span>{meta.name}</span>
+          <span style={{ color: `hsl(var(--tpl-accent))` }}>{meta.name.toLowerCase().replace(/\s+/g, '-')}.tsx</span>
         </div>
-        <h1 className="text-4xl font-bold tracking-tight font-sans">
-          {profile.fullName || 'Your Name'}
-        </h1>
-        <p
-          className="mt-2 text-sm font-sans"
-          style={{ color: `hsl(var(--tpl-accent))` }}
-        >
-          &gt; {profile.headline || meta.description}
-        </p>
+        <div className="grid md:grid-cols-[1fr_auto] gap-6 items-end">
+          <div>
+            <h1 className="text-[42px] font-bold tracking-tight leading-[1.05]">
+              {profile.fullName || 'Your Name'}
+            </h1>
+            <p className="mt-2.5 text-[14px] font-mono" style={{ color: `hsl(var(--tpl-accent))` }}>
+              <span className="text-zinc-500">{'>'}</span> {profile.headline || meta.tagline}
+            </p>
+          </div>
+          {profile.photoUrl && !profile.hidePhoto && (
+            <img
+              src={profile.photoUrl}
+              alt={profile.fullName}
+              className="h-20 w-20 rounded-md object-cover border-2 border-white/10"
+            />
+          )}
+        </div>
         {profile.bio && (
-          <p className="mt-5 text-[14px] leading-relaxed text-zinc-300 max-w-3xl font-sans">
-            {profile.bio}
-          </p>
+          <p className="mt-6 text-[14px] leading-relaxed text-zinc-300 max-w-3xl">{profile.bio}</p>
         )}
       </header>
 
-      <div className="font-sans">
-        {meta.sections.map((s) => (
-          <SectionShell key={s.key} label={s.label} accent>
-            {renderSection(s.key, profile)}
-          </SectionShell>
-        ))}
-      </div>
+      {/* Grid sections */}
+      {meta.sections.map((s) => (
+        <SectionShell key={s.key} dark>
+          <SectionHeader label={s.label} variant="mono" dark />
+          {renderByKind(s, itemsFor(s, profile, meta), true)}
+        </SectionShell>
+      ))}
     </div>
   );
 }
 
-/* ── Base 3: Executive (Business) ──────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   BASE 3 — EXECUTIVE
+   Wide-margin asymmetric boardroom. Premium serif hierarchy, minimalist
+   borders, prominent metric callouts in featured first row.
+   ══════════════════════════════════════════════════════════════════════ */
 
 function ExecutiveBase({
   profile,
@@ -193,54 +530,75 @@ function ExecutiveBase({
   meta: TemplateMeta;
   style: React.CSSProperties;
 }) {
+  const featuredMetric = meta.sections.find((s) => s.kind === 'metric-grid');
+  const rest = meta.sections.filter((s) => s !== featuredMetric);
+
   return (
     <div
       style={style}
-      className="min-h-full bg-[#0f172a] text-white px-8 md:px-16 py-14"
+      className="min-h-full bg-[#0f172a] text-white"
     >
-      {/* Hero — boardroom serif */}
-      <header className="grid md:grid-cols-[1fr_auto] gap-6 items-end pb-10 border-b border-white/10">
-        <div>
-          <div
-            className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase mb-4"
-            style={{ color: `hsl(var(--tpl-accent))` }}
-          >
-            <ProfessionIcon name={meta.icon} className="h-3.5 w-3.5" />
-            {meta.name}
+      <div className="px-8 md:px-20 py-16 max-w-6xl mx-auto">
+        {/* Asymmetric serif hero */}
+        <header className="grid md:grid-cols-12 gap-6 items-end pb-12 border-b border-white/10">
+          <div className="md:col-span-9">
+            <div
+              className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.25em] uppercase mb-5"
+              style={{ color: `hsl(var(--tpl-accent))` }}
+            >
+              <ProfessionIcon name={meta.icon} className="h-3.5 w-3.5" />
+              {meta.name}
+            </div>
+            <h1 className="text-[56px] md:text-[68px] font-serif tracking-tight leading-[0.98]">
+              {profile.fullName || 'Your Name'}
+            </h1>
+            <p className="mt-4 text-[16px] text-white/70 max-w-xl font-serif italic">
+              {profile.headline || meta.tagline}
+            </p>
           </div>
-          <h1 className="text-5xl font-serif tracking-tight leading-[1.05]">
-            {profile.fullName || 'Your Name'}
-          </h1>
-          <p className="mt-3 text-base text-white/70 max-w-xl">
-            {profile.headline || meta.description}
+          <div className="md:col-span-3 flex md:justify-end">
+            {profile.photoUrl && !profile.hidePhoto && (
+              <img
+                src={profile.photoUrl}
+                alt={profile.fullName}
+                className="h-28 w-28 rounded-sm object-cover"
+                style={{ outline: `2px solid hsl(var(--tpl-accent))`, outlineOffset: 5 }}
+              />
+            )}
+          </div>
+        </header>
+
+        {profile.bio && (
+          <p className="mt-10 text-[16px] leading-[1.75] text-white/80 max-w-3xl font-serif">
+            {profile.bio}
           </p>
-        </div>
-        {profile.photoUrl && !profile.hidePhoto && (
-          <img
-            src={profile.photoUrl}
-            alt={profile.fullName}
-            className="h-24 w-24 rounded-sm object-cover"
-            style={{ outline: `2px solid hsl(var(--tpl-accent))`, outlineOffset: 4 }}
-          />
         )}
-      </header>
 
-      {profile.bio && (
-        <p className="mt-8 text-[15px] leading-relaxed text-white/80 max-w-3xl font-serif">
-          {profile.bio}
-        </p>
-      )}
+        {/* Prominent metric callouts */}
+        {featuredMetric && (
+          <section className="mt-12">
+            <SectionHeader label={featuredMetric.label} variant="default" dark />
+            <MetricGrid items={itemsFor(featuredMetric, profile, meta)} dark />
+          </section>
+        )}
 
-      {meta.sections.map((s) => (
-        <SectionShell key={s.key} label={s.label} accent>
-          {renderSection(s.key, profile, 'dark')}
-        </SectionShell>
-      ))}
+        {/* Remaining sections in serif rhythm */}
+        {rest.map((s) => (
+          <SectionShell key={s.key} dark>
+            <SectionHeader label={s.label} variant="serif" dark />
+            {renderByKind(s, itemsFor(s, profile, meta), true)}
+          </SectionShell>
+        ))}
+      </div>
     </div>
   );
 }
 
-/* ── Base 4: Trades (Field / Industrial) ───────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   BASE 4 — TRADES
+   Rugged industrial layout. Structured cards, bold compliance badge grids,
+   project summary blocks with high-vis accent tape.
+   ══════════════════════════════════════════════════════════════════════ */
 
 function TradesBase({
   profile,
@@ -252,151 +610,63 @@ function TradesBase({
   style: React.CSSProperties;
 }) {
   return (
-    <div
-      style={style}
-      className="min-h-full bg-[#f5f5f0] text-stone-900 px-8 md:px-14 py-12"
-    >
-      {/* Hero — industrial badge */}
-      <header className="flex items-start justify-between gap-6 pb-8 border-b-2 border-stone-900">
-        <div className="flex items-center gap-5">
-          {profile.photoUrl && !profile.hidePhoto && (
-            <img
-              src={profile.photoUrl}
-              alt={profile.fullName}
-              className="h-20 w-20 rounded-sm object-cover border-2 border-stone-900"
-            />
-          )}
-          <div>
-            <div
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold tracking-widest uppercase text-stone-900 mb-2"
-              style={{ background: `hsl(var(--tpl-accent))` }}
-            >
-              <ProfessionIcon name={meta.icon} className="h-3 w-3" />
-              {meta.name}
-            </div>
-            <h1 className="text-3xl font-black uppercase tracking-tight text-stone-900">
-              {profile.fullName || 'Your Name'}
-            </h1>
-            <p className="text-sm text-stone-700 mt-1">
-              {profile.headline || meta.description}
-            </p>
-          </div>
-        </div>
-      </header>
-
-      {profile.bio && (
-        <p className="mt-6 text-[15px] leading-relaxed text-stone-800 max-w-3xl">
-          {profile.bio}
-        </p>
-      )}
-
-      {meta.sections.map((s) => (
-        <SectionShell key={s.key} label={s.label} accent>
-          {renderSection(s.key, profile)}
-        </SectionShell>
-      ))}
-    </div>
-  );
-}
-
-/* ── Section content mapper ────────────────────────────────────────────── */
-
-function renderSection(key: string, profile: ProfileData, theme: 'light' | 'dark' = 'light') {
-  const textClass = theme === 'dark' ? 'text-white/80' : 'text-slate-700';
-  const subClass = theme === 'dark' ? 'text-white/50' : 'text-slate-500';
-
-  // Generic mapper — these keys all share a common data source
-  if (key === 'experience') {
-    if (!profile.workExperience?.length) {
-      return <p className={`text-sm ${subClass}`}>No experience added yet.</p>;
-    }
-    return (
-      <ul className="space-y-4">
-        {profile.workExperience.slice(0, 6).map((w) => (
-          <li key={w.id} className="grid grid-cols-[1fr_auto] gap-4">
-            <div className="min-w-0">
-              <p className={`text-sm font-semibold ${textClass}`}>
-                {w.jobTitle} · {w.company}
-              </p>
-              {w.description && (
-                <p className={`text-[13px] leading-relaxed mt-1 ${subClass} line-clamp-3`}>
-                  {w.description}
-                </p>
+    <div style={style} className="min-h-full bg-[#f5f5f0] text-stone-900 font-sans">
+      {/* Hi-vis hero band */}
+      <div className="relative">
+        <div
+          className="absolute inset-x-0 top-0 h-2"
+          style={{
+            background: `repeating-linear-gradient(45deg, hsl(var(--tpl-accent)) 0 14px, #111 14px 28px)`,
+          }}
+        />
+        <div className="px-8 md:px-14 pt-12 pb-10 border-b-[3px] border-stone-900">
+          <div className="flex items-start justify-between gap-6 flex-wrap">
+            <div className="flex items-center gap-5">
+              {profile.photoUrl && !profile.hidePhoto && (
+                <img
+                  src={profile.photoUrl}
+                  alt={profile.fullName}
+                  className="h-24 w-24 rounded-sm object-cover border-[3px] border-stone-900"
+                />
               )}
+              <div>
+                <div
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-black tracking-[0.2em] uppercase text-stone-900 mb-2.5"
+                  style={{ background: `hsl(var(--tpl-accent))` }}
+                >
+                  <ProfessionIcon name={meta.icon} className="h-3 w-3" />
+                  {meta.name}
+                </div>
+                <h1 className="text-[36px] font-black uppercase tracking-tight text-stone-900 leading-none">
+                  {profile.fullName || 'Your Name'}
+                </h1>
+                <p className="text-[14px] text-stone-700 mt-2 max-w-xl">
+                  {profile.headline || meta.tagline}
+                </p>
+              </div>
             </div>
-            <p className={`text-[11px] tabular-nums whitespace-nowrap ${subClass}`}>
-              {w.startDate} — {w.current ? 'Now' : w.endDate}
-            </p>
-          </li>
-        ))}
-      </ul>
-    );
-  }
-
-  if (key === 'projects' || key === 'case-files' || key === 'case-studies' || key === 'models' || key === 'pipelines' || key === 'architectures') {
-    if (!profile.projects?.length) {
-      return <p className={`text-sm ${subClass}`}>No items added yet.</p>;
-    }
-    return (
-      <div className="grid sm:grid-cols-2 gap-3">
-        {profile.projects.slice(0, 4).map((p) => (
-          <div
-            key={p.id}
-            className="p-4 rounded-md border border-current/10 hover:border-current/30 transition-colors"
-            style={{ borderColor: `hsl(var(--tpl-accent) / 0.25)` }}
-          >
-            <p className={`text-sm font-semibold ${textClass}`}>{p.title}</p>
-            {p.description && (
-              <p className={`text-[12px] leading-relaxed mt-1 ${subClass} line-clamp-3`}>
-                {p.description}
-              </p>
+            {profile.location && (
+              <div className="border-2 border-stone-900 px-3 py-2">
+                <p className="text-[9px] font-black tracking-widest uppercase text-stone-600">Region</p>
+                <p className="text-[13px] font-bold uppercase text-stone-900">{profile.location}</p>
+              </div>
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="px-8 md:px-14 py-12">
+        {profile.bio && (
+          <p className="text-[15px] leading-relaxed text-stone-800 max-w-3xl mb-8">{profile.bio}</p>
+        )}
+
+        {meta.sections.map((s) => (
+          <SectionShell key={s.key}>
+            <SectionHeader label={s.label} variant="industrial" />
+            {renderByKind(s, itemsFor(s, profile, meta), false)}
+          </SectionShell>
         ))}
       </div>
-    );
-  }
-
-  if (key === 'certifications' || key === 'licenses' || key === 'credentials' || key === 'training') {
-    const items = profile.keyHighlights?.length ? profile.keyHighlights : profile.skills;
-    if (!items?.length) {
-      return <p className={`text-sm ${subClass}`}>None added yet.</p>;
-    }
-    return (
-      <div className="flex flex-wrap gap-2">
-        {items.slice(0, 12).map((s, i) => (
-          <span
-            key={i}
-            className="text-[11px] font-medium px-2.5 py-1 rounded-full border"
-            style={{
-              borderColor: `hsl(var(--tpl-accent) / 0.4)`,
-              color: theme === 'dark' ? 'white' : `hsl(var(--tpl-accent))`,
-              background: `hsl(var(--tpl-accent) / 0.08)`,
-            }}
-          >
-            {s}
-          </span>
-        ))}
-      </div>
-    );
-  }
-
-  // Default: render skills as pills (used for specialties / techniques / stack / etc.)
-  if (!profile.skills?.length) {
-    return <p className={`text-sm ${subClass}`}>None added yet.</p>;
-  }
-  return (
-    <div className="flex flex-wrap gap-2">
-      {profile.skills.slice(0, 16).map((s, i) => (
-        <span
-          key={i}
-          className={`text-[12px] px-2.5 py-1 rounded-md ${
-            theme === 'dark' ? 'bg-white/10 text-white/90' : 'bg-slate-100 text-slate-700'
-          }`}
-        >
-          {s}
-        </span>
-      ))}
     </div>
   );
 }
