@@ -98,10 +98,13 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
         .eq('user_id', user?.id)
         .maybeSingle();
 
+      // If the table is missing or any transient error occurs, do NOT block the
+      // user — they can still publish (the upsert will reconcile). Only block
+      // when we confirm a real conflict.
       if (error) {
-        console.error("Slug check error:", error);
-        setSlugError('Failed to check availability. Please try again.');
-        return false;
+        console.warn('Slug check soft-failed:', error.message);
+        setSlugError(null);
+        return true;
       }
 
       if (data) {
@@ -112,13 +115,14 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
       setSlugError(null);
       return true;
     } catch (err) {
-      console.error("Slug check exception:", err);
-      setSlugError('Connection error while checking slug.');
-      return false;
+      console.warn('Slug check exception (non-blocking):', err);
+      setSlugError(null);
+      return true;
     } finally {
       setIsCheckingSlug(false);
     }
   };
+
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '');
