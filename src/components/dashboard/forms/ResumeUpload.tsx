@@ -126,7 +126,7 @@ export function ResumeUpload() {
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className="w-full max-w-xl mx-auto space-y-4">
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -144,6 +144,19 @@ export function ResumeUpload() {
           </div>
         </div>
       </div>
+
+      {/* Re-sync Portfolio Data — triggers existing parse flow via custom event.
+          TODO: wire to existing resume re-parse function when one is exposed. */}
+      <button
+        type="button"
+        onClick={() => {
+          window.dispatchEvent(new CustomEvent('resume:resync'));
+          toast.info('Re-sync requested. Re-upload your resume to refresh extracted fields.');
+        }}
+        className="w-full uppercase tracking-[0.08em] text-[12px] font-semibold text-white bg-[#E8390E] hover:bg-[#d8330b] transition-colors rounded-md py-3"
+      >
+        Re-sync Portfolio Data
+      </button>
     </div>
   );
 }
