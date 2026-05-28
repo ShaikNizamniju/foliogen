@@ -400,12 +400,11 @@ export function TemplateCard({
   return (
     <div
       onClick={onSelect}
+      data-template-card
       className={cn(
-        'group relative cursor-pointer overflow-hidden transition-all duration-200',
-        'rounded-[12px] bg-[#1A1A1A]',
-        isSelected
-          ? 'border-2 border-[#E8390E] shadow-[0_0_0_4px_rgba(232,57,14,0.12)]'
-          : 'border border-white/[0.08] hover:border-[rgba(232,57,14,0.4)] hover:-translate-y-[2px]'
+        'group relative cursor-pointer overflow-hidden tpl-card tpl-card-enter',
+        'rounded-[12px]',
+        isSelected ? 'tpl-card-selected' : ''
       )}
     >
       {isSelected && (
@@ -437,17 +436,14 @@ export function TemplateCard({
       </div>
 
       {/* Preview */}
-      <div className="w-full aspect-[4/3] overflow-hidden bg-[#0d0d0d]">
+      <div className="tpl-card-preview w-full aspect-[4/3] overflow-hidden">
         <TemplateSVG id={id} />
       </div>
 
       {/* Footer */}
-      <div className="bg-[#1A1A1A] px-[14px] py-3">
-        <h3 className="text-[13px] font-semibold text-white leading-tight truncate">{name}</h3>
-        <p
-          className="text-[11px] mt-[2px] text-white/45 line-clamp-2"
-          style={{ lineHeight: 1.4 }}
-        >
+      <div className="tpl-card-footer px-[14px] py-3">
+        <h3 className="tpl-card-title text-[13px] font-semibold leading-tight truncate">{name}</h3>
+        <p className="tpl-card-desc text-[11px] mt-[2px] line-clamp-2" style={{ lineHeight: 1.4 }}>
           {description}
         </p>
       </div>
