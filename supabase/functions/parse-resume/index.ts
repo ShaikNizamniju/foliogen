@@ -67,38 +67,60 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        max_tokens: 1000,
+        max_tokens: 3500,
+        response_format: { type: "json_object" },
         messages: [
           {
             role: "system",
-            content: `You are The Elite PM Narrative Engine. Your goal is Industry-Specific Narrative Transmutation.
-Provide FOUR distinct narrative variants for the user based on their data.
-
-DIALECTS:
-- general: Standard professional narrative.
-- startup: Use "Scrappy", "0-to-1", "Full-cycle", "Velocity", "Ambiguity". Focus on building from scratch.
-- bigtech: Use "Scale", "Stakeholders", "Systems-thinking", "Process", "Cross-functional". Focus on massive user impact.
-- fintech: Use "Compliance", "Security", "Scalability", "Trust", "Accuracy". Focus on risk and reliability.
-
-INSTRUCTIONS:
-1. For EACH persona, provide a 'headline' (1-sentence hook) and a 'bio' (max 3 sentences).
-2. Projects: Extract the last 3 most recent projects. Rewrite descriptions to highlight "Primary Impact" framed for a Big Tech persona (scale and users).
-3. Preserve Facts: DO NOT invent roles, companies, or metrics.
-4. Return ONLY JSON.`
+            content: `You are an elite resume parsing engine. Extract STRUCTURED data from a resume and return ONLY pure JSON (no markdown).
+Rules:
+- Preserve facts. Never invent companies, dates, or metrics.
+- Use camelCase keys. Use empty string "" or [] when a field is missing — never null.
+- Dates as short strings (e.g. "Jan 2023", "2022", "Present").
+- Keep arrays small and signal-rich.`
           },
           {
             role: "user",
-            content: `Extract and transmute these fields into pure JSON (camelCase):
-- fullName (string)
-- narrativeVariants (object with keys: general, startup, bigtech, fintech. Each key contains { headline: string, bio: string })
-- projects (array of objects with keys: title, description, visualPrompt)
-- predictedDomain: one of "tech", "creative", "corporate", "luxury"
+            content: `Extract the following JSON schema from the resume below. Return ONLY the JSON object.
 
-Resume Text (Truncated):
+{
+  "fullName": "string",
+  "headline": "one-line professional title",
+  "bio": "2-3 sentence summary",
+  "location": "City, Country",
+  "email": "string",
+  "linkedinUrl": "string (full https URL or empty)",
+  "website": "string (full https URL or empty)",
+  "skills": ["string", ...up to 20 most relevant],
+  "keyHighlights": ["3-5 punchy achievement pills, each <60 chars"],
+  "workExperience": [
+    {
+      "jobTitle": "string",
+      "company": "string",
+      "startDate": "string",
+      "endDate": "string",
+      "current": false,
+      "description": "1-3 sentence impact summary with metrics when present"
+    }
+  ],
+  "projects": [
+    { "title": "string", "description": "1-2 sentence outcome-driven summary", "link": "" }
+  ],
+  "narrativeVariants": {
+    "general":  { "headline": "...", "bio": "..." },
+    "startup":  { "headline": "...", "bio": "..." },
+    "bigtech":  { "headline": "...", "bio": "..." },
+    "fintech":  { "headline": "...", "bio": "..." }
+  },
+  "predictedDomain": "tech|creative|corporate|luxury"
+}
+
+Resume Text:
 ${resumeText.substring(0, 15000)}`
           }
         ]
       })
+
     });
 
     if (!response.ok) {
