@@ -1,7 +1,5 @@
-import { motion } from 'framer-motion';
 import { Check, Heart, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 interface TemplateCardProps {
@@ -14,249 +12,353 @@ interface TemplateCardProps {
   onToggleFavorite?: (id: string) => void;
 }
 
-// Mini preview components for each template style
-const TemplatePreviewContent = ({ id }: { id: string }) => {
+/* ============================================================
+   Inline SVG preview mockups — one per template id.
+   viewBox 400x300 (4:3). No external assets, no fetch.
+   ============================================================ */
+const TemplateSVG = ({ id }: { id: string }) => {
+  const common = { viewBox: '0 0 400 300', preserveAspectRatio: 'xMidYMid slice', width: '100%', height: '100%' } as const;
+
   switch (id) {
     case 'minimalist':
       return (
-        <div className="h-full w-full bg-white p-3 flex flex-col">
-          <div className="w-8 h-8 rounded-full bg-gray-200 mb-2" />
-          <div className="h-2 w-16 bg-gray-900 rounded mb-1" />
-          <div className="h-1.5 w-12 bg-gray-300 rounded mb-3" />
-          <div className="flex-1 grid grid-cols-2 gap-1.5">
-            <div className="bg-gray-100 rounded" />
-            <div className="bg-gray-100 rounded" />
-          </div>
-        </div>
+        <svg {...common}>
+          <rect width="400" height="300" fill="#ffffff" />
+          <rect x="0" y="0" width="400" height="8" fill="#0a0a0a" />
+          <rect x="32" y="40" width="120" height="6" fill="#9ca3af" />
+          <rect x="32" y="58" width="180" height="4" fill="#d1d5db" />
+          <rect x="32" y="74" width="160" height="4" fill="#d1d5db" />
+          <rect x="32" y="120" width="336" height="1" fill="#e5e7eb" />
+          <rect x="32" y="140" width="240" height="4" fill="#d1d5db" />
+          <rect x="32" y="156" width="200" height="4" fill="#d1d5db" />
+          <rect x="32" y="172" width="280" height="4" fill="#d1d5db" />
+          <rect x="32" y="220" width="80" height="3" fill="#9ca3af" />
+        </svg>
       );
-    
-    case 'creative':
-      return (
-        <div className="h-full w-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-3 flex flex-col">
-          <div className="flex gap-2 mb-2">
-            <div className="w-6 h-6 rounded-lg bg-white/20 backdrop-blur" />
-            <div className="flex-1">
-              <div className="h-1.5 w-10 bg-white/80 rounded mb-1" />
-              <div className="h-1 w-8 bg-white/40 rounded" />
-            </div>
-          </div>
-          <div className="flex-1 grid grid-cols-2 gap-1.5">
-            <div className="bg-white/20 backdrop-blur rounded-lg" />
-            <div className="bg-white/20 backdrop-blur rounded-lg" />
-            <div className="col-span-2 bg-white/20 backdrop-blur rounded-lg" />
-          </div>
-        </div>
-      );
-    
-    case 'saas':
-      return (
-        <div className="h-full w-full bg-gradient-to-b from-violet-50 to-white p-3 flex flex-col">
-          <div className="h-2 w-14 bg-violet-600 rounded mb-1" />
-          <div className="h-1 w-20 bg-gray-300 rounded mb-3" />
-          <div className="flex gap-2 mb-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex-1 bg-white rounded shadow-sm p-1.5">
-                <div className="h-1.5 w-4 bg-violet-200 rounded mb-1" />
-                <div className="h-3 w-full bg-gray-100 rounded" />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    
-    case 'dev':
-      return (
-        <div className="h-full w-full bg-[#0D1117] p-3 flex flex-col font-mono">
-          <div className="flex gap-1 mb-2">
-            <div className="w-2 h-2 rounded-full bg-red-500/60" />
-            <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
-            <div className="w-2 h-2 rounded-full bg-green-500/60" />
-          </div>
-          <div className="space-y-1">
-            <div className="flex gap-1">
-              <div className="h-1 w-3 bg-purple-400 rounded" />
-              <div className="h-1 w-6 bg-green-400 rounded" />
-            </div>
-            <div className="flex gap-1 pl-2">
-              <div className="h-1 w-4 bg-blue-400 rounded" />
-              <div className="h-1 w-8 bg-amber-400 rounded" />
-            </div>
-            <div className="h-1 w-2 bg-gray-500 rounded" />
-          </div>
-        </div>
-      );
-    
-    case 'brutalist':
-      return (
-        <div className="h-full w-full bg-[#FFE962] p-2 flex flex-col">
-          <div className="border-4 border-black p-1.5 mb-2 bg-white shadow-[4px_4px_0_0_#000]">
-            <div className="h-2 w-12 bg-black rounded-sm" />
-          </div>
-          <div className="flex-1 grid grid-cols-2 gap-1.5">
-            <div className="border-3 border-black bg-white shadow-[3px_3px_0_0_#000]" />
-            <div className="border-3 border-black bg-[#FF6B6B] shadow-[3px_3px_0_0_#000]" />
-          </div>
-        </div>
-      );
-    
-    case 'academic':
-      return (
-        <div className="h-full w-full bg-[#fdfbf7] p-3 flex flex-col" style={{ fontFamily: 'Georgia, serif' }}>
-          <div className="border-b-2 border-[#8b7355] pb-1 mb-2">
-            <div className="h-2 w-16 bg-[#1a1a1a] rounded-sm" />
-          </div>
-          <div className="space-y-1.5">
-            <div className="h-1 w-full bg-[#d4c5b0] rounded-sm" />
-            <div className="h-1 w-4/5 bg-[#d4c5b0] rounded-sm" />
-            <div className="h-1 w-full bg-[#d4c5b0] rounded-sm" />
-          </div>
-        </div>
-      );
-    
-    case 'studio':
-      return (
-        <div className="h-full w-full bg-[#1a1a1a] p-2 flex flex-col">
-          <div className="h-1.5 w-8 bg-white/80 rounded mb-2" />
-          <div className="flex-1 grid grid-cols-3 gap-1">
-            <div className="col-span-2 row-span-2 bg-gradient-to-br from-gray-600 to-gray-800 rounded" />
-            <div className="bg-gradient-to-br from-gray-700 to-gray-900 rounded" />
-            <div className="bg-gradient-to-br from-gray-700 to-gray-900 rounded" />
-          </div>
-        </div>
-      );
-    
-    case 'executive':
-      return (
-        <div className="h-full w-full bg-[#0f172a] p-3 flex flex-col">
-          <div className="flex items-center gap-2 mb-2 pb-1 border-b border-amber-400/30">
-            <div className="w-5 h-5 rounded-full bg-amber-400/20 border border-amber-400/50" />
-            <div className="h-1.5 w-10 bg-amber-400 rounded" />
-          </div>
-          <div className="grid grid-cols-2 gap-2 flex-1">
-            <div className="space-y-1">
-              <div className="h-1 w-8 bg-white/60 rounded" />
-              <div className="h-1 w-6 bg-white/30 rounded" />
-            </div>
-            <div className="space-y-1">
-              <div className="h-1 w-8 bg-white/60 rounded" />
-              <div className="h-1 w-6 bg-white/30 rounded" />
-            </div>
-          </div>
-        </div>
-      );
-    
-    case 'influencer':
-      return (
-        <div className="h-full w-full bg-gradient-to-br from-pink-200 via-purple-200 to-cyan-200 p-3 flex flex-col items-center">
-          <div className="w-8 h-8 rounded-full bg-white/60 backdrop-blur border-2 border-white/80 mb-2" />
-          <div className="h-1.5 w-10 bg-white/80 rounded mb-1" />
-          <div className="flex-1 w-full space-y-1.5 mt-2">
-            <div className="h-4 w-full bg-white/40 backdrop-blur rounded-lg" />
-            <div className="h-4 w-full bg-white/40 backdrop-blur rounded-lg" />
-          </div>
-        </div>
-      );
-    
-    case 'swiss':
-      return (
-        <div className="h-full w-full bg-white p-2 flex flex-col">
-          <div className="h-3 w-16 bg-black mb-1" />
-          <div className="h-0.5 w-full bg-red-500 mb-2" />
-          <div className="flex-1 grid grid-cols-3 gap-1">
-            <div className="col-span-2 bg-black" />
-            <div className="bg-gray-200" />
-            <div className="bg-gray-200" />
-            <div className="bg-red-500" />
-            <div className="bg-gray-200" />
-          </div>
-        </div>
-      );
-    
-    case 'noir':
-      return (
-        <div className="h-full w-full bg-black p-3 flex flex-col relative overflow-hidden">
-          {/* Film grain effect */}
-          <div className="absolute inset-0 opacity-20 pointer-events-none"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            }}
-          />
-          <div className="relative z-10">
-            <div className="h-2 w-12 bg-white mb-1" style={{ fontFamily: 'Georgia, serif' }} />
-            <div className="h-1 w-16 bg-white/40 mb-3" />
-            <div className="grid grid-cols-2 gap-1.5">
-              <div className="h-8 bg-gradient-to-b from-white/20 to-transparent rounded" />
-              <div className="h-8 bg-gradient-to-b from-white/20 to-transparent rounded" />
-            </div>
-          </div>
-        </div>
-      );
-    
     case 'modern-dark':
       return (
-        <div className="h-full w-full bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f] p-3 flex flex-col relative overflow-hidden">
-          {/* Glow effect */}
-          <div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/20 rounded-full blur-xl" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500" />
-              <div className="h-1.5 w-10 bg-white/80 rounded" />
-            </div>
-            <div className="h-1 w-16 bg-cyan-400/60 rounded mb-2" />
-            <div className="grid grid-cols-2 gap-1.5 flex-1">
-              <div className="bg-white/10 backdrop-blur rounded-lg border border-white/10" />
-              <div className="bg-white/10 backdrop-blur rounded-lg border border-white/10" />
-            </div>
-          </div>
-        </div>
+        <svg {...common}>
+          <rect width="400" height="300" fill="#0a0a0a" />
+          <rect x="0" y="0" width="400" height="4" fill="#00E5FF" />
+          <rect x="24" y="32" width="120" height="8" rx="2" fill="#1f2937" />
+          <rect x="24" y="52" width="80" height="4" rx="1" fill="#00E5FF" opacity="0.6" />
+          <rect x="24" y="96" width="160" height="100" rx="10" fill="#111827" stroke="#1f2937" />
+          <rect x="200" y="96" width="160" height="100" rx="10" fill="#111827" stroke="#1f2937" />
+          <circle cx="340" cy="60" r="40" fill="#00E5FF" opacity="0.15" />
+        </svg>
       );
-    
-    case 'niju-bold': // Hero Bold
+    case 'creative':
       return (
-        <div className="h-full w-full bg-[#0A0A0A] p-3 flex flex-col justify-end relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#E11D48] to-[#F97316]" />
-          <div className="h-3 w-16 bg-white rounded-sm mb-0.5" />
-          <div className="h-3 w-12 bg-[#E11D48] rounded-sm mb-2" />
-          <div className="h-1 w-20 bg-white/30 rounded" />
-        </div>
+        <svg {...common}>
+          <defs>
+            <linearGradient id="creativeBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#7C3AED" />
+              <stop offset="100%" stopColor="#EC4899" />
+            </linearGradient>
+            <radialGradient id="creativeGlow" cx="0.5" cy="0.5" r="0.5">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#creativeBg)" />
+          <circle cx="200" cy="150" r="90" fill="url(#creativeGlow)" />
+          <rect x="24" y="24" width="170" height="120" rx="12" fill="#ffffff" opacity="0.18" />
+          <rect x="206" y="24" width="170" height="120" rx="12" fill="#ffffff" opacity="0.12" />
+          <rect x="24" y="156" width="170" height="120" rx="12" fill="#ffffff" opacity="0.12" />
+          <rect x="206" y="156" width="170" height="120" rx="12" fill="#ffffff" opacity="0.18" />
+        </svg>
       );
-
+    case 'saas':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#ffffff" />
+          <rect x="0" y="0" width="400" height="10" fill="#0a0a0a" />
+          <rect x="24" y="36" width="140" height="10" fill="#0a0a0a" />
+          <rect x="24" y="56" width="200" height="4" fill="#9ca3af" />
+          <g>
+            <rect x="24" y="110" width="108" height="80" rx="6" fill="#f3f4f6" />
+            <rect x="40" y="125" width="40" height="10" fill="#0a0a0a" />
+            <rect x="40" y="145" width="60" height="4" fill="#6b7280" />
+            <rect x="146" y="110" width="108" height="80" rx="6" fill="#f3f4f6" />
+            <rect x="162" y="125" width="40" height="10" fill="#0a0a0a" />
+            <rect x="162" y="145" width="60" height="4" fill="#6b7280" />
+            <rect x="268" y="110" width="108" height="80" rx="6" fill="#f3f4f6" />
+            <rect x="284" y="125" width="40" height="10" fill="#0a0a0a" />
+            <rect x="284" y="145" width="60" height="4" fill="#6b7280" />
+          </g>
+        </svg>
+      );
+    case 'dev':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#0d1117" />
+          <g fill="#00FF41" fontFamily="monospace" fontSize="11">
+            <text x="20" y="40">$ whoami</text>
+            <text x="20" y="62">$ cat profile.md</text>
+            <text x="20" y="84"># Senior Engineer</text>
+            <text x="20" y="106">- React · TS · Node</text>
+            <text x="20" y="128">- 8+ years building</text>
+            <text x="20" y="150">$ ls projects/</text>
+            <text x="20" y="172">portfolio  api  cli</text>
+            <text x="20" y="200">$ _</text>
+          </g>
+          <rect x="44" y="192" width="8" height="12" fill="#00FF41">
+            <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" />
+          </rect>
+        </svg>
+      );
+    case 'brutalist':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#ffffff" />
+          <rect x="20" y="20" width="360" height="80" fill="#ffffff" stroke="#000" strokeWidth="6" />
+          <text x="36" y="78" fontFamily="Impact, sans-serif" fontSize="48" fill="#000">BOLD.</text>
+          <rect x="20" y="120" width="14" height="160" fill="#E8390E" />
+          <rect x="50" y="120" width="330" height="14" fill="#000" />
+          <rect x="50" y="150" width="200" height="10" fill="#000" />
+          <rect x="50" y="170" width="160" height="10" fill="#000" />
+          <rect x="50" y="220" width="120" height="60" fill="#ffffff" stroke="#000" strokeWidth="6" />
+          <rect x="190" y="220" width="120" height="60" fill="#E8390E" stroke="#000" strokeWidth="6" />
+        </svg>
+      );
+    case 'academic':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#F5F0E8" />
+          <rect x="0" y="0" width="400" height="40" fill="#1B2A4A" />
+          <text x="24" y="27" fontFamily="Georgia, serif" fontSize="16" fill="#F5F0E8">Curriculum Vitae</text>
+          <g fontFamily="Georgia, serif" fill="#1B2A4A">
+            <rect x="24" y="60" width="160" height="3" fill="#1B2A4A" />
+            <rect x="24" y="74" width="160" height="3" fill="#bfb19a" />
+            <rect x="24" y="86" width="140" height="3" fill="#bfb19a" />
+            <rect x="24" y="98" width="160" height="3" fill="#bfb19a" />
+            <rect x="24" y="110" width="120" height="3" fill="#bfb19a" />
+            <rect x="216" y="60" width="160" height="3" fill="#1B2A4A" />
+            <rect x="216" y="74" width="160" height="3" fill="#bfb19a" />
+            <rect x="216" y="86" width="140" height="3" fill="#bfb19a" />
+            <rect x="216" y="98" width="160" height="3" fill="#bfb19a" />
+            <rect x="216" y="110" width="120" height="3" fill="#bfb19a" />
+          </g>
+        </svg>
+      );
+    case 'studio':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#111111" />
+          <rect x="20" y="20" width="120" height="180" rx="6" fill="#1f1f1f" />
+          <rect x="150" y="20" width="120" height="80" rx="6" fill="#F59E0B" opacity="0.85" />
+          <rect x="150" y="110" width="120" height="90" rx="6" fill="#1f1f1f" />
+          <rect x="280" y="20" width="100" height="120" rx="6" fill="#1f1f1f" />
+          <rect x="280" y="150" width="100" height="50" rx="6" fill="#F59E0B" opacity="0.6" />
+          <rect x="20" y="210" width="360" height="70" rx="6" fill="#1f1f1f" />
+        </svg>
+      );
+    case 'executive':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#0A1628" />
+          <rect x="24" y="28" width="160" height="2" fill="#C9A84C" />
+          <text x="24" y="58" fontFamily="Georgia, serif" fontSize="18" fill="#C9A84C">EXECUTIVE</text>
+          <rect x="24" y="70" width="80" height="2" fill="#C9A84C" />
+          <g fill="#ffffff" opacity="0.7">
+            <rect x="24" y="100" width="160" height="3" />
+            <rect x="24" y="112" width="140" height="3" />
+            <rect x="24" y="124" width="160" height="3" />
+            <rect x="216" y="100" width="160" height="3" />
+            <rect x="216" y="112" width="140" height="3" />
+            <rect x="216" y="124" width="160" height="3" />
+          </g>
+          <rect x="24" y="170" width="352" height="1" fill="#C9A84C" opacity="0.4" />
+          <g fill="#ffffff" opacity="0.5">
+            <rect x="24" y="190" width="100" height="3" />
+            <rect x="24" y="202" width="80" height="3" />
+            <rect x="216" y="190" width="100" height="3" />
+            <rect x="216" y="202" width="80" height="3" />
+          </g>
+        </svg>
+      );
+    case 'influencer':
+      return (
+        <svg {...common}>
+          <defs>
+            <linearGradient id="infBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#E8D5FF" />
+              <stop offset="100%" stopColor="#FFD5E8" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#infBg)" />
+          <circle cx="200" cy="60" r="28" fill="#ffffff" opacity="0.85" />
+          <rect x="160" y="100" width="80" height="6" rx="3" fill="#7c3aed" opacity="0.6" />
+          <rect x="80" y="130" width="240" height="34" rx="17" fill="#ffffff" opacity="0.55" />
+          <rect x="80" y="174" width="240" height="34" rx="17" fill="#ffffff" opacity="0.55" />
+          <rect x="80" y="218" width="240" height="34" rx="17" fill="#ffffff" opacity="0.55" />
+        </svg>
+      );
+    case 'swiss':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#ffffff" />
+          <line x1="100" y1="0" x2="100" y2="300" stroke="#E8390E" strokeWidth="1" />
+          <line x1="0" y1="80" x2="400" y2="80" stroke="#E8390E" strokeWidth="1" />
+          <text x="24" y="62" fontFamily="Helvetica, Arial" fontWeight="700" fontSize="40" fill="#0a0a0a">Helvetica.</text>
+          <rect x="110" y="100" width="180" height="6" fill="#0a0a0a" />
+          <rect x="110" y="118" width="240" height="3" fill="#9ca3af" />
+          <rect x="110" y="130" width="200" height="3" fill="#9ca3af" />
+          <rect x="110" y="142" width="220" height="3" fill="#9ca3af" />
+          <rect x="110" y="200" width="80" height="80" fill="#E8390E" />
+          <rect x="200" y="200" width="80" height="80" fill="#0a0a0a" />
+        </svg>
+      );
+    case 'noir':
+      return (
+        <svg {...common}>
+          <defs>
+            <filter id="noirGrain">
+              <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+              <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.06 0" />
+            </filter>
+          </defs>
+          <rect width="400" height="300" fill="#0a0a0a" />
+          <text x="24" y="80" fontFamily="Georgia, serif" fontSize="38" fill="#ffffff" letterSpacing="2">NOIR</text>
+          <rect x="24" y="110" width="180" height="2" fill="#ffffff" opacity="0.6" />
+          <rect x="24" y="140" width="220" height="2" fill="#ffffff" opacity="0.3" />
+          <rect x="24" y="156" width="200" height="2" fill="#ffffff" opacity="0.3" />
+          <rect x="24" y="172" width="240" height="2" fill="#ffffff" opacity="0.3" />
+          <rect x="24" y="220" width="160" height="60" fill="#ffffff" opacity="0.06" />
+          <rect x="200" y="220" width="160" height="60" fill="#ffffff" opacity="0.06" />
+          <rect width="400" height="300" filter="url(#noirGrain)" opacity="0.5" />
+        </svg>
+      );
+    case 'gaspar':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#FAF7F0" />
+          <text x="24" y="60" fontFamily="Georgia, serif" fontStyle="italic" fontSize="28" fill="#0a0a0a">Gaspar.</text>
+          <rect x="24" y="80" width="60" height="1" fill="#0a0a0a" />
+          <g fill="#3a3a3a">
+            <rect x="24" y="120" width="160" height="3" />
+            <rect x="24" y="134" width="140" height="3" />
+            <rect x="24" y="148" width="160" height="3" />
+            <rect x="24" y="162" width="120" height="3" />
+            <rect x="24" y="176" width="150" height="3" />
+            <rect x="216" y="120" width="160" height="3" />
+            <rect x="216" y="134" width="140" height="3" />
+            <rect x="216" y="148" width="160" height="3" />
+            <rect x="216" y="162" width="120" height="3" />
+            <rect x="216" y="176" width="150" height="3" />
+          </g>
+        </svg>
+      );
+    case 'destello':
+      return (
+        <svg {...common}>
+          <defs>
+            <linearGradient id="destBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FF3CAC" />
+              <stop offset="100%" stopColor="#784BA0" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#destBg)" />
+          <g fontFamily="Georgia, serif" fill="#ffffff">
+            <text x="24" y="80" fontSize="42" fontWeight="700">01</text>
+            <rect x="100" y="60" width="200" height="4" fill="#ffffff" />
+            <rect x="100" y="74" width="160" height="3" fill="#ffffff" opacity="0.6" />
+            <text x="24" y="160" fontSize="42" fontWeight="700">02</text>
+            <rect x="100" y="140" width="200" height="4" fill="#ffffff" />
+            <rect x="100" y="154" width="160" height="3" fill="#ffffff" opacity="0.6" />
+            <text x="24" y="240" fontSize="42" fontWeight="700">03</text>
+            <rect x="100" y="220" width="200" height="4" fill="#ffffff" />
+            <rect x="100" y="234" width="160" height="3" fill="#ffffff" opacity="0.6" />
+          </g>
+        </svg>
+      );
+    case 'frqncy':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#0a0a0a" />
+          <polygon points="0,0 200,0 100,80 0,80" fill="#39FF14" opacity="0.2" />
+          <polygon points="400,300 200,300 300,220 400,220" fill="#BF5AF2" opacity="0.25" />
+          <rect x="20" y="100" width="160" height="80" rx="10" fill="#111" stroke="#39FF14" />
+          <rect x="200" y="100" width="180" height="40" rx="10" fill="#111" stroke="#BF5AF2" />
+          <rect x="200" y="150" width="80" height="30" rx="10" fill="#39FF14" />
+          <rect x="290" y="150" width="90" height="30" rx="10" fill="#BF5AF2" />
+          <rect x="20" y="200" width="360" height="60" rx="10" fill="#111" stroke="#39FF14" />
+        </svg>
+      );
+    case 'arpeggio':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#111111" />
+          <rect x="20" y="30" width="110" height="140" rx="4" fill="#1c1c1c" stroke="#FFD700" strokeWidth="0.5" />
+          <rect x="145" y="60" width="110" height="140" rx="4" fill="#1c1c1c" stroke="#FFD700" strokeWidth="0.5" />
+          <rect x="270" y="40" width="110" height="140" rx="4" fill="#1c1c1c" stroke="#FFD700" strokeWidth="0.5" />
+          <rect x="20" y="185" width="110" height="4" fill="#FFD700" />
+          <rect x="145" y="215" width="110" height="4" fill="#FFD700" />
+          <rect x="270" y="195" width="110" height="4" fill="#FFD700" />
+        </svg>
+      );
+    case 'nakula':
+      return (
+        <svg {...common}>
+          <defs>
+            <linearGradient id="nakBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#f8f6f3" />
+              <stop offset="100%" stopColor="#eae6df" />
+            </linearGradient>
+          </defs>
+          <rect width="400" height="300" fill="url(#nakBg)" />
+          <rect x="40" y="40" width="320" height="220" rx="20" fill="#ffffff" opacity="0.55" />
+          <text x="60" y="100" fontFamily="Georgia, serif" fontSize="22" fill="#0a0a0a">Nakula</text>
+          <rect x="60" y="120" width="140" height="2" fill="#0a0a0a" opacity="0.3" />
+          <rect x="60" y="160" width="280" height="3" fill="#0a0a0a" opacity="0.2" />
+          <rect x="60" y="174" width="240" height="3" fill="#0a0a0a" opacity="0.2" />
+          <rect x="60" y="188" width="260" height="3" fill="#0a0a0a" opacity="0.2" />
+        </svg>
+      );
+    case 'niju-bold':
+      return (
+        <svg {...common}>
+          <rect width="400" height="300" fill="#ffffff" />
+          <rect x="20" y="80" width="320" height="40" fill="#0a0a0a" />
+          <rect x="20" y="130" width="120" height="4" fill="#E8390E" />
+          <rect x="20" y="170" width="200" height="3" fill="#9ca3af" />
+          <rect x="20" y="184" width="160" height="3" fill="#9ca3af" />
+        </svg>
+      );
     case 'minimal-saas':
       return (
-        <div className="h-full w-full bg-[#FAFBFC] p-3 flex flex-col">
-          <div className="flex items-center gap-1 mb-2">
-            <div className="h-1.5 w-6 bg-[#111827] rounded" />
-            <div className="h-1.5 w-1.5 rounded-full bg-[#6366F1]" />
-          </div>
-          <div className="h-2 w-14 bg-[#111827] rounded mb-1" />
-          <div className="h-1 w-10 bg-[#6366F1] rounded mb-3" />
-          <div className="flex-1 grid grid-cols-2 gap-1.5">
-            <div className="bg-white rounded border border-[#E5E7EB] p-1">
-              <div className="h-1 w-6 bg-[#111827]/60 rounded mb-0.5" />
-              <div className="h-1 w-4 bg-[#6366F1]/30 rounded" />
-            </div>
-            <div className="bg-white rounded border border-[#E5E7EB] p-1">
-              <div className="h-1 w-6 bg-[#111827]/60 rounded mb-0.5" />
-              <div className="h-1 w-4 bg-[#6366F1]/30 rounded" />
-            </div>
-          </div>
-        </div>
+        <svg {...common}>
+          <rect width="400" height="300" fill="#ffffff" />
+          <rect x="0" y="0" width="400" height="32" fill="#f3f4f6" />
+          <rect x="20" y="12" width="60" height="8" fill="#0a0a0a" />
+          <rect x="300" y="12" width="50" height="8" rx="2" fill="#0EA5E9" />
+          <rect x="0" y="32" width="100" height="268" fill="#f9fafb" />
+          <rect x="14" y="56" width="72" height="6" fill="#0EA5E9" />
+          <rect x="14" y="76" width="60" height="4" fill="#9ca3af" />
+          <rect x="14" y="92" width="60" height="4" fill="#9ca3af" />
+          <rect x="14" y="108" width="60" height="4" fill="#9ca3af" />
+          <rect x="120" y="56" width="160" height="10" fill="#0a0a0a" />
+          <rect x="120" y="76" width="240" height="3" fill="#9ca3af" />
+          <rect x="120" y="86" width="200" height="3" fill="#9ca3af" />
+          <rect x="120" y="120" width="120" height="80" rx="6" fill="#f3f4f6" />
+          <rect x="252" y="120" width="120" height="80" rx="6" fill="#f3f4f6" />
+        </svg>
       );
-
     default:
       return (
-        <div className="h-full w-full bg-gray-100 p-3 flex items-center justify-center">
-          <div className="h-2 w-12 bg-gray-300 rounded" />
-        </div>
+        <svg {...common}>
+          <rect width="400" height="300" fill="#1a1a1a" />
+          <rect x="40" y="120" width="320" height="60" rx="6" fill="#2a2a2a" />
+        </svg>
       );
   }
 };
 
-export function TemplateCard({ 
-  id, 
-  name, 
-  description, 
-  isSelected, 
+export function TemplateCard({
+  id,
+  name,
+  description,
+  isSelected,
   onSelect,
   isFavorite = false,
   onToggleFavorite,
@@ -265,7 +367,6 @@ export function TemplateCard({
 
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // First select the template, then navigate to templates section
     onSelect();
     navigate(`/dashboard?section=profile`);
   };
@@ -276,87 +377,59 @@ export function TemplateCard({
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      whileTap={{ scale: 0.98 }}
+    <div
+      onClick={onSelect}
       className={cn(
-        "group relative w-full rounded-xl overflow-hidden transition-all duration-300",
-        "bg-card border-2",
+        'group relative cursor-pointer overflow-hidden transition-all duration-200',
+        'rounded-[12px] bg-[#1A1A1A]',
         isSelected
-          ? "border-primary ring-2 ring-primary/20 shadow-lg"
-          : "border-border hover:border-primary/40 hover:shadow-md"
+          ? 'border-2 border-[#E8390E] shadow-[0_0_0_4px_rgba(232,57,14,0.12)]'
+          : 'border border-white/[0.08] hover:border-[rgba(232,57,14,0.4)] hover:-translate-y-[2px]'
       )}
     >
-      {/* Selection indicator */}
       {isSelected && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="absolute top-3 left-3 z-20 h-6 w-6 rounded-full bg-primary flex items-center justify-center shadow-lg"
-        >
-          <Check className="h-3.5 w-3.5 text-primary-foreground" />
-        </motion.div>
+        <div className="absolute top-2 left-2 z-20 h-6 w-6 rounded-full bg-[#E8390E] flex items-center justify-center shadow-md">
+          <Check className="h-3.5 w-3.5 text-white" />
+        </div>
       )}
 
-      {/* Action Buttons - Top Right */}
       <div className="absolute top-2 right-2 z-20 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          size="icon"
-          variant="secondary"
-          className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md hover:bg-background"
+        <button
           onClick={handleFavoriteClick}
+          className="h-7 w-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-black/80"
+          aria-label="Favorite"
         >
-          <Heart 
+          <Heart
             className={cn(
-              "h-4 w-4 transition-colors",
-              isFavorite 
-                ? "fill-red-500 text-red-500" 
-                : "text-muted-foreground hover:text-red-500"
-            )} 
+              'h-3.5 w-3.5 transition-colors',
+              isFavorite ? 'fill-red-500 text-red-500' : 'text-white/70 hover:text-red-400'
+            )}
           />
-        </Button>
-        <Button
-          size="icon"
-          variant="secondary"
-          className="h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md hover:bg-background"
+        </button>
+        <button
           onClick={handleEditClick}
+          className="h-7 w-7 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-black/80"
+          aria-label="Edit"
         >
-          <Pencil className="h-4 w-4 text-muted-foreground" />
-        </Button>
+          <Pencil className="h-3.5 w-3.5 text-white/70" />
+        </button>
       </div>
 
-      {/* Clickable area for selection */}
-      <button
-        onClick={onSelect}
-        className="w-full text-left flex flex-col h-full"
-      >
-        {/* Mini Preview */}
-        <div className="aspect-video w-full overflow-hidden shrink-0">
-          <motion.div
-            className="h-full w-full"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.3 }}
-          >
-            <TemplatePreviewContent id={id} />
-          </motion.div>
-        </div>
+      {/* Preview */}
+      <div className="w-full aspect-[4/3] overflow-hidden bg-[#0d0d0d]">
+        <TemplateSVG id={id} />
+      </div>
 
-        {/* Info */}
-        <div className="p-4 bg-card flex flex-col flex-1">
-          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
-            {name}
-          </h3>
-          <p className="text-xs text-muted-foreground mt-1 line-clamp-2 min-h-[2rem]">
-            {description}
-          </p>
-        </div>
-      </button>
-
-      {/* Hover overlay */}
-      <div className={cn(
-        "absolute inset-0 bg-primary/5 opacity-0 transition-opacity duration-300 pointer-events-none",
-        "group-hover:opacity-100"
-      )} />
-    </motion.div>
+      {/* Footer */}
+      <div className="bg-[#1A1A1A] px-[14px] py-3">
+        <h3 className="text-[13px] font-semibold text-white leading-tight truncate">{name}</h3>
+        <p
+          className="text-[11px] mt-[2px] text-white/45 line-clamp-2"
+          style={{ lineHeight: 1.4 }}
+        >
+          {description}
+        </p>
+      </div>
+    </div>
   );
 }
