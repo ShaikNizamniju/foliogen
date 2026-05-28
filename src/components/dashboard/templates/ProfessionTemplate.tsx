@@ -44,28 +44,24 @@ function ProfessionIcon({ name, className }: { name: string; className?: string 
 }
 
 /**
- * Returns the items to render for a section. Prefers populated profile data
- * when semantically aligned; otherwise falls back to bespoke sample copy
- * from the registry so every preview feels rich on a fresh profile.
+ * Returns the items to render for a section based ONLY on populated profile
+ * data. Never falls back to sample copy — empty profiles render empty states
+ * so no placeholder/ghost content leaks into live previews or public views.
  */
-function itemsFor(block: SectionBlock, profile: ProfileData, meta: TemplateMeta): SampleItem[] {
-  const sample = meta.samples[block.key] ?? [];
-
+function itemsFor(block: SectionBlock, profile: ProfileData, _meta: TemplateMeta): SampleItem[] {
   if (block.kind === 'timeline' && profile.workExperience?.length) {
-    const mapped = profile.workExperience.slice(0, 6).map((w) => ({
+    return profile.workExperience.slice(0, 6).map((w) => ({
       title: `${w.jobTitle}${w.company ? ` · ${w.company}` : ''}`,
       caption: w.description?.slice(0, 120),
       meta: `${w.startDate || ''}${w.current ? ' — Now' : w.endDate ? ` — ${w.endDate}` : ''}`.trim(),
     }));
-    return mapped.length ? mapped : sample;
   }
 
   if (block.kind === 'cards' && profile.projects?.length) {
-    const mapped = profile.projects.slice(0, 4).map((p) => ({
+    return profile.projects.slice(0, 4).map((p) => ({
       title: p.title,
       caption: p.description?.slice(0, 160),
     }));
-    return mapped.length ? mapped : sample;
   }
 
   if (block.kind === 'pill-cloud' && profile.skills?.length) {
@@ -76,8 +72,9 @@ function itemsFor(block: SectionBlock, profile: ProfileData, meta: TemplateMeta)
     return profile.keyHighlights.slice(0, 8).map((s) => ({ title: s }));
   }
 
-  return sample;
+  return [];
 }
+
 
 /* ── Structural primitives (theme-aware via parent's text/bg classes) ──── */
 
