@@ -231,109 +231,105 @@ const TemplateSVG = ({ id }: { id: string }) => {
       );
     case 'gaspar':
       return (
-        <svg {...common}>
-          <rect width="400" height="300" fill="#FAF7F0" />
-          <circle cx="22" cy="22" r="2" fill="#1a1a1a" />
-          <circle cx="32" cy="22" r="2" fill="#1a1a1a" />
-          <circle cx="42" cy="22" r="2" fill="#1a1a1a" />
-          <text x="378" y="25" textAnchor="end" fontFamily="Georgia, serif" fontSize="9" letterSpacing="1.5" fill="#1a1a1a">WORK  ABOUT  CONTACT</text>
-          <rect x="24" y="70" width="320" height="32" fill="#1a1a1a" />
-          <rect x="24" y="112" width="240" height="24" fill="#1a1a1a" />
-          <rect x="24" y="160" width="352" height="1" fill="#1a1a1a" opacity="0.3" />
-          <g fill="#1a1a1a" opacity="0.55">
-            <rect x="24" y="176" width="150" height="3" />
-            <rect x="24" y="186" width="130" height="3" />
-            <rect x="24" y="196" width="150" height="3" />
-            <rect x="216" y="176" width="150" height="3" />
-            <rect x="216" y="186" width="130" height="3" />
-            <rect x="216" y="196" width="150" height="3" />
-          </g>
-          <text x="24" y="276" fontFamily="Georgia, serif" fontSize="11" letterSpacing="2" fill="#1a1a1a">GASPAR</text>
-          <g fill="#1a1a1a" opacity="0.7">
-            <circle cx="320" cy="272" r="4" />
-            <circle cx="340" cy="272" r="4" />
-            <circle cx="360" cy="272" r="4" />
-          </g>
+        <svg viewBox="0 0 320 213" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+          <rect width="320" height="213" fill="#FAF7F0" />
+          <rect x="20" y="16" width="60" height="7" rx="2" fill="#1a1a1a" />
+          <rect x="220" y="16" width="30" height="5" rx="1" fill="#888" />
+          <rect x="256" y="16" width="24" height="5" rx="1" fill="#888" />
+          <rect x="20" y="40" width="160" height="18" rx="2" fill="#1a1a1a" />
+          <rect x="20" y="64" width="120" height="14" rx="2" fill="#1a1a1a" />
+          <rect x="20" y="88" width="280" height="1" fill="#d4cfc8" />
+          <rect x="20" y="100" width="130" height="6" rx="1" fill="#888" />
+          <rect x="20" y="112" width="110" height="6" rx="1" fill="#aaa" />
+          <rect x="170" y="100" width="130" height="6" rx="1" fill="#888" />
+          <rect x="170" y="112" width="100" height="6" rx="1" fill="#aaa" />
+          <rect x="20" y="195" width="40" height="5" rx="1" fill="#1a1a1a" />
+          <rect x="240" y="195" width="25" height="5" rx="1" fill="#888" />
+          <rect x="270" y="195" width="25" height="5" rx="1" fill="#888" />
         </svg>
       );
     case 'destello':
       return (
-        <svg {...common}>
+        <svg viewBox="0 0 320 213" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
           <defs>
-            <linearGradient id="destBg" x1="0" y1="0" x2="1" y2="1">
+            <linearGradient id="dg" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#1a0533" />
               <stop offset="100%" stopColor="#2d1065" />
             </linearGradient>
           </defs>
-          <rect width="400" height="300" fill="url(#destBg)" />
-          <text x="24" y="32" fontFamily="Inter, sans-serif" fontSize="13" fontWeight="700" fill="#ffffff">destello</text>
-          <text x="24" y="84" fontFamily="Inter, sans-serif" fontSize="28" fontWeight="700" fill="#FF3CAC">01</text>
-          <rect x="70" y="74" width="220" height="8" fill="#ffffff" opacity="0.85" />
-          <text x="24" y="138" fontFamily="Inter, sans-serif" fontSize="28" fontWeight="700" fill="#FF3CAC">02</text>
-          <rect x="70" y="128" width="220" height="8" fill="#ffffff" opacity="0.85" />
-          <text x="24" y="192" fontFamily="Inter, sans-serif" fontSize="28" fontWeight="700" fill="#FF3CAC">03</text>
-          <rect x="70" y="182" width="220" height="8" fill="#ffffff" opacity="0.85" />
-          <rect x="24" y="220" width="60" height="20" rx="4" fill="#FF3CAC" />
-          <rect x="24" y="268" width="352" height="1" fill="#FF3CAC" opacity="0.6" />
+          <rect width="320" height="213" fill="url(#dg)" />
+          <rect x="20" y="16" width="70" height="9" rx="2" fill="#ffffff" />
+          <text x="20" y="65" fontSize="28" fontWeight="bold" fill="#FF3CAC" fontFamily="serif">01</text>
+          <rect x="20" y="72" width="100" height="6" rx="1" fill="rgba(255,255,255,0.6)" />
+          <text x="20" y="115" fontSize="28" fontWeight="bold" fill="#FF3CAC" fontFamily="serif">02</text>
+          <rect x="20" y="122" width="80" height="6" rx="1" fill="rgba(255,255,255,0.6)" />
+          <text x="20" y="165" fontSize="28" fontWeight="bold" fill="#FF3CAC" fontFamily="serif">03</text>
+          <rect x="20" y="172" width="90" height="6" rx="1" fill="rgba(255,255,255,0.6)" />
+          <rect x="20" y="190" width="60" height="14" rx="3" fill="#FF3CAC" />
+          <rect x="200" y="50" width="100" height="140" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(255,60,172,0.3)" strokeWidth="1" />
+          <rect x="215" y="70" width="70" height="6" rx="1" fill="rgba(255,255,255,0.4)" />
+          <rect x="215" y="84" width="55" height="6" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="215" y="98" width="60" height="6" rx="1" fill="rgba(255,255,255,0.3)" />
         </svg>
       );
     case 'frqncy':
       return (
-        <svg {...common}>
-          <rect width="400" height="300" fill="#0a0a0a" />
-          <text x="20" y="26" fontFamily="Inter, sans-serif" fontWeight="700" fontSize="12" fill="#ffffff">FRQNCY</text>
-          <g fill="#ffffff" opacity="0.7">
-            <rect x="300" y="20" width="20" height="3" />
-            <rect x="330" y="20" width="20" height="3" />
-            <rect x="360" y="20" width="20" height="3" />
-          </g>
-          <text x="20" y="78" fontFamily="Inter, sans-serif" fontWeight="800" fontSize="24" fill="#39FF14" letterSpacing="1">YOUR NAME</text>
-          <rect x="20" y="100" width="150" height="80" rx="6" fill="#39FF14" />
-          <rect x="180" y="100" width="200" height="80" rx="6" fill="#0a0a0a" stroke="#1a1a1a" strokeWidth="2" />
-          <rect x="20" y="190" width="80" height="80" rx="6" fill="#BF5AF2" />
-          <g fill="#ffffff" opacity="0.7">
-            <rect x="115" y="200" width="180" height="4" />
-            <rect x="115" y="214" width="220" height="4" />
-            <rect x="115" y="228" width="160" height="4" />
-            <rect x="115" y="242" width="200" height="4" />
-          </g>
-          <line x1="0" y1="300" x2="140" y2="160" stroke="#FF6B1A" strokeWidth="2" />
+        <svg viewBox="0 0 320 213" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+          <rect width="320" height="213" fill="#0a0a0a" />
+          <rect x="20" y="14" width="55" height="8" rx="2" fill="#ffffff" />
+          <rect x="220" y="14" width="30" height="6" rx="1" fill="rgba(255,255,255,0.4)" />
+          <rect x="256" y="14" width="24" height="6" rx="1" fill="rgba(255,255,255,0.4)" />
+          <rect x="20" y="40" width="180" height="22" rx="2" fill="#39FF14" />
+          <rect x="20" y="72" width="140" height="60" rx="4" fill="#39FF14" opacity="0.9" />
+          <rect x="170" y="72" width="130" height="60" rx="4" fill="#1a1a1a" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+          <rect x="185" y="87" width="70" height="5" rx="1" fill="rgba(255,255,255,0.5)" />
+          <rect x="185" y="98" width="50" height="5" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="20" y="142" width="80" height="40" rx="4" fill="#BF5AF2" />
+          <rect x="110" y="142" width="190" height="40" rx="4" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+          <rect x="125" y="155" width="80" height="5" rx="1" fill="rgba(255,255,255,0.4)" />
+          <line x1="0" y1="213" x2="60" y2="150" stroke="#E8390E" strokeWidth="1.5" opacity="0.6" />
         </svg>
       );
     case 'arpeggio':
       return (
-        <svg {...common}>
-          <rect width="400" height="300" fill="#0f0f0f" />
-          <rect x="24" y="0" width="108" height="135" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
-          <rect x="24" y="0" width="108" height="2" fill="#FFD700" />
-          <rect x="146" y="45" width="108" height="135" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
-          <rect x="268" y="90" width="108" height="135" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
-          <g fill="#ffffff" opacity="0.6">
-            <rect x="34" y="18" width="80" height="3" />
-            <rect x="34" y="28" width="60" height="3" />
-            <rect x="156" y="63" width="80" height="3" />
-            <rect x="156" y="73" width="60" height="3" />
-            <rect x="278" y="108" width="80" height="3" />
-            <rect x="278" y="118" width="60" height="3" />
-          </g>
+        <svg viewBox="0 0 320 213" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+          <rect width="320" height="213" fill="#0f0f0f" />
+          <rect x="20" y="10" width="90" height="85" rx="4" fill="#1a1a1a" stroke="rgba(255,215,0,0.8)" strokeWidth="2" />
+          <rect x="32" y="22" width="66" height="5" rx="1" fill="rgba(255,255,255,0.5)" />
+          <rect x="32" y="33" width="50" height="5" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="32" y="44" width="58" height="5" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="118" y="30" width="90" height="85" rx="4" fill="#1a1a1a" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <rect x="130" y="42" width="66" height="5" rx="1" fill="rgba(255,255,255,0.5)" />
+          <rect x="130" y="53" width="50" height="5" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="130" y="64" width="58" height="5" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="216" y="50" width="90" height="85" rx="4" fill="#1a1a1a" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <rect x="228" y="62" width="66" height="5" rx="1" fill="rgba(255,255,255,0.5)" />
+          <rect x="228" y="73" width="50" height="5" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="228" y="84" width="58" height="5" rx="1" fill="rgba(255,255,255,0.3)" />
+          <rect x="20" y="115" width="280" height="6" rx="1" fill="rgba(255,255,255,0.06)" />
+          <rect x="20" y="130" width="200" height="6" rx="1" fill="rgba(255,255,255,0.06)" />
+          <rect x="20" y="145" width="240" height="6" rx="1" fill="rgba(255,255,255,0.06)" />
         </svg>
       );
     case 'nakula':
       return (
-        <svg {...common}>
+        <svg viewBox="0 0 320 213" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
           <defs>
-            <pattern id="nakDots" width="8" height="8" patternUnits="userSpaceOnUse">
-              <circle cx="2" cy="2" r="1" fill="rgba(0,0,0,0.06)" />
+            <pattern id="nakDots" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+              <circle cx="6" cy="6" r="1" fill="rgba(0,0,0,0.07)" />
             </pattern>
           </defs>
-          <rect width="400" height="300" fill="rgba(255,255,255,0.92)" />
-          <rect width="400" height="300" fill="url(#nakDots)" />
-          <circle cx="200" cy="80" r="20" fill="rgba(0,0,0,0.08)" />
-          <text x="200" y="135" textAnchor="middle" fontFamily="Georgia, serif" fontSize="14" fill="#1a1a1a">Nakula Sharma</text>
-          <text x="200" y="155" textAnchor="middle" fontFamily="Georgia, serif" fontSize="10" fill="#1a1a1a" opacity="0.6">Product Designer</text>
-          <rect x="130" y="180" width="140" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.18)" />
-          <rect x="130" y="210" width="140" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.18)" />
-          <rect x="130" y="240" width="140" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.18)" />
+          <rect width="320" height="213" fill="#f8f8ff" />
+          <rect width="320" height="213" fill="url(#nakDots)" />
+          <circle cx="160" cy="55" r="22" fill="rgba(0,0,0,0.07)" />
+          <rect x="110" y="88" width="100" height="10" rx="3" fill="rgba(0,0,0,0.15)" />
+          <rect x="120" y="104" width="80" height="7" rx="2" fill="rgba(0,0,0,0.08)" />
+          <rect x="90" y="124" width="140" height="1" fill="rgba(0,0,0,0.08)" />
+          <rect x="75" y="136" width="170" height="24" rx="12" fill="transparent" stroke="rgba(0,0,0,0.15)" strokeWidth="1" />
+          <rect x="90" y="144" width="140" height="8" rx="2" fill="rgba(0,0,0,0.1)" />
+          <rect x="95" y="172" width="50" height="20" rx="10" fill="transparent" stroke="rgba(0,0,0,0.12)" strokeWidth="1" />
+          <rect x="135" y="172" width="50" height="20" rx="10" fill="transparent" stroke="rgba(0,0,0,0.12)" strokeWidth="1" />
+          <rect x="175" y="172" width="50" height="20" rx="10" fill="transparent" stroke="rgba(0,0,0,0.12)" strokeWidth="1" />
         </svg>
       );
     case 'niju-bold':
