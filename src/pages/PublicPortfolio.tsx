@@ -29,6 +29,8 @@ import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
 import { HeroBoldTemplate } from '@/components/templates/HeroBoldTemplate';
 import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
+import { ProfessionTemplate } from '@/components/dashboard/templates/ProfessionTemplate';
+import { PROFESSION_TEMPLATE_IDS } from '@/lib/professionTemplates';
 import { useViewTracker } from '@/hooks/useViewTracker';
 import { useRecruiterPulse } from '@/hooks/useRecruiterPulse';
 
@@ -317,6 +319,11 @@ export default function PublicPortfolio() {
   const renderTemplate = () => {
     const displayProfile = { ...profile, photoUrl: profile.hidePhoto ? "" : profile.photoUrl };
     const templateProps = { profile: displayProfile, onContactClick: () => setContactOpen(true) };
+
+    // Profession templates (20) all route through one renderer
+    if (PROFESSION_TEMPLATE_IDS.has(profile.selectedTemplate as string)) {
+      return <ProfessionTemplate profile={displayProfile} templateId={profile.selectedTemplate as string} />;
+    }
 
     switch (profile.selectedTemplate) {
       case 'minimalist':

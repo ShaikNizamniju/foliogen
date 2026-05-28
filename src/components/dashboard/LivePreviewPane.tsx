@@ -11,6 +11,8 @@ import { InfluencerTemplate } from "./templates/InfluencerTemplate";
 import { SwissTemplate } from "./templates/SwissTemplate";
 import { NoirTemplate } from "./templates/NoirTemplate";
 import { ModernDarkTemplate } from "./templates/ModernDarkTemplate";
+import { ProfessionTemplate } from "./templates/ProfessionTemplate";
+import { PROFESSION_TEMPLATE_IDS } from "@/lib/professionTemplates";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Eye, Smartphone, Monitor, ChevronRight } from "lucide-react";
 import { FONT_OPTIONS, FontChoice } from "@/contexts/ProfileContext";
@@ -133,8 +135,27 @@ export function LivePreviewPane() {
                       photoUrl: profile.hidePhoto ? "" : profile.photoUrl 
                     };
 
+                    // Profession templates (20) — single shared renderer
+                    if (PROFESSION_TEMPLATE_IDS.has(profile.selectedTemplate as string)) {
+                      return <ProfessionTemplate profile={displayProfile} templateId={profile.selectedTemplate as string} />;
+                    }
+
                     switch (profile.selectedTemplate) {
                       case "modern-dark": return <ModernDarkTemplate profile={displayProfile} />;
+                      case "minimalist": return <MinimalistTemplate profile={displayProfile} />;
+                      case "creative": return <CreativeTemplate profile={displayProfile} />;
+                      case "saas": return <SaasTemplate profile={displayProfile} />;
+                      case "dev": return <DevTemplate profile={displayProfile} />;
+                      case "brutalist": return <BrutalistTemplate profile={displayProfile} />;
+                      case "academic": return <AcademicTemplate profile={displayProfile} />;
+                      case "studio": return <StudioTemplate profile={displayProfile} />;
+                      case "executive": return <ExecutiveTemplate profile={displayProfile} />;
+                      case "influencer": return <InfluencerTemplate profile={displayProfile} />;
+                      case "swiss": return <SwissTemplate profile={displayProfile} />;
+                      case "noir": return <NoirTemplate profile={displayProfile} />;
+                      default: return <ModernDarkTemplate profile={displayProfile} />;
+                    }
+                  })()}
                       case "minimalist": return <MinimalistTemplate profile={displayProfile} />;
                       case "creative": return <CreativeTemplate profile={displayProfile} />;
                       case "saas": return <SaasTemplate profile={displayProfile} />;
