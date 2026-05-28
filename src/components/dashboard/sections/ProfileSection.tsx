@@ -115,46 +115,58 @@ export function ProfileSection() {
         );
       case 'skills':
         return <SkillsForm />;
-      case 'font':
+      case 'font': {
+        const sizeMap: Record<string, string> = { sm: '0.875rem', base: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem' };
+        const activeFontId = profile.selectedFont || 'default';
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-foreground mb-1">Typography & Formatting</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Customize the typography and layout for your entire portfolio page. Word-style controls for real-time edits.
+              <div className="flex items-center gap-3 mb-2">
+                <span className="block h-[2px] w-6 bg-[#E8390E]" aria-hidden />
+                <h3 className="text-[20px] font-bold text-white" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+                  Portfolio Font
+                </h3>
+              </div>
+              <p className="text-[13px] text-white/45">
+                Pick a typeface for your entire portfolio. Live preview updates instantly.
               </p>
             </div>
-            
-            <div className="flex flex-wrap gap-4 items-center p-2 rounded-lg border border-border bg-muted/30 w-full max-w-3xl">
-              {/* Font Family */}
-              <div className="w-48">
-                 <Select value={profile.selectedFont || 'default'} onValueChange={handleFontChange}>
-                   <SelectTrigger className="h-10">
-                     <SelectValue placeholder="Select a font" />
-                   </SelectTrigger>
-                   <SelectContent>
-                     <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Classic</div>
-                     {FONT_OPTIONS.filter(f => (f.category || 'Classic') === 'Classic').map(font => (
-                       <SelectItem key={font.id} value={font.id}>
-                         <span style={{ fontFamily: font.preview }}>{font.label}</span>
-                       </SelectItem>
-                     ))}
-                     <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-1">Modern</div>
-                     {FONT_OPTIONS.filter(f => f.category === 'Modern').map(font => (
-                       <SelectItem key={font.id} value={font.id}>
-                         <span style={{ fontFamily: font.preview }}>{font.label}</span>
-                       </SelectItem>
-                     ))}
-                   </SelectContent>
-                 </Select>
-              </div>
-              
-              <div className="w-px h-8 bg-border hidden sm:block"></div>
-              
-              {/* Font Size */}
-              <div className="w-24">
+
+            {/* Font Cards Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {FONT_OPTIONS.map((font) => {
+                const isActive = activeFontId === font.id;
+                return (
+                  <button
+                    key={font.id}
+                    type="button"
+                    onClick={() => handleFontChange(font.id)}
+                    className={cn(
+                      'group text-left rounded-[10px] bg-[#1A1A1A] px-4 py-4 transition-all duration-200',
+                      isActive
+                        ? 'border-2 border-[#E8390E] shadow-[0_0_0_3px_rgba(232,57,14,0.12)]'
+                        : 'border border-white/[0.08] hover:border-white/20'
+                    )}
+                  >
+                    <div
+                      className="text-[18px] text-white leading-none mb-2 truncate"
+                      style={{ fontFamily: font.preview }}
+                    >
+                      {font.label}
+                    </div>
+                    <div className="text-[10px] uppercase tracking-[0.12em] text-white/35">
+                      {font.category || 'Classic'}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Formatting toolbar */}
+            <div className="flex flex-wrap gap-3 items-center p-3 rounded-[10px] border border-white/[0.08] bg-[#1A1A1A] w-full">
+              <div className="w-28">
                 <Select value={profile.fontConfig?.size || 'base'} onValueChange={(v) => handleFontConfigChange({ size: v })}>
-                  <SelectTrigger className="h-10">
+                  <SelectTrigger className="h-9 bg-transparent border-white/10 text-white text-xs">
                     <SelectValue placeholder="Size" />
                   </SelectTrigger>
                   <SelectContent>
@@ -166,89 +178,49 @@ export function ProfileSection() {
                   </SelectContent>
                 </Select>
               </div>
-
-              <div className="w-px h-8 bg-border hidden sm:block"></div>
-
-              {/* Toggles: B, I, U */}
+              <div className="w-px h-7 bg-white/10 hidden sm:block" />
               <div className="flex items-center gap-1">
-                 <Button 
-                   variant={profile.fontConfig?.isBold ? 'secondary' : 'ghost'} 
-                   size="icon" className="h-10 w-10"
-                   onClick={() => handleFontConfigChange({ isBold: !profile.fontConfig?.isBold })}
-                 >
-                   <Bold className="h-4 w-4" />
-                 </Button>
-                 <Button 
-                   variant={profile.fontConfig?.isItalic ? 'secondary' : 'ghost'} 
-                   size="icon" className="h-10 w-10"
-                   onClick={() => handleFontConfigChange({ isItalic: !profile.fontConfig?.isItalic })}
-                 >
-                   <Italic className="h-4 w-4" />
-                 </Button>
-                 <Button 
-                   variant={profile.fontConfig?.isUnderline ? 'secondary' : 'ghost'} 
-                   size="icon" className="h-10 w-10"
-                   onClick={() => handleFontConfigChange({ isUnderline: !profile.fontConfig?.isUnderline })}
-                 >
-                   <Underline className="h-4 w-4" />
-                 </Button>
+                <Button variant={profile.fontConfig?.isBold ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
+                  onClick={() => handleFontConfigChange({ isBold: !profile.fontConfig?.isBold })}><Bold className="h-4 w-4" /></Button>
+                <Button variant={profile.fontConfig?.isItalic ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
+                  onClick={() => handleFontConfigChange({ isItalic: !profile.fontConfig?.isItalic })}><Italic className="h-4 w-4" /></Button>
+                <Button variant={profile.fontConfig?.isUnderline ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
+                  onClick={() => handleFontConfigChange({ isUnderline: !profile.fontConfig?.isUnderline })}><Underline className="h-4 w-4" /></Button>
               </div>
-
-              <div className="w-px h-8 bg-border hidden sm:block"></div>
-
-              {/* Alignment */}
+              <div className="w-px h-7 bg-white/10 hidden sm:block" />
               <div className="flex items-center gap-1">
-                 <Button 
-                   variant={profile.fontConfig?.alignment === 'left' ? 'secondary' : 'ghost'} 
-                   size="icon" className="h-10 w-10"
-                   onClick={() => handleFontConfigChange({ alignment: 'left' })}
-                 >
-                   <AlignLeft className="h-4 w-4" />
-                 </Button>
-                 <Button 
-                   variant={profile.fontConfig?.alignment === 'center' ? 'secondary' : 'ghost'} 
-                   size="icon" className="h-10 w-10"
-                   onClick={() => handleFontConfigChange({ alignment: 'center' })}
-                 >
-                   <AlignCenter className="h-4 w-4" />
-                 </Button>
-                 <Button 
-                   variant={profile.fontConfig?.alignment === 'right' ? 'secondary' : 'ghost'} 
-                   size="icon" className="h-10 w-10"
-                   onClick={() => handleFontConfigChange({ alignment: 'right' })}
-                 >
-                   <AlignRight className="h-4 w-4" />
-                 </Button>
-                 <Button 
-                   variant={profile.fontConfig?.alignment === 'justify' ? 'secondary' : 'ghost'} 
-                   size="icon" className="h-10 w-10"
-                   onClick={() => handleFontConfigChange({ alignment: 'justify' })}
-                 >
-                   <AlignJustify className="h-4 w-4" />
-                 </Button>
+                <Button variant={profile.fontConfig?.alignment === 'left' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
+                  onClick={() => handleFontConfigChange({ alignment: 'left' })}><AlignLeft className="h-4 w-4" /></Button>
+                <Button variant={profile.fontConfig?.alignment === 'center' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
+                  onClick={() => handleFontConfigChange({ alignment: 'center' })}><AlignCenter className="h-4 w-4" /></Button>
+                <Button variant={profile.fontConfig?.alignment === 'right' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
+                  onClick={() => handleFontConfigChange({ alignment: 'right' })}><AlignRight className="h-4 w-4" /></Button>
+                <Button variant={profile.fontConfig?.alignment === 'justify' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
+                  onClick={() => handleFontConfigChange({ alignment: 'justify' })}><AlignJustify className="h-4 w-4" /></Button>
               </div>
             </div>
 
-            {/* Preview */}
-            <div className="mt-8 p-8 rounded-lg border border-border bg-muted/10 min-h-[250px] flex items-center justify-center overflow-hidden">
+            {/* Live Preview */}
+            <div className="mt-2 p-8 rounded-[10px] border border-white/[0.08] bg-[#111] min-h-[200px]">
               <div
-                className="w-full max-w-2xl"
+                className="w-full max-w-2xl text-white"
                 style={{
-                  fontFamily: FONT_OPTIONS.find(f => f.id === profile.selectedFont)?.preview || 'Inter',
-                  fontSize: Object.create({ sm: '0.875rem', base: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem' })[profile.fontConfig?.size || 'base'],
+                  fontFamily: FONT_OPTIONS.find(f => f.id === activeFontId)?.preview || 'Inter',
+                  fontSize: sizeMap[profile.fontConfig?.size || 'base'],
                   fontWeight: profile.fontConfig?.isBold ? 'bold' : 'normal',
                   fontStyle: profile.fontConfig?.isItalic ? 'italic' : 'normal',
                   textDecoration: profile.fontConfig?.isUnderline ? 'underline' : 'none',
-                  textAlign: profile.fontConfig?.alignment || 'left'
+                  textAlign: profile.fontConfig?.alignment || 'left',
                 }}
               >
-                The quick brown fox jumps over the lazy dog. 
+                The quick brown fox jumps over the lazy dog.
                 <br /><br />
                 Your exact formatting will apply across your live portfolio sections. This preview updates in real-time.
               </div>
             </div>
           </div>
         );
+      }
       case 'resume':
         return <ResumeUpload />;
       case 'linkedin':
