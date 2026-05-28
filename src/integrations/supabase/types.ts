@@ -95,6 +95,45 @@ export type Database = {
         }
         Relationships: []
       }
+      chameleon_links: {
+        Row: {
+          created_at: string
+          data_json: Json
+          id: string
+          industry_context: string | null
+          is_active: boolean
+          slug: string
+          template_name: string | null
+          updated_at: string
+          user_id: string
+          views: number
+        }
+        Insert: {
+          created_at?: string
+          data_json?: Json
+          id?: string
+          industry_context?: string | null
+          is_active?: boolean
+          slug: string
+          template_name?: string | null
+          updated_at?: string
+          user_id: string
+          views?: number
+        }
+        Update: {
+          created_at?: string
+          data_json?: Json
+          id?: string
+          industry_context?: string | null
+          is_active?: boolean
+          slug?: string
+          template_name?: string | null
+          updated_at?: string
+          user_id?: string
+          views?: number
+        }
+        Relationships: []
+      }
       chat_queries: {
         Row: {
           ai_response: string | null
@@ -224,6 +263,42 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      portfolios: {
+        Row: {
+          created_at: string
+          custom_slug: string | null
+          data_json: Json
+          id: string
+          slug: string
+          template_name: string
+          updated_at: string
+          user_id: string
+          views: number
+        }
+        Insert: {
+          created_at?: string
+          custom_slug?: string | null
+          data_json?: Json
+          id?: string
+          slug?: string
+          template_name?: string
+          updated_at?: string
+          user_id: string
+          views?: number
+        }
+        Update: {
+          created_at?: string
+          custom_slug?: string | null
+          data_json?: Json
+          id?: string
+          slug?: string
+          template_name?: string
+          updated_at?: string
+          user_id?: string
+          views?: number
         }
         Relationships: []
       }
