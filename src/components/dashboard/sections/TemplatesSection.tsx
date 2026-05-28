@@ -22,10 +22,17 @@ export function TemplatesSection() {
   const handleReset = async () => {
     if (resetting) return;
     setResetting(true);
+    // Dismiss any in-flight auto-save toast so the user sees the reset result cleanly
+    toast.dismiss('auto-save');
     try {
-      updateProfile({ selectedTemplate: DEFAULT_TEMPLATE as any });
+      // 1. Persist the reset to the DB FIRST (source of truth). saveProfile()
+      //    accepts overrides so we don't have to wait for a re-render.
       const { error } = await saveProfile({ selectedTemplate: DEFAULT_TEMPLATE as any });
       if (error) throw error;
+      // 2. Only after the DB is updated, sync local state. This prevents the
+      //    pending debounced auto-save (1.5s timer) from clobbering the reset
+      //    with stale data and causing the "flash back" the user reported.
+      updateProfile({ selectedTemplate: DEFAULT_TEMPLATE as any });
       toast.success('Reset complete');
     } catch (e) {
       toast.error('Reset failed, please try again');
