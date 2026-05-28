@@ -708,3 +708,73 @@ body {
 
 /* Avatar fallback tint */
 .dashboard-shell .bg-primary\/10 { background-color: rgba(232,57,14,0.12) !important; }
+
+/* ============ Template Card (theme-aware + animations) ============ */
+.tpl-card {
+  background: var(--card);
+  border: 1px solid hsl(var(--border));
+  color: var(--foreground);
+  transition: transform 200ms cubic-bezier(0.4,0,0.2,1),
+              box-shadow 200ms cubic-bezier(0.4,0,0.2,1),
+              border-color 200ms ease;
+}
+.dark .tpl-card {
+  background: #1A1A1A;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.tpl-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+  border-color: rgba(232,57,14,0.4);
+}
+.dark .tpl-card:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+}
+.tpl-card-selected,
+.tpl-card-selected:hover {
+  border: 2px solid #E8390E !important;
+  box-shadow: 0 0 0 4px rgba(232,57,14,0.12);
+}
+.tpl-card-preview { background: #0d0d0d; }
+.tpl-card-footer { background: var(--card); }
+.dark .tpl-card-footer { background: #1A1A1A; }
+.tpl-card-title { color: hsl(var(--foreground)); }
+.tpl-card-desc { color: hsl(var(--muted-foreground)); }
+.dark .tpl-card-title { color: #ffffff; }
+.dark .tpl-card-desc { color: rgba(255,255,255,0.45); }
+
+@keyframes tpl-fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.tpl-card-enter {
+  animation: tpl-fadeSlideUp 320ms ease-out both;
+}
+.tpl-grid > *:nth-child(n+1):nth-child(-n+3)   { animation-delay: 0ms; }
+.tpl-grid > *:nth-child(n+4):nth-child(-n+6)   { animation-delay: 60ms; }
+.tpl-grid > *:nth-child(n+7):nth-child(-n+9)   { animation-delay: 120ms; }
+.tpl-grid > *:nth-child(n+10):nth-child(-n+12) { animation-delay: 180ms; }
+.tpl-grid > *:nth-child(n+13):nth-child(-n+15) { animation-delay: 240ms; }
+.tpl-grid > *:nth-child(n+16):nth-child(-n+18) { animation-delay: 300ms; }
+.tpl-grid > *:nth-child(n+19)                  { animation-delay: 360ms; }
+
+@keyframes tpl-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+.tpl-card.just-selected { animation: tpl-pulse 200ms ease-out; }
+
+/* Templates grid: explicit columns so a lone last item left-aligns */
+.tpl-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .tpl-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1280px) {
+  .tpl-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.just-selected-wrap > .tpl-card { animation: tpl-pulse 200ms ease-out; }
