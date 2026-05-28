@@ -11,6 +11,7 @@ import { Save, User, Briefcase, FolderKanban, Sparkles, Upload, Linkedin, Type, 
 import { toast } from 'sonner';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 // Load Google Font dynamically
 function loadGoogleFont(fontUrl: string) {
