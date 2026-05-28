@@ -233,19 +233,26 @@ const TemplateSVG = ({ id }: { id: string }) => {
       return (
         <svg {...common}>
           <rect width="400" height="300" fill="#FAF7F0" />
-          <text x="24" y="60" fontFamily="Georgia, serif" fontStyle="italic" fontSize="28" fill="#0a0a0a">Gaspar.</text>
-          <rect x="24" y="80" width="60" height="1" fill="#0a0a0a" />
-          <g fill="#3a3a3a">
-            <rect x="24" y="120" width="160" height="3" />
-            <rect x="24" y="134" width="140" height="3" />
-            <rect x="24" y="148" width="160" height="3" />
-            <rect x="24" y="162" width="120" height="3" />
+          <circle cx="22" cy="22" r="2" fill="#1a1a1a" />
+          <circle cx="32" cy="22" r="2" fill="#1a1a1a" />
+          <circle cx="42" cy="22" r="2" fill="#1a1a1a" />
+          <text x="378" y="25" textAnchor="end" fontFamily="Georgia, serif" fontSize="9" letterSpacing="1.5" fill="#1a1a1a">WORK  ABOUT  CONTACT</text>
+          <rect x="24" y="70" width="320" height="32" fill="#1a1a1a" />
+          <rect x="24" y="112" width="240" height="24" fill="#1a1a1a" />
+          <rect x="24" y="160" width="352" height="1" fill="#1a1a1a" opacity="0.3" />
+          <g fill="#1a1a1a" opacity="0.55">
             <rect x="24" y="176" width="150" height="3" />
-            <rect x="216" y="120" width="160" height="3" />
-            <rect x="216" y="134" width="140" height="3" />
-            <rect x="216" y="148" width="160" height="3" />
-            <rect x="216" y="162" width="120" height="3" />
+            <rect x="24" y="186" width="130" height="3" />
+            <rect x="24" y="196" width="150" height="3" />
             <rect x="216" y="176" width="150" height="3" />
+            <rect x="216" y="186" width="130" height="3" />
+            <rect x="216" y="196" width="150" height="3" />
+          </g>
+          <text x="24" y="276" fontFamily="Georgia, serif" fontSize="11" letterSpacing="2" fill="#1a1a1a">GASPAR</text>
+          <g fill="#1a1a1a" opacity="0.7">
+            <circle cx="320" cy="272" r="4" />
+            <circle cx="340" cy="272" r="4" />
+            <circle cx="360" cy="272" r="4" />
           </g>
         </svg>
       );
@@ -254,65 +261,79 @@ const TemplateSVG = ({ id }: { id: string }) => {
         <svg {...common}>
           <defs>
             <linearGradient id="destBg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#FF3CAC" />
-              <stop offset="100%" stopColor="#784BA0" />
+              <stop offset="0%" stopColor="#1a0533" />
+              <stop offset="100%" stopColor="#2d1065" />
             </linearGradient>
           </defs>
           <rect width="400" height="300" fill="url(#destBg)" />
-          <g fontFamily="Georgia, serif" fill="#ffffff">
-            <text x="24" y="80" fontSize="42" fontWeight="700">01</text>
-            <rect x="100" y="60" width="200" height="4" fill="#ffffff" />
-            <rect x="100" y="74" width="160" height="3" fill="#ffffff" opacity="0.6" />
-            <text x="24" y="160" fontSize="42" fontWeight="700">02</text>
-            <rect x="100" y="140" width="200" height="4" fill="#ffffff" />
-            <rect x="100" y="154" width="160" height="3" fill="#ffffff" opacity="0.6" />
-            <text x="24" y="240" fontSize="42" fontWeight="700">03</text>
-            <rect x="100" y="220" width="200" height="4" fill="#ffffff" />
-            <rect x="100" y="234" width="160" height="3" fill="#ffffff" opacity="0.6" />
-          </g>
+          <text x="24" y="32" fontFamily="Inter, sans-serif" fontSize="13" fontWeight="700" fill="#ffffff">destello</text>
+          <text x="24" y="84" fontFamily="Inter, sans-serif" fontSize="28" fontWeight="700" fill="#FF3CAC">01</text>
+          <rect x="70" y="74" width="220" height="8" fill="#ffffff" opacity="0.85" />
+          <text x="24" y="138" fontFamily="Inter, sans-serif" fontSize="28" fontWeight="700" fill="#FF3CAC">02</text>
+          <rect x="70" y="128" width="220" height="8" fill="#ffffff" opacity="0.85" />
+          <text x="24" y="192" fontFamily="Inter, sans-serif" fontSize="28" fontWeight="700" fill="#FF3CAC">03</text>
+          <rect x="70" y="182" width="220" height="8" fill="#ffffff" opacity="0.85" />
+          <rect x="24" y="220" width="60" height="20" rx="4" fill="#FF3CAC" />
+          <rect x="24" y="268" width="352" height="1" fill="#FF3CAC" opacity="0.6" />
         </svg>
       );
     case 'frqncy':
       return (
         <svg {...common}>
           <rect width="400" height="300" fill="#0a0a0a" />
-          <polygon points="0,0 200,0 100,80 0,80" fill="#39FF14" opacity="0.2" />
-          <polygon points="400,300 200,300 300,220 400,220" fill="#BF5AF2" opacity="0.25" />
-          <rect x="20" y="100" width="160" height="80" rx="10" fill="#111" stroke="#39FF14" />
-          <rect x="200" y="100" width="180" height="40" rx="10" fill="#111" stroke="#BF5AF2" />
-          <rect x="200" y="150" width="80" height="30" rx="10" fill="#39FF14" />
-          <rect x="290" y="150" width="90" height="30" rx="10" fill="#BF5AF2" />
-          <rect x="20" y="200" width="360" height="60" rx="10" fill="#111" stroke="#39FF14" />
+          <text x="20" y="26" fontFamily="Inter, sans-serif" fontWeight="700" fontSize="12" fill="#ffffff">FRQNCY</text>
+          <g fill="#ffffff" opacity="0.7">
+            <rect x="300" y="20" width="20" height="3" />
+            <rect x="330" y="20" width="20" height="3" />
+            <rect x="360" y="20" width="20" height="3" />
+          </g>
+          <text x="20" y="78" fontFamily="Inter, sans-serif" fontWeight="800" fontSize="24" fill="#39FF14" letterSpacing="1">YOUR NAME</text>
+          <rect x="20" y="100" width="150" height="80" rx="6" fill="#39FF14" />
+          <rect x="180" y="100" width="200" height="80" rx="6" fill="#0a0a0a" stroke="#1a1a1a" strokeWidth="2" />
+          <rect x="20" y="190" width="80" height="80" rx="6" fill="#BF5AF2" />
+          <g fill="#ffffff" opacity="0.7">
+            <rect x="115" y="200" width="180" height="4" />
+            <rect x="115" y="214" width="220" height="4" />
+            <rect x="115" y="228" width="160" height="4" />
+            <rect x="115" y="242" width="200" height="4" />
+          </g>
+          <line x1="0" y1="300" x2="140" y2="160" stroke="#FF6B1A" strokeWidth="2" />
         </svg>
       );
     case 'arpeggio':
       return (
         <svg {...common}>
-          <rect width="400" height="300" fill="#111111" />
-          <rect x="20" y="30" width="110" height="140" rx="4" fill="#1c1c1c" stroke="#FFD700" strokeWidth="0.5" />
-          <rect x="145" y="60" width="110" height="140" rx="4" fill="#1c1c1c" stroke="#FFD700" strokeWidth="0.5" />
-          <rect x="270" y="40" width="110" height="140" rx="4" fill="#1c1c1c" stroke="#FFD700" strokeWidth="0.5" />
-          <rect x="20" y="185" width="110" height="4" fill="#FFD700" />
-          <rect x="145" y="215" width="110" height="4" fill="#FFD700" />
-          <rect x="270" y="195" width="110" height="4" fill="#FFD700" />
+          <rect width="400" height="300" fill="#0f0f0f" />
+          <rect x="24" y="0" width="108" height="135" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+          <rect x="24" y="0" width="108" height="2" fill="#FFD700" />
+          <rect x="146" y="45" width="108" height="135" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+          <rect x="268" y="90" width="108" height="135" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
+          <g fill="#ffffff" opacity="0.6">
+            <rect x="34" y="18" width="80" height="3" />
+            <rect x="34" y="28" width="60" height="3" />
+            <rect x="156" y="63" width="80" height="3" />
+            <rect x="156" y="73" width="60" height="3" />
+            <rect x="278" y="108" width="80" height="3" />
+            <rect x="278" y="118" width="60" height="3" />
+          </g>
         </svg>
       );
     case 'nakula':
       return (
         <svg {...common}>
           <defs>
-            <linearGradient id="nakBg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#f8f6f3" />
-              <stop offset="100%" stopColor="#eae6df" />
-            </linearGradient>
+            <pattern id="nakDots" width="8" height="8" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1" fill="rgba(0,0,0,0.06)" />
+            </pattern>
           </defs>
-          <rect width="400" height="300" fill="url(#nakBg)" />
-          <rect x="40" y="40" width="320" height="220" rx="20" fill="#ffffff" opacity="0.55" />
-          <text x="60" y="100" fontFamily="Georgia, serif" fontSize="22" fill="#0a0a0a">Nakula</text>
-          <rect x="60" y="120" width="140" height="2" fill="#0a0a0a" opacity="0.3" />
-          <rect x="60" y="160" width="280" height="3" fill="#0a0a0a" opacity="0.2" />
-          <rect x="60" y="174" width="240" height="3" fill="#0a0a0a" opacity="0.2" />
-          <rect x="60" y="188" width="260" height="3" fill="#0a0a0a" opacity="0.2" />
+          <rect width="400" height="300" fill="rgba(255,255,255,0.92)" />
+          <rect width="400" height="300" fill="url(#nakDots)" />
+          <circle cx="200" cy="80" r="20" fill="rgba(0,0,0,0.08)" />
+          <text x="200" y="135" textAnchor="middle" fontFamily="Georgia, serif" fontSize="14" fill="#1a1a1a">Nakula Sharma</text>
+          <text x="200" y="155" textAnchor="middle" fontFamily="Georgia, serif" fontSize="10" fill="#1a1a1a" opacity="0.6">Product Designer</text>
+          <rect x="130" y="180" width="140" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.18)" />
+          <rect x="130" y="210" width="140" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.18)" />
+          <rect x="130" y="240" width="140" height="22" rx="11" fill="none" stroke="rgba(0,0,0,0.18)" />
         </svg>
       );
     case 'niju-bold':
