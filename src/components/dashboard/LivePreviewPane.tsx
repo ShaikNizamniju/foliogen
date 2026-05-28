@@ -156,20 +156,6 @@ export function LivePreviewPane() {
                       default: return <ModernDarkTemplate profile={displayProfile} />;
                     }
                   })()}
-                      case "minimalist": return <MinimalistTemplate profile={displayProfile} />;
-                      case "creative": return <CreativeTemplate profile={displayProfile} />;
-                      case "saas": return <SaasTemplate profile={displayProfile} />;
-                      case "dev": return <DevTemplate profile={displayProfile} />;
-                      case "brutalist": return <BrutalistTemplate profile={displayProfile} />;
-                      case "academic": return <AcademicTemplate profile={displayProfile} />;
-                      case "studio": return <StudioTemplate profile={displayProfile} />;
-                      case "executive": return <ExecutiveTemplate profile={displayProfile} />;
-                      case "influencer": return <InfluencerTemplate profile={displayProfile} />;
-                      case "swiss": return <SwissTemplate profile={displayProfile} />;
-                      case "noir": return <NoirTemplate profile={displayProfile} />;
-                      default: return <ModernDarkTemplate profile={displayProfile} />;
-                    }
-                  })()}
                 </motion.div>
               </AnimatePresence>
             </div>
