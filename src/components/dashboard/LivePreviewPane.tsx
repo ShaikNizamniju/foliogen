@@ -14,7 +14,7 @@ import { ModernDarkTemplate } from "./templates/ModernDarkTemplate";
 import { ProfessionTemplate } from "./templates/ProfessionTemplate";
 import { PROFESSION_TEMPLATE_IDS } from "@/lib/professionTemplates";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Smartphone, Monitor, ChevronRight } from "lucide-react";
+import { Eye, Smartphone, Monitor, ChevronRight, ExternalLink } from "lucide-react";
 import { FONT_OPTIONS, FontChoice } from "@/contexts/ProfileContext";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,6 +51,15 @@ export function LivePreviewPane() {
           </div>
           
           <div className="flex items-center gap-2">
+            {/* Open in new tab (escapes iframe for Google OAuth) */}
+            <button
+              onClick={() => window.open(`${window.location.origin}/dashboard?section=overview`, '_blank', 'noopener,noreferrer')}
+              title="Open dashboard in new tab (for Google sign-in)"
+              className="p-1.5 rounded-md text-muted-foreground hover:text-primary hover:bg-muted transition-all"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+            </button>
+
             {/* View Mode Switcher */}
             <div className="flex items-center bg-muted rounded-lg p-0.5 mr-2">
               <button 
