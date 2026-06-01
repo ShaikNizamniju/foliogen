@@ -28,6 +28,7 @@ const Refunds = lazy(() => import("./pages/Refunds"));
 const ContactPage = lazy(() => import("./pages/Contact"));
 const Success = lazy(() => import("./pages/Success"));
 const AboutFounder = lazy(() => import("./pages/AboutFounder"));
+const Admin = lazy(() => import("./pages/Admin"));
 
 const Billing = lazy(() => import("./pages/dashboard/Billing"));
 
