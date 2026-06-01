@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Check, Copy, ExternalLink, Rocket, Linkedin, Twitter, Mail, AlertCircle, Loader2, Link2, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { triggerCelebration } from '@/lib/confetti';
+import { notify } from '@/lib/notifications';
 import { QRCodeSVG } from 'qrcode.react';
 import { usePro } from '@/contexts/ProContext';
 import { motion, AnimatePresence } from 'framer-motion';
