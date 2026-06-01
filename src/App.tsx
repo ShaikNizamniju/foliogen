@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingThemeToggle } from "@/components/FloatingThemeToggle";
 import { AuthLoadingOverlay } from "@/components/AuthLoadingOverlay";
 import { supabase } from '@/lib/supabase_v2';
+import { initNotifications } from '@/lib/notifications';
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
