@@ -11,6 +11,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { FloatingThemeToggle } from "@/components/FloatingThemeToggle";
 import { AuthLoadingOverlay } from "@/components/AuthLoadingOverlay";
 import { supabase } from '@/lib/supabase_v2';
+import { initNotifications } from '@/lib/notifications';
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -42,6 +43,8 @@ function AppRoutes() {
   const isPublicRoute = location.pathname.startsWith('/p/') || location.pathname.startsWith('/u/') || location.pathname.startsWith('/auth/callback') || hasAuthToken;
 
   useEffect(() => {
+    // Init push + local notification fallback (safe no-op on web)
+    initNotifications();
     // Task 3: Production Key Verification
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbWNqc2ZmZXljd3lnaWNmbGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMzA0MjYsImV4cCI6MjA4NTYwNjQyNn0.blzGaOlPRVyM90RWoA7tshfGBXFPdkY6XWaspMdOou8";
     /* 
