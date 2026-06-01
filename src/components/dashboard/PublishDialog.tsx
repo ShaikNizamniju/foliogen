@@ -253,6 +253,12 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
         title: 'Identity Deployed 🚀',
         description: `Your portfolio is live at foliogen.in/u/${generatedCustomSlug}`,
       });
+      // Native push / web toast fallback — fires "portfolio ready" event
+      notify({
+        title: 'Your portfolio is ready 🎉',
+        body: `foliogen.in/u/${generatedCustomSlug} is now live.`,
+        data: { route: `/u/${generatedCustomSlug}`, event: 'portfolio_published' },
+      }).catch(() => {});
     } catch (err: any) {
       console.error("Publish error:", err);
       toast({
