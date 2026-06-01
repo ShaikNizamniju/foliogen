@@ -5,13 +5,22 @@ const config: CapacitorConfig = {
   appName: 'Foliogen',
   webDir: 'dist',
   // Live server URL — every web update on foliogen.in propagates instantly
-  // to the installed Play Store app (no APK re-upload required for content).
+  // to the installed iOS/Android app (no store re-upload required for content).
   server: {
     url: 'https://foliogen.in',
-    cleartext: true,
+    cleartext: false,
   },
   android: {
     allowMixedContent: false,
+  },
+  ios: {
+    contentInset: 'always',
+    limitsNavigationsToAppBoundDomains: false,
+  },
+  plugins: {
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert'],
+    },
   },
 };
 
