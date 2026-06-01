@@ -14,7 +14,7 @@ import { ModernDarkTemplate } from "./templates/ModernDarkTemplate";
 import { ProfessionTemplate } from "./templates/ProfessionTemplate";
 import { PROFESSION_TEMPLATE_IDS } from "@/lib/professionTemplates";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Eye, Smartphone, Monitor, ChevronRight } from "lucide-react";
+import { Eye, Smartphone, Monitor, ChevronRight, ExternalLink } from "lucide-react";
 import { FONT_OPTIONS, FontChoice } from "@/contexts/ProfileContext";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
