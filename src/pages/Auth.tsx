@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { supabase } from '@/lib/supabase_v2';
 import { useWelcomeEmail } from '@/hooks/use-welcome-email';
 import { SEO } from '@/components/SEO';
+import { track } from '@vercel/analytics';
 
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z
