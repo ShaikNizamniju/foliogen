@@ -171,6 +171,8 @@ export function RecruiterAuditSection() {
       jd_char_count: jobDescription.length,
       timestamp: new Date().toISOString()
     });
+    track('audit_initiated', { authed: !!user });
+
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
