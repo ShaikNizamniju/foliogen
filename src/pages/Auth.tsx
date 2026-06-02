@@ -48,6 +48,17 @@ export default function Auth() {
     }
   }, [user, authLoading, navigate]);
 
+  // Funnel: fire once on auth screen mount for unauthenticated visitors.
+  // Note: this screen serves both login and signup (toggled via `isLogin`).
+  const signupScreenTracked = useRef(false);
+  useEffect(() => {
+    if (signupScreenTracked.current) return;
+    if (authLoading) return;
+    if (user) return;
+    signupScreenTracked.current = true;
+    track('signup_screen_reached');
+  }, [authLoading, user]);
+
   // Counter animation
   useEffect(() => {
     const targets = [12400, 3.2, 89];
