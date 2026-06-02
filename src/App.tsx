@@ -12,6 +12,7 @@ import { FloatingThemeToggle } from "@/components/FloatingThemeToggle";
 import { AuthLoadingOverlay } from "@/components/AuthLoadingOverlay";
 import { supabase } from '@/lib/supabase_v2';
 import { initNotifications } from '@/lib/notifications';
+import { Analytics } from '@vercel/analytics/react';
 
 const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
@@ -122,6 +123,7 @@ const App = () => (
               <BrowserRouter>
                 <AppRoutes />
               </BrowserRouter>
+              <Analytics />
             </TooltipProvider>
           </ProProvider>
         </AuthProvider>

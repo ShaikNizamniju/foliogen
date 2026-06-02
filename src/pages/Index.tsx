@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { SEO } from "@/components/SEO";
+import { track } from "@vercel/analytics";
 
 // Code-split below-the-fold + secondary routes so the landing chunk stays minimal.
 const LandingEditorial = lazy(() =>
@@ -93,6 +94,13 @@ const Index = () => {
   // Logic checks
   const isSuccess = searchParams.has("success");
   const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
+
+  const landingTracked = useRef(false);
+  useEffect(() => {
+    if (landingTracked.current) return;
+    landingTracked.current = true;
+    track("landing_view");
+  }, []);
 
   useEffect(() => {
     // Redirect logic

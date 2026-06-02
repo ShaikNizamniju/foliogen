@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { supabase } from '@/lib/supabase_v2';
 import { useWelcomeEmail } from '@/hooks/use-welcome-email';
 import { SEO } from '@/components/SEO';
+import { track } from '@vercel/analytics';
 
 const emailSchema = z.string().email('Please enter a valid email');
 const passwordSchema = z
@@ -46,6 +47,17 @@ export default function Auth() {
       navigate(`/dashboard?section=${section}`, { replace: true });
     }
   }, [user, authLoading, navigate]);
+
+  // Funnel: fire once on auth screen mount for unauthenticated visitors.
+  // Note: this screen serves both login and signup (toggled via `isLogin`).
+  const signupScreenTracked = useRef(false);
+  useEffect(() => {
+    if (signupScreenTracked.current) return;
+    if (authLoading) return;
+    if (user) return;
+    signupScreenTracked.current = true;
+    track('signup_screen_reached');
+  }, [authLoading, user]);
 
   // Counter animation
   useEffect(() => {
@@ -141,6 +153,7 @@ export default function Auth() {
             : error.message || 'Failed to create account');
         } else {
           toast.success('Account created! Welcome to Foliogen.');
+          track('signup_completed', { method: 'email' });
           triggerWelcomeEmail(fullName, 'email');
           navigate('/dashboard?section=overview');
         }
