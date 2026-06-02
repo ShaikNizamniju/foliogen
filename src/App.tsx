@@ -123,6 +123,7 @@ const App = () => (
               <BrowserRouter>
                 <AppRoutes />
               </BrowserRouter>
+              <Analytics />
             </TooltipProvider>
           </ProProvider>
         </AuthProvider>
