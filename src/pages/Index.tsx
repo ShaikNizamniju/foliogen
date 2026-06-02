@@ -95,6 +95,13 @@ const Index = () => {
   const isSuccess = searchParams.has("success");
   const hasJobMatchParams = searchParams.has("company") || searchParams.has("skill") || searchParams.has("target");
 
+  const landingTracked = useRef(false);
+  useEffect(() => {
+    if (landingTracked.current) return;
+    landingTracked.current = true;
+    track("landing_view");
+  }, []);
+
   useEffect(() => {
     // Redirect logic
     if (!loading && user && !hasJobMatchParams) {
