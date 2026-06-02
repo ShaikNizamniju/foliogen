@@ -245,7 +245,7 @@ export default function Auth() {
             </div>
           </div>
 
-          <div className="fg-left-footer">© 2025 Foliogen · Built for ambitious professionals</div>
+          <div className="fg-left-footer">© 2026 Foliogen · Built for ambitious professionals</div>
         </div>
 
         {/* RIGHT */}

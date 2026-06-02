@@ -361,7 +361,7 @@ export function LandingEditorial() {
           </div>
         </div>
         <div className="fl-footer-base">
-          <span>© 2025 Foliogen · Built for ambitious professionals</span>
+          <span>© 2026 Foliogen · Built for ambitious professionals</span>
           <span>www.foliogen.in</span>
         </div>
       </footer>
