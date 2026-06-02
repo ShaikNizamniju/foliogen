@@ -521,7 +521,7 @@ body {
    Visual-only restyle to match login page right panel.
    Scoped to .dashboard-shell so it never bleeds into landing.
    ============================================================ */
-.dashboard-shell {
+.dark .dashboard-shell {
   --ds-bg: #0D0D0D;
   --ds-panel: #111111;
   --ds-card: #1A1A1A;
@@ -538,151 +538,151 @@ body {
 }
 
 /* Page surfaces */
-.dashboard-shell,
-.dashboard-shell main,
-.dashboard-shell [data-sidebar="content"] ~ * {
+.dark .dashboard-shell,
+.dark .dashboard-shell main,
+.dark .dashboard-shell [data-sidebar="content"] ~ * {
   background-color: var(--ds-bg);
 }
 
 /* Sidebar */
-.dashboard-shell [data-sidebar="sidebar"],
-.dashboard-shell aside[data-sidebar],
-.dashboard-shell .bg-sidebar {
+.dark .dashboard-shell [data-sidebar="sidebar"],
+.dark .dashboard-shell aside[data-sidebar],
+.dark .dashboard-shell .bg-sidebar {
   background: var(--ds-panel) !important;
   border-right: 1px solid var(--ds-border) !important;
   color: var(--ds-text);
 }
-.dashboard-shell [data-sidebar="footer"] {
+.dark .dashboard-shell [data-sidebar="footer"] {
   border-top: 1px solid var(--ds-border) !important;
 }
 
 /* Sidebar nav items default */
-.dashboard-shell [data-sidebar="menu-button"],
-.dashboard-shell [data-sidebar="menu-button"] * {
+.dark .dashboard-shell [data-sidebar="menu-button"],
+.dark .dashboard-shell [data-sidebar="menu-button"] * {
   color: rgba(255,255,255,0.55) !important;
 }
-.dashboard-shell [data-sidebar="menu-button"]:hover,
-.dashboard-shell [data-sidebar="menu-button"]:hover * {
+.dark .dashboard-shell [data-sidebar="menu-button"]:hover,
+.dark .dashboard-shell [data-sidebar="menu-button"]:hover * {
   color: #ffffff !important;
   background: rgba(255,255,255,0.05) !important;
   transition: all 150ms ease;
 }
 /* Active nav item */
-.dashboard-shell [data-sidebar="menu-button"][data-active="true"],
-.dashboard-shell [data-sidebar="menu-button"][data-active="true"] * {
+.dark .dashboard-shell [data-sidebar="menu-button"][data-active="true"],
+.dark .dashboard-shell [data-sidebar="menu-button"][data-active="true"] * {
   color: var(--ds-accent) !important;
   background: rgba(232,57,14,0.08) !important;
   font-weight: 500;
 }
-.dashboard-shell [data-sidebar="menu-button"][data-active="true"] {
+.dark .dashboard-shell [data-sidebar="menu-button"][data-active="true"] {
   box-shadow: inset 2px 0 0 0 var(--ds-accent);
 }
 
 /* Top header */
-.dashboard-shell header {
+.dark .dashboard-shell header {
   background: var(--ds-panel) !important;
   border-bottom: 1px solid var(--ds-border) !important;
 }
-.dashboard-shell header h1 {
+.dark .dashboard-shell header h1 {
   font-family: 'Playfair Display', Georgia, serif;
   color: #ffffff !important;
   font-size: 18px;
 }
 
 /* Section titles inside content */
-.dashboard-shell h1,
-.dashboard-shell h2,
-.dashboard-shell h3 {
+.dark .dashboard-shell h1,
+.dark .dashboard-shell h2,
+.dark .dashboard-shell h3 {
   color: #ffffff;
 }
-.dashboard-shell p,
-.dashboard-shell label,
-.dashboard-shell span {
+.dark .dashboard-shell p,
+.dark .dashboard-shell label,
+.dark .dashboard-shell span {
   color: inherit;
 }
 
 /* Cards / panels */
-.dashboard-shell .bg-card,
-.dashboard-shell .bg-background,
-.dashboard-shell .bg-muted,
-.dashboard-shell .bg-muted\/30,
-.dashboard-shell .bg-muted\/50,
-.dashboard-shell .bg-popover {
+.dark .dashboard-shell .bg-card,
+.dark .dashboard-shell .bg-background,
+.dark .dashboard-shell .bg-muted,
+.dark .dashboard-shell .bg-muted\/30,
+.dark .dashboard-shell .bg-muted\/50,
+.dark .dashboard-shell .bg-popover {
   background-color: var(--ds-card) !important;
   border-color: var(--ds-border) !important;
   color: var(--ds-text);
 }
 
 /* Borders */
-.dashboard-shell .border,
-.dashboard-shell .border-border,
-.dashboard-shell .border-border\/50,
-.dashboard-shell .border-input,
-.dashboard-shell hr,
-.dashboard-shell [role="separator"] {
+.dark .dashboard-shell .border,
+.dark .dashboard-shell .border-border,
+.dark .dashboard-shell .border-border\/50,
+.dark .dashboard-shell .border-input,
+.dark .dashboard-shell hr,
+.dark .dashboard-shell [role="separator"] {
   border-color: var(--ds-border) !important;
 }
 
 /* Inputs, textareas, selects */
-.dashboard-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-.dashboard-shell textarea,
-.dashboard-shell select,
-.dashboard-shell [role="combobox"] {
+.dark .dashboard-shell input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.dark .dashboard-shell textarea,
+.dark .dashboard-shell select,
+.dark .dashboard-shell [role="combobox"] {
   background-color: var(--ds-input) !important;
   border: 1px solid rgba(255,255,255,0.10) !important;
   color: #ffffff !important;
   border-radius: 8px !important;
   transition: box-shadow 150ms ease, border-color 150ms ease;
 }
-.dashboard-shell input::placeholder,
-.dashboard-shell textarea::placeholder {
+.dark .dashboard-shell input::placeholder,
+.dark .dashboard-shell textarea::placeholder {
   color: rgba(255,255,255,0.3) !important;
 }
-.dashboard-shell input:focus,
-.dashboard-shell input:focus-visible,
-.dashboard-shell textarea:focus,
-.dashboard-shell textarea:focus-visible,
-.dashboard-shell select:focus,
-.dashboard-shell [role="combobox"]:focus {
+.dark .dashboard-shell input:focus,
+.dark .dashboard-shell input:focus-visible,
+.dark .dashboard-shell textarea:focus,
+.dark .dashboard-shell textarea:focus-visible,
+.dark .dashboard-shell select:focus,
+.dark .dashboard-shell [role="combobox"]:focus {
   border-color: var(--ds-accent) !important;
   box-shadow: 0 0 0 2px rgba(232,57,14,0.15) !important;
   outline: none !important;
 }
 
 /* Form labels — uppercase tracked */
-.dashboard-shell label {
+.dark .dashboard-shell label {
   color: rgba(255,255,255,0.55);
 }
 
 /* Text color helpers commonly used */
-.dashboard-shell .text-foreground { color: #ffffff !important; }
-.dashboard-shell .text-muted-foreground { color: rgba(255,255,255,0.45) !important; }
-.dashboard-shell .text-primary { color: var(--ds-accent) !important; }
-.dashboard-shell .bg-primary { background-color: var(--ds-accent) !important; }
-.dashboard-shell .hover\:bg-primary\/90:hover { background-color: #c8320c !important; }
-.dashboard-shell .bg-primary\/10 { background-color: rgba(232,57,14,0.1) !important; }
-.dashboard-shell .border-primary { border-color: var(--ds-accent) !important; }
+.dark .dashboard-shell .text-foreground { color: #ffffff !important; }
+.dark .dashboard-shell .text-muted-foreground { color: rgba(255,255,255,0.45) !important; }
+.dark .dashboard-shell .text-primary { color: var(--ds-accent) !important; }
+.dark .dashboard-shell .bg-primary { background-color: var(--ds-accent) !important; }
+.dark .dashboard-shell .hover\:bg-primary\/90:hover { background-color: #c8320c !important; }
+.dark .dashboard-shell .bg-primary\/10 { background-color: rgba(232,57,14,0.1) !important; }
+.dark .dashboard-shell .border-primary { border-color: var(--ds-accent) !important; }
 
 /* Buttons — ghost variants */
-.dashboard-shell button {
+.dark .dashboard-shell button {
   transition: all 150ms ease;
 }
 
 /* Tabs */
-.dashboard-shell [role="tablist"] {
+.dark .dashboard-shell [role="tablist"] {
   background: transparent !important;
   border-bottom: 1px solid var(--ds-border);
 }
-.dashboard-shell [role="tab"] {
+.dark .dashboard-shell [role="tab"] {
   color: rgba(255,255,255,0.45) !important;
   background: transparent !important;
   border-radius: 0 !important;
   transition: color 150ms ease, border-color 150ms ease;
 }
-.dashboard-shell [role="tab"]:hover {
+.dark .dashboard-shell [role="tab"]:hover {
   color: rgba(255,255,255,0.75) !important;
 }
-.dashboard-shell [role="tab"][data-state="active"] {
+.dark .dashboard-shell [role="tab"][data-state="active"] {
   color: #ffffff !important;
   background: transparent !important;
   border-bottom: 2px solid var(--ds-accent) !important;
@@ -690,8 +690,8 @@ body {
 }
 
 /* Scrollbar subtle */
-.dashboard-shell ::-webkit-scrollbar { width: 8px; height: 8px; }
-.dashboard-shell ::-webkit-scrollbar-thumb {
+.dark .dashboard-shell ::-webkit-scrollbar { width: 8px; height: 8px; }
+.dark .dashboard-shell ::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.08);
   border-radius: 4px;
 }
@@ -701,13 +701,13 @@ body {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.dashboard-shell main > *,
-.dashboard-shell [role="tabpanel"] {
+.dark .dashboard-shell main > *,
+.dark .dashboard-shell [role="tabpanel"] {
   animation: ds-fadeSlideUp 300ms ease-out;
 }
 
 /* Avatar fallback tint */
-.dashboard-shell .bg-primary\/10 { background-color: rgba(232,57,14,0.12) !important; }
+.dark .dashboard-shell .bg-primary\/10 { background-color: rgba(232,57,14,0.12) !important; }
 
 /* ============ Template Card (theme-aware + animations) ============ */
 .tpl-card {
