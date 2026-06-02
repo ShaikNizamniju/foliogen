@@ -153,6 +153,7 @@ export default function Auth() {
             : error.message || 'Failed to create account');
         } else {
           toast.success('Account created! Welcome to Foliogen.');
+          track('signup_completed', { method: 'email' });
           triggerWelcomeEmail(fullName, 'email');
           navigate('/dashboard?section=overview');
         }
