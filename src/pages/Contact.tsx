@@ -61,21 +61,21 @@ const Contact = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950">
+        <div className="min-h-screen bg-background text-foreground">
             <SEO
               title="Contact Foliogen — Talk to the team"
               description="Get in touch with the Foliogen team about AI portfolios, billing, partnerships, or support. We respond within one business day."
               path="/contact"
               jsonLd={CONTACT_JSONLD}
             />
-            <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+            <header className="border-b border-border bg-background/80 backdrop-blur-xl">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <Link to="/" className="flex items-center">
                         <img src={logo} alt="Foliogen - AI Portfolio Builder" className="h-10 w-auto" />
                     </Link>
                     <Link
                         to="/"
-                        className="flex items-center gap-2 text-sm font-medium text-slate-400 transition-colors hover:text-white">
+                        className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
                         <ArrowLeft className="h-4 w-4" />
                         Back to Home
                     </Link>
@@ -83,16 +83,15 @@ const Contact = () => {
             </header>
 
             <main className="container mx-auto px-4 py-16 max-w-5xl">
-                <h1 className="text-4xl font-bold text-white mb-12 text-center">Contact Us</h1>
+                <h1 className="text-4xl font-bold text-foreground mb-12 text-center">Contact Us</h1>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     {/* Contact Form */}
-                    <div className="bg-slate-900 border border-white/10 rounded-xl p-6 sm:p-8">
-                        <h2 className="text-2xl font-semibold text-white mb-6">Send a Message</h2>
+                    <div className="bg-card border border-border rounded-xl p-6 sm:p-8">
+                        <h2 className="text-2xl font-semibold text-foreground mb-6">Send a Message</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <Input
-                                    className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500"
                                     placeholder="Your Name *"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
@@ -101,7 +100,6 @@ const Contact = () => {
                             </div>
                             <div>
                                 <Input
-                                    className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500"
                                     type="email"
                                     placeholder="Your Email *"
                                     value={email}
@@ -111,7 +109,7 @@ const Contact = () => {
                             </div>
                             <div>
                                 <Textarea
-                                    className="bg-slate-950 border-white/10 text-white placeholder:text-slate-500 min-h-[150px]"
+                                    className="min-h-[150px]"
                                     placeholder="Your Message *"
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
@@ -127,17 +125,17 @@ const Contact = () => {
 
                     {/* Business Identity Block */}
                     <div className="flex flex-col justify-center">
-                        <div className="bg-slate-900 border border-white/10 rounded-xl p-6 sm:p-8">
-                            <h2 className="text-2xl font-semibold text-white mb-6">Business Identity</h2>
+                        <div className="bg-card border border-border rounded-xl p-6 sm:p-8">
+                            <h2 className="text-2xl font-semibold text-foreground mb-6">Business Identity</h2>
 
                             <div className="space-y-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="p-3 bg-slate-800 rounded-lg shrink-0">
-                                        <MapPin className="h-5 w-5 text-indigo-400" />
+                                    <div className="p-3 bg-muted rounded-lg shrink-0">
+                                        <MapPin className="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium mb-1">Registered Address</h3>
-                                        <p className="text-slate-400 text-sm leading-relaxed">
+                                        <h3 className="text-foreground font-medium mb-1">Registered Address</h3>
+                                        <p className="text-muted-foreground text-sm leading-relaxed">
                                             123 Tech Park, 4th Floor<br />
                                             HSR Layout, Sector 2<br />
                                             Bengaluru, Karnataka 560102<br />
@@ -147,24 +145,24 @@ const Contact = () => {
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-slate-800 rounded-lg shrink-0">
-                                        <Phone className="h-5 w-5 text-indigo-400" />
+                                    <div className="p-3 bg-muted rounded-lg shrink-0">
+                                        <Phone className="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium mb-1">Telephone Support</h3>
-                                        <p className="text-slate-400 text-sm">
+                                        <h3 className="text-foreground font-medium mb-1">Telephone Support</h3>
+                                        <p className="text-muted-foreground text-sm">
                                             +91 98765 43210
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-slate-800 rounded-lg shrink-0">
-                                        <Mail className="h-5 w-5 text-indigo-400" />
+                                    <div className="p-3 bg-muted rounded-lg shrink-0">
+                                        <Mail className="h-5 w-5 text-primary" />
                                     </div>
                                     <div>
-                                        <h3 className="text-white font-medium mb-1">Email Support</h3>
-                                        <p className="text-slate-400 text-sm">
+                                        <h3 className="text-foreground font-medium mb-1">Email Support</h3>
+                                        <p className="text-muted-foreground text-sm">
                                             admin@foliogen.in
                                         </p>
                                     </div>
@@ -175,9 +173,9 @@ const Contact = () => {
                 </div>
             </main>
 
-            <footer className="border-t border-white/10 bg-slate-950 py-8 mt-12">
+            <footer className="border-t border-border bg-background py-8 mt-12">
                 <div className="container mx-auto px-4 text-center">
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-muted-foreground">
                         © {new Date().getFullYear()} Foliogen. All rights reserved.
                     </p>
                 </div>
