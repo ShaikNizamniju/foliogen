@@ -107,11 +107,12 @@ export function LivePreviewPane() {
           <motion.div 
             layout
             className={cn(
-              "mx-auto rounded-xl border border-border bg-card shadow-2xl overflow-hidden transition-all duration-500 origin-top",
+              "light mx-auto rounded-xl border border-border bg-card shadow-2xl overflow-hidden transition-all duration-500 origin-top",
               viewMode === 'desktop' 
                 ? "w-[180%] transform scale-[0.52] -translate-x-1/2 left-1/2 relative" 
                 : "w-full max-w-[320px] transform scale-[0.85]"
             )}
+            style={{ colorScheme: 'light' }}
           >
             <div
               id="portfolio-live-container"
