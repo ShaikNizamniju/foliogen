@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { PROFESSION_TEMPLATES } from '@/lib/professionTemplates';
+
 
 // Template registry - should be shared with TemplatesSection
 export const templates = [
@@ -104,14 +104,6 @@ export const templates = [
     name: 'Minimal SaaS',
     description: 'Clean tech-focused layout for PMs & devs',
   },
-  // ── Profession Templates 2026 (top 20) ───────────────────────────────
-  // Sourced from src/lib/professionTemplates.ts — single source of truth.
-  // Listed inline here so the existing TemplateCard grid picks them up.
-  ...PROFESSION_TEMPLATES.map((t) => ({
-    id: t.id,
-    name: t.name,
-    description: t.description,
-  })),
 ];
 
 const containerVariants = {
