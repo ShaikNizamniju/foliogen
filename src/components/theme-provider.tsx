@@ -26,33 +26,21 @@ export function ThemeProvider({
   storageKey = "foliogen-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
+    // Forced light theme: always apply light, never dark, regardless of
+    // localStorage or system preference.
     const root = window.document.documentElement;
-
-    root.classList.remove("light", "dark");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      return;
-    }
-
-    root.classList.add(theme);
+    root.classList.remove("dark");
+    root.classList.add("light");
   }, [theme]);
 
   const value = {
-    theme,
-    setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
-      setTheme(theme);
+    theme: "light" as Theme,
+    setTheme: (_theme: Theme) => {
+      // No-op: theme is forced to light app-wide.
+      setThemeState("light");
     },
   };
 

@@ -6,14 +6,9 @@ import { useLocation } from "react-router-dom";
 export function FloatingThemeToggle() {
   const { theme, setTheme } = useTheme();
   const location = useLocation();
-  
-  // Hide on dashboard as it's integrated into the header
-  // Hide on published portfolio routes (/p/:id and /u/:id) which are locked to light theme
-  if (
-    location.pathname.startsWith('/dashboard') ||
-    location.pathname.startsWith('/p/') ||
-    location.pathname.startsWith('/u/')
-  ) return null;
+
+  // Theme is forced to light app-wide; hide the toggle everywhere.
+  return null;
 
   // Check if currently dark (either explicit dark or system prefers dark)
   const isDark = theme === "dark" || 
