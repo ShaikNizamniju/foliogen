@@ -115,8 +115,9 @@ export function LivePreviewPane() {
           >
             <div
               id="portfolio-live-container"
-              className="min-h-0 w-full"
+              className="light min-h-0 w-full [&_*]:![color-scheme:light]"
               style={{
+                colorScheme: 'light',
                 fontFamily: (() => {
                   const fontOption = FONT_OPTIONS.find(f => f.id === profile.selectedFont);
                   return fontOption && profile.selectedFont !== 'default'
