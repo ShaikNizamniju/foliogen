@@ -280,47 +280,6 @@ export default function PublicPortfolio() {
   const pageImage = profile.photoUrl || 'https://www.foliogen.in/og-premium-placeholder.png';
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
 
-  // Vanilla JS fallback to mutate meta tags for crawlers that struggle with Helmet
-  useEffect(() => {
-    if (!profile) return;
-
-    document.title = pageTitle;
-
-    const updateMetaTag = (property: string, content: string) => {
-      let tag = document.querySelector(`meta[property="${property}"]`);
-      if (!tag) {
-        tag = document.querySelector(`meta[name="${property}"]`);
-      }
-      if (tag) {
-        tag.setAttribute('content', content);
-      } else {
-        const newTag = document.createElement('meta');
-        newTag.setAttribute(property.startsWith('og:') ? 'property' : 'name', property);
-        newTag.setAttribute('content', content);
-        document.head.appendChild(newTag);
-      }
-    };
-
-    updateMetaTag('og:title', ogTitle);
-    updateMetaTag('og:description', ogDescription);
-    updateMetaTag('og:image', pageImage);
-    updateMetaTag('og:url', pageUrl);
-
-    updateMetaTag('twitter:title', ogTitle);
-    updateMetaTag('twitter:description', ogDescription);
-    updateMetaTag('twitter:image', pageImage);
-    updateMetaTag('twitter:url', pageUrl);
-
-    let canonicalTag = document.querySelector('link[rel="canonical"]');
-    if (canonicalTag) {
-      canonicalTag.setAttribute('href', pageUrl);
-    } else {
-      canonicalTag = document.createElement('link');
-      canonicalTag.setAttribute('rel', 'canonical');
-      canonicalTag.setAttribute('href', pageUrl);
-      document.head.appendChild(canonicalTag);
-    }
-  }, [profile, pageTitle, pageDescription, ogTitle, ogDescription, pageImage, pageUrl]);
 
   // Render the selected template directly - no editing controls
   const renderTemplate = () => {
