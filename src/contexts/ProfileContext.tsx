@@ -324,14 +324,19 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
     setLoading(true);
     const { data, error } = await supabase.from("profiles").select("*, plan_type, subscription_id").eq("user_id", user.id).maybeSingle();
-    const { data: vaultData, error: vaultError } = await supabase.from("identity_vault").select("*").eq("user_id", user.id);
+    // Identity Vault feature disabled — silently default to empty and never block profile load
+    let vaultData: Record<string, unknown>[] = [];
+    try {
+      const res = await supabase.from("identity_vault").select("*").eq("user_id", user.id);
+      if (!res.error && Array.isArray(res.data)) {
+        vaultData = res.data as Record<string, unknown>[];
+      }
+    } catch {
+      vaultData = [];
+    }
 
     if (error) {
       console.error("Supabase Error Details [Profile Fetch]:", error.message, error.details, error.hint);
-    }
-
-    if (vaultError) {
-      console.error("Supabase Error Details [Identity Vault Fetch]:", vaultError.message, vaultError.details, vaultError.hint);
     }
 
     if (data && !error) {
@@ -486,12 +491,8 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       };
     });
 
-    try {
-       // Fire and forget identity_vault upsert to prevent auth blocking
-       if (vaultPayload.length > 0) {
-           supabase.from('identity_vault').upsert(vaultPayload, { onConflict: 'project_id' }).then();
-       }
-    } catch(e) {}
+    // Identity Vault upsert disabled — scores are derived in-memory above and persisted via profiles JSONB
+    void vaultPayload;
 
     // Persist client-only fields (not present in DB schema) to localStorage so we don't
     // break the Supabase mutation with unknown columns like active_persona/font_config/etc.
