@@ -114,7 +114,7 @@ function AppRoutes() {
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="dark" storageKey="foliogen-ui-theme">
+      <ThemeProvider defaultTheme="light" storageKey="foliogen-ui-theme">
         <AuthProvider>
           <ProProvider>
             <TooltipProvider>
