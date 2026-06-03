@@ -2,9 +2,11 @@ import type { ProfileData } from "@/contexts/ProfileContext";
 import type { ProfessionalDomain } from "@/lib/domainRecommendation";
 
 interface ScoreBreakdown {
+  profileBasics: number;
+  experience: number;
   projects: number;
+  skills: number;
   contact: number;
-  mapping: number;
 }
 
 export interface Recommendation {
@@ -29,7 +31,7 @@ function getUserDomain(): ProfessionalDomain | null {
   return null;
 }
 
-// Domain-aware benchmark targets
+// Domain-aware benchmark targets (kept for getRecommendations compatibility)
 interface DomainBenchmarks {
   projectTarget: number;
   skillTarget: number;
@@ -42,45 +44,41 @@ function getDomainBenchmarks(domain: ProfessionalDomain | null): DomainBenchmark
     case 'creative': return { projectTarget: 5, skillTarget: 10, contactTarget: 3 };
     case 'corporate': return { projectTarget: 3, skillTarget: 12, contactTarget: 5 };
     case 'luxury': return { projectTarget: 4, skillTarget: 10, contactTarget: 3 };
-    default: return { projectTarget: 3, skillTarget: 15, contactTarget: 4 }; // Founder-level default
+    default: return { projectTarget: 3, skillTarget: 15, contactTarget: 4 };
   }
 }
 
 export function calculatePortfolioStrength(profile: ProfileData): PortfolioStrength {
   const domain = getUserDomain();
   const benchmarks = getDomainBenchmarks(domain);
-  const projects = getProjectScore(profile.projects.length, benchmarks.projectTarget);
-  const contact = getContactScore(profile, benchmarks.contactTarget);
-  const mapping = getSkillMappingScore(profile.skills, profile.projects, benchmarks.skillTarget);
+
+  const profileBasics =
+    (profile.fullName?.trim() ? 5 : 0) +
+    (profile.headline?.trim() ? 5 : 0) +
+    (profile.location?.trim() ? 5 : 0) +
+    (profile.bio?.trim() ? 5 : 0);
+
+  const experience = (profile.workExperience?.length ?? 0) >= 1 ? 20 : 0;
+
+  const projectCount = profile.projects?.length ?? 0;
+  const projects = projectCount >= 2 ? 20 : projectCount === 1 ? 10 : 0;
+
+  const skillCount = profile.skills?.length ?? 0;
+  const skills = skillCount >= 5 ? 20 : skillCount >= 1 ? 10 : 0;
+
+  const contact = Math.min(
+    20,
+    (profile.email ? 10 : 0) +
+      (profile.linkedinUrl || profile.githubUrl || profile.website ? 10 : 0)
+  );
+
   const recommendations = getRecommendations(profile, domain, benchmarks);
 
   return {
-    totalScore: projects + contact + mapping,
-    breakdown: { projects, contact, mapping },
+    totalScore: profileBasics + experience + projects + skills + contact,
+    breakdown: { profileBasics, experience, projects, skills, contact },
     recommendations,
   };
-}
-
-function getProjectScore(count: number, target: number): number {
-  return Math.min(30, Math.round((count / target) * 30));
-}
-
-function getContactScore(profile: ProfileData, target: number): number {
-  const fields = [profile.email, profile.linkedinUrl, profile.githubUrl, profile.twitterUrl, profile.website];
-  const filled = fields.filter(Boolean).length;
-  return Math.min(20, Math.round((filled / target) * 20));
-}
-
-function getSkillMappingScore(skills: string[], projects: ProfileData["projects"], target: number): number {
-  if (skills.length === 0) return 0;
-
-  const cappedSkills = skills.slice(0, target);
-  const allTech = new Set(
-    projects.flatMap((p) => (p.techStack ?? []).map((t) => t.toLowerCase()))
-  );
-
-  const matched = cappedSkills.filter((s) => allTech.has(s.toLowerCase())).length;
-  return Math.round((matched / Math.min(skills.length, target)) * 50);
 }
 
 // --- Domain-aware recommendations ---

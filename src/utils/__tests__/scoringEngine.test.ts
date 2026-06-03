@@ -35,51 +35,69 @@ describe("calculatePortfolioStrength", () => {
   it("returns 0 for an empty profile", () => {
     const result = calculatePortfolioStrength(emptyProfile);
     expect(result.totalScore).toBe(0);
-    expect(result.breakdown).toEqual({ projects: 0, contact: 0, mapping: 0 });
+    expect(result.breakdown).toEqual({
+      profileBasics: 0,
+      experience: 0,
+      projects: 0,
+      skills: 0,
+      contact: 0,
+    });
   });
 
-  it("returns 100 for a perfect profile", () => {
+  it("returns 100 for a fully filled profile", () => {
     const profile: ProfileData = {
       ...emptyProfile,
+      fullName: "Jane Doe",
+      headline: "Engineer",
+      location: "NYC",
+      bio: "Builder",
       email: "a@b.com",
       linkedinUrl: "https://linkedin.com/in/x",
       githubUrl: "https://github.com/x",
-      twitterUrl: "https://twitter.com/x",
       website: "https://example.com",
-      skills: ["React", "TypeScript", "Node"],
-      projects: Array.from({ length: 5 }, (_, i) => ({
+      skills: ["React", "TypeScript", "Node", "Go", "SQL"],
+      workExperience: [
+        { id: "1", company: "Acme", role: "Eng", startDate: "", endDate: "", description: "" } as any,
+      ],
+      projects: Array.from({ length: 2 }, (_, i) => ({
         id: String(i),
         title: `Project ${i}`,
         link: "",
         imageUrl: "",
         description: "",
-        techStack: ["React", "TypeScript", "Node"],
+        techStack: ["React"],
       })),
     };
 
     const result = calculatePortfolioStrength(profile);
     expect(result.totalScore).toBe(100);
-    expect(result.breakdown).toEqual({ projects: 30, contact: 20, mapping: 50 });
+    expect(result.breakdown).toEqual({
+      profileBasics: 20,
+      experience: 20,
+      projects: 20,
+      skills: 20,
+      contact: 20,
+    });
   });
 
-  it("calculates correctly for a partial profile", () => {
+  it("calculates partial scores correctly", () => {
     const profile: ProfileData = {
       ...emptyProfile,
+      fullName: "Jane",
+      headline: "Eng",
       email: "a@b.com",
-      linkedinUrl: "https://linkedin.com/in/x",
-      githubUrl: "https://github.com/x",
       skills: ["React", "Vue"],
       projects: [
         { id: "1", title: "P1", link: "", imageUrl: "", description: "", techStack: ["React"] },
-        { id: "2", title: "P2", link: "", imageUrl: "", description: "", techStack: ["Angular"] },
       ],
     };
 
     const result = calculatePortfolioStrength(profile);
-    // 2/5 projects = 12, 3/4 contacts = 15, 1/2 skills matched = 25
-    expect(result.breakdown.projects).toBe(12);
-    expect(result.breakdown.contact).toBe(15);
-    expect(result.breakdown.mapping).toBe(25);
-    expect(result.totalScore).toBe(52);
+    expect(result.breakdown.profileBasics).toBe(10);
+    expect(result.breakdown.experience).toBe(0);
+    expect(result.breakdown.projects).toBe(10);
+    expect(result.breakdown.skills).toBe(10);
+    expect(result.breakdown.contact).toBe(10);
+    expect(result.totalScore).toBe(40);
   });
 });

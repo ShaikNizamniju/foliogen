@@ -280,11 +280,13 @@ export function OverviewSection() {
               <h2 className="text-sm font-semibold text-foreground mb-3">Portfolio Strength</h2>
 
               {/* Score breakdown */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-5 gap-3 mb-4">
                 {[
-                  { label: 'Projects', value: strength.breakdown.projects, max: 30 },
+                  { label: 'Profile', value: strength.breakdown.profileBasics, max: 20 },
+                  { label: 'Experience', value: strength.breakdown.experience, max: 20 },
+                  { label: 'Projects', value: strength.breakdown.projects, max: 20 },
+                  { label: 'Skills', value: strength.breakdown.skills, max: 20 },
                   { label: 'Contact', value: strength.breakdown.contact, max: 20 },
-                  { label: 'Skill Map', value: strength.breakdown.mapping, max: 50 },
                 ].map((seg) => (
                   <div key={seg.label}>
                     <div className="flex items-baseline justify-between mb-1">
