@@ -42,6 +42,13 @@ export default function PublicPortfolio() {
   const [contactOpen, setContactOpen] = useState(false);
   const [recruiterMode, setRecruiterMode] = useState(false);
 
+  // Force light theme on published portfolio regardless of saved preference
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('dark');
+    root.classList.add('light');
+  }, []);
+
   // Track portfolio views (handles owner detection, session/localStorage spam prevention)
   useViewTracker(profile?.id);
   

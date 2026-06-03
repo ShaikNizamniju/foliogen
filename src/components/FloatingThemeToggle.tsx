@@ -8,7 +8,12 @@ export function FloatingThemeToggle() {
   const location = useLocation();
   
   // Hide on dashboard as it's integrated into the header
-  if (location.pathname.startsWith('/dashboard')) return null;
+  // Hide on published portfolio routes (/p/:id and /u/:id) which are locked to light theme
+  if (
+    location.pathname.startsWith('/dashboard') ||
+    location.pathname.startsWith('/p/') ||
+    location.pathname.startsWith('/u/')
+  ) return null;
 
   // Check if currently dark (either explicit dark or system prefers dark)
   const isDark = theme === "dark" || 
