@@ -81,7 +81,7 @@ export const templates = [
   },
   {
     id: 'frqncy',
-    name: 'Frqncy',
+    name: 'Pulse',
     description: 'Gen-Z neon bento grid with creative vibes',
   },
   {
@@ -91,7 +91,7 @@ export const templates = [
   },
   {
     id: 'nakula',
-    name: 'Nakula',
+    name: 'Aura',
     description: 'Airy glassmorphic layout with serif elegance',
   },
   {
