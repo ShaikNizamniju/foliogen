@@ -58,10 +58,10 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
 
         <motion.h1
           variants={fadeUp}
-          className="text-6xl sm:text-8xl md:text-[9rem] font-black leading-[0.85] tracking-tighter uppercase"
+          className="text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-black leading-[0.85] tracking-tighter uppercase break-words [overflow-wrap:anywhere] max-w-full"
         >
           {name.split(' ').map((word, i) => (
-            <span key={i} className="block" style={{ color: i === 0 ? '#FAFAFA' : '#E11D48' }}>
+            <span key={i} className="block break-words [overflow-wrap:anywhere]" style={{ color: i === 0 ? '#FAFAFA' : '#E11D48' }}>
               {word}
             </span>
           ))}
