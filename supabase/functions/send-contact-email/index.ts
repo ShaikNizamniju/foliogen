@@ -52,6 +52,41 @@ serve(async (req) => {
     const toEmailCheck = validateEmail(body.toEmail, "Recipient email");
     if (!toEmailCheck.valid) return validationError(toEmailCheck.error!);
 
+    // ── Recipient allow-list ─────────────────────────────────────────────
+    // Prevent arbitrary email relay: the recipient must be either the
+    // Foliogen admin inbox or a registered portfolio owner's email.
+    const requestedTo = body.toEmail.trim().toLowerCase();
+    const ADMIN_EMAILS = new Set(["admin@foliogen.in", "support@foliogen.in", "hello@foliogen.in"]);
+    let recipientAllowed = ADMIN_EMAILS.has(requestedTo);
+
+    if (!recipientAllowed) {
+      try {
+        const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+        const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+        if (SUPABASE_URL && SERVICE_KEY) {
+          const lookup = await fetch(
+            `${SUPABASE_URL}/rest/v1/profiles?select=user_id&email=eq.${encodeURIComponent(requestedTo)}&limit=1`,
+            {
+              headers: {
+                apikey: SERVICE_KEY,
+                Authorization: `Bearer ${SERVICE_KEY}`,
+              },
+            }
+          );
+          if (lookup.ok) {
+            const rows = await lookup.json();
+            if (Array.isArray(rows) && rows.length > 0) recipientAllowed = true;
+          }
+        }
+      } catch (e) {
+        console.error("Recipient allow-list lookup failed:", e);
+      }
+    }
+
+    if (!recipientAllowed) {
+      return validationError("Recipient is not allowed.");
+    }
+
     // Sanitize for downstream use
     const safeName = sanitize(body.name, 200);
     const safeMessage = sanitize(body.message, 5000);

@@ -105,6 +105,7 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error('Chat error:', error);
-    return errorResponse(error.message || 'An unexpected error occurred', 500);
+    return errorResponse('An unexpected error occurred', 500);
   }
+
 });
