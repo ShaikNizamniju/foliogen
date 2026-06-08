@@ -158,10 +158,26 @@ export function PublishDialog({ open, onOpenChange }: PublishDialogProps) {
         throw saveError;
       }
 
+    // Always fetch the freshest photo_url straight from the profiles row so
+    // the published snapshot never carries a stale/cached image URL.
+    let currentPhotoUrl = profile.photoUrl;
+    try {
+      const { data: freshProfile } = await supabase
+        .from('profiles')
+        .select('photo_url')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (freshProfile && typeof freshProfile.photo_url !== 'undefined') {
+        currentPhotoUrl = freshProfile.photo_url;
+      }
+    } catch (e) {
+      console.warn('Could not fetch fresh photo_url, falling back to in-memory profile:', e);
+    }
+
     // Build the data payload
     const dataJson = {
       full_name: profile.fullName,
-      photo_url: profile.photoUrl,
+      photo_url: currentPhotoUrl,
       bio: profile.bio,
       headline: profile.headline,
       location: profile.location,
