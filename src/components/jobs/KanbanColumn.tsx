@@ -44,7 +44,7 @@ export function KanbanColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col min-w-[280px] w-[280px] bg-muted/30 rounded-xl border border-border/50 border-t-4 transition-colors',
+        'flex flex-col w-full min-w-0 bg-muted/30 rounded-xl border border-border/50 border-t-4 transition-colors',
         COLUMN_COLORS[status],
         isOver && 'bg-muted/60 ring-2 ring-primary/20'
       )}
