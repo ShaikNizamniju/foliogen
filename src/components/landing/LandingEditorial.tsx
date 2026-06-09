@@ -197,7 +197,7 @@ export function LandingEditorial() {
       </section>
 
       {/* PROCESS */}
-      <section id="process" className="fl-process">
+      <section id="process" className="fl-process fl-reveal">
         <div className="fl-process-deco">Process</div>
         <div className="fl-section-head">
           <div className="fl-eyebrow fl-eyebrow-light">— Chapter Two · How It Works</div>
