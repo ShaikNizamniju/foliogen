@@ -34,7 +34,7 @@ export function AiRewriteButton({ text, onResult }: AiRewriteButtonProps) {
             if (!session) throw new Error("Not authenticated");
 
             const response = await fetch(
-                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/rewrite-text`,
+                `${SUPABASE_URL}/functions/v1/rewrite-text`,
                 {
                     method: 'POST',
                     headers: {
