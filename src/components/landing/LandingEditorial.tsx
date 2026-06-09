@@ -216,7 +216,7 @@ export function LandingEditorial() {
       </section>
 
       {/* TEMPLATES */}
-      <section id="templates" className="fl-section">
+      <section id="templates" className="fl-section fl-reveal">
         <div className="fl-section-head">
           <div className="fl-eyebrow">— Chapter Three · The Library</div>
           <h2 className="fl-h2">Nineteen <em>templates</em>.<br />Zero <em>paywalls.</em></h2>
