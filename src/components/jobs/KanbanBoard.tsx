@@ -218,7 +218,7 @@ export function KanbanBoard() {
         onDragOver={handleDragOver}
       >
         <motion.div
-          className="flex gap-4 overflow-x-auto pb-4"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
