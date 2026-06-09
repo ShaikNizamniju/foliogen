@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProfile } from "@/contexts/ProfileContext";
 import { usePro } from "@/contexts/ProContext";
-import { supabase } from "@/lib/supabase_v2";
+import { supabase, SUPABASE_URL } from "@/lib/supabase_v2";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
