@@ -70,6 +70,27 @@ export function LandingEditorial() {
     };
   }, []);
 
+  // Scroll reveal — fade/slide once on entry, respects reduced motion
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.fl-reveal').forEach((el) => el.classList.add('fl-in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fl-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fl-reveal').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+
+
 
   const features = [
     { n: '01', t: 'AI Resume Parser', d: 'Drop your PDF. Our AI extracts every role, skill, and metric into a structured story.' },
@@ -116,7 +137,7 @@ export function LandingEditorial() {
         <div className="fl-hero-inner">
           <div className="fl-issue-line">AI-Powered Portfolios · Est. 2026</div>
 
-          <h1 className="fl-h1">
+          <h1 className="fl-h1 fl-hero-anim fl-hero-anim-1">
             <span className="fl-word"><span>Your</span></span>{' '}
             <span className="fl-word fl-italic fl-red"><span>Work,</span></span>
             <br />
@@ -124,11 +145,12 @@ export function LandingEditorial() {
             <span className="fl-word fl-italic"><span>Told.</span></span>
           </h1>
 
-          <p className="fl-sub">
+          <p className="fl-sub fl-hero-anim fl-hero-anim-2">
             Upload your resume. Our AI engineers a portfolio that makes recruiters
             stop scrolling and start calling. No code. No templates that scream
             template. No compromise.
           </p>
+
 
           <div className="fl-cta-row">
             <Link to="/auth?provider=google" className="fl-cta-primary">
@@ -158,7 +180,7 @@ export function LandingEditorial() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="fl-section">
+      <section id="features" className="fl-section fl-reveal">
         <div className="fl-section-head">
           <div className="fl-eyebrow">— Chapter One · The Toolkit</div>
           <h2 className="fl-h2">Every <em>feature</em>.<br />Unlocked. <em>Free.</em></h2>
@@ -175,7 +197,7 @@ export function LandingEditorial() {
       </section>
 
       {/* PROCESS */}
-      <section id="process" className="fl-process">
+      <section id="process" className="fl-process fl-reveal">
         <div className="fl-process-deco">Process</div>
         <div className="fl-section-head">
           <div className="fl-eyebrow fl-eyebrow-light">— Chapter Two · How It Works</div>
@@ -194,7 +216,7 @@ export function LandingEditorial() {
       </section>
 
       {/* TEMPLATES */}
-      <section id="templates" className="fl-section">
+      <section id="templates" className="fl-section fl-reveal">
         <div className="fl-section-head">
           <div className="fl-eyebrow">— Chapter Three · The Library</div>
           <h2 className="fl-h2">Nineteen <em>templates</em>.<br />Zero <em>paywalls.</em></h2>
@@ -321,7 +343,7 @@ export function LandingEditorial() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="fl-pricing">
+      <section id="pricing" className="fl-pricing fl-reveal">
         <div className="fl-pricing-inner">
           <div className="fl-eyebrow fl-eyebrow-light">— The Pricing</div>
           <h2 className="fl-pricing-h">Free.<br /><em>Forever.</em></h2>
@@ -586,6 +608,31 @@ export function LandingEditorial() {
         @keyframes fl-fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
         @keyframes fl-fadeIn { from{opacity:0;} to{opacity:1;} }
         @keyframes fl-slideUp { from{transform:translateY(110%);} to{transform:translateY(0);} }
+
+        /* Scroll reveal */
+        .fl-reveal { opacity:0; transform:translateY(20px); transition:opacity 400ms ease-out, transform 400ms ease-out; will-change:opacity, transform; }
+        .fl-reveal.fl-in { opacity:1; transform:translateY(0); }
+
+        /* Hero on-load */
+        .fl-hero-anim { opacity:0; transform:translateY(16px); animation:fl-heroIn 450ms ease-out forwards; }
+        .fl-hero-anim-1 { animation-delay:80ms; }
+        .fl-hero-anim-2 { animation-delay:200ms; }
+        @keyframes fl-heroIn { to { opacity:1; transform:translateY(0); } }
+
+        /* Hover polish */
+        .fl-card { transition:transform 200ms ease-out, box-shadow 200ms ease-out, border-color 200ms ease-out; }
+        .fl-card:hover { transform:translateY(-3px); box-shadow:0 10px 30px -12px rgba(17,16,16,0.18); }
+        .fl-template { transition:transform 200ms ease-out, box-shadow 200ms ease-out, border-color 200ms ease-out, opacity 0.5s ease; }
+        .fl-template:hover { transform:translateY(-3px) scale(1.02); box-shadow:0 12px 30px -14px rgba(17,16,16,0.22); }
+        .fl-cta-primary, .fl-cta-secondary { transition:transform 200ms ease-out, box-shadow 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out, border-color 200ms ease-out; }
+        .fl-cta-primary:hover, .fl-cta-secondary:hover { transform:translateY(-2px); box-shadow:0 8px 22px -10px rgba(17,16,16,0.35); }
+        .fl-pill { transition:transform 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out; }
+        .fl-pill:hover { transform:translateY(-2px); }
+
+        @media (prefers-reduced-motion: reduce) {
+          .fl-reveal, .fl-hero-anim, .fl-stats, .fl-template { opacity:1 !important; transform:none !important; animation:none !important; transition:none !important; }
+          .fl-card:hover, .fl-template:hover, .fl-cta-primary:hover, .fl-cta-secondary:hover, .fl-pill:hover { transform:none !important; box-shadow:none !important; }
+        }
       `}</style>
     </div>
   );
