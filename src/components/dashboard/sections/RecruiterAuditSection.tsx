@@ -192,7 +192,7 @@ export function RecruiterAuditSection() {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/recruiter-audit`,
+        `${SUPABASE_URL}/functions/v1/recruiter-audit`,
         {
           method: "POST",
           headers: {
@@ -248,7 +248,7 @@ export function RecruiterAuditSection() {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/recruiter-audit`,
+        `${SUPABASE_URL}/functions/v1/recruiter-audit`,
         {
           method: "POST",
           headers: {

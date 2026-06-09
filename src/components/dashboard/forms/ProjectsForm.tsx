@@ -20,11 +20,11 @@ import { Button } from '@/components/ui/button';
 import { Plus, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { SmartProjectCard, SmartProject, projectSchema } from './SmartProjectCard';
-import { supabase } from '@/lib/supabase_v2';
+import { supabase, SUPABASE_URL } from "@/lib/supabase_v2";
 import { useAuth } from '@/contexts/AuthContext';
 import { Json } from '@/integrations/supabase/types';
 
-const ENHANCE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/enhance-project`;
+const ENHANCE_URL = `${SUPABASE_URL}/functions/v1/enhance-project`;
 
 // Convert old Project format to SmartProject
 function toSmartProject(project: Project): SmartProject {
