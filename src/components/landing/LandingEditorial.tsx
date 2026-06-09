@@ -137,7 +137,7 @@ export function LandingEditorial() {
         <div className="fl-hero-inner">
           <div className="fl-issue-line">AI-Powered Portfolios · Est. 2026</div>
 
-          <h1 className="fl-h1">
+          <h1 className="fl-h1 fl-hero-anim fl-hero-anim-1">
             <span className="fl-word"><span>Your</span></span>{' '}
             <span className="fl-word fl-italic fl-red"><span>Work,</span></span>
             <br />
@@ -145,11 +145,12 @@ export function LandingEditorial() {
             <span className="fl-word fl-italic"><span>Told.</span></span>
           </h1>
 
-          <p className="fl-sub">
+          <p className="fl-sub fl-hero-anim fl-hero-anim-2">
             Upload your resume. Our AI engineers a portfolio that makes recruiters
             stop scrolling and start calling. No code. No templates that scream
             template. No compromise.
           </p>
+
 
           <div className="fl-cta-row">
             <Link to="/auth?provider=google" className="fl-cta-primary">
