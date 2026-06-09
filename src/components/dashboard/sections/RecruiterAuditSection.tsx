@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProfile } from "@/contexts/ProfileContext";
 import { usePro } from "@/contexts/ProContext";
-import { supabase } from "@/lib/supabase_v2";
+import { supabase, SUPABASE_URL } from "@/lib/supabase_v2";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -192,7 +192,7 @@ export function RecruiterAuditSection() {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/recruiter-audit`,
+        `${SUPABASE_URL}/functions/v1/recruiter-audit`,
         {
           method: "POST",
           headers: {
@@ -248,7 +248,7 @@ export function RecruiterAuditSection() {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/recruiter-audit`,
+        `${SUPABASE_URL}/functions/v1/recruiter-audit`,
         {
           method: "POST",
           headers: {

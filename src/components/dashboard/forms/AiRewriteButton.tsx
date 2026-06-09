@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/lib/supabase_v2';
+import { supabase, SUPABASE_URL } from '@/lib/supabase_v2';
 import { toast } from '@/hooks/use-toast';
 import { Sparkles, Loader2, Check, ExternalLink } from 'lucide-react';
 import {
@@ -34,7 +34,7 @@ export function AiRewriteButton({ text, onResult }: AiRewriteButtonProps) {
             if (!session) throw new Error("Not authenticated");
 
             const response = await fetch(
-                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/rewrite-text`,
+                `${SUPABASE_URL}/functions/v1/rewrite-text`,
                 {
                     method: 'POST',
                     headers: {

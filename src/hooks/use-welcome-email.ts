@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { supabase } from '@/lib/supabase_v2';
+import { supabase, SUPABASE_URL } from '@/lib/supabase_v2';
 
 /**
  * Hook to fire the on-auth-success edge function after a user signs up or first logs in.
@@ -13,7 +13,7 @@ export function useWelcomeEmail() {
                 if (!session?.access_token) return;
 
                 await fetch(
-                    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/on-auth-success`,
+                    `${SUPABASE_URL}/functions/v1/on-auth-success`,
                     {
                         method: 'POST',
                         headers: {
