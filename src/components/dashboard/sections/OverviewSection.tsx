@@ -249,7 +249,7 @@ export function OverviewSection() {
                     <Circle className="h-4 w-4 text-indigo-500/30" />
                   )}
                 </div>
-                <h3 className={`text-sm font-bold ${step.isDone ? 'text-emerald-200/80 line-through opacity-60' : 'text-foreground'}`}>
+                <h3 className="text-sm font-bold text-foreground">
                   {step.label}
                 </h3>
                 <p className="text-[11px] text-muted-foreground mt-1 leading-tight">
