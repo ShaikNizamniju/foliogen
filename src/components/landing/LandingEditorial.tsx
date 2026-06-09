@@ -180,7 +180,7 @@ export function LandingEditorial() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="fl-section">
+      <section id="features" className="fl-section fl-reveal">
         <div className="fl-section-head">
           <div className="fl-eyebrow">— Chapter One · The Toolkit</div>
           <h2 className="fl-h2">Every <em>feature</em>.<br />Unlocked. <em>Free.</em></h2>
