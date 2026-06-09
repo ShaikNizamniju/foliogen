@@ -343,7 +343,7 @@ export function LandingEditorial() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="fl-pricing">
+      <section id="pricing" className="fl-pricing fl-reveal">
         <div className="fl-pricing-inner">
           <div className="fl-eyebrow fl-eyebrow-light">— The Pricing</div>
           <h2 className="fl-pricing-h">Free.<br /><em>Forever.</em></h2>
