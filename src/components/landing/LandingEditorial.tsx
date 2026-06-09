@@ -608,7 +608,36 @@ export function LandingEditorial() {
         @keyframes fl-fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
         @keyframes fl-fadeIn { from{opacity:0;} to{opacity:1;} }
         @keyframes fl-slideUp { from{transform:translateY(110%);} to{transform:translateY(0);} }
+
+        /* Scroll reveal */
+        .fl-reveal { opacity:0; transform:translateY(20px); transition:opacity 400ms ease-out, transform 400ms ease-out; will-change:opacity, transform; }
+        .fl-reveal.fl-in { opacity:1; transform:translateY(0); }
+
+        /* Hero on-load */
+        .fl-hero-anim { opacity:0; transform:translateY(16px); animation:fl-heroIn 450ms ease-out forwards; }
+        .fl-hero-anim-1 { animation-delay:80ms; }
+        .fl-hero-anim-2 { animation-delay:200ms; }
+        @keyframes fl-heroIn { to { opacity:1; transform:translateY(0); } }
+
+        /* Hover polish */
+        .fl-card { transition:transform 200ms ease-out, box-shadow 200ms ease-out, border-color 200ms ease-out; }
+        .fl-card:hover { transform:translateY(-3px); box-shadow:0 10px 30px -12px rgba(17,16,16,0.18); }
+        .fl-template { transition:transform 200ms ease-out, box-shadow 200ms ease-out, border-color 200ms ease-out, opacity 0.5s ease; }
+        .fl-template:hover { transform:translateY(-3px) scale(1.02); box-shadow:0 12px 30px -14px rgba(17,16,16,0.22); }
+        .fl-cta-primary, .fl-cta-secondary { transition:transform 200ms ease-out, box-shadow 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out, border-color 200ms ease-out; }
+        .fl-cta-primary:hover, .fl-cta-secondary:hover { transform:translateY(-2px); box-shadow:0 8px 22px -10px rgba(17,16,16,0.35); }
+        .fl-pill { transition:transform 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out; }
+        .fl-pill:hover { transform:translateY(-2px); }
+
+        @media (prefers-reduced-motion: reduce) {
+          .fl-reveal, .fl-hero-anim, .fl-stats, .fl-template { opacity:1 !important; transform:none !important; animation:none !important; transition:none !important; }
+          .fl-card:hover, .fl-template:hover, .fl-cta-primary:hover, .fl-cta-secondary:hover, .fl-pill:hover { transform:none !important; box-shadow:none !important; }
+        }
       `}</style>
+    </div>
+  );
+}
+
     </div>
   );
 }
