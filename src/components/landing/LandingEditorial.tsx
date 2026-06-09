@@ -70,6 +70,27 @@ export function LandingEditorial() {
     };
   }, []);
 
+  // Scroll reveal — fade/slide once on entry, respects reduced motion
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.fl-reveal').forEach((el) => el.classList.add('fl-in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fl-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fl-reveal').forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+
+
 
   const features = [
     { n: '01', t: 'AI Resume Parser', d: 'Drop your PDF. Our AI extracts every role, skill, and metric into a structured story.' },
