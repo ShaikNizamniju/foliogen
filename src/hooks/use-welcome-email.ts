@@ -13,7 +13,7 @@ export function useWelcomeEmail() {
                 if (!session?.access_token) return;
 
                 await fetch(
-                    `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/on-auth-success`,
+                    `${SUPABASE_URL}/functions/v1/on-auth-success`,
                     {
                         method: 'POST',
                         headers: {
