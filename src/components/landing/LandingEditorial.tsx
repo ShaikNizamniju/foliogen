@@ -637,7 +637,3 @@ export function LandingEditorial() {
     </div>
   );
 }
-
-    </div>
-  );
-}
