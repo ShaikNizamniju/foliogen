@@ -254,6 +254,19 @@ export default function PublicPortfolio() {
       ? ((payload as any).key_highlights as string[])
       : [];
 
+    // Fetch the owner's contact email from the public view (anon-readable).
+    // This is the only private profile field exposed publicly, and only so the
+    // "Establish Contact" mailto can be addressed to the real owner.
+    let ownerEmail = (payload as any).email || (data as any).email || '';
+    if (!ownerEmail && data.id) {
+      const { data: emailRow } = await supabase
+        .from('profiles_public')
+        .select('email')
+        .eq('user_id', data.id)
+        .maybeSingle();
+      ownerEmail = (emailRow as any)?.email || '';
+    }
+
     setProfile({
       id: data.id || '',
       fullName: payload.full_name || '',
@@ -261,7 +274,7 @@ export default function PublicPortfolio() {
       bio: payload.bio || '',
       headline: payload.headline || '',
       location: payload.location || '',
-      email: '', // Not exposed in public view for privacy
+      email: ownerEmail,
       website: payload.website || '',
       linkedinUrl: payload.linkedin_url || '',
       githubUrl: payload.github_url || '',
@@ -286,6 +299,7 @@ export default function PublicPortfolio() {
     });
     setLoading(false);
   };
+
 
   if (loading) {
     return (
