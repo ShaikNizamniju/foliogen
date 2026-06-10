@@ -6,16 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Briefcase, Link as LinkIcon, Mail, Building2, Eye, Sparkles, X } from 'lucide-react';
+import { Briefcase, Link as LinkIcon, Mail, Building2, Eye, Sparkles, X, Linkedin } from 'lucide-react';
 
 interface RecruiterPingProps {
   portfolioUserId: string;
   linkId: string;
   linkType: 'portfolio' | 'chameleon';
   industryContext?: string;
+  ownerEmail?: string;
+  ownerLinkedIn?: string;
+  ownerName?: string;
 }
 
-export function RecruiterPing({ portfolioUserId, linkId, linkType, industryContext }: RecruiterPingProps) {
+export function RecruiterPing({ portfolioUserId, linkId, linkType, industryContext, ownerEmail, ownerLinkedIn, ownerName }: RecruiterPingProps) {
   const [open, setOpen] = useState(false);
   const [company, setCompany] = useState('');
   const [contactMethod, setContactMethod] = useState('');
@@ -26,10 +29,16 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
     e.preventDefault();
     if (!company.trim() || !contactMethod.trim()) return;
 
+    if (!ownerEmail) {
+      toast.error("No email on file", {
+        description: "This portfolio owner hasn't shared an email address.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    setIsSubmitting(true);
-    
-    // Fire and forget networking to achieve <200ms perceived latency
+
+    // Fire-and-forget analytics log (non-blocking)
     supabase.from('visit_logs').insert({
       user_id: portfolioUserId,
       link_type: linkType,
@@ -39,29 +48,35 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
       is_ping: true,
       company: company.trim(),
       contact_method: contactMethod.trim(),
-    }).then(({ error }) => {
-      if (error) { }
-    });
+    }).then(() => {});
 
-    // Trigger Neural Sync Success Animation
+    // Open the visitor's email app addressed to the owner
+    const subject = 'Portfolio inquiry';
+    const body =
+      `Hi ${ownerName || 'there'},\n\n` +
+      `I came across your portfolio and would love to connect.\n\n` +
+      `Company: ${company.trim()}\n` +
+      `Best way to reach me: ${contactMethod.trim()}\n`;
+    window.location.href = `mailto:${ownerEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
     setIsSuccess(true);
     setTimeout(() => {
       setOpen(false);
       setIsSuccess(false);
       setCompany('');
       setContactMethod('');
-      toast.success("Interest Sent", {
-        description: "Encrypted connection established.",
-        style: { 
-          background: '#0a0a0a', 
-          border: '1px solid rgba(59, 130, 246, 0.5)', 
+      toast.success("Opening your email app…", {
+        description: `Your message to ${ownerName || ownerEmail} is ready to send.`,
+        style: {
+          background: '#0a0a0a',
+          border: '1px solid rgba(59, 130, 246, 0.5)',
           color: 'white',
           boxShadow: '0 0 20px rgba(59, 130, 246, 0.15)'
         },
         icon: <Sparkles className="h-4 w-4 text-blue-400" />
       });
       setIsSubmitting(false);
-    }, 150);
+    }, 400);
   };
 
   // Lock body scroll while open
