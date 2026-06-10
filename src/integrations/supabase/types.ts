@@ -531,6 +531,7 @@ export type Database = {
           bio: string | null
           calendly_url: string | null
           created_at: string | null
+          email: string | null
           full_name: string | null
           github_url: string | null
           headline: string | null
@@ -556,6 +557,7 @@ export type Database = {
           bio?: string | null
           calendly_url?: string | null
           created_at?: string | null
+          email?: string | null
           full_name?: string | null
           github_url?: string | null
           headline?: string | null
@@ -581,6 +583,7 @@ export type Database = {
           bio?: string | null
           calendly_url?: string | null
           created_at?: string | null
+          email?: string | null
           full_name?: string | null
           github_url?: string | null
           headline?: string | null
