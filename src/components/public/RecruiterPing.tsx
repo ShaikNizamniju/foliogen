@@ -130,9 +130,34 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
                   Establish Contact
                 </h2>
                 <p className="text-neutral-400 text-sm mt-1.5">
-                  Send a discrete, encrypted ping directly to the portfolio owner. Zero friction.
+                  Send a message — it'll open in your email app, addressed directly to the portfolio owner.
                 </p>
               </div>
+
+              {(ownerEmail || ownerLinkedIn) && (
+                <div className="mb-5 rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-2 text-sm">
+                  {ownerEmail && (
+                    <a
+                      href={`mailto:${ownerEmail}?subject=${encodeURIComponent('Portfolio inquiry')}`}
+                      className="flex items-center gap-2 text-neutral-200 hover:text-blue-400 transition-colors break-all"
+                    >
+                      <Mail className="w-4 h-4 shrink-0 text-blue-400" />
+                      <span>{ownerEmail}</span>
+                    </a>
+                  )}
+                  {ownerLinkedIn && (
+                    <a
+                      href={ownerLinkedIn}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-neutral-200 hover:text-blue-400 transition-colors break-all"
+                    >
+                      <Linkedin className="w-4 h-4 shrink-0 text-blue-400" />
+                      <span>LinkedIn Profile</span>
+                    </a>
+                  )}
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
