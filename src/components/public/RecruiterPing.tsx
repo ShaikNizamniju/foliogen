@@ -201,12 +201,12 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
                       <div className="w-4 h-4 rounded-full border-2 border-blue-400/30 border-t-blue-400 animate-spin" />
-                      Encrypting...
+                      Opening email…
                     </span>
                   ) : (
                     <span className="flex items-center gap-2">
-                      <LinkIcon className="w-4 h-4" />
-                      Send Ping
+                      <Mail className="w-4 h-4" />
+                      Send via Email
                     </span>
                   )}
                 </Button>
