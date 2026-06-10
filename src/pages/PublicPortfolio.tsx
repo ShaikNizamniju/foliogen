@@ -630,6 +630,7 @@ export default function PublicPortfolio() {
         onOpenChange={setContactOpen}
         recipientEmail={profile.email}
         recipientName={profile.fullName}
+        recipientLinkedIn={profile.linkedinUrl}
       />
       {id && (
         <ProfileChatBot
@@ -645,6 +646,9 @@ export default function PublicPortfolio() {
           linkId={slug || id}
           linkType={slug ? 'chameleon' : 'portfolio'}
           industryContext={undefined}
+          ownerEmail={profile.email}
+          ownerLinkedIn={profile.linkedinUrl}
+          ownerName={profile.fullName}
         />
       )}
 
