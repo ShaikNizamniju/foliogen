@@ -64,19 +64,42 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
     }, 150);
   };
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button 
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold rounded-full bg-[#0a0a0a]/90 backdrop-blur-md border border-white/10 text-neutral-300 hover:text-white transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] hover:border-blue-500/50 group"
+  // Lock body scroll while open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const modal = open ? createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto overscroll-contain p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="recruiter-ping-title"
+    >
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+        onClick={() => !isSubmitting && setOpen(false)}
+      />
+
+      <div className="relative z-10 w-full max-w-md my-auto bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          aria-label="Close"
+          className="absolute right-3 top-3 z-20 p-2 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
         >
-          <div className="absolute inset-0 rounded-full bg-blue-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Eye className="w-4 h-4 text-blue-400" />
-          <span className="relative z-10">I’m Interested</span>
+          <X className="w-4 h-4" />
         </button>
-      </DialogTrigger>
-      
-      <DialogContent className="sm:max-w-md bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] rounded-2xl overflow-hidden p-0 relative">
+
         <AnimatePresence mode="wait">
           {!isSuccess ? (
             <motion.div
@@ -86,25 +109,25 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
               exit={{ opacity: 0, scale: 0.95 }}
               className="p-6"
             >
-              <DialogHeader className="mb-6">
-                <DialogTitle className="text-white text-xl font-bold flex items-center gap-2">
+              <div className="mb-6">
+                <h2 id="recruiter-ping-title" className="text-white text-xl font-bold flex items-center gap-2">
                   <Briefcase className="w-5 h-5 text-blue-500" />
                   Establish Contact
-                </DialogTitle>
-                <DialogDescription className="text-neutral-400 text-sm">
+                </h2>
+                <p className="text-neutral-400 text-sm mt-1.5">
                   Send a discrete, encrypted ping directly to the portfolio owner. Zero friction.
-                </DialogDescription>
-              </DialogHeader>
+                </p>
+              </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="company" className="text-neutral-300 text-xs uppercase tracking-wider font-semibold">Your Company</Label>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                    <Input 
+                    <Input
                       id="company"
-                      type="text" 
-                      placeholder="e.g. Acme Corp" 
+                      type="text"
+                      placeholder="e.g. Acme Corp"
                       value={company}
                       onChange={(e) => setCompany(e.target.value)}
                       required
@@ -117,10 +140,10 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
                   <Label htmlFor="contact" className="text-neutral-300 text-xs uppercase tracking-wider font-semibold">Preferred Contact</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-                    <Input 
+                    <Input
                       id="contact"
-                      type="text" 
-                      placeholder="Email or LinkedIn URL" 
+                      type="text"
+                      placeholder="Email or LinkedIn URL"
                       value={contactMethod}
                       onChange={(e) => setContactMethod(e.target.value)}
                       required
@@ -129,8 +152,8 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isSubmitting || !company || !contactMethod}
                   className="w-full bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 font-semibold h-11 relative group overflow-hidden"
                 >
@@ -157,19 +180,19 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
               className="p-8 flex flex-col items-center justify-center min-h-[300px]"
             >
               <div className="relative w-20 h-20 mb-6 flex items-center justify-center">
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: [0.8, 1.2, 1], opacity: [0, 1, 0.5] }}
                   transition={{ duration: 1, ease: "easeOut" }}
                   className="absolute inset-0 rounded-full bg-blue-500/20 blur-xl"
                 />
                 <motion.div
-                   initial={{ opacity: 0, width: 0 }}
-                   animate={{ opacity: 1, width: "100%" }}
-                   transition={{ duration: 0.8, ease: "easeInOut" }}
-                   className="h-1 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,1)] rounded-full relative overflow-hidden"
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "100%" }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  className="h-1 bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,1)] rounded-full relative overflow-hidden"
                 >
-                  <motion.div 
+                  <motion.div
                     initial={{ x: "-100%" }}
                     animate={{ x: "100%" }}
                     transition={{ repeat: Infinity, duration: 0.6, ease: "linear" }}
@@ -189,7 +212,23 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
             </motion.div>
           )}
         </AnimatePresence>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>,
+    document.body
+  ) : null;
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold rounded-full bg-[#0a0a0a]/90 backdrop-blur-md border border-white/10 text-neutral-300 hover:text-white transition-all shadow-[0_0_15px_rgba(59,130,246,0.1)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] hover:border-blue-500/50 group"
+      >
+        <div className="absolute inset-0 rounded-full bg-blue-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+        <Eye className="w-4 h-4 text-blue-400" />
+        <span className="relative z-10">I'm Interested</span>
+      </button>
+      {modal}
+    </>
   );
 }
