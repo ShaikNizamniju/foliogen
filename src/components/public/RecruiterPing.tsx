@@ -1,19 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase_v2';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Briefcase, Link as LinkIcon, Mail, Building2, Eye, Sparkles } from 'lucide-react';
+import { Briefcase, Link as LinkIcon, Mail, Building2, Eye, Sparkles, X } from 'lucide-react';
 
 interface RecruiterPingProps {
   portfolioUserId: string;
