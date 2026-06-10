@@ -11,15 +11,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Send, Loader2, CheckCircle } from 'lucide-react';
+import { Send, Mail, Linkedin } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { supabase } from '@/lib/supabase_v2';
 
-// Validation schema
 const contactSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
-  email: z.string().trim().email("Please enter a valid email").max(255, "Email must be less than 255 characters"),
-  message: z.string().trim().min(10, "Message must be at least 10 characters").max(5000, "Message must be less than 5000 characters"),
+  name: z.string().trim().min(1, 'Name is required').max(100),
+  email: z.string().trim().email('Please enter a valid email').max(255),
+  message: z.string().trim().min(10, 'Message must be at least 10 characters').max(5000),
 });
 
 interface ContactDialogProps {
@@ -27,14 +25,19 @@ interface ContactDialogProps {
   onOpenChange: (open: boolean) => void;
   recipientEmail: string;
   recipientName: string;
+  recipientLinkedIn?: string;
 }
 
-export function ContactDialog({ open, onOpenChange, recipientEmail, recipientName }: ContactDialogProps) {
+export function ContactDialog({
+  open,
+  onOpenChange,
+  recipientEmail,
+  recipientName,
+  recipientLinkedIn,
+}: ContactDialogProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
 
   const resetForm = () => {
@@ -42,21 +45,16 @@ export function ContactDialog({ open, onOpenChange, recipientEmail, recipientNam
     setEmail('');
     setMessage('');
     setErrors({});
-    setSent(false);
   };
 
-  const handleClose = (open: boolean) => {
-    if (!open) {
-      resetForm();
-    }
-    onOpenChange(open);
+  const handleClose = (o: boolean) => {
+    if (!o) resetForm();
+    onOpenChange(o);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-
-    // Validate
     const result = contactSchema.safeParse({ name, email, message });
     if (!result.success) {
       const fieldErrors: { name?: string; email?: string; message?: string } = {};
@@ -68,45 +66,28 @@ export function ContactDialog({ open, onOpenChange, recipientEmail, recipientNam
       return;
     }
 
-    setSending(true);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: {
-          name: result.data.name,
-          email: result.data.email,
-          message: result.data.message,
-          toEmail: recipientEmail,
-          toName: recipientName,
-        },
-      });
-
-      if (error) throw error;
-
-      if (!data?.success) {
-        throw new Error(data?.error || 'Failed to send message');
-      }
-
-      setSent(true);
+    if (!recipientEmail) {
       toast({
-        title: "Message sent! ✨",
-        description: `Your message has been delivered to ${recipientName}.`,
+        title: 'No email on file',
+        description: "This portfolio owner hasn't shared an email address.",
+        variant: 'destructive',
       });
-
-      // Auto-close after success
-      setTimeout(() => {
-        handleClose(false);
-      }, 2000);
-    } catch (error) {
-
-      toast({
-        title: "Failed to send",
-        description: error instanceof Error ? error.message : "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setSending(false);
+      return;
     }
+
+    const subject = 'Portfolio inquiry';
+    const body =
+      `Hi ${recipientName || 'there'},\n\n` +
+      `${result.data.message}\n\n` +
+      `— ${result.data.name}\n${result.data.email}`;
+    const href = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = href;
+
+    toast({
+      title: 'Opening your email app…',
+      description: `Your message to ${recipientName || recipientEmail} is ready to send.`,
+    });
+    setTimeout(() => handleClose(false), 600);
   };
 
   return (
@@ -115,87 +96,79 @@ export function ContactDialog({ open, onOpenChange, recipientEmail, recipientNam
         <DialogHeader>
           <DialogTitle>Contact {recipientName || 'Me'}</DialogTitle>
           <DialogDescription>
-            Send a message directly to {recipientName}. They'll receive it via email.
+            Send a message — it will open in your email app, addressed directly to {recipientName || 'the owner'}.
           </DialogDescription>
         </DialogHeader>
 
-        {sent ? (
-          <div className="py-8 text-center space-y-4">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto animate-in zoom-in" />
-            <div>
-              <h3 className="font-semibold text-lg">Message Sent!</h3>
-              <p className="text-muted-foreground text-sm">
-                {recipientName} will get back to you soon.
-              </p>
-            </div>
+        {/* Direct contact options */}
+        <div className="rounded-lg border bg-muted/30 p-3 space-y-2 text-sm">
+          {recipientEmail && (
+            <a
+              href={`mailto:${recipientEmail}?subject=${encodeURIComponent('Portfolio inquiry')}`}
+              className="flex items-center gap-2 hover:text-primary transition-colors break-all"
+            >
+              <Mail className="h-4 w-4 shrink-0" />
+              <span>{recipientEmail}</span>
+            </a>
+          )}
+          {recipientLinkedIn && (
+            <a
+              href={recipientLinkedIn}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 hover:text-primary transition-colors break-all"
+            >
+              <Linkedin className="h-4 w-4 shrink-0" />
+              <span>LinkedIn Profile</span>
+            </a>
+          )}
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+          <div className="space-y-2">
+            <Label htmlFor="contact-name">Your Name</Label>
+            <Input
+              id="contact-name"
+              placeholder="John Doe"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={errors.name ? 'border-destructive' : ''}
+            />
+            {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="contact-name">Your Name</Label>
-              <Input
-                id="contact-name"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={sending}
-                className={errors.name ? 'border-destructive' : ''}
-              />
-              {errors.name && (
-                <p className="text-xs text-destructive">{errors.name}</p>
-              )}
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="contact-email">Your Email</Label>
-              <Input
-                id="contact-email"
-                type="email"
-                placeholder="john@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={sending}
-                className={errors.email ? 'border-destructive' : ''}
-              />
-              {errors.email && (
-                <p className="text-xs text-destructive">{errors.email}</p>
-              )}
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="contact-email">Your Email</Label>
+            <Input
+              id="contact-email"
+              type="email"
+              placeholder="john@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={errors.email ? 'border-destructive' : ''}
+            />
+            {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="contact-message">Message</Label>
-              <Textarea
-                id="contact-message"
-                placeholder="Hi! I'd love to connect about a potential opportunity..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                disabled={sending}
-                rows={4}
-                className={errors.message ? 'border-destructive' : ''}
-              />
-              {errors.message && (
-                <p className="text-xs text-destructive">{errors.message}</p>
-              )}
-              <p className="text-xs text-muted-foreground text-right">
-                {message.length}/5000
-              </p>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="contact-message">Message</Label>
+            <Textarea
+              id="contact-message"
+              placeholder="Hi! I'd love to connect about a potential opportunity..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={4}
+              className={errors.message ? 'border-destructive' : ''}
+            />
+            {errors.message && <p className="text-xs text-destructive">{errors.message}</p>}
+            <p className="text-xs text-muted-foreground text-right">{message.length}/5000</p>
+          </div>
 
-            <Button type="submit" className="w-full" disabled={sending}>
-              {sending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Send Message
-                </>
-              )}
-            </Button>
-          </form>
-        )}
+          <Button type="submit" className="w-full" disabled={!recipientEmail}>
+            <Send className="h-4 w-4 mr-2" />
+            Send via Email
+          </Button>
+        </form>
       </DialogContent>
     </Dialog>
   );
