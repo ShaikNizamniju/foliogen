@@ -571,21 +571,6 @@ export default function PublicPortfolio() {
         );
       })()}
 
-      {/* Recruiter Mode Toggle */}
-      <div className="fixed top-4 left-4 md:top-6 md:left-6 z-[60] flex items-center gap-2 md:gap-3 bg-black/40 backdrop-blur-md p-1.5 pl-3 pr-1.5 md:p-2 md:pl-4 md:pr-2 rounded-full border border-white/10 shadow-2xl">
-        <span className="text-[10px] md:text-xs font-bold text-white uppercase tracking-widest">
-          Recruiter
-        </span>
-        <label className="relative inline-flex items-center cursor-pointer group">
-          <input
-            type="checkbox"
-            className="sr-only peer"
-            checked={recruiterMode}
-            onChange={(e) => setRecruiterMode(e.target.checked)}
-          />
-          <div className="w-11 h-6 bg-neutral-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 border-none"></div>
-        </label>
-      </div>
 
       <div
         className="min-h-screen"
