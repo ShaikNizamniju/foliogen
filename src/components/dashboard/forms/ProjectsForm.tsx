@@ -26,9 +26,10 @@ import { Json } from '@/integrations/supabase/types';
 
 const ENHANCE_URL = `${SUPABASE_URL}/functions/v1/enhance-project`;
 
-// Convert old Project format to SmartProject
+// Convert old Project format to SmartProject (preserve every field so URLs round-trip)
 function toSmartProject(project: Project): SmartProject {
   return {
+    ...(project as any),
     id: project.id,
     title: project.title || '',
     link: project.link || '',
@@ -39,12 +40,19 @@ function toSmartProject(project: Project): SmartProject {
     visible: (project as any).visible !== false,
     visualPrompt: project.visualPrompt,
     references: project.references || [],
-  };
+    docsUrl: project.docsUrl || '',
+    proofOfImpact: project.proofOfImpact || '',
+    isProtected: project.isProtected || false,
+    password: project.password || '',
+    verifiedImpact: project.verifiedImpact || false,
+    isVerified: project.isVerified || false,
+  } as SmartProject;
 }
 
-// Convert SmartProject back to Profile Project format
+// Convert SmartProject back to Profile Project format (preserve every field)
 function toProfileProject(project: SmartProject): Project {
   return {
+    ...(project as any),
     id: project.id,
     title: project.title,
     link: project.link || '',
@@ -55,6 +63,12 @@ function toProfileProject(project: SmartProject): Project {
     targetKeywords: project.targetKeywords,
     visible: project.visible,
     references: project.references,
+    docsUrl: (project as any).docsUrl || '',
+    proofOfImpact: (project as any).proofOfImpact || '',
+    isProtected: (project as any).isProtected || false,
+    password: (project as any).password || '',
+    verifiedImpact: (project as any).verifiedImpact || false,
+    isVerified: (project as any).isVerified || false,
   } as Project;
 }
 

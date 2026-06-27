@@ -81,15 +81,16 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   
   // Smart button promotion: determine the main link
-  const mainLink = getProjectHref(project) || '#';
+  const mainLink = getProjectHref(project);
   const isDocsOnly = !project.link && !!project.docsUrl;
 
   return (
     <motion.a
       ref={ref}
       href={mainLink}
-      target={mainLink !== '#' ? '_blank' : undefined}
+      target={mainLink ? '_blank' : undefined}
       rel="noopener noreferrer"
+      onClick={!mainLink ? (e) => e.preventDefault() : undefined}
       className="block group relative overflow-hidden rounded-2xl"
       initial={{ opacity: 0, y: 60 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}

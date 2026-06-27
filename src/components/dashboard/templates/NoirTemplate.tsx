@@ -204,14 +204,15 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
               <div className="space-y-24">
                 {profile.projects.map((project, index) => {
                   // Smart button promotion: determine the main link
-                  const mainLink = getProjectHref(project) || '#';
+                  const mainLink = getProjectHref(project);
                   const isDocsOnly = !project.link && !!project.docsUrl;
                   
                   return (
                     <motion.a
                       key={project.id}
                       href={mainLink}
-                      target={mainLink !== '#' ? '_blank' : undefined}
+                      target={mainLink ? '_blank' : undefined}
+                    onClick={!mainLink ? (e) => e.preventDefault() : undefined}
                       rel="noopener noreferrer"
                       className="block group"
                       initial={{ opacity: 0, y: 60 }}

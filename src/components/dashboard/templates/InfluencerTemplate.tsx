@@ -254,14 +254,15 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
               </h2>
             {profile.projects.map((project, index) => {
               // Smart button promotion: determine the main link
-              const mainLink = getProjectHref(project) || '#';
+              const mainLink = getProjectHref(project);
               const isDocsOnly = !project.link && !!project.docsUrl;
               
               return (
                 <motion.a
                   key={project.id}
                   href={mainLink}
-                  target={mainLink !== '#' ? '_blank' : undefined}
+                  target={mainLink ? '_blank' : undefined}
+                    onClick={!mainLink ? (e) => e.preventDefault() : undefined}
                   rel="noopener noreferrer"
                   className="block backdrop-blur-xl bg-white/60 border border-white/80 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
                   whileHover={{ scale: 1.02, y: -2 }}

@@ -271,14 +271,15 @@ export function ExecutiveTemplate({ profile, onContactClick }: ExecutiveTemplate
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {profile.projects.map((project, index) => {
                     // Smart button promotion: determine the main link
-                    const mainLink = getProjectHref(project) || '#';
+                    const mainLink = getProjectHref(project);
                     const isDocsOnly = !project.link && !!project.docsUrl;
                     
                     return (
                       <motion.a
                         key={project.id}
                         href={mainLink}
-                        target={mainLink !== '#' ? '_blank' : undefined}
+                        target={mainLink ? '_blank' : undefined}
+                    onClick={!mainLink ? (e) => e.preventDefault() : undefined}
                         rel="noopener noreferrer"
                         className="group block bg-white/5 border border-white/10 hover:border-amber-400/50 transition-all overflow-hidden"
                         initial={{ opacity: 0, scale: 0.95 }}
