@@ -233,10 +233,13 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
               Selected Works
             </h2>
             <div className="space-y-8">
-              {profile.projects.map((project, index) => (
+              {profile.projects.map((project, index) => {
+                const cardHref = getProjectHref(project);
+                return (
                 <motion.div 
                   key={project.id}
-                  className="group"
+                  className={`group ${cardHref ? 'cursor-pointer' : ''}`}
+                  onClick={cardHref ? () => window.open(cardHref, '_blank', 'noopener,noreferrer') : undefined}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 2.1 + index * 0.15, duration: 0.8 }}
