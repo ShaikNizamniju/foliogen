@@ -7,6 +7,7 @@ import {
 } from '@/lib/professionTemplates';
 import * as Icons from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface Props {
   profile: ProfileData;
@@ -61,6 +62,7 @@ function itemsFor(block: SectionBlock, profile: ProfileData, _meta: TemplateMeta
     return profile.projects.slice(0, 4).map((p) => ({
       title: p.title,
       caption: p.description?.slice(0, 160),
+      href: getProjectHref(p),
     }));
   }
 
@@ -194,24 +196,33 @@ function CardsGrid({ items, dark }: { items: SampleItem[]; dark?: boolean }) {
   if (!items.length) return <EmptyHint />;
   return (
     <div className="grid sm:grid-cols-2 gap-3">
-      {items.map((it, i) => (
-        <div
-          key={i}
-          className={`p-4 rounded-md border ${
-            dark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-white'
-          }`}
-          style={{ borderLeft: `2px solid hsl(var(--tpl-accent))` }}
-        >
-          <p className={`text-[13px] font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>
-            {it.title}
-          </p>
-          {it.caption && (
-            <p className={`text-[12px] leading-relaxed mt-1 ${dark ? 'text-white/65' : 'text-slate-600'}`}>
-              {it.caption}
+      {items.map((it, i) => {
+        const className = `p-4 rounded-md border block ${
+          dark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-white'
+        } ${it.href ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`;
+        const style = { borderLeft: `2px solid hsl(var(--tpl-accent))` } as React.CSSProperties;
+        const inner = (
+          <>
+            <p className={`text-[13px] font-semibold ${dark ? 'text-white' : 'text-slate-900'}`}>
+              {it.title}
             </p>
-          )}
-        </div>
-      ))}
+            {it.caption && (
+              <p className={`text-[12px] leading-relaxed mt-1 ${dark ? 'text-white/65' : 'text-slate-600'}`}>
+                {it.caption}
+              </p>
+            )}
+          </>
+        );
+        return it.href ? (
+          <a key={i} href={it.href} target="_blank" rel="noopener noreferrer" className={className} style={style}>
+            {inner}
+          </a>
+        ) : (
+          <div key={i} className={className} style={style}>
+            {inner}
+          </div>
+        );
+      })}
     </div>
   );
 }
