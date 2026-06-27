@@ -3,7 +3,7 @@ import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, CheckCirc
 import { motion } from 'framer-motion';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface MinimalistTemplateProps {
   profile: ProfileData;
@@ -260,10 +260,13 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
               Selected Work
             </h2>
             <div className="grid grid-cols-2 gap-6">
-              {profile.projects.map((project, index) => (
+              {profile.projects.map((project, index) => {
+                const cardHref = getProjectHref(project);
+                return (
                 <motion.div 
                   key={project.id} 
-                  className="group border border-black/10 hover:border-black/30 transition-all hover:shadow-lg hover:-translate-y-1 duration-300"
+                  className={`group border border-black/10 hover:border-black/30 transition-all hover:shadow-lg hover:-translate-y-1 duration-300 ${cardHref ? 'cursor-pointer' : ''}`}
+                  onClick={cardHref ? () => window.open(cardHref, '_blank', 'noopener,noreferrer') : undefined}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
@@ -331,7 +334,8 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                     <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           </motion.section>
         )}

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface CreativeTemplateProps {
   profile: ProfileData;
@@ -365,12 +365,16 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {profile.projects.map((project, index) => (
+                  {profile.projects.map((project, index) => {
+                    const cardHref = getProjectHref(project);
+                    return (
                     <motion.div
                       key={project.id}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.8 + index * 0.15 }}
+                      onClick={cardHref ? () => window.open(cardHref, '_blank', 'noopener,noreferrer') : undefined}
+                      className={cardHref ? 'cursor-pointer' : ''}
                     >
                       <TiltCard className={`group relative overflow-hidden rounded-3xl ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`}>
                         <div className="relative overflow-hidden rounded-3xl border border-white/10">
@@ -443,7 +447,8 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                         </div>
                       </TiltCard>
                     </motion.div>
-                  ))}
+                    );
+                  })}
                 </div>
               </motion.div>
             )}

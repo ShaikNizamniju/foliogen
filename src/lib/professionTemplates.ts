@@ -39,6 +39,7 @@ export interface SampleItem {
   title: string;
   caption?: string;
   meta?: string;
+  href?: string;
 }
 
 export interface ProfessionTemplate {

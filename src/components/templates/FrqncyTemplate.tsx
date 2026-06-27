@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { UserCircle } from 'lucide-react';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface FrqncyTemplateProps {
   profile?: ProfileData;
@@ -86,6 +87,8 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
       bg: bg_palettes[i % bg_palettes.length],
       text: text_palettes[i % text_palettes.length],
       image: p.imageUrl || '',
+      link: p.link || '',
+      proofOfImpact: p.proofOfImpact || '',
     }))
     : projectCards;
 
@@ -187,7 +190,9 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
           Selected Work
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {dynamicProjectCards.map((p, i) => (
+          {dynamicProjectCards.map((p: any, i: number) => {
+            const href = getProjectHref(p);
+            return (
             <motion.div
               key={p.title}
               initial={{ opacity: 0, y: 30 }}
@@ -195,7 +200,8 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
               whileHover={{ y: -8 }}
-              className="rounded-2xl overflow-hidden cursor-pointer transition-shadow duration-300 hover:shadow-2xl"
+              onClick={href ? () => window.open(href, '_blank', 'noopener,noreferrer') : undefined}
+              className={`rounded-2xl overflow-hidden ${href ? 'cursor-pointer' : ''} transition-shadow duration-300 hover:shadow-2xl`}
               style={{ backgroundColor: p.bg }}
             >
               {p.image && <img src={p.image} alt={p.title} className="w-full aspect-[3/2] object-cover" />}
@@ -204,7 +210,8 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
                 <span className="text-xs tracking-widest uppercase" style={{ fontFamily: mono, color: p.text, opacity: 0.7 }}>{p.category}</span>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

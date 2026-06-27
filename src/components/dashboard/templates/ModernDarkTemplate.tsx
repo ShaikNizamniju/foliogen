@@ -11,7 +11,7 @@ import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useJobMatch } from '@/hooks/useJobMatch';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 import { ProjectPasswordDialog } from '@/components/public/ProjectPasswordDialog';
 import { Project } from '@/contexts/ProfileContext';
 
@@ -566,11 +566,18 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
             <div className="space-y-6">
               {sortedProjects.map((project, index) => {
                 const isHighlighted = highlightedProjectIds.has(project.id);
+                const cardHref = !project.isProtected || unlockedProjects.has(project.id) ? getProjectHref(project) : undefined;
                 return (
                   <motion.div 
                     key={project.id}
                     variants={itemVariants}
-                    className={`bg-white/5 backdrop-blur-xl border rounded-2xl overflow-hidden transition-all group ${
+                    onClick={cardHref ? (e) => {
+                      // Avoid hijacking clicks on interactive children
+                      const target = e.target as HTMLElement;
+                      if (target.closest('a,button')) return;
+                      window.open(cardHref, '_blank', 'noopener,noreferrer');
+                    } : undefined}
+                    className={`bg-white/5 backdrop-blur-xl border rounded-2xl overflow-hidden transition-all group ${cardHref ? 'cursor-pointer' : ''} ${
                       isHighlighted 
                         ? 'border-cyan-500/50 ring-1 ring-cyan-500/20 shadow-lg shadow-cyan-500/10' 
                         : 'border-white/10 hover:border-cyan-500/30'

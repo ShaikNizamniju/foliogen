@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, ArrowRight, MapPin, MessageSquare, FileText, ExternalLink } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface NoirTemplateProps {
   profile: ProfileData;
@@ -204,7 +204,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
               <div className="space-y-24">
                 {profile.projects.map((project, index) => {
                   // Smart button promotion: determine the main link
-                  const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                  const mainLink = getProjectHref(project) || '#';
                   const isDocsOnly = !project.link && !!project.docsUrl;
                   
                   return (

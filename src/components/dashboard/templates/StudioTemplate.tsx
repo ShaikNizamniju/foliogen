@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, ArrowUpRight, Instagram, FileText, ExternalLink } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { useRef } from 'react';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface StudioTemplateProps {
   profile: ProfileData;
@@ -81,7 +81,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   
   // Smart button promotion: determine the main link
-  const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+  const mainLink = getProjectHref(project) || '#';
   const isDocsOnly = !project.link && !!project.docsUrl;
 
   return (

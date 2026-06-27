@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { ArrowUpRight, Mail, MapPin, ExternalLink, UserCircle } from 'lucide-react';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface NakulaTemplateProps {
   profile?: ProfileData;
@@ -64,6 +65,8 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
         desc: proj.description || '',
         category: proj.techStack?.[0] || 'Project',
         image: proj.imageUrl || '',
+        link: proj.link || '',
+        proofOfImpact: proj.proofOfImpact || '',
       }))
     : demoProfile.projects;
 
@@ -184,8 +187,10 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {projects.slice(0, 6).map((proj: any, i: number) => (
-              <motion.div key={i} variants={fadeUp} className="group cursor-pointer flex flex-col h-full">
+            {projects.slice(0, 6).map((proj: any, i: number) => {
+              const href = getProjectHref(proj);
+              return (
+              <motion.div key={i} variants={fadeUp} onClick={href ? () => window.open(href, '_blank', 'noopener,noreferrer') : undefined} className={`group flex flex-col h-full ${href ? 'cursor-pointer' : ''}`}>
                 {proj.image ? (
                   <div className="relative overflow-hidden rounded-2xl" style={{ border: '1px solid #E8E8E4' }}>
                     <motion.img
@@ -218,7 +223,8 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
                   </div>
                 )}
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       </section>

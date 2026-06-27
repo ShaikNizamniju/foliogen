@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface AcademicTemplateProps {
   profile: ProfileData;
@@ -233,10 +233,13 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
               Selected Works
             </h2>
             <div className="space-y-8">
-              {profile.projects.map((project, index) => (
+              {profile.projects.map((project, index) => {
+                const cardHref = getProjectHref(project);
+                return (
                 <motion.div 
                   key={project.id}
-                  className="group"
+                  className={`group ${cardHref ? 'cursor-pointer' : ''}`}
+                  onClick={cardHref ? () => window.open(cardHref, '_blank', 'noopener,noreferrer') : undefined}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 2.1 + index * 0.15, duration: 0.8 }}
@@ -297,7 +300,8 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
                     </div>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           </motion.section>
         )}
