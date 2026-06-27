@@ -58,6 +58,20 @@ export function openUrlSafely(url: string | undefined | null): void {
 }
 
 /**
+ * Resolve the visitor-facing URL for a project card.
+ * Prefers the user's "Project Link / Demo URL"; falls back to the
+ * "Proof Link" (GitHub/PRD/Loom). Returns undefined when both are empty
+ * so the card can render as not-clickable.
+ */
+export function getProjectHref(
+  p: { link?: string | null; proofOfImpact?: string | null } | null | undefined
+): string | undefined {
+  if (!p) return undefined;
+  const raw = (p.link && p.link.trim()) || (p.proofOfImpact && p.proofOfImpact.trim()) || '';
+  return raw ? ensureProtocol(raw) : undefined;
+}
+
+/**
  * Gets a smart label for a document URL based on its content
  * @param url - The document URL
  * @returns A contextual label like "View PDF", "View Post", or "View Details"
