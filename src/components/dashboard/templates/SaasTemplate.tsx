@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ArrowUpRight, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface SaasTemplateProps {
   profile: ProfileData;
@@ -222,7 +222,7 @@ export function SaasTemplate({ profile, onContactClick }: SaasTemplateProps) {
           <div className="grid grid-cols-2 gap-6">
             {profile.projects.map((project, index) => {
               // Smart button promotion: determine the main link
-              const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+              const mainLink = getProjectHref(project) || '#';
               
               return (
                 <motion.a

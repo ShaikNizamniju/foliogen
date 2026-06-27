@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, Twitter, MapPin, ExternalLink, TrendingUp, Target, Award, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface ExecutiveTemplateProps {
   profile: ProfileData;
@@ -271,7 +271,7 @@ export function ExecutiveTemplate({ profile, onContactClick }: ExecutiveTemplate
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {profile.projects.map((project, index) => {
                     // Smart button promotion: determine the main link
-                    const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                    const mainLink = getProjectHref(project) || '#';
                     const isDocsOnly = !project.link && !!project.docsUrl;
                     
                     return (

@@ -4,7 +4,7 @@ import { Mail, Globe, Linkedin, Github, Twitter, Terminal, Folder, MessageSquare
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
 import { getEmbedUrl } from '@/lib/video-utils';
 import { useEffect, useState } from 'react';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface DevTemplateProps {
   profile: ProfileData;
@@ -262,7 +262,7 @@ export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
             <div className="pl-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               {profile.projects.map((project, index) => {
                 // Smart button promotion: determine the main link
-                const mainLink = project.link ? ensureProtocol(project.link) : project.docsUrl ? ensureProtocol(project.docsUrl) : '#';
+                const mainLink = getProjectHref(project) || '#';
                 
                 return (
                   <motion.a
