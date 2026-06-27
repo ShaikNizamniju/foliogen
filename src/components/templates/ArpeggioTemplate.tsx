@@ -67,6 +67,8 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
         year: '2024',
         image: proj.imageUrl || '',
         description: proj.description || '',
+        link: proj.link || '',
+        proofOfImpact: proj.proofOfImpact || '',
       }))
     : demoProfile.projects;
 
