@@ -262,13 +262,14 @@ export function DevTemplate({ profile, onContactClick }: DevTemplateProps) {
             <div className="pl-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               {profile.projects.map((project, index) => {
                 // Smart button promotion: determine the main link
-                const mainLink = getProjectHref(project) || '#';
+                const mainLink = getProjectHref(project);
                 
                 return (
                   <motion.a
                     key={project.id}
                     href={mainLink}
-                    target={mainLink !== '#' ? '_blank' : undefined}
+                    target={mainLink ? '_blank' : undefined}
+                    onClick={!mainLink ? (e) => e.preventDefault() : undefined}
                     rel="noopener noreferrer"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}

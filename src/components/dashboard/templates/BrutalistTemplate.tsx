@@ -233,14 +233,15 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profile.projects.map((project, index) => {
                 // Smart button promotion: determine the main link
-                const mainLink = getProjectHref(project) || '#';
+                const mainLink = getProjectHref(project);
                 const isDocsOnly = !project.link && !!project.docsUrl;
                 
                 return (
                   <motion.a
                     key={project.id}
                     href={mainLink}
-                    target={mainLink !== '#' ? '_blank' : undefined}
+                    target={mainLink ? '_blank' : undefined}
+                    onClick={!mainLink ? (e) => e.preventDefault() : undefined}
                     rel="noopener noreferrer"
                     initial={{ opacity: 0, rotate: index % 2 === 0 ? -3 : 3 }}
                     animate={{ opacity: 1, rotate: 0 }}

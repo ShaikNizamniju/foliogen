@@ -227,7 +227,7 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
             <div className="grid grid-cols-12 gap-8">
               {profile.projects.map((project, index) => {
                 // Smart button promotion: determine the main link
-                const mainLink = getProjectHref(project) || '#';
+                const mainLink = getProjectHref(project);
                 const isDocsOnly = !project.link && !!project.docsUrl;
                 
                 // Alternate between different grid spans for asymmetry
@@ -239,7 +239,8 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
                   <motion.a
                     key={project.id}
                     href={mainLink}
-                    target={mainLink !== '#' ? '_blank' : undefined}
+                    target={mainLink ? '_blank' : undefined}
+                    onClick={!mainLink ? (e) => e.preventDefault() : undefined}
                     rel="noopener noreferrer"
                     className={`${colSpan} ${offset} group block`}
                     initial={{ opacity: 0, y: 40 }}
