@@ -64,6 +64,8 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
       category: p.techStack?.[0] || 'Design',
       year: new Date().getFullYear().toString(),
       image: p.imageUrl || '',
+      link: p.link || '',
+      proofOfImpact: p.proofOfImpact || '',
     }))
     : projects;
   const profileSkills = profile?.skills?.length ? profile.skills.slice(0, 8) : marqueeClients;
