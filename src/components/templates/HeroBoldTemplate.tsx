@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { UserCircle } from 'lucide-react';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface HeroBoldTemplateProps {
   profile?: ProfileData;
@@ -146,11 +147,14 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
         >
           <motion.span variants={fadeUp} className="text-xs tracking-[0.3em] uppercase block mb-10" style={{ color: '#71717A' }}>Selected Work</motion.span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {projects.map((p) => (
+            {projects.map((p: any) => {
+              const href = getProjectHref(p);
+              return (
               <motion.div
                 key={p.id}
                 variants={fadeUp}
-                className="group rounded-2xl border transition-all duration-300 hover:border-[#E11D48]/50 overflow-hidden flex flex-col h-full"
+                onClick={href ? () => window.open(href, '_blank', 'noopener,noreferrer') : undefined}
+                className={`group rounded-2xl border transition-all duration-300 hover:border-[#E11D48]/50 overflow-hidden flex flex-col h-full ${href ? 'cursor-pointer' : ''}`}
                 style={{ borderColor: '#27272A', backgroundColor: '#111113' }}
               >
                 {p.imageUrl && (
