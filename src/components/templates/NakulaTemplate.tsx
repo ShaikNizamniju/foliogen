@@ -223,7 +223,8 @@ export function NakulaTemplate({ profile }: NakulaTemplateProps) {
                   </div>
                 )}
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       </section>
