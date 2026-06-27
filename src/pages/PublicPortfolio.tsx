@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/lib/supabase_v2';
 import { ProfileData, WorkExperience, Project, FontChoice, FONT_OPTIONS } from '@/contexts/ProfileContext';
 import { ContactDialog } from '@/components/ContactDialog';
-import { ProfileChatBot } from '@/components/public/ProfileChatBot';
+
 import { ProRecruiterBanner } from '@/components/public/ProRecruiterBanner';
 import { RecruiterPing } from '@/components/public/RecruiterPing';
 import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
@@ -631,13 +631,6 @@ export default function PublicPortfolio() {
         recipientName={profile.fullName}
         recipientLinkedIn={profile.linkedinUrl}
       />
-      {id && (
-        <ProfileChatBot
-          profileId={profile.id || id}
-          profileName={profile.fullName}
-          slug={slug}
-        />
-      )}
       {/* Recruiter Interest Portal — Zero Friction Ping */}
       {id && (
         <RecruiterPing
