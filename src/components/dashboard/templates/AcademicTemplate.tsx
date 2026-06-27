@@ -300,7 +300,8 @@ export function AcademicTemplate({ profile, onContactClick }: AcademicTemplatePr
                     </div>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           </motion.section>
         )}
