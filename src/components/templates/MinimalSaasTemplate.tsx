@@ -194,7 +194,8 @@ export function MinimalSaasTemplate({ profile, onContactClick }: MinimalSaasTemp
                   ))}
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       </section>
