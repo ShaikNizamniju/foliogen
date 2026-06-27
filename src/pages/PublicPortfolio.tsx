@@ -631,13 +631,6 @@ export default function PublicPortfolio() {
         recipientName={profile.fullName}
         recipientLinkedIn={profile.linkedinUrl}
       />
-      {id && (
-        <ProfileChatBot
-          profileId={profile.id || id}
-          profileName={profile.fullName}
-          slug={slug}
-        />
-      )}
       {/* Recruiter Interest Portal — Zero Friction Ping */}
       {id && (
         <RecruiterPing
