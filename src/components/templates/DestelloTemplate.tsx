@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ArrowRight, ArrowLeft, ChevronRight, Send, UserCircle } from 'lucide-react';
 import { ProfileData } from '@/contexts/ProfileContext';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface DestelloTemplateProps {
   profile?: ProfileData;
@@ -116,7 +117,9 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
     num: `0${i + 1}`.slice(-2),
     title: p.title || 'Project',
     category: p.techStack?.[0] || 'Design',
-    image: p.imageUrl || ''
+    image: p.imageUrl || '',
+    link: p.link || '',
+    proofOfImpact: p.proofOfImpact || '',
   })) : works;
 
   const profileExpertise = profile?.skills?.length ? profile.skills.map((s, i) => ({
@@ -185,14 +188,26 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
 
         {/* Numbered list */}
         <div className="border-t" style={{ borderColor: '#E5E5E5' }}>
-          {profileWorks.map((w, i) => (
-            <motion.button key={w.num} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} onClick={() => setActiveWork(activeWork === i ? null : i)} className="w-full flex items-center gap-4 md:gap-8 py-5 border-b text-left group hover:bg-[#FAFAFA] transition-colors px-2" style={{ borderColor: '#E5E5E5' }}>
+          {profileWorks.map((w: any, i: number) => {
+            const href = getProjectHref(w);
+            return (
+            <motion.button
+              key={w.num}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.06 }}
+              onClick={() => href ? window.open(href, '_blank', 'noopener,noreferrer') : setActiveWork(activeWork === i ? null : i)}
+              className="w-full flex items-center gap-4 md:gap-8 py-5 border-b text-left group hover:bg-[#FAFAFA] transition-colors px-2"
+              style={{ borderColor: '#E5E5E5' }}
+            >
               <span className="text-sm font-bold" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{w.num}</span>
               <span className="text-lg md:text-2xl font-semibold flex-1 group-hover:text-[#FF4444] transition-colors" style={{ fontFamily: "'Syne', sans-serif" }}>{w.title}</span>
               <span className="text-xs tracking-widest uppercase hidden sm:block" style={{ color: '#999' }}>{w.category}</span>
               <ChevronRight className="h-4 w-4" style={{ color: '#CCC' }} />
             </motion.button>
-          ))}
+            );
+          })}
         </div>
 
         {/* Expanded project card */}
