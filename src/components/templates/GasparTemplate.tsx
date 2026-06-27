@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { UserCircle } from 'lucide-react';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface GasparTemplateProps {
   profile?: ProfileData;
@@ -135,8 +136,15 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            {profileProjects.map((p) => (
-              <motion.div key={p.id} variants={itemVariants} className="group cursor-pointer flex flex-col h-full">
+            {profileProjects.map((p) => {
+              const href = getProjectHref(p);
+              return (
+              <motion.div
+                key={p.id}
+                variants={itemVariants}
+                onClick={href ? () => window.open(href, '_blank', 'noopener,noreferrer') : undefined}
+                className={`group flex flex-col h-full ${href ? 'cursor-pointer' : ''}`}
+              >
                 {p.image && (
                   <div className="relative overflow-hidden mb-5">
                     <motion.img src={p.image} alt={p.title} className="w-full aspect-[3/2] object-cover" whileHover={{ scale: 1.05 }} transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const }} />
@@ -152,7 +160,8 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
                   </div>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       </section>
