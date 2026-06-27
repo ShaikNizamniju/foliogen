@@ -179,7 +179,8 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
                   </div>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
       </section>
