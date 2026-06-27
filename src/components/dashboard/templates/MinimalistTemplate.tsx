@@ -334,7 +334,8 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                     <p className="text-sm text-black/60 leading-relaxed">{project.description}</p>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           </motion.section>
         )}
