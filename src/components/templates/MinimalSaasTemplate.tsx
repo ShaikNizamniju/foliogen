@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { ExternalLink, Github, Linkedin, Mail, MapPin } from 'lucide-react';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface MinimalSaasTemplateProps {
   profile?: ProfileData;
@@ -161,11 +162,17 @@ export function MinimalSaasTemplate({ profile, onContactClick }: MinimalSaasTemp
             Projects
           </motion.h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projects.map((p) => (
+            {projects.map((p: any) => {
+              const href = getProjectHref(p);
+              return (
               <motion.div
                 key={p.id}
                 variants={fadeUp}
-                className="group p-5 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-[#6366F1]/30"
+                onClick={href ? (e) => {
+                  if ((e.target as HTMLElement).closest('a,button')) return;
+                  window.open(href, '_blank', 'noopener,noreferrer');
+                } : undefined}
+                className={`group p-5 rounded-xl border transition-all duration-200 hover:shadow-md hover:border-[#6366F1]/30 ${href ? 'cursor-pointer' : ''}`}
                 style={{ borderColor: '#E5E7EB', backgroundColor: '#FFFFFF' }}
               >
                 <div className="flex items-start justify-between mb-2">
