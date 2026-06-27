@@ -136,7 +136,7 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            {profileProjects.map((p) => {
+            {profileProjects.map((p: any) => {
               const href = getProjectHref(p);
               return (
               <motion.div
