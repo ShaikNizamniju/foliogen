@@ -2,7 +2,7 @@ import { ProfileData } from '@/contexts/ProfileContext';
 import { motion } from 'framer-motion';
 import { Mail, Globe, Linkedin, Github, MapPin, ExternalLink, BookOpen, Award, Briefcase, MessageSquare, FileText } from 'lucide-react';
 import { getProjectImageUrl } from '@/lib/portfolio-utils';
-import { ensureProtocol, getDocsButtonLabel } from '@/lib/urlUtils';
+import { ensureProtocol, getDocsButtonLabel, getProjectHref } from '@/lib/urlUtils';
 
 interface AcademicTemplateProps {
   profile: ProfileData;
