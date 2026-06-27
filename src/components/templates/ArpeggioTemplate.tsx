@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { ArrowUpRight, Mail, MapPin, Github, Linkedin, Twitter, UserCircle } from 'lucide-react';
+import { getProjectHref } from '@/lib/urlUtils';
 
 interface ArpeggioTemplateProps {
   profile?: ProfileData;
@@ -177,11 +178,13 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {projects.slice(0, 6).map((proj: any, i: number) => {
               const isLarge = i === 0 || i === 3;
+              const href = getProjectHref(proj);
               return (
                 <motion.div
                   key={i}
                   variants={fadeUp}
-                  className={`group cursor-pointer ${isLarge ? 'md:col-span-2' : ''}`}
+                  onClick={href ? () => window.open(href, '_blank', 'noopener,noreferrer') : undefined}
+                  className={`group ${href ? 'cursor-pointer' : ''} ${isLarge ? 'md:col-span-2' : ''}`}
                 >
                   {proj.image ? (
                     <div className="relative overflow-hidden" style={{ border: '1px solid #1A1A1A' }}>
