@@ -553,32 +553,6 @@ export function SmartProjectCard({
                 Link to a case study, PRD, Notion page, or PDF (auto-fixes URLs)
               </p>
 
-              {/* File Upload Option */}
-              <div className="mt-3 pt-3 border-t border-border/50">
-                <Label className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <Upload className="h-4 w-4" />
-                  Or Upload Proof (PDF / Image)
-                </Label>
-                <div className="flex items-center gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.png,.jpg,.jpeg"
-                    onChange={handleFileUpload}
-                    disabled={isUploading}
-                    className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 file:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  />
-                  {isUploading && (
-                    <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-xs">Uploading...</span>
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1.5">
-                  Upload certificates, screenshots, or case study PDFs (max 10MB)
-                </p>
-              </div>
             </div>
 
             {/* Image URL with Smart Preview */}
