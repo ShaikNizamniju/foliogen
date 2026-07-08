@@ -327,7 +327,7 @@ export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps)
             <div className="hidden lg:flex items-center justify-center py-24">
               {profile.photoUrl ? (
                 <motion.div
-                  className="relative w-full max-w-md aspect-[3/4] rounded-3xl overflow-hidden"
+                  className="relative w-full max-w-sm max-h-[70vh] aspect-[3/4] rounded-3xl overflow-hidden"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.8, duration: 1 }}
@@ -341,7 +341,7 @@ export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps)
                 </motion.div>
               ) : (
                 <motion.div
-                  className="relative w-full max-w-md aspect-[3/4] rounded-3xl overflow-hidden bg-gradient-to-br from-white/5 to-white/[0.02] flex items-center justify-center"
+                  className="relative w-full max-w-sm max-h-[70vh] aspect-[3/4] rounded-3xl overflow-hidden bg-gradient-to-br from-white/5 to-white/[0.02] flex items-center justify-center"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.8, duration: 1 }}
