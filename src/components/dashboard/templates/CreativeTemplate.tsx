@@ -278,7 +278,7 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
             {profile.skills.length > 0 && (
               <motion.div 
                 variants={cardVariants}
-                className="col-span-12 lg:col-span-5"
+                className="col-span-12"
               >
                 <TiltCard className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 h-full">
                   <span className="inline-block text-xs font-semibold uppercase tracking-wider text-violet-400 bg-violet-500/10 px-3 py-1 rounded-full mb-6">
@@ -298,16 +298,41 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
               </motion.div>
             )}
 
+            {/* Experience Card */}
+            {profile.workExperience.length > 0 && (
+              <motion.div 
+                variants={cardVariants}
+                className="col-span-12"
+              >
+                <TiltCard className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 h-full">
+                  <span className="inline-block text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full mb-6">
+                    Experience
+                  </span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {profile.workExperience.slice(0, 6).map((exp) => (
+                      <div key={exp.id} className="group">
+                        <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-sm mb-2">
+                          {exp.company?.charAt(0) || 'C'}
+                        </div>
+                        <h3 className="font-semibold text-white text-sm truncate">{exp.jobTitle}</h3>
+                        <p className="text-xs text-white/40">{exp.company}</p>
+                      </div>
+                    ))}
+                  </div>
+                </TiltCard>
+              </motion.div>
+            )}
+
             {/* Contact Card */}
             <motion.div 
               variants={cardVariants}
-              className="col-span-12 lg:col-span-4"
+              className="col-span-12"
             >
               <TiltCard className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 h-full">
                 <span className="inline-block text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full mb-6">
                   Contact
                 </span>
-                <div className="space-y-4">
+                <div className="flex flex-wrap gap-4">
                   {profile.email && (
                     <a href={`mailto:${profile.email}`} className="flex items-center gap-3 text-white/60 hover:text-white transition-colors group">
                       <div className="p-3 bg-white/5 rounded-xl group-hover:bg-white/10 transition-colors border border-white/10">
@@ -327,31 +352,6 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
                 </div>
               </TiltCard>
             </motion.div>
-
-            {/* Experience Card */}
-            {profile.workExperience.length > 0 && (
-              <motion.div 
-                variants={cardVariants}
-                className="col-span-12 lg:col-span-3"
-              >
-                <TiltCard className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 h-full">
-                  <span className="inline-block text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full mb-6">
-                    Experience
-                  </span>
-                  <div className="space-y-4">
-                    {profile.workExperience.slice(0, 3).map((exp) => (
-                      <div key={exp.id} className="group">
-                        <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-sm mb-2">
-                          {exp.company?.charAt(0) || 'C'}
-                        </div>
-                        <h3 className="font-semibold text-white text-sm truncate">{exp.jobTitle}</h3>
-                        <p className="text-xs text-white/40">{exp.company}</p>
-                      </div>
-                    ))}
-                  </div>
-                </TiltCard>
-              </motion.div>
-            )}
 
             {/* Projects Section - Bento/Masonry Style */}
             {profile.projects.length > 0 && (
