@@ -40,15 +40,11 @@ export function RecruiterPing({ portfolioUserId, linkId, linkType, industryConte
 
     // Fire-and-forget analytics log (non-blocking)
     supabase.from('visit_logs').insert({
-      user_id: portfolioUserId,
-      link_type: linkType,
-      link_id: linkId,
-      industry_context: 'AI_PM_Vertical',
-      device_type: window.innerWidth < 768 ? 'Mobile' : 'Desktop',
-      is_ping: true,
-      company: company.trim(),
-      contact_method: contactMethod.trim(),
+      profile_user_id: portfolioUserId,
+      company_name: company.trim().slice(0, 120),
+      role_target: contactMethod.trim().slice(0, 120),
     }).then(() => {});
+
 
     // Open the visitor's email app addressed to the owner
     const subject = 'Portfolio inquiry';
