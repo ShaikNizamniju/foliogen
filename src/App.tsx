@@ -57,22 +57,21 @@ function AppRoutes() {
     }
     */
 
-    // Task 1: URL Fragment Listener with Task 2 Hardening
+    // Redirect ONLY on explicit SIGNED_IN event (not INITIAL_SESSION) and only
+    // when the user is on the /auth screen. This prevents yanking signed-in
+    // users off the landing page, public portfolios, billing, pricing, etc.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        if (session) {
-          // Task 2: Wait 500ms before navigating to let local storage commit
-          setTimeout(() => {
-            // Only redirect if we're not currently on a dashboard route or don't have a section param
-            const searchParams = new URLSearchParams(window.location.search);
-            if (!window.location.pathname.startsWith('/dashboard') || !searchParams.has('section')) {
-              toast.success('Identity verified. Entering the Vault.');
-              navigate('/dashboard?section=overview', { replace: true });
-            }
-          }, 500);
-        }
+      if (event === 'SIGNED_IN' && session) {
+        setTimeout(() => {
+          const path = window.location.pathname;
+          if (path === '/auth' || path.startsWith('/auth/') && !path.startsWith('/auth/callback')) {
+            toast.success('Identity verified. Entering the Vault.');
+            navigate('/dashboard?section=overview', { replace: true });
+          }
+        }, 500);
       }
     });
+
 
     return () => subscription.unsubscribe();
   }, [navigate]);
