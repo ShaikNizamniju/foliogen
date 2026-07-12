@@ -111,11 +111,11 @@ export function OverviewSection() {
           }
         });
 
-      // Fetch total pings
+      // Fetch total pings (any visit_log with company_name counts as a recruiter ping)
       supabase.from('visit_logs')
         .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_ping', true)
+        .eq('profile_user_id', user.id)
+        .not('company_name', 'is', null)
         .then(({ count }) => {
           setPingCount(count || 0);
         });
@@ -127,14 +127,15 @@ export function OverviewSection() {
           event: 'INSERT',
           schema: 'public',
           table: 'visit_logs',
-          filter: `user_id=eq.${user.id}`,
+          filter: `profile_user_id=eq.${user.id}`,
         }, (payload: any) => {
-          if (payload.new?.is_ping) {
+          if (payload.new?.company_name) {
             setPingCount(prev => prev + 1);
             toast.success('New Recruiter Interest', {
-              description: `${payload.new.company || 'A recruiter'} just pinged your portfolio.`,
+              description: `${payload.new.company_name || 'A recruiter'} just pinged your portfolio.`,
               icon: <Sparkles className="h-4 w-4 text-blue-400" />,
               style: {
+
                 background: '#0a0a0a',
                 border: '1px solid rgba(59, 130, 246, 0.5)',
                 color: 'white',
