@@ -1,0 +1,1 @@
+CREATE POLICY "Users can delete their own chat queries" ON public.chat_queries FOR DELETE TO authenticated USING (auth.uid() = profile_user_id);
