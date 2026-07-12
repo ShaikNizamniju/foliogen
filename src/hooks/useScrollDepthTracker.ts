@@ -82,18 +82,12 @@ export function useScrollDepthTracker(profileUserId: string | undefined, ownerUs
                 if (existing) existing.time_spent_ms += now - entryTime;
             });
 
-            const rows = Array.from(eventsRef.current.values()).map((ev) => ({
-                session_id: sessionIdRef.current,
-                profile_user_id: profileUserId,
-                section_id: ev.section_id,
-                first_seen_at: ev.first_seen_at,
-                time_spent_ms: ev.time_spent_ms,
-            }));
-
+            // NOTE: visit_logs table only stores recruiter pings (company_name/role_target).
+            // Per-section scroll analytics are not persisted server-side yet; keep the
+            // in-memory aggregation above but skip the DB insert to avoid schema errors.
+            const rows = Array.from(eventsRef.current.values());
             if (rows.length === 0) return;
 
-            // Flush captured events to DB silently in production
-            supabase.from('visit_logs').insert(rows).then();
         };
 
         window.addEventListener('pagehide', flush);
