@@ -186,19 +186,13 @@ export default function PublicPortfolio() {
             }
           };
 
-          // Background task to log this chameleon visit
+          // Background task to increment chameleon view count. We intentionally do NOT
+          // insert into visit_logs here because that table is reserved for recruiter
+          // pings (requires company_name/role_target per RLS policy).
           setTimeout(() => {
-             supabase.from('visit_logs').insert({
-               user_id: chameleonResult.data.user_id,
-               link_type: 'chameleon',
-               link_id: identifier,
-               industry_context: chameleonResult.data.industry_context,
-               device_type: window.innerWidth < 768 ? 'Mobile' : 'Desktop',
-             }).then();
-             
-             // Also increment views quickly
              supabase.from('chameleon_links').update({ views: (chameleonResult.data.views || 0) + 1 }).eq('slug', identifier).then();
           }, 500);
+
         } else {
           // Check custom_slug next for sequential URLs Reqs
           const customSlugResult = await supabase
