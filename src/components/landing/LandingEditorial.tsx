@@ -131,6 +131,7 @@ export function LandingEditorial() {
       </header>
 
       {/* HERO */}
+      <main>
       <section className="fl-hero">
         <div className="fl-hero-deco">Folio</div>
 
@@ -367,6 +368,7 @@ export function LandingEditorial() {
           </Link>
         </div>
       </section>
+      </main>
 
       {/* FOOTER */}
       <footer className="fl-footer">
