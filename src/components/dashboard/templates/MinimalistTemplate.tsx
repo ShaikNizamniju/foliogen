@@ -259,7 +259,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Selected Work
             </h2>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {profile.projects.map((project, index) => {
                 const cardHref = getProjectHref(project);
                 return (
