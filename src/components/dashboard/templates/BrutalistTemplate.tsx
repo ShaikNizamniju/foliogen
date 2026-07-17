@@ -78,7 +78,7 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
           </motion.h1>
           
           <motion.p 
-            className="text-2xl font-bold mb-4"
+            className="text-xl md:text-2xl font-bold mb-4 break-words"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
