@@ -329,7 +329,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
                   : '👋 Welcome to my portfolio'
                 }
               </p>
-              <h1 className="text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight break-words">
                 Hi, I'm{' '}
                 <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                   {profile.fullName || 'Your Name'}
