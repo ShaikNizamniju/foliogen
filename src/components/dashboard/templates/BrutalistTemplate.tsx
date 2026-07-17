@@ -60,7 +60,7 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
       </motion.div>
 
       {/* Main Content */}
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.3, rotate: -5 }}
