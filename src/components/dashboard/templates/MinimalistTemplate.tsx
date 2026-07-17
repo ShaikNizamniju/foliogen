@@ -42,7 +42,7 @@ const sidebarVariants = {
 
 export function MinimalistTemplate({ profile, onContactClick }: MinimalistTemplateProps) {
   return (
-    <div className="min-h-screen bg-white text-black font-sans flex relative">
+    <div className="min-h-screen bg-white text-black font-sans flex flex-col md:flex-row relative">
       {/* Dot Pattern Background */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -52,24 +52,24 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
         }}
       />
 
-      {/* Left Sidebar - Sticky */}
+      {/* Left Sidebar - Sticky on desktop, stacked on mobile */}
       <motion.aside 
-        className="w-[280px] min-h-full bg-black text-white p-8 flex flex-col sticky top-0 self-start z-10"
+        className="w-full md:w-[280px] md:min-h-full bg-black text-white p-6 md:p-8 flex flex-col md:sticky md:top-0 md:self-start z-10"
         variants={sidebarVariants}
         initial="hidden"
         animate="visible"
       >
         {/* Name */}
         <motion.div 
-          className="mb-12"
+          className="mb-8 md:mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight leading-tight uppercase break-words">
             {profile.fullName || 'Your Name'}
           </h1>
-          <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
+          <p className="text-base md:text-sm text-white/60 mt-2 uppercase tracking-widest">
             {profile.headline || 'Professional'}
           </p>
         </motion.div>
@@ -119,17 +119,17 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
           transition={{ delay: 0.6, duration: 0.5 }}
         >
           {profile.linkedinUrl && (
-            <a href={profile.linkedinUrl} aria-label="LinkedIn profile" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.linkedinUrl} aria-label="LinkedIn profile" className="p-3 md:p-2 border border-white/20 hover:bg-white hover:text-black transition-all inline-flex items-center justify-center min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0">
               <Linkedin className="h-4 w-4" />
             </a>
           )}
           {profile.githubUrl && (
-            <a href={profile.githubUrl} aria-label="GitHub profile" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.githubUrl} aria-label="GitHub profile" className="p-3 md:p-2 border border-white/20 hover:bg-white hover:text-black transition-all inline-flex items-center justify-center min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0">
               <Github className="h-4 w-4" />
             </a>
           )}
           {profile.twitterUrl && (
-            <a href={profile.twitterUrl} aria-label="Twitter profile" className="p-2 border border-white/20 hover:bg-white hover:text-black transition-all">
+            <a href={profile.twitterUrl} aria-label="Twitter profile" className="p-3 md:p-2 border border-white/20 hover:bg-white hover:text-black transition-all inline-flex items-center justify-center min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0">
               <Twitter className="h-4 w-4" />
             </a>
           )}
@@ -138,7 +138,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
         {/* Skills - Sidebar bottom */}
         {profile.skills.length > 0 && (
           <motion.div 
-            className="mt-auto pt-12"
+            className="mt-8 md:mt-auto md:pt-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
@@ -165,7 +165,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
 
       {/* Right Content - Scrollable */}
       <motion.main 
-        className="flex-1 p-12 overflow-auto relative z-10"
+        className="flex-1 p-6 md:p-12 overflow-auto relative z-10 min-w-0"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -176,7 +176,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6">
               About
             </h2>
-            <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
+            <p className="text-base md:text-xl leading-relaxed text-black/80 max-w-2xl font-light break-words">
               {profile.bio}
             </p>
           </motion.section>
@@ -237,7 +237,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                     </div>
                     
                     {/* Content */}
-                    <h3 className="text-2xl font-bold tracking-tight mb-1">
+                    <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-1 break-words">
                       {exp.jobTitle}
                     </h3>
                     <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
@@ -259,7 +259,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-8">
               Selected Work
             </h2>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {profile.projects.map((project, index) => {
                 const cardHref = getProjectHref(project);
                 return (

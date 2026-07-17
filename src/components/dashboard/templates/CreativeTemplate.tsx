@@ -155,7 +155,7 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="max-w-7xl mx-auto px-8 py-4 flex items-center justify-between">
+          <div className="max-w-7xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               {profile.photoUrl ? (
                 <img 
@@ -208,7 +208,7 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
 
         {/* Hero Section */}
         <motion.section 
-          className="max-w-7xl mx-auto px-8 pt-24 pb-16"
+          className="max-w-7xl mx-auto px-4 md:px-8 pt-16 md:pt-24 pb-12 md:pb-16"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -221,14 +221,14 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
           
           <motion.h2 
             variants={itemVariants}
-            className="text-6xl md:text-8xl font-black text-white mb-6 leading-[0.9] tracking-tight"
+            className="text-4xl sm:text-6xl md:text-8xl font-black text-white mb-6 break-words leading-[0.9] tracking-tight"
           >
             {profile.fullName || 'Your Name'}
           </motion.h2>
           
           <motion.p 
             variants={itemVariants}
-            className="text-xl md:text-2xl text-white/60 max-w-3xl leading-relaxed mb-8"
+            className="text-base md:text-2xl text-white/60 max-w-3xl leading-relaxed mb-8"
           >
             {profile.bio || 'Tell your story here...'}
           </motion.p>
@@ -267,7 +267,7 @@ export function CreativeTemplate({ profile, onContactClick }: CreativeTemplatePr
 
         {/* Bento Grid Content */}
         <motion.div 
-          className="max-w-7xl mx-auto px-8 pb-24"
+          className="max-w-7xl mx-auto px-4 md:px-8 pb-16 md:pb-24"
           variants={containerVariants}
           initial="hidden"
           animate="visible"

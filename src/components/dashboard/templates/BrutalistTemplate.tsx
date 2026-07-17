@@ -60,16 +60,16 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
       </motion.div>
 
       {/* Main Content */}
-      <div className="p-8 max-w-4xl mx-auto">
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
         {/* Hero Section */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.3, rotate: -5 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          className="bg-[#FFE962] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 mb-8"
+          className="bg-[#FFE962] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-5 md:p-8 mb-6 md:mb-8"
         >
           <motion.h1 
-            className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4"
+            className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4 break-words"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
@@ -78,7 +78,7 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
           </motion.h1>
           
           <motion.p 
-            className="text-2xl font-bold mb-4"
+            className="text-xl md:text-2xl font-bold mb-4 break-words"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
@@ -301,7 +301,7 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
           transition={{ delay: 1.5, type: 'spring', stiffness: 200 }}
           className="bg-black text-white p-8 shadow-[8px_8px_0px_0px_rgba(255,92,0,1)]"
         >
-          <h2 className="text-3xl font-black uppercase mb-6">LET'S WORK TOGETHER!</h2>
+          <h2 className="text-2xl md:text-3xl font-black uppercase mb-6 break-words">LET'S WORK TOGETHER!</h2>
           <div className="flex flex-wrap gap-4">
             {profile.email && (
               <motion.a 

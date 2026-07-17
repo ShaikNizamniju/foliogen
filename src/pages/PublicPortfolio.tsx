@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { Sparkles } from 'lucide-react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useParams } from 'react-router-dom';
@@ -9,30 +9,37 @@ import { ContactDialog } from '@/components/ContactDialog';
 
 import { ProRecruiterBanner } from '@/components/public/ProRecruiterBanner';
 import { RecruiterPing } from '@/components/public/RecruiterPing';
-import { MinimalistTemplate } from '@/components/dashboard/templates/MinimalistTemplate';
-import { CreativeTemplate } from '@/components/dashboard/templates/CreativeTemplate';
-import { SaasTemplate } from '@/components/dashboard/templates/SaasTemplate';
-import { DevTemplate } from '@/components/dashboard/templates/DevTemplate';
-import { BrutalistTemplate } from '@/components/dashboard/templates/BrutalistTemplate';
-import { AcademicTemplate } from '@/components/dashboard/templates/AcademicTemplate';
-import { StudioTemplate } from '@/components/dashboard/templates/StudioTemplate';
-import { ExecutiveTemplate } from '@/components/dashboard/templates/ExecutiveTemplate';
-import { InfluencerTemplate } from '@/components/dashboard/templates/InfluencerTemplate';
-import { SwissTemplate } from '@/components/dashboard/templates/SwissTemplate';
-import { NoirTemplate } from '@/components/dashboard/templates/NoirTemplate';
-import { ModernDarkTemplate } from '@/components/dashboard/templates/ModernDarkTemplate';
-import { GasparTemplate } from '@/components/templates/GasparTemplate';
-import { DestelloTemplate } from '@/components/templates/DestelloTemplate';
-import { FrqncyTemplate } from '@/components/templates/FrqncyTemplate';
-import { ArpeggioTemplate } from '@/components/templates/ArpeggioTemplate';
-import { NakulaTemplate } from '@/components/templates/NakulaTemplate';
-import { HeroBoldTemplate } from '@/components/templates/HeroBoldTemplate';
-import { MinimalSaasTemplate } from '@/components/templates/MinimalSaasTemplate';
+// Code-split templates so /u/[slug] only loads the active one
+const MinimalistTemplate = lazy(() => import('@/components/dashboard/templates/MinimalistTemplate').then(m => ({ default: m.MinimalistTemplate })));
+const CreativeTemplate = lazy(() => import('@/components/dashboard/templates/CreativeTemplate').then(m => ({ default: m.CreativeTemplate })));
+const SaasTemplate = lazy(() => import('@/components/dashboard/templates/SaasTemplate').then(m => ({ default: m.SaasTemplate })));
+const DevTemplate = lazy(() => import('@/components/dashboard/templates/DevTemplate').then(m => ({ default: m.DevTemplate })));
+const BrutalistTemplate = lazy(() => import('@/components/dashboard/templates/BrutalistTemplate').then(m => ({ default: m.BrutalistTemplate })));
+const AcademicTemplate = lazy(() => import('@/components/dashboard/templates/AcademicTemplate').then(m => ({ default: m.AcademicTemplate })));
+const StudioTemplate = lazy(() => import('@/components/dashboard/templates/StudioTemplate').then(m => ({ default: m.StudioTemplate })));
+const ExecutiveTemplate = lazy(() => import('@/components/dashboard/templates/ExecutiveTemplate').then(m => ({ default: m.ExecutiveTemplate })));
+const InfluencerTemplate = lazy(() => import('@/components/dashboard/templates/InfluencerTemplate').then(m => ({ default: m.InfluencerTemplate })));
+const SwissTemplate = lazy(() => import('@/components/dashboard/templates/SwissTemplate').then(m => ({ default: m.SwissTemplate })));
+const NoirTemplate = lazy(() => import('@/components/dashboard/templates/NoirTemplate').then(m => ({ default: m.NoirTemplate })));
+const ModernDarkTemplate = lazy(() => import('@/components/dashboard/templates/ModernDarkTemplate').then(m => ({ default: m.ModernDarkTemplate })));
+const GasparTemplate = lazy(() => import('@/components/templates/GasparTemplate').then(m => ({ default: m.GasparTemplate })));
+const DestelloTemplate = lazy(() => import('@/components/templates/DestelloTemplate').then(m => ({ default: m.DestelloTemplate })));
+const FrqncyTemplate = lazy(() => import('@/components/templates/FrqncyTemplate').then(m => ({ default: m.FrqncyTemplate })));
+const ArpeggioTemplate = lazy(() => import('@/components/templates/ArpeggioTemplate').then(m => ({ default: m.ArpeggioTemplate })));
+const NakulaTemplate = lazy(() => import('@/components/templates/NakulaTemplate').then(m => ({ default: m.NakulaTemplate })));
+const HeroBoldTemplate = lazy(() => import('@/components/templates/HeroBoldTemplate').then(m => ({ default: m.HeroBoldTemplate })));
+const MinimalSaasTemplate = lazy(() => import('@/components/templates/MinimalSaasTemplate').then(m => ({ default: m.MinimalSaasTemplate })));
+const ProfessionTemplate = lazy(() => import('@/components/dashboard/templates/ProfessionTemplate').then(m => ({ default: m.ProfessionTemplate })));
 import { PrintableResume } from '@/components/dashboard/templates/PrintableResume';
-import { ProfessionTemplate } from '@/components/dashboard/templates/ProfessionTemplate';
 import { PROFESSION_TEMPLATE_IDS } from '@/lib/professionTemplates';
 import { useViewTracker } from '@/hooks/useViewTracker';
 import { useRecruiterPulse } from '@/hooks/useRecruiterPulse';
+
+const TemplateSuspenseFallback = () => (
+  <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+  </div>
+);
 
 export default function PublicPortfolio() {
   const { id, slug } = useParams<{ id: string, slug?: string }>();
@@ -605,7 +612,9 @@ export default function PublicPortfolio() {
         </style>
         <div id="portfolio-export-container" className="print:w-full">
           <ErrorBoundary fallbackMessage="Portfolio template encountered an error">
-            {recruiterMode ? renderRecruiterGrid() : renderTemplate()}
+            {recruiterMode ? renderRecruiterGrid() : (
+              <Suspense fallback={<TemplateSuspenseFallback />}>{renderTemplate()}</Suspense>
+            )}
           </ErrorBoundary>
         </div>
       </div>
