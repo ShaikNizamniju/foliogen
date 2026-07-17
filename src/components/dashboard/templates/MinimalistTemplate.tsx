@@ -237,7 +237,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
                     </div>
                     
                     {/* Content */}
-                    <h3 className="text-2xl font-bold tracking-tight mb-1">
+                    <h3 className="text-xl md:text-2xl font-bold tracking-tight mb-1 break-words">
                       {exp.jobTitle}
                     </h3>
                     <p className="text-sm uppercase tracking-widest text-black/50 mb-4">
