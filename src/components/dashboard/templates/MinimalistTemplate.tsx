@@ -42,7 +42,7 @@ const sidebarVariants = {
 
 export function MinimalistTemplate({ profile, onContactClick }: MinimalistTemplateProps) {
   return (
-    <div className="min-h-screen bg-white text-black font-sans flex relative">
+    <div className="min-h-screen bg-white text-black font-sans flex flex-col md:flex-row relative">
       {/* Dot Pattern Background */}
       <div 
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -52,9 +52,9 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
         }}
       />
 
-      {/* Left Sidebar - Sticky */}
+      {/* Left Sidebar - Sticky on desktop, stacked on mobile */}
       <motion.aside 
-        className="w-[280px] min-h-full bg-black text-white p-8 flex flex-col sticky top-0 self-start z-10"
+        className="w-full md:w-[280px] md:min-h-full bg-black text-white p-6 md:p-8 flex flex-col md:sticky md:top-0 md:self-start z-10"
         variants={sidebarVariants}
         initial="hidden"
         animate="visible"
