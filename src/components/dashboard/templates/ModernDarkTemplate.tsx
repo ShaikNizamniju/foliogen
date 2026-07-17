@@ -311,7 +311,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-8 py-20 max-w-7xl mx-auto">
+      <section className="relative z-10 px-4 md:px-8 py-12 md:py-20 max-w-7xl mx-auto">
         {isLoading ? (
           <HeroSkeleton />
         ) : (
