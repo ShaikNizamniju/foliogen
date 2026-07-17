@@ -233,7 +233,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
 
       {/* Navbar */}
       <motion.nav 
-        className="relative z-20 flex items-center justify-between px-8 py-6 border-b border-white/5"
+        className="relative z-20 flex items-center justify-between px-4 md:px-8 py-4 md:py-6 border-b border-white/5"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
