@@ -283,7 +283,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative z-30 mx-8 mt-6"
+            className="relative z-30 mx-4 md:mx-8 mt-6"
           >
             <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-xl border border-cyan-500/30 rounded-2xl px-6 py-4 flex items-center justify-between shadow-lg shadow-cyan-500/5">
               <div className="flex items-center gap-4">
