@@ -138,7 +138,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
         {/* Skills - Sidebar bottom */}
         {profile.skills.length > 0 && (
           <motion.div 
-            className="mt-auto pt-12"
+            className="mt-8 md:mt-auto md:pt-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.5 }}
