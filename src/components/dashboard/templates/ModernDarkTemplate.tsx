@@ -285,7 +285,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="relative z-30 mx-4 md:mx-8 mt-6"
           >
-            <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-xl border border-cyan-500/30 rounded-2xl px-6 py-4 flex items-center justify-between shadow-lg shadow-cyan-500/5">
+            <div className="bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-xl border border-cyan-500/30 rounded-2xl px-4 py-3 md:px-6 md:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg shadow-cyan-500/5">
               <div className="flex items-center gap-4">
                 <div className="p-2 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                   <Sparkles className="w-5 h-5 text-cyan-400" />
