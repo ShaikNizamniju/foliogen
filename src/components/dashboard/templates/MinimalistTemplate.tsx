@@ -165,7 +165,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
 
       {/* Right Content - Scrollable */}
       <motion.main 
-        className="flex-1 p-12 overflow-auto relative z-10"
+        className="flex-1 p-6 md:p-12 overflow-auto relative z-10 min-w-0"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
