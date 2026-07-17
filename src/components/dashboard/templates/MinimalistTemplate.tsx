@@ -176,7 +176,7 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
             <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/40 mb-6">
               About
             </h2>
-            <p className="text-xl leading-relaxed text-black/80 max-w-2xl font-light">
+            <p className="text-base md:text-xl leading-relaxed text-black/80 max-w-2xl font-light break-words">
               {profile.bio}
             </p>
           </motion.section>
