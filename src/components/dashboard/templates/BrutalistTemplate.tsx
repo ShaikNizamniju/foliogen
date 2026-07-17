@@ -66,10 +66,10 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
           initial={{ opacity: 0, scale: 0.3, rotate: -5 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          className="bg-[#FFE962] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 mb-8"
+          className="bg-[#FFE962] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-5 md:p-8 mb-6 md:mb-8"
         >
           <motion.h1 
-            className="text-5xl md:text-7xl font-black uppercase tracking-tight mb-4"
+            className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tight mb-4 break-words"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
