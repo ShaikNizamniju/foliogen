@@ -301,7 +301,7 @@ export function BrutalistTemplate({ profile, onContactClick }: BrutalistTemplate
           transition={{ delay: 1.5, type: 'spring', stiffness: 200 }}
           className="bg-black text-white p-8 shadow-[8px_8px_0px_0px_rgba(255,92,0,1)]"
         >
-          <h2 className="text-3xl font-black uppercase mb-6">LET'S WORK TOGETHER!</h2>
+          <h2 className="text-2xl md:text-3xl font-black uppercase mb-6 break-words">LET'S WORK TOGETHER!</h2>
           <div className="flex flex-wrap gap-4">
             {profile.email && (
               <motion.a 
