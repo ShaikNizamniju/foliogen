@@ -335,7 +335,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
                   {profile.fullName || 'Your Name'}
                 </span>
               </h1>
-              <p className="text-xl text-white/60 mb-6">
+              <p className="text-lg md:text-xl text-white/60 mb-6">
                 {isPersonalized && recruiterCompany
                   ? `Building innovative solutions for ${recruiterCompany}`
                   : isPersonalized && recruiterRole
