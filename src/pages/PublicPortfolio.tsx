@@ -612,7 +612,9 @@ export default function PublicPortfolio() {
         </style>
         <div id="portfolio-export-container" className="print:w-full">
           <ErrorBoundary fallbackMessage="Portfolio template encountered an error">
-            {recruiterMode ? renderRecruiterGrid() : renderTemplate()}
+            {recruiterMode ? renderRecruiterGrid() : (
+              <Suspense fallback={<TemplateSuspenseFallback />}>{renderTemplate()}</Suspense>
+            )}
           </ErrorBoundary>
         </div>
       </div>
