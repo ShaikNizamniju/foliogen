@@ -430,6 +430,7 @@ export function LandingEditorial() {
         .fl-issue-line { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent); margin-bottom:24px; display:inline-flex; align-items:center; gap:10px; opacity:0; animation:fl-fadeUp 0.6s 0.25s ease forwards; }
         .fl-issue-line::before, .fl-issue-line::after { content:''; width:24px; height:2px; background:var(--accent); flex-shrink:0; }
         .fl-h1 { font-family:'Playfair Display',serif; font-weight:900; font-size:clamp(56px,9vw,140px); line-height:0.92; letter-spacing:-0.025em; margin-bottom:32px; }
+        @media (max-width: 639px) { .fl-h1 { font-size:clamp(2.25rem, 11vw, 3rem); line-height:1.05; } }
         .fl-h1 .fl-word { display:inline-block; overflow:hidden; vertical-align:bottom; }
         .fl-h1 .fl-word > span { display:inline-block; transform:translateY(105%); animation:fl-word-up 0.9s cubic-bezier(0.2,0.7,0.1,1) forwards; }
         .fl-h1 .fl-word:nth-of-type(1) > span { animation-delay:0.3s; }
