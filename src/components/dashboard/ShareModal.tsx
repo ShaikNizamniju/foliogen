@@ -68,7 +68,7 @@ export function ShareModal({ open, onOpenChange, defaultUrl }: ShareModalProps) 
         github_url: profile.githubUrl,
         twitter_url: profile.twitterUrl,
         work_experience: profile.workExperience,
-        projects: profile.projects,
+        projects: (profile.projects || []).map(({ password, ...rest }: any) => rest),
         skills: profile.skills,
         key_highlights: profile.keyHighlights,
         calendly_url: profile.calendlyUrl,
