@@ -437,7 +437,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
       </section>
 
       {/* About Me Section */}
-      <section id="about" className="relative z-10 px-8 py-20 max-w-7xl mx-auto">
+      <section id="about" className="relative z-10 px-4 md:px-8 py-12 md:py-20 max-w-7xl mx-auto">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -445,7 +445,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
           viewport={{ once: true, margin: "-100px" }}
         >
           <motion.div variants={itemVariants} className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               About <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Me</span>
             </h2>
             <p className="text-white/50 max-w-2xl mx-auto">
@@ -468,7 +468,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
       </section>
 
       {/* Skills & Expertise Section */}
-      <section id="skills" className="relative z-10 px-8 py-20 max-w-7xl mx-auto">
+      <section id="skills" className="relative z-10 px-4 md:px-8 py-12 md:py-20 max-w-7xl mx-auto">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -476,7 +476,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
           viewport={{ once: true, margin: "-100px" }}
         >
           <motion.div variants={itemVariants} className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Skills & <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Expertise</span>
             </h2>
             <p className="text-white/50 max-w-2xl mx-auto">
@@ -541,7 +541,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
       </section>
 
       {/* Featured Projects Section */}
-      <section id="projects" className="relative z-10 px-8 py-20 max-w-7xl mx-auto">
+      <section id="projects" className="relative z-10 px-4 md:px-8 py-12 md:py-20 max-w-7xl mx-auto">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -550,7 +550,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
         >
           <motion.div variants={itemVariants} className="text-center mb-12">
             <p className="text-cyan-400 text-sm font-medium mb-2">✨ My Work</p>
-            <h2 className="text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Featured <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Projects</span>
             </h2>
             <p className="text-white/50 max-w-2xl mx-auto">
@@ -728,7 +728,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="relative z-10 px-8 py-20 max-w-7xl mx-auto">
+      <section id="contact" className="relative z-10 px-4 md:px-8 py-12 md:py-20 max-w-7xl mx-auto">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -737,7 +737,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
         >
           <motion.div variants={itemVariants} className="text-center mb-12">
             <p className="text-cyan-400 text-sm font-medium mb-2">📬 Get In Touch</p>
-            <h2 className="text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Let's Build Something{' '}
               <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">Amazing</span>
             </h2>
@@ -865,7 +865,7 @@ export function ModernDarkTemplate({ profile, onContactClick, isLoading = false 
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 px-8 py-8 border-t border-white/5">
+      <footer className="relative z-10 px-4 md:px-8 py-8 border-t border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-black font-bold text-xs">
