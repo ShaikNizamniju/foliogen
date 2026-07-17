@@ -61,15 +61,15 @@ export function MinimalistTemplate({ profile, onContactClick }: MinimalistTempla
       >
         {/* Name */}
         <motion.div 
-          className="mb-12"
+          className="mb-8 md:mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <h1 className="text-3xl font-black tracking-tight leading-tight uppercase">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight leading-tight uppercase break-words">
             {profile.fullName || 'Your Name'}
           </h1>
-          <p className="text-sm text-white/60 mt-2 uppercase tracking-widest">
+          <p className="text-base md:text-sm text-white/60 mt-2 uppercase tracking-widest">
             {profile.headline || 'Professional'}
           </p>
         </motion.div>
