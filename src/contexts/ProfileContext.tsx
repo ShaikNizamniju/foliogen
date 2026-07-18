@@ -377,6 +377,18 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     saveTimeoutRef.current = setTimeout(async () => {
       const { error } = await saveProfile(dataToSave);
       if (error) {
+        // Benign aborts (navigation, token refresh, superseded requests) surface
+        // as AbortError from the underlying fetch. The newest save will still
+        // land — do not scare the user. Just dismiss the loading toast.
+        const msg = (error.message || '').toLowerCase();
+        const isAbort =
+          (error as any).name === 'AbortError' ||
+          msg.includes('aborted') ||
+          msg.includes('abortsignal');
+        if (isAbort) {
+          toast.dismiss('auto-save');
+          return;
+        }
         toast.error('Auto-save failed', { id: 'auto-save', description: error.message });
       } else {
         toast.success('Saved ✓', { id: 'auto-save', duration: 1500 });
