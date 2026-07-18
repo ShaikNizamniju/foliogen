@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ArrowRight, ArrowLeft, ChevronRight, Send, UserCircle } from 'lucide-react';
+import { ChevronDown, ArrowRight, ChevronRight, UserCircle, Mail, Linkedin, Github, Twitter, Globe } from 'lucide-react';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { getProjectHref } from '@/lib/urlUtils';
 
@@ -8,92 +8,29 @@ interface DestelloTemplateProps {
   profile?: ProfileData;
 }
 
-/* ── Data ── */
-const works = [
-  { num: '01', title: 'Nova Identity', category: 'Brand Identity', image: '' },
-  { num: '02', title: 'Pulse Campaign', category: 'Art Direction', image: '' },
-  { num: '03', title: 'Kinetic Social', category: 'Social Marketing', image: '' },
-  { num: '04', title: 'Vertex Studio', category: 'Content Production', image: '' },
-  { num: '05', title: 'Ember Film', category: 'Art Direction', image: '' },
-  { num: '06', title: 'Arclight Launch', category: 'Brand Identity', image: '' },
-];
-
-const expertise = [
-  { num: '01', title: 'Brand Identity', desc: 'Crafting visual systems that resonate and endure.' },
-  { num: '02', title: 'Art Direction', desc: 'Guiding aesthetics from concept to final pixel.' },
-  { num: '03', title: 'Content Production', desc: 'High-impact assets across every medium.' },
-  { num: '04', title: 'Social Marketing', desc: 'Campaigns that spark engagement and growth.' },
-];
-
-const processSteps = [
-  { title: 'Spark the Vision', desc: 'We start with deep discovery — understanding your brand DNA, audience, and goals.', image: '' },
-  { title: 'Craft the Blueprint', desc: 'Strategy meets structure. We map the experience before a single pixel is placed.', image: '' },
-  { title: 'Design the Experience', desc: 'Every detail is intentional — from typography to micro-interactions.', image: '' },
-  { title: 'Launch & Illuminate', desc: 'We ship, measure, and iterate — ensuring impact from day one.', image: '' },
-];
-
-const testimonials = [
-  { quote: 'Destello transformed our brand from ordinary to extraordinary. Their creative instinct is unmatched.', name: 'Taylor Morgan', role: 'CMO, NovaTech' },
-  { quote: 'The attention to detail and strategic thinking blew us away. A true creative partner.', name: 'Jordan Ellis', role: 'Founder, Vertex Labs' },
-  { quote: 'Working with Destello felt like having an in-house creative team that actually gets it.', name: 'Casey Lin', role: 'Brand Director, Ember Co.' },
-];
-
-const faqs = [
-  { q: 'What is your typical project timeline?', a: 'Most projects run 6-12 weeks depending on scope. We always align on milestones before kicking off.' },
-  { q: 'Do you work with startups?', a: 'Absolutely. We love working with ambitious teams at every stage, from pre-seed to Series C and beyond.' },
-  { q: 'What does your pricing look like?', a: "We offer project-based and retainer models. Reach out and we'll scope something that fits your budget." },
-  { q: 'Can you handle both digital and print?', a: 'Yes. Our team covers the full spectrum: websites, apps, packaging, editorial, and environmental design.' },
-  { q: 'How do revisions work?', a: 'Every phase includes structured feedback rounds. We believe in collaboration, not endless revisions.' },
-  { q: 'Where is your team based?', a: "We're a distributed studio with hubs in New York, London, and Tokyo." },
-];
-
-const footerLinks = {
-  Studio: ['About', 'Careers', 'Press'],
-  Services: ['Branding', 'Digital', 'Content'],
-  Connect: ['Instagram', 'Twitter', 'LinkedIn'],
-};
-
-/* ── Accordion Item ── */
-function Accordion({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="border-b" style={{ borderColor: '#E5E5E5' }}>
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between py-5 text-left group">
-        <span className="text-base md:text-lg font-medium" style={{ fontFamily: "'Syne', sans-serif" }}>{title}</span>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.3 }}>
-          <ChevronDown className="h-5 w-5" style={{ color: '#FF4444' }} />
-        </motion.div>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const }} className="overflow-hidden">
-            <div className="pb-5 text-sm leading-relaxed" style={{ color: '#555' }}>{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-/* ── Process Step ── */
-function ProcessAccordion({ step, index }: { step: typeof processSteps[0]; index: number }) {
-  const [open, setOpen] = useState(index === 0);
+/* ── Process/Experience Accordion ── */
+function ExperienceAccordion({ step, index, defaultOpen }: { step: { title: string; company: string; dates?: string; desc?: string }; index: number; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(!!defaultOpen);
   return (
     <div className="border-b" style={{ borderColor: '#E5E5E5' }}>
       <button onClick={() => setOpen(!open)} className="w-full flex items-center gap-4 py-6 text-left">
-        <span className="text-sm font-bold" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>0{index + 1}</span>
-        <span className="text-lg md:text-xl font-semibold flex-1" style={{ fontFamily: "'Syne', sans-serif" }}>{step.title}</span>
+        <span className="text-sm font-bold" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{String(index + 1).padStart(2, '0')}</span>
+        <div className="flex-1 min-w-0">
+          <div className="text-lg md:text-xl font-semibold break-words" style={{ fontFamily: "'Syne', sans-serif" }}>{step.title}</div>
+          {(step.company || step.dates) && (
+            <div className="text-xs md:text-sm mt-1" style={{ color: '#666' }}>
+              {step.company}{step.company && step.dates ? ' · ' : ''}{step.dates}
+            </div>
+          )}
+        </div>
         <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.3 }}>
           <ChevronDown className="h-5 w-5" style={{ color: '#FF4444' }} />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
-        {open && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as const }} className="overflow-hidden">
-            <div className={`pb-6 grid grid-cols-1 gap-6 ${step.image ? 'md:grid-cols-2' : ''}`}>
-              <p className="text-sm leading-relaxed" style={{ color: '#555' }}>{step.desc}</p>
-              {step.image && <img src={step.image} alt={step.title} className="w-full aspect-[2/1] object-cover rounded-lg" />}
-            </div>
+        {open && step.desc && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] as const }} className="overflow-hidden">
+            <div className="pb-6 pl-10 text-sm leading-relaxed whitespace-pre-line" style={{ color: '#555' }}>{step.desc}</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -101,50 +38,69 @@ function ProcessAccordion({ step, index }: { step: typeof processSteps[0]; index
   );
 }
 
-/* ── Main Template ── */
 export function DestelloTemplate({ profile }: DestelloTemplateProps) {
   const [activeWork, setActiveWork] = useState<number | null>(null);
-  const [testimIdx, setTestimIdx] = useState(0);
 
-  const nextTestim = () => setTestimIdx((i) => (i + 1) % testimonials.length);
-  const prevTestim = () => setTestimIdx((i) => (i - 1 + testimonials.length) % testimonials.length);
+  const name = profile?.fullName || 'Your Name';
+  const firstName = name.split(' ')[0] || name;
+  const tagline = profile?.headline || '';
+  const bio = profile?.bio || '';
+  const email = profile?.email || '';
+  const year = new Date().getFullYear();
 
-  const name = profile?.fullName || 'destello';
-  const tagline = profile?.headline || 'Creative Digital Studio';
-  const bio = profile?.bio || 'We build brands that move culture forward. Strategy, design, and content — all under one roof.';
+  const socials: { label: string; href: string; icon: typeof Mail }[] = [];
+  if (profile?.linkedinUrl) socials.push({ label: 'LinkedIn', href: profile.linkedinUrl, icon: Linkedin });
+  if (profile?.githubUrl) socials.push({ label: 'GitHub', href: profile.githubUrl, icon: Github });
+  if (profile?.twitterUrl) socials.push({ label: 'Twitter', href: profile.twitterUrl, icon: Twitter });
+  if (profile?.website) socials.push({ label: 'Website', href: profile.website, icon: Globe });
 
-  const profileWorks = profile?.projects?.length ? profile.projects.map((p, i) => ({
-    num: `0${i + 1}`.slice(-2),
+  const works = (profile?.projects || []).map((p, i) => ({
+    num: String(i + 1).padStart(2, '0'),
     title: p.title || 'Project',
-    category: p.techStack?.[0] || 'Design',
+    category: p.techStack?.[0] || '',
     image: p.imageUrl || '',
     link: p.link || '',
+    description: p.description || '',
     proofOfImpact: p.proofOfImpact || '',
-  })) : works;
+  }));
 
-  const profileExpertise = profile?.skills?.length ? profile.skills.map((s, i) => ({
-    num: `0${i + 1}`.slice(-2),
-    title: s,
-    desc: 'Specialized expertise driving impact and scale.'
-  })) : expertise;
-
-  const profileProcess = profile?.workExperience?.length ? profile.workExperience.map((w, i) => ({
+  const skills = profile?.skills || [];
+  const experience = (profile?.workExperience || []).map((w) => ({
     title: w.jobTitle || 'Role',
-    desc: w.company || '',
-    image: ''
-  })) : processSteps;
+    company: w.company || '',
+    dates: [w.startDate, w.endDate].filter(Boolean).join(' — '),
+    desc: w.description || '',
+  }));
+
+  const hasContact = !!(email || socials.length);
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleCta = () => {
+    if (email) window.location.href = `mailto:${email}`;
+    else scrollTo('contact');
+  };
+
+  const navItems: { label: string; id: string; show: boolean }[] = [
+    { label: 'Work', id: 'work', show: works.length > 0 },
+    { label: 'Experience', id: 'experience', show: experience.length > 0 },
+    { label: 'Skills', id: 'skills', show: skills.length > 0 },
+    { label: 'Contact', id: 'contact', show: hasContact },
+  ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FFFFFF', color: '#0A0A0A', fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: '#FFFFFF', color: '#0A0A0A', fontFamily: "'Inter', sans-serif" }}>
       {/* Navbar */}
-      <motion.nav initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="sticky top-0 z-30 flex items-center justify-between px-6 md:px-14 py-5 backdrop-blur-md bg-white/90 border-b" style={{ borderColor: '#F0F0F0' }}>
-        <div>
-          <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "'Syne', sans-serif" }}>{name.split(' ')[0]?.toLowerCase()}</span>
-          <span className="text-[10px] tracking-widest uppercase block -mt-0.5" style={{ color: '#999' }}>{tagline}</span>
+      <motion.nav initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="sticky top-0 z-30 flex items-center justify-between px-6 md:px-14 py-5 backdrop-blur-md bg-white/90 border-b gap-4" style={{ borderColor: '#F0F0F0' }}>
+        <div className="min-w-0">
+          <span className="text-xl font-bold tracking-tight block truncate" style={{ fontFamily: "'Syne', sans-serif" }}>{firstName}</span>
+          {tagline && <span className="text-[10px] tracking-widest uppercase block -mt-0.5 truncate" style={{ color: '#999' }}>{tagline}</span>}
         </div>
         <div className="hidden md:flex gap-7 text-xs tracking-widest uppercase" style={{ color: '#666' }}>
-          {['Work', 'Services', 'Process', 'Contact'].map((l) => (
-            <span key={l} className="cursor-pointer hover:text-[#FF4444] transition-colors">{l}</span>
+          {navItems.filter(n => n.show).map((l) => (
+            <button key={l.id} onClick={() => scrollTo(l.id)} className="cursor-pointer hover:text-[#FF4444] transition-colors">{l.label}</button>
           ))}
         </div>
       </motion.nav>
@@ -152,183 +108,167 @@ export function DestelloTemplate({ profile }: DestelloTemplateProps) {
       {/* Hero */}
       <section className="px-6 md:px-14 py-16 md:py-24">
         <div className="flex flex-col md:flex-row items-center gap-12 md:gap-16">
-          <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }} className="flex-1">
-            <h1 className="text-6xl md:text-8xl lg:text-[120px] font-bold leading-[0.9] tracking-tighter" style={{ fontFamily: "'Syne', sans-serif" }}>
-              {name.split(' ')[0]?.toLowerCase()}
+          <motion.div initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }} className="flex-1 min-w-0">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] tracking-tighter break-words" style={{ fontFamily: "'Syne', sans-serif" }}>
+              {name}
             </h1>
-            <p className="mt-6 text-base md:text-lg max-w-md" style={{ color: '#555' }}>
-              {bio}
-            </p>
-            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="mt-8 px-8 py-3.5 text-sm font-semibold tracking-wider uppercase text-white rounded-full" style={{ backgroundColor: '#FF4444' }}>
-              Start a Project
-            </motion.button>
+            {tagline && <p className="mt-4 text-lg md:text-xl font-medium" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{tagline}</p>}
+            {bio && <p className="mt-6 text-base md:text-lg max-w-xl" style={{ color: '#555' }}>{bio}</p>}
+            {hasContact && (
+              <motion.button onClick={handleCta} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="mt-8 px-8 py-3.5 text-sm font-semibold tracking-wider uppercase text-white rounded-full min-h-[44px]" style={{ backgroundColor: '#FF4444' }}>
+                Get in Touch
+              </motion.button>
+            )}
           </motion.div>
-          <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.15 }} className="flex-1 max-w-md w-full">
-            <div className="relative rounded-2xl overflow-hidden">
-              {(!profile || !profile.hidePhoto) ? (
-                profile?.photoUrl ? (
-                  <img src={profile.photoUrl} alt="Hero" className="w-full aspect-[5/7] object-cover" />
+          {(!profile || !profile.hidePhoto) && (
+            <motion.div initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.15 }} className="flex-1 max-w-md w-full">
+              <div className="relative rounded-2xl overflow-hidden">
+                {profile?.photoUrl ? (
+                  <img src={profile.photoUrl} alt={name} className="w-full aspect-[5/7] object-cover" />
                 ) : (
                   <div className="w-full aspect-[5/7] bg-[#F5F5F5] flex items-center justify-center">
                     <UserCircle className="w-32 h-32 text-[#CCCCCC]" />
                   </div>
-                )
-              ) : null}
-              <div className="absolute inset-0 bg-[#FF4444]/15 mix-blend-multiply" />
-            </div>
-          </motion.div>
+                )}
+                <div className="absolute inset-0 bg-[#FF4444]/15 mix-blend-multiply" />
+              </div>
+            </motion.div>
+          )}
         </div>
       </section>
 
       {/* Selected Works */}
-      <section className="px-6 md:px-14 py-16 md:py-24 border-t" style={{ borderColor: '#F0F0F0' }}>
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-5xl font-bold mb-12" style={{ fontFamily: "'Syne', sans-serif" }}>
-          Selected Works
-        </motion.h2>
+      {works.length > 0 && (
+        <section id="work" className="px-6 md:px-14 py-16 md:py-24 border-t" style={{ borderColor: '#F0F0F0' }}>
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-5xl font-bold mb-12" style={{ fontFamily: "'Syne', sans-serif" }}>
+            Selected Work
+          </motion.h2>
 
-        {/* Numbered list */}
-        <div className="border-t" style={{ borderColor: '#E5E5E5' }}>
-          {profileWorks.map((w: any, i: number) => {
-            const href = getProjectHref(w);
-            return (
-            <motion.button
-              key={w.num}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06 }}
-              onClick={() => href ? window.open(href, '_blank', 'noopener,noreferrer') : setActiveWork(activeWork === i ? null : i)}
-              className="w-full flex items-center gap-4 md:gap-8 py-5 border-b text-left group hover:bg-[#FAFAFA] transition-colors px-2"
-              style={{ borderColor: '#E5E5E5' }}
-            >
-              <span className="text-sm font-bold" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{w.num}</span>
-              <span className="text-lg md:text-2xl font-semibold flex-1 group-hover:text-[#FF4444] transition-colors" style={{ fontFamily: "'Syne', sans-serif" }}>{w.title}</span>
-              <span className="text-xs tracking-widest uppercase hidden sm:block" style={{ color: '#999' }}>{w.category}</span>
-              <ChevronRight className="h-4 w-4" style={{ color: '#CCC' }} />
-            </motion.button>
-            );
-          })}
-        </div>
+          <div className="border-t" style={{ borderColor: '#E5E5E5' }}>
+            {works.map((w, i) => {
+              const href = getProjectHref(w);
+              return (
+                <motion.button
+                  key={w.num + w.title}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.06 }}
+                  onClick={() => href ? window.open(href, '_blank', 'noopener,noreferrer') : setActiveWork(activeWork === i ? null : i)}
+                  className="w-full flex items-center gap-3 md:gap-8 py-5 border-b text-left group hover:bg-[#FAFAFA] transition-colors px-2 min-h-[44px]"
+                  style={{ borderColor: '#E5E5E5' }}
+                >
+                  <span className="text-sm font-bold" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{w.num}</span>
+                  <span className="text-base md:text-2xl font-semibold flex-1 min-w-0 break-words group-hover:text-[#FF4444] transition-colors" style={{ fontFamily: "'Syne', sans-serif" }}>{w.title}</span>
+                  {w.category && <span className="text-xs tracking-widest uppercase hidden sm:block" style={{ color: '#999' }}>{w.category}</span>}
+                  <ChevronRight className="h-4 w-4 shrink-0" style={{ color: '#CCC' }} />
+                </motion.button>
+              );
+            })}
+          </div>
 
-        {/* Expanded project card */}
-        <AnimatePresence>
-          {activeWork !== null && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.4 }} className="overflow-hidden mt-8">
-              <div className={`rounded-2xl overflow-hidden relative min-h-[160px] md:min-h-[240px] ${!profileWorks[activeWork].image ? 'bg-[#0A0A0A] p-6 md:p-10 flex flex-col justify-end' : ''}`}>
-                {profileWorks[activeWork].image && (
-                  <>
-                    <img src={profileWorks[activeWork].image} alt={profileWorks[activeWork].title} className="w-full aspect-[2/1] object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/60 to-transparent" />
-                  </>
-                )}
-                <div className={profileWorks[activeWork].image ? "absolute bottom-0 left-0 p-6 md:p-10" : ""}>
-                  <span className={`text-xs tracking-widest uppercase ${profileWorks[activeWork].image ? 'text-white/70' : 'text-white/50'}`}>{profileWorks[activeWork].category}</span>
-                  <h3 className="text-2xl md:text-4xl font-bold text-white mt-1" style={{ fontFamily: "'Syne', sans-serif" }}>{profileWorks[activeWork].title}</h3>
+          <AnimatePresence>
+            {activeWork !== null && works[activeWork] && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.4 }} className="overflow-hidden mt-8">
+                <div className={`rounded-2xl overflow-hidden relative ${!works[activeWork].image ? 'bg-[#0A0A0A] p-6 md:p-10' : ''}`}>
+                  {works[activeWork].image && (
+                    <>
+                      <img src={works[activeWork].image} alt={works[activeWork].title} className="w-full aspect-[2/1] object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/70 to-transparent" />
+                    </>
+                  )}
+                  <div className={works[activeWork].image ? 'absolute bottom-0 left-0 right-0 p-6 md:p-10' : ''}>
+                    {works[activeWork].category && <span className="text-xs tracking-widest uppercase text-white/70">{works[activeWork].category}</span>}
+                    <h3 className="text-2xl md:text-4xl font-bold text-white mt-1 break-words" style={{ fontFamily: "'Syne', sans-serif" }}>{works[activeWork].title}</h3>
+                    {works[activeWork].description && <p className="text-sm md:text-base text-white/80 mt-3 max-w-2xl">{works[activeWork].description}</p>}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </section>
-
-      {/* Expertise */}
-      <section className="px-6 md:px-14 py-16 md:py-24" style={{ backgroundColor: '#FAFAFA' }}>
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-5xl font-bold mb-12" style={{ fontFamily: "'Syne', sans-serif" }}>
-          Our Expertise
-        </motion.h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {profileExpertise.map((e, i) => (
-            <motion.div key={e.num} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="p-6 bg-white rounded-xl border group cursor-pointer hover:border-[#FF4444]/30 transition-colors" style={{ borderColor: '#E5E5E5' }}>
-              <span className="text-xs font-bold block mb-3" style={{ color: '#FF4444', fontFamily: "'Syne', sans-serif" }}>{e.num}</span>
-              <h3 className="text-lg font-semibold mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>{e.title}</h3>
-              <p className="text-sm leading-relaxed mb-4" style={{ color: '#666' }}>{e.desc}</p>
-              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" style={{ color: '#FF4444' }} />
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Process */}
-      <section className="px-6 md:px-14 py-16 md:py-24">
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-5xl font-bold mb-12" style={{ fontFamily: "'Syne', sans-serif" }}>
-          Our Process
-        </motion.h2>
-        <div>
-          {profileProcess.map((s, i) => (
-            <ProcessAccordion key={i} step={s} index={i} />
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonial */}
-      <section className="px-6 md:px-14 py-16 md:py-24" style={{ backgroundColor: '#0A0A0A', color: '#FFFFFF' }}>
-        <div className="max-w-3xl mx-auto text-center">
-          <AnimatePresence mode="wait">
-            <motion.div key={testimIdx} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}>
-              <p className="text-xl md:text-3xl font-light leading-relaxed mb-8" style={{ fontFamily: "'Syne', sans-serif" }}>
-                "{testimonials[testimIdx].quote}"
-              </p>
-              <p className="text-sm font-semibold">{testimonials[testimIdx].name}</p>
-              <p className="text-xs mt-1" style={{ color: '#999' }}>{testimonials[testimIdx].role}</p>
-            </motion.div>
+              </motion.div>
+            )}
           </AnimatePresence>
-          <div className="flex items-center justify-center gap-4 mt-10">
-            <button onClick={prevTestim} className="p-2 rounded-full border border-white/20 hover:border-white/50 transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-            <span className="text-xs" style={{ color: '#999' }}>{testimIdx + 1} / {testimonials.length}</span>
-            <button onClick={nextTestim} className="p-2 rounded-full border border-white/20 hover:border-white/50 transition-colors">
-              <ArrowRight className="h-4 w-4" />
-            </button>
+        </section>
+      )}
+
+      {/* Skills */}
+      {skills.length > 0 && (
+        <section id="skills" className="px-6 md:px-14 py-16 md:py-24" style={{ backgroundColor: '#FAFAFA' }}>
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-5xl font-bold mb-12" style={{ fontFamily: "'Syne', sans-serif" }}>
+            Skills & Expertise
+          </motion.h2>
+          <div className="flex flex-wrap gap-2 md:gap-3">
+            {skills.map((s, i) => (
+              <motion.span
+                key={s + i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: Math.min(i * 0.02, 0.4) }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border text-sm font-medium break-words"
+                style={{ borderColor: '#E5E5E5', fontFamily: "'Inter', sans-serif" }}
+              >
+                <span className="text-xs font-bold" style={{ color: '#FF4444' }}>{String(i + 1).padStart(2, '0')}</span>
+                <span>{s}</span>
+              </motion.span>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* FAQ */}
-      <section className="px-6 md:px-14 py-16 md:py-24">
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-5xl font-bold mb-12" style={{ fontFamily: "'Syne', sans-serif" }}>
-          FAQ
-        </motion.h2>
-        <div className="max-w-2xl">
-          {faqs.map((f, i) => (
-            <Accordion key={i} title={f.q}>{f.a}</Accordion>
-          ))}
-        </div>
-      </section>
+      {/* Experience */}
+      {experience.length > 0 && (
+        <section id="experience" className="px-6 md:px-14 py-16 md:py-24">
+          <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-5xl font-bold mb-12" style={{ fontFamily: "'Syne', sans-serif" }}>
+            Experience
+          </motion.h2>
+          <div>
+            {experience.map((s, i) => (
+              <ExperienceAccordion key={i} step={s} index={i} defaultOpen={i === 0} />
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* Footer */}
-      <footer className="px-6 md:px-14 py-16 md:py-20 border-t" style={{ borderColor: '#E5E5E5' }}>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Contact */}
+      {/* Footer / Contact */}
+      <footer id="contact" className="px-6 md:px-14 py-16 md:py-20 border-t" style={{ borderColor: '#E5E5E5' }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="md:col-span-1">
-            <span className="text-xl font-bold tracking-tight block mb-2" style={{ fontFamily: "'Syne', sans-serif" }}>destello</span>
-            <p className="text-sm" style={{ color: '#666' }}>hello@destello.studio</p>
-            <p className="text-sm" style={{ color: '#666' }}>+1 (212) 555-0199</p>
+            <span className="text-xl font-bold tracking-tight block mb-2 break-words" style={{ fontFamily: "'Syne', sans-serif" }}>{name}</span>
+            {tagline && <p className="text-sm mb-3" style={{ color: '#666' }}>{tagline}</p>}
+            {email && (
+              <a href={`mailto:${email}`} className="text-sm inline-flex items-center gap-2 hover:text-[#FF4444] transition-colors break-all" style={{ color: '#666' }}>
+                <Mail className="h-4 w-4 shrink-0" />{email}
+              </a>
+            )}
           </div>
 
-          {/* Sitemap */}
-          {Object.entries(footerLinks).map(([heading, links]) => (
-            <div key={heading}>
-              <span className="text-xs tracking-widest uppercase font-semibold block mb-4" style={{ color: '#999' }}>{heading}</span>
-              {links.map((l) => (
-                <span key={l} className="block text-sm mb-2 cursor-pointer hover:text-[#FF4444] transition-colors">{l}</span>
+          {navItems.some(n => n.show) && (
+            <div>
+              <span className="text-xs tracking-widest uppercase font-semibold block mb-4" style={{ color: '#999' }}>Explore</span>
+              {navItems.filter(n => n.show).map((l) => (
+                <button key={l.id} onClick={() => scrollTo(l.id)} className="block text-sm mb-2 cursor-pointer hover:text-[#FF4444] transition-colors text-left">{l.label}</button>
               ))}
             </div>
-          ))}
+          )}
+
+          {socials.length > 0 && (
+            <div>
+              <span className="text-xs tracking-widest uppercase font-semibold block mb-4" style={{ color: '#999' }}>Connect</span>
+              {socials.map((s) => {
+                const Icon = s.icon;
+                return (
+                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm mb-2 hover:text-[#FF4444] transition-colors">
+                    <Icon className="h-4 w-4" />{s.label}
+                    <ArrowRight className="h-3 w-3" />
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Newsletter */}
-        <div className="mt-14 pt-8 border-t flex flex-col sm:flex-row items-center gap-4" style={{ borderColor: '#E5E5E5' }}>
-          <span className="text-sm font-medium">Stay in the loop</span>
-          <div className="flex-1 max-w-sm flex">
-            <input type="email" placeholder="your@email.com" className="flex-1 px-4 py-2.5 text-sm border rounded-l-full outline-none focus:border-[#FF4444] transition-colors" style={{ borderColor: '#E5E5E5' }} />
-            <button className="px-5 py-2.5 rounded-r-full text-white text-sm" style={{ backgroundColor: '#FF4444' }}>
-              <Send className="h-4 w-4" />
-            </button>
-          </div>
+        <div className="mt-14 pt-8 border-t text-xs text-center" style={{ borderColor: '#E5E5E5', color: '#999' }}>
+          © {year} {name}. All rights reserved.
         </div>
-
-        <div className="mt-8 text-xs text-center" style={{ color: '#999' }}>© 2024 Destello. All rights reserved.</div>
       </footer>
     </div>
   );
