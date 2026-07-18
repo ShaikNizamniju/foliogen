@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { UserCircle, MapPin, Mail, Linkedin } from 'lucide-react';
 import { getProjectHref } from '@/lib/urlUtils';
