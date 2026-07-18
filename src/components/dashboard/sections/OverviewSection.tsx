@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
+import { ResumeUpload } from '@/components/dashboard/forms/ResumeUpload';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
