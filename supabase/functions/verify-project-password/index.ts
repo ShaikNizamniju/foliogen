@@ -16,7 +16,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Token-bucket rate limit: 100 req / 15 min per IP
     const ip = getClientIP(req);
     const { profileUserId, projectId, password } = await req.json();
     const { allowed, retryAfterSeconds } = checkRateLimit(`verify-pw:${ip}`, 20, 15 * 60 * 1000);
@@ -26,7 +25,6 @@ Deno.serve(async (req) => {
       return rateLimitedResponse(retryAfterSeconds);
     }
 
-    // ── Allow-list validation ────────────────────────────────────────────
     const userIdCheck = validateText(profileUserId, "Profile User ID", 100);
     if (!userIdCheck.valid) return validationError(userIdCheck.error!);
 
@@ -45,35 +43,16 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("projects")
-      .eq("user_id", profileUserId)
-      .single();
+    // Delegate to bcrypt-backed DB function (constant-time crypt() comparison).
+    const { data: isValid, error } = await supabase.rpc("verify_project_password", {
+      p_user_id: profileUserId,
+      p_project_id: projectId,
+      p_password: password,
+    });
 
-    if (error || !profile) {
-      return errorResponse("Profile not found", 404);
+    if (error) {
+      return errorResponse("Verification failed", 500);
     }
-
-    const projects = profile.projects as any[];
-    if (!Array.isArray(projects)) {
-      return errorResponse("Project not found", 404);
-    }
-
-    const project = projects.find((p: any) => p.id === projectId);
-    if (!project || !project.isProtected) {
-      return errorResponse("Project not found or not protected", 404);
-    }
-
-    // Constant-time comparison using manual loop (Deno-compatible)
-    const encoder = new TextEncoder();
-    const expectedBytes = encoder.encode(project.password.padEnd(256, '\0'));
-    const providedBytes = encoder.encode(password.padEnd(256, '\0'));
-    let diff = project.password.length ^ password.length;
-    for (let i = 0; i < expectedBytes.length; i++) {
-      diff |= expectedBytes[i] ^ providedBytes[i];
-    }
-    const isValid = diff === 0;
 
     if (!isValid) {
       await logSecurityEvent('auth_attempt', 'warning', 'verify-project-password', { ip, projectId, success: false }, profileUserId, req);
@@ -87,7 +66,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ success: true }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (error: any) {
+  } catch (_error) {
     return errorResponse("Internal error", 500);
   }
 });

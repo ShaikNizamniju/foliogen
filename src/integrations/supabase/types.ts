@@ -640,6 +640,10 @@ export type Database = {
         Returns: boolean
       }
       increment_views: { Args: { p_user_id: string }; Returns: undefined }
+      verify_project_password: {
+        Args: { p_password: string; p_project_id: string; p_user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
