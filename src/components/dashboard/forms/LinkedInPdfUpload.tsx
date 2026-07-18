@@ -55,12 +55,18 @@ export function LinkedInPdfUpload() {
 
       toast.info('Analyzing LinkedIn profile with AI...');
 
-      const { data, error } = await supabase.functions.invoke('parse-resume', {
+      // Hard 90s client-side timeout so a hanging socket on re-upload can't
+      // leave the UI stuck in "Analyzing…" forever without ever resolving.
+      const invokePromise = supabase.functions.invoke('parse-resume', {
         body: { resumeText: fullText }
       });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Client timeout after 90s')), 90000),
+      );
+      const { data, error } = (await Promise.race([invokePromise, timeoutPromise])) as any;
 
       if (error) throw new Error("Connection failed: " + error.message);
-      if (data.error) throw new Error(data.error);
+      if (data?.error) throw new Error(data.error);
 
       const safeWorkExperience = (data.workExperience || []).map((w: any) => ({
         ...w,
