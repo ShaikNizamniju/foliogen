@@ -9,15 +9,7 @@ interface NoirTemplateProps {
   onContactClick?: () => void;
 }
 
-// Custom getProjectImageUrl for Noir - append "black and white"
-function getNoirProjectImageUrl(project: { imageUrl?: string; visualPrompt?: string; title?: string }): string {
-  if (project.imageUrl) return project.imageUrl;
-  
-  const prompt = project.visualPrompt || project.title || 'abstract art';
-  const noirPrompt = `${prompt} black and white high contrast cinematic noir`;
-  
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(noirPrompt)}?width=800&height=600&nologo=true`;
-}
+// Noir uses the shared branded placeholder — no stock photos.
 
 const fadeIn = {
   initial: { opacity: 0 },
@@ -223,7 +215,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
                       <div className="relative overflow-hidden">
                         <div className="aspect-[21/9] overflow-hidden">
                           <img 
-                            src={getNoirProjectImageUrl(project)} 
+                            src={getProjectImageUrl(project, 'creative')} 
                             alt={project.title}
                             className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-1000"
                           />
