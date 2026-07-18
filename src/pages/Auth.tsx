@@ -31,10 +31,8 @@ export default function Auth() {
   const navigate = useNavigate();
   const { triggerWelcomeEmail } = useWelcomeEmail();
 
-  // Animated counters
-  const [c1, setC1] = useState(0);
-  const [c2, setC2] = useState(0);
-  const [c3, setC3] = useState(0);
+  // Cursor refs
+
 
   // Cursor refs
   const cursorRef = useRef<HTMLDivElement>(null);
