@@ -121,9 +121,9 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
           {profile.bio && (
             <motion.div 
               variants={itemVariants}
-              className="backdrop-blur-xl bg-white/60 border border-white/80 rounded-3xl p-6 shadow-lg"
+              className="backdrop-blur-xl bg-white/60 border border-white/80 rounded-3xl p-6 shadow-lg lg:col-span-8 lg:col-start-5"
             >
-              <p className="text-center text-gray-700 leading-relaxed">
+              <p className="text-center lg:text-left text-gray-700 leading-relaxed">
                 {profile.bio}
               </p>
             </motion.div>
@@ -131,7 +131,7 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
 
           {/* Key Highlights Pills */}
           {profile.keyHighlights && profile.keyHighlights.length > 0 && (
-            <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-2">
+            <motion.div variants={itemVariants} className="flex flex-wrap justify-center lg:justify-start gap-2 lg:col-span-8 lg:col-start-5">
               {profile.keyHighlights.map((highlight, index) => (
                 <motion.span
                   key={index}
@@ -146,7 +146,7 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
           )}
 
           {/* Social Links - Glassmorphism Cards */}
-          <motion.div variants={itemVariants} className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3 lg:col-span-8 lg:col-start-5 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
             {profile.linkedinUrl && (
               <motion.a
                 href={profile.linkedinUrl}
