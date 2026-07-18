@@ -97,7 +97,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
       transition={{ delay: index * 0.1, duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
     >
       <motion.div
-        className={`relative overflow-hidden aspect-[4/3] lg:${index % 3 === 0 ? 'aspect-[4/5]' : index % 3 === 1 ? 'aspect-[3/4]' : 'aspect-[16/10]'}`}
+        className={`relative overflow-hidden aspect-[4/3] ${index % 3 === 0 ? 'lg:aspect-[4/5]' : index % 3 === 1 ? 'lg:aspect-[3/4]' : 'lg:aspect-[16/10]'}`}
         whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.4 }}
       >
