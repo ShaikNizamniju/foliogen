@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, Loader2, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Upload, Loader2, AlertCircle, RefreshCw, PenLine } from 'lucide-react';
 import { supabase } from '@/lib/supabase_v2';
 import { useProfile } from '@/contexts/ProfileContext';
 import { toast } from 'sonner';
@@ -8,10 +8,48 @@ import * as pdfjsLib from 'pdfjs-dist';
 // Dynamically resolve worker URL to match installed pdfjs-dist version
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function invokeParseWithRetry(
+  resumeText: string,
+  onRetry: () => void,
+) {
+  // One automatic retry with 2s backoff before surfacing failure.
+  let lastErr: any = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const { data, error } = await supabase.functions.invoke('parse-resume', {
+        body: { resumeText },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data;
+    } catch (err: any) {
+      lastErr = err;
+      if (attempt === 0) {
+        onRetry();
+        await sleep(2000);
+        continue;
+      }
+    }
+  }
+  throw lastErr;
+}
+
 export function ResumeUpload() {
   const [isDragging, setIsDragging] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [lastFile, setLastFile] = useState<File | null>(null);
+  const [failed, setFailed] = useState(false);
   const { updateProfile, saveProfile } = useProfile();
+
+  const goToManualEntry = () => {
+    // ProfileSection listens to tab state internally; dispatch a hint event
+    // and also scroll to the top so the user immediately sees the Basic Info form.
+    window.dispatchEvent(new CustomEvent('profile:switchTab', { detail: 'basic' }));
+    document.querySelector('[data-tour="profile"]')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const processFile = async (file: File) => {
     if (file.type !== 'application/pdf') {
@@ -19,10 +57,13 @@ export function ResumeUpload() {
       return;
     }
 
+    setLastFile(file);
+    setFailed(false);
     setIsParsing(true);
+    setStatusMessage('Reading your PDF…');
+
     try {
       const arrayBuffer = await file.arrayBuffer();
-
       const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
       const pdf = await loadingTask.promise;
 
@@ -35,33 +76,17 @@ export function ResumeUpload() {
       }
 
       if (!fullText || fullText.length < 50) {
-        throw new Error("PDF text is empty. It might be an image scan.");
+        throw new Error("This PDF doesn't contain selectable text — it may be a scanned image.");
       }
 
-      toast.info('Analyzing with AI...');
+      setStatusMessage('Analyzing with AI…');
 
-      const { data, error } = await supabase.functions.invoke('parse-resume', {
-        body: { resumeText: fullText }
+      const data = await invokeParseWithRetry(fullText, () => {
+        setStatusMessage('This is taking longer than usual — retrying automatically…');
       });
 
-      if (error) {
-        if (error.message && error.message.includes('Failed to send a request')) {
-          throw new Error('Neural Parser Offline: Connection to Edge Function timed out or was blocked by CORS.');
-        }
-        throw new Error("Connection failed: " + error.message);
-      }
-      if (data?.error) throw new Error(data.error);
-
-      // 🔍 DIAGNOSTIC: full raw payload from the parser. Helps verify schema
-      // alignment with ProfileContext primitives (timeline / cards / pill-cloud /
-      // badge-grid). Safe to keep — only logs in the user's own browser.
       console.log('[ResumeUpload] Raw parser payload →', data);
 
-      // ── Schema mapping (parser camelCase → ProfileContext primitives) ──
-      // timeline       ← workExperience
-      // cards          ← projects
-      // pill-cloud     ← skills
-      // badge-grid     ← keyHighlights
       const safeWorkExperience = (data.workExperience || []).map((w: any) => ({
         jobTitle: w.jobTitle || w.title || '',
         company: w.company || '',
@@ -85,21 +110,11 @@ export function ResumeUpload() {
         id: p.id || crypto.randomUUID(),
       }));
 
-      // Fall back to narrativeVariants.general for headline/bio when the
-      // top-level fields are absent (older parser responses).
       const general = data.narrativeVariants?.general || {};
       const headline = data.headline || general.headline || '';
       const bio = data.bio || general.bio || '';
 
-      // STEP 1: Clear identity-bound fields first so stale values from a
-      // previous resume don't survive when the new PDF lacks them.
-      const cleared = {
-        photoUrl: '',
-        email: '',
-        linkedinUrl: '',
-        website: '',
-      };
-
+      const cleared = { photoUrl: '', email: '', linkedinUrl: '', website: '' };
       const updates: any = {
         ...cleared,
         fullName: data.fullName || '',
@@ -117,44 +132,27 @@ export function ResumeUpload() {
       if (data.narrativeVariants) updates.narrativeVariants = data.narrativeVariants;
       if (data.predictedDomain) updates.predictedDomain = data.predictedDomain;
 
-      console.log('[ResumeUpload] Mapped profile updates →', updates);
-
-      // STEP 2: Push to state IMMEDIATELY so the live preview re-renders
-      // before the network round-trip to Supabase completes.
       updateProfile(updates);
-
-      // STEP 3: Persist using the same saveProfile used by "Save Changes".
-      try {
-        const { error: saveError } = await saveProfile(updates);
-        if (saveError) {
-          toast.error('Parse failed. Please try again.');
-        } else {
-          toast.success('Resume parsed. Review and save your updated profile.');
-        }
-      } catch {
-        toast.error('Parse failed. Please try again.');
-      }
-
-
-
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Failed to parse resume';
-      if (errorMessage.includes('Neural Parser Offline')) {
-         toast.error("Neural Sync Interrupted", {
-            description: "Connection to processing core timed out. Retrying...",
-            style: { 
-              background: '#0a0a0a', 
-              border: '1px solid rgba(239, 68, 68, 0.5)', 
-              color: 'white',
-              boxShadow: '0 0 20px rgba(239, 68, 68, 0.15)'
-            },
-            icon: <AlertCircle className="h-4 w-4 text-red-400" />
-          });
+      const { error: saveError } = await saveProfile(updates);
+      if (saveError) {
+        toast.error('Saved locally, but syncing failed. Try "Save Changes" once more.');
       } else {
-         toast.error(errorMessage, {
-            style: { background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }
-         });
+        toast.success('Resume parsed. Review and save your updated profile.');
       }
+      setFailed(false);
+    } catch (error: any) {
+      console.error('[ResumeUpload] Parsing failed →', error);
+      setFailed(true);
+      const msg = String(error?.message || '');
+      let friendly = "We couldn't process this file. Try again, or fill in your details manually below.";
+      if (/timed out|timeout|504/i.test(msg)) {
+        friendly = "The AI took too long to respond. Try again, or fill in your details manually.";
+      } else if (/scanned image|selectable text/i.test(msg)) {
+        friendly = "This PDF looks like a scanned image. Please upload a text-based PDF or fill in your details manually.";
+      } else if (/rate limit|429/i.test(msg)) {
+        friendly = "Too many attempts right now. Please wait a minute and try again.";
+      }
+      setStatusMessage(friendly);
     } finally {
       setIsParsing(false);
     }
@@ -178,30 +176,58 @@ export function ResumeUpload() {
         onDrop={handleDrop}
         className={`relative border-2 border-dashed rounded-xl p-10 text-center transition-all duration-200 ${isDragging ? 'border-primary bg-primary/5' : 'border-muted/25 hover:border-primary/50'}`}
       >
-        <input type="file" accept=".pdf" onChange={handleFileSelect} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={handleFileSelect}
+          disabled={isParsing}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+        />
         <div className="flex flex-col items-center gap-4">
           <div className={`p-4 rounded-full ${isParsing ? 'bg-primary/10 animate-pulse' : 'bg-primary/5'}`}>
             {isParsing ? <Loader2 className="w-8 h-8 text-primary animate-spin" /> : <Upload className="w-8 h-8 text-primary" />}
           </div>
           <div className="space-y-2">
-            <h3 className="text-lg font-semibold">{isParsing ? 'Analyzing Resume...' : 'Upload Resume or LinkedIn PDF'}</h3>
-            <p className="text-sm text-muted-foreground">{isParsing ? 'Extracting details...' : 'Drag & drop your PDF file here'}</p>
+            <h3 className="text-lg font-semibold">
+              {isParsing ? 'Processing Resume…' : 'Upload Resume or LinkedIn PDF'}
+            </h3>
+            <p className="text-sm text-muted-foreground min-h-[20px]">
+              {isParsing
+                ? (statusMessage || 'Extracting details…')
+                : 'Drag & drop your PDF file here (max ~5 pages recommended)'}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Re-sync Portfolio Data — triggers existing parse flow via custom event.
-          TODO: wire to existing resume re-parse function when one is exposed. */}
-      <button
-        type="button"
-        onClick={() => {
-          window.dispatchEvent(new CustomEvent('resume:resync'));
-          toast.info('Re-sync requested. Re-upload your resume to refresh extracted fields.');
-        }}
-        className="w-full uppercase tracking-[0.08em] text-[12px] font-semibold text-white bg-[#E8390E] hover:bg-[#d8330b] transition-colors rounded-md py-3"
-      >
-        Re-sync Portfolio Data
-      </button>
+      {failed && !isParsing && (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+            <div className="text-sm text-foreground">
+              <p className="font-medium">Couldn't process your resume</p>
+              <p className="text-muted-foreground mt-1">{statusMessage}</p>
+              <p className="text-muted-foreground mt-2 text-xs">Nothing was saved to your profile.</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => lastFile && processFile(lastFile)}
+              className="inline-flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90 transition"
+            >
+              <RefreshCw className="h-4 w-4" /> Try again
+            </button>
+            <button
+              type="button"
+              onClick={goToManualEntry}
+              className="inline-flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-md border border-border hover:bg-muted/50 transition"
+            >
+              <PenLine className="h-4 w-4" /> Fill in manually instead
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
