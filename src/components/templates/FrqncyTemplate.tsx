@@ -85,79 +85,153 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
 
       {/* Hero — Bento */}
       <section className="px-6 md:px-14 py-10 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5" style={{ minHeight: '420px' }}>
-          {/* Name */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 md:auto-rows-fr">
+          {/* 1 — Name / bio / location */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col justify-center p-8 md:p-10 rounded-2xl"
+            className="order-1 md:order-1 flex flex-col justify-between gap-6 p-8 md:p-10 rounded-2xl min-h-[320px]"
             style={{ backgroundColor: '#FFFFFF' }}
           >
-            <h1 className="text-5xl md:text-7xl lg:text-[80px] font-bold leading-[0.95] tracking-tighter break-words" style={{ fontFamily: heading }}>
-              {first}{last && <><br />{last}</>}
-            </h1>
-            {role && (
-              <span className="mt-4 text-xs tracking-widest uppercase px-3 py-1.5 rounded-full border w-fit max-w-full break-words" style={{ fontFamily: mono, borderColor: '#CDFF64', backgroundColor: '#CDFF64' }}>
-                {role}
-              </span>
+            <div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tighter break-words" style={{ fontFamily: heading }}>
+                {first}{last && <><br />{last}</>}
+              </h1>
+              {(role || location) && (
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  {role && (
+                    <span className="text-xs tracking-widest uppercase px-3 py-1.5 rounded-full border max-w-full break-words" style={{ fontFamily: mono, borderColor: '#CDFF64', backgroundColor: '#CDFF64' }}>
+                      {role}
+                    </span>
+                  )}
+                  {location && (
+                    <span className="inline-flex items-center gap-1 text-xs tracking-widest uppercase px-3 py-1.5 rounded-full border max-w-full break-words" style={{ fontFamily: mono, borderColor: '#111111', color: '#111111' }}>
+                      <MapPin className="h-3 w-3" />{location}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+            {bio && (
+              <p className="text-sm md:text-base leading-relaxed line-clamp-4" style={{ color: '#444' }}>
+                {bio}
+              </p>
             )}
           </motion.div>
 
-          {/* Photo — no color overlay */}
+          {/* 2 — Photo */}
           {!profile?.hidePhoto && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="rounded-2xl overflow-hidden relative"
+              className="order-2 md:order-2 rounded-2xl overflow-hidden relative min-h-[320px]"
             >
               {profile?.photoUrl ? (
-                <img src={profile.photoUrl} alt={name} className="w-full h-full object-cover min-h-[280px]" />
+                <img src={profile.photoUrl} alt={name} className="w-full h-full object-cover min-h-[320px]" />
               ) : (
-                <div className="w-full h-full min-h-[280px] bg-[#E5E5E5] flex items-center justify-center">
+                <div className="w-full h-full min-h-[320px] bg-[#E5E5E5] flex items-center justify-center">
                   <UserCircle className="w-24 h-24 text-[#CCCCCC]" />
                 </div>
               )}
             </motion.div>
           )}
 
-          {/* Skills scroll */}
+          {/* 3 — CTA (mobile before skills; desktop bottom-right) */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className={`order-3 md:order-4 rounded-2xl p-8 md:p-10 flex flex-col justify-between gap-6 min-h-[320px] ${skills.length === 0 ? 'md:col-span-2' : ''}`}
+            style={{ backgroundColor: '#111111' }}
+          >
+            <div>
+              <span className="text-sm tracking-wider mb-3 block" style={{ fontFamily: mono, color: '#CDFF64' }}>Open to opportunities</span>
+              <p className="text-white text-lg md:text-xl leading-snug" style={{ fontFamily: heading }}>Let's build something great together.</p>
+              {email && (
+                <a
+                  href={`mailto:${email}`}
+                  className="mt-4 inline-flex items-center gap-2 text-sm break-all hover:text-[#CDFF64] transition-colors"
+                  style={{ fontFamily: mono, color: '#CCC' }}
+                >
+                  <Mail className="h-4 w-4 shrink-0" />{email}
+                </a>
+              )}
+            </div>
+            <div className="flex flex-col gap-4">
+              <motion.a
+                href={contactHref}
+                onClick={(e) => { if (!email) { e.preventDefault(); scrollToContact(); } }}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-7 py-3 rounded-full text-sm font-semibold tracking-wider inline-block w-fit min-h-[44px]"
+                style={{ backgroundColor: '#CDFF64', color: '#111111', fontFamily: heading }}
+              >
+                Let's Talk →
+              </motion.a>
+              {(profile?.linkedinUrl || profile?.githubUrl || profile?.twitterUrl || profile?.website) && (
+                <div className="flex flex-wrap items-center gap-3">
+                  {profile?.linkedinUrl && (
+                    <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                      <Linkedin className="h-4 w-4" />
+                    </a>
+                  )}
+                  {profile?.githubUrl && (
+                    <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                      <Github className="h-4 w-4" />
+                    </a>
+                  )}
+                  {profile?.twitterUrl && (
+                    <a href={profile.twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                      <Twitter className="h-4 w-4" />
+                    </a>
+                  )}
+                  {profile?.website && (
+                    <a href={profile.website} target="_blank" rel="noopener noreferrer" aria-label="Website" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                      <Globe className="h-4 w-4" />
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </motion.div>
+
+          {/* 4 — Skills pills (static, wrapped) */}
           {skills.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="rounded-2xl p-8 overflow-hidden h-48 md:h-auto"
+              className="order-4 md:order-3 rounded-2xl p-8 md:p-10 flex flex-col gap-4 min-h-[320px]"
               style={{ backgroundColor: '#FFFFFF' }}
             >
-              <ScrollingSkills items={skills.slice(0, 10)} />
+              <span className="text-xs tracking-widest uppercase" style={{ fontFamily: mono, color: '#888' }}>Skills</span>
+              <div className="flex flex-wrap gap-2 md:gap-3">
+                {skills.slice(0, 10).map((s, i) => (
+                  <span
+                    key={s + i}
+                    className="text-xs md:text-sm tracking-wider px-3 py-1.5 rounded-full border inline-block max-w-full break-words"
+                    style={{ fontFamily: mono, borderColor: '#CDFF64', color: '#111111', backgroundColor: '#F7FFE0' }}
+                  >
+                    {s}
+                  </span>
+                ))}
+                {skills.length > 10 && (
+                  <a
+                    href="#skills"
+                    className="text-xs md:text-sm tracking-wider px-3 py-1.5 rounded-full inline-block font-semibold hover:opacity-80 transition-opacity"
+                    style={{ fontFamily: mono, backgroundColor: '#111111', color: '#CDFF64' }}
+                  >
+                    +{skills.length - 10} more
+                  </a>
+                )}
+              </div>
             </motion.div>
           )}
-
-          {/* CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className={`rounded-2xl p-8 md:p-10 flex flex-col justify-center items-start ${skills.length === 0 ? 'md:col-span-2' : ''}`}
-            style={{ backgroundColor: '#111111' }}
-          >
-            <span className="text-sm tracking-wider mb-3" style={{ fontFamily: mono, color: '#CDFF64' }}>Open to opportunities</span>
-            <p className="text-white text-lg mb-6" style={{ fontFamily: heading }}>Let's build something great together.</p>
-            <motion.a
-              href={contactHref}
-              onClick={(e) => { if (!email) { e.preventDefault(); scrollToContact(); } }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-7 py-3 rounded-full text-sm font-semibold tracking-wider inline-block min-h-[44px]"
-              style={{ backgroundColor: '#CDFF64', color: '#111111', fontFamily: heading }}
-            >
-              Let's Talk →
-            </motion.a>
-          </motion.div>
         </div>
       </section>
+
 
       {/* Skills Marquee */}
       {skills.length > 0 && <SkillMarquee items={skills} />}
