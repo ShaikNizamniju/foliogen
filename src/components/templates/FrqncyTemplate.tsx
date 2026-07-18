@@ -14,27 +14,7 @@ const heading = "'Space Grotesk', sans-serif";
 const bg_palettes = ['#CDFF64', '#FF6B6B', '#64BFFF', '#111111', '#E8E0FF', '#FFE4B5'];
 const text_palettes = ['#111111', '#FFFFFF', '#111111', '#FFFFFF', '#111111', '#111111'];
 
-/* ── Vertical Skill Scroll ── */
-function ScrollingSkills({ items }: { items: string[] }) {
-  const doubled = [...items, ...items, ...items];
-  return (
-    <div className="h-full overflow-hidden relative">
-      <div className="absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-[#F0F0F0] to-transparent z-10" />
-      <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-[#F0F0F0] to-transparent z-10" />
-      <motion.div
-        className="flex flex-col gap-4"
-        animate={{ y: ['0%', '-33.33%'] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-      >
-        {doubled.map((t, i) => (
-          <span key={i} className="text-sm tracking-wider px-3 py-1.5 rounded-full border inline-block w-fit max-w-full break-words" style={{ fontFamily: mono, borderColor: '#CDFF64', color: '#111111' }}>
-            {t}
-          </span>
-        ))}
-      </motion.div>
-    </div>
-  );
-}
+/* (ScrollingSkills removed — hero now renders static wrapped pills) */
 
 /* ── Skills Marquee (horizontal) ── */
 function SkillMarquee({ items }: { items: string[] }) {
