@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
-import { UserCircle, Mail } from 'lucide-react';
+import { UserCircle, Mail, Linkedin, Github, Twitter, Globe, MapPin } from 'lucide-react';
 import { getProjectHref } from '@/lib/urlUtils';
 
 interface FrqncyTemplateProps {
