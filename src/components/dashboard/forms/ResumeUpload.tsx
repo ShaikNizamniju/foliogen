@@ -49,7 +49,7 @@ export function ResumeUpload() {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [lastFile, setLastFile] = useState<File | null>(null);
   const [failed, setFailed] = useState(false);
-  const { updateProfile, saveProfile } = useProfile();
+  const { updateProfile, saveProfile, refetchProfile } = useProfile();
 
   const goToManualEntry = () => {
     // ProfileSection listens to tab state internally; dispatch a hint event
