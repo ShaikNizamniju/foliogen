@@ -253,7 +253,7 @@ export default function Auth() {
               {isLogin ? <>Welcome<br /><em>Back.</em></> : <>Create<br /><em>Account.</em></>}
             </div>
             <div className="fg-r-sub">
-              {isLogin ? 'Sign in to continue building your portfolio.' : 'Join 12,400+ professionals telling their story.'}
+              {isLogin ? 'Sign in to continue building your portfolio.' : 'Create your free account and start telling your story.'}
             </div>
 
             <button className="fg-btn-g" type="button" onClick={handleGoogleLogin} disabled={googleLoading || loading} onMouseEnter={() => import('./Dashboard')}>
