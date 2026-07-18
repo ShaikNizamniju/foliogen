@@ -102,44 +102,50 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
         </div>
       </motion.nav>
 
-      {/* Hero — Grid split */}
-      <section className="px-6 md:px-14 py-16 md:py-28">
-        <motion.div variants={stagger} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
-          {/* Left — Big name */}
-          <motion.div variants={fadeUp} className="md:col-span-7 flex flex-col justify-end">
-            <h1 className="text-6xl md:text-8xl lg:text-[110px] font-bold leading-[0.88] tracking-tighter" style={{ fontFamily: heading }}>
+      {/* Hero — Name dominant, photo constrained */}
+      <section className="px-6 md:px-14 py-14 md:py-20 lg:min-h-[85vh] flex items-center">
+        <motion.div variants={stagger} initial="hidden" animate="visible" className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 w-full items-center">
+          {/* Left — Big name (dominant) */}
+          <motion.div variants={fadeUp} className="lg:col-span-8 order-1 flex flex-col justify-center">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.88] tracking-tighter" style={{ fontFamily: heading }}>
               {name.split(' ').map((w: string, i: number) => (
                 <span key={i} className="block">{w}</span>
               ))}
             </h1>
-            <p className="mt-6 text-lg md:text-xl font-light max-w-lg" style={{ color: '#888' }}>{headline}</p>
-          </motion.div>
-
-          {/* Right — Photo with grid overlay */}
-          <motion.div variants={fadeUp} className="md:col-span-5 relative">
-            <div className="relative overflow-hidden" style={{ border: '2px solid #222' }}>
-              {(!profile || !profile.hidePhoto) && (
-                 profile?.photoUrl ? (
-                   <img src={profile.photoUrl} alt={name} className="w-full aspect-[4/5] object-cover grayscale" />
-                 ) : (
-                   <div className="w-full aspect-[4/5] bg-[#111] flex items-center justify-center">
-                     <UserCircle className="w-24 h-24 text-[#333]" />
-                   </div>
-                 )
-              )}
-              {/* Grid overlay */}
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'linear-gradient(#FAFAFA08 1px, transparent 1px), linear-gradient(90deg, #FAFAFA08 1px, transparent 1px)',
-                backgroundSize: '40px 40px',
-              }} />
-            </div>
-            <div className="flex items-center gap-2 mt-4">
+            <p className="mt-6 text-xl md:text-2xl font-light max-w-2xl" style={{ color: '#BBB' }}>{headline}</p>
+            <div className="flex items-center gap-2 mt-5">
               <MapPin className="h-3 w-3" style={{ color: '#666' }} />
               <span className="text-xs tracking-widest uppercase" style={{ fontFamily: mono, color: '#666' }}>{location}</span>
+            </div>
+            {bio && (
+              <p className="mt-6 text-base md:text-lg font-light leading-relaxed max-w-2xl" style={{ color: '#888' }}>{bio}</p>
+            )}
+          </motion.div>
+
+          {/* Right — Photo constrained */}
+          <motion.div variants={fadeUp} className="lg:col-span-4 order-2 flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-sm">
+              <div className="relative overflow-hidden" style={{ border: '2px solid #222' }}>
+                {(!profile || !profile.hidePhoto) && (
+                   profile?.photoUrl ? (
+                     <img src={profile.photoUrl} alt={name} className="w-full max-h-[320px] lg:max-h-[420px] object-cover grayscale" />
+                   ) : (
+                     <div className="w-full aspect-[4/5] max-h-[320px] lg:max-h-[420px] bg-[#111] flex items-center justify-center">
+                       <UserCircle className="w-20 h-20 text-[#333]" />
+                     </div>
+                   )
+                )}
+                {/* Grid overlay */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  backgroundImage: 'linear-gradient(#FAFAFA08 1px, transparent 1px), linear-gradient(90deg, #FAFAFA08 1px, transparent 1px)',
+                  backgroundSize: '40px 40px',
+                }} />
+              </div>
             </div>
           </motion.div>
         </motion.div>
       </section>
+
 
       {/* About — Bold statement */}
       <section className="px-6 md:px-14 py-16 md:py-24" style={{ borderTop: '1px solid #1A1A1A' }}>
