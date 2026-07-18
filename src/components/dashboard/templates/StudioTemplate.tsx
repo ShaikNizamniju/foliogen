@@ -445,20 +445,37 @@ export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps)
         </section>
       )}
 
-      {/* Skills - Animated Marquee */}
+      {/* Skills - Animated Marquee on desktop, static readable list on mobile */}
       {profile.skills.length > 0 && (
-        <section className="py-12 md:py-16 overflow-hidden border-y border-white/5">
-          <motion.div
-            className="flex gap-8 md:gap-16 whitespace-nowrap"
-            animate={{ x: [0, '-50%'] }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-          >
-            {[...profile.skills, ...profile.skills].map((skill, index) => (
-              <span key={index} className="text-3xl md:text-5xl lg:text-6xl font-extralight text-white/[0.08]">
-                {skill}
-              </span>
-            ))}
-          </motion.div>
+        <section className="py-10 md:py-16 border-y border-white/5">
+          {/* Mobile: static wrapped, readable list */}
+          <div className="lg:hidden px-4 md:px-8">
+            <h2 className="text-xs tracking-[0.3em] uppercase text-white/40 mb-4">Skills</h2>
+            <div className="flex flex-wrap gap-2">
+              {profile.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="text-sm text-white/80 border border-white/15 rounded-full px-3 py-1.5"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+          {/* Desktop: original marquee */}
+          <div className="hidden lg:block overflow-hidden">
+            <motion.div
+              className="flex gap-16 whitespace-nowrap"
+              animate={{ x: [0, '-50%'] }}
+              transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+            >
+              {[...profile.skills, ...profile.skills].map((skill, index) => (
+                <span key={index} className="text-5xl lg:text-6xl font-extralight text-white/[0.08]">
+                  {skill}
+                </span>
+              ))}
+            </motion.div>
+          </div>
         </section>
       )}
 
