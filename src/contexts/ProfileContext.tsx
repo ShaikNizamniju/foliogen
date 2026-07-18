@@ -140,6 +140,7 @@ interface ProfileContextType {
   profile: ProfileData;
   updateProfile: (updates: Partial<ProfileData>) => void;
   saveProfile: (overrides?: Partial<ProfileData>) => Promise<{ error: Error | null }>;
+  refetchProfile: () => Promise<void>;
   loading: boolean;
   saving: boolean;
 }
@@ -560,7 +561,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ProfileContext.Provider value={{ profile, updateProfile, saveProfile, loading, saving }}>
+    <ProfileContext.Provider value={{ profile, updateProfile, saveProfile, refetchProfile: fetchProfile, loading, saving }}>
       {children}
     </ProfileContext.Provider>
   );

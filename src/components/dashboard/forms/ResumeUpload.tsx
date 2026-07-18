@@ -14,13 +14,20 @@ async function invokeParseWithRetry(
   resumeText: string,
   onRetry: () => void,
 ) {
-  // One automatic retry with 2s backoff before surfacing failure.
+  // Hard client-side timeout per attempt (90s). Without this, a flaky mobile
+  // socket can leave supabase.functions.invoke hanging forever, so the UI
+  // stays in "Processing…" and never resolves — this is what caused the
+  // second-upload-never-updates bug. One automatic retry on failure.
   let lastErr: any = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const { data, error } = await supabase.functions.invoke('parse-resume', {
+      const invokePromise = supabase.functions.invoke('parse-resume', {
         body: { resumeText },
       });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Client timeout after 90s')), 90000),
+      );
+      const { data, error } = (await Promise.race([invokePromise, timeoutPromise])) as any;
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       return data;
@@ -42,7 +49,7 @@ export function ResumeUpload() {
   const [statusMessage, setStatusMessage] = useState<string>('');
   const [lastFile, setLastFile] = useState<File | null>(null);
   const [failed, setFailed] = useState(false);
-  const { updateProfile, saveProfile } = useProfile();
+  const { updateProfile, saveProfile, refetchProfile } = useProfile();
 
   const goToManualEntry = () => {
     // ProfileSection listens to tab state internally; dispatch a hint event
@@ -137,6 +144,11 @@ export function ResumeUpload() {
       if (saveError) {
         toast.error('Saved locally, but syncing failed. Try "Save Changes" once more.');
       } else {
+        // Force a fresh read from the DB so the Portfolio Preview, Strength
+        // card, and form fields reflect the newly-saved data on EVERY upload
+        // (not just the first one). Without this, a re-upload leaves the UI
+        // showing prior-upload data until a manual page refresh.
+        try { await refetchProfile(); } catch { /* non-fatal */ }
         toast.success('Resume parsed. Review and save your updated profile.');
       }
       setFailed(false);

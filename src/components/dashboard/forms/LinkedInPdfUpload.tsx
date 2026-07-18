@@ -27,7 +27,7 @@ export function LinkedInPdfUpload() {
   const [isParsing, setIsParsing] = useState(false);
   const [mergeModalOpen, setMergeModalOpen] = useState(false);
   const [pendingData, setPendingData] = useState<Partial<ProfileData> | null>(null);
-  const { profile, updateProfile, saveProfile } = useProfile();
+  const { profile, updateProfile, saveProfile, refetchProfile } = useProfile();
 
   const processFile = async (file: File) => {
     if (file.type !== 'application/pdf') {
@@ -55,12 +55,18 @@ export function LinkedInPdfUpload() {
 
       toast.info('Analyzing LinkedIn profile with AI...');
 
-      const { data, error } = await supabase.functions.invoke('parse-resume', {
+      // Hard 90s client-side timeout so a hanging socket on re-upload can't
+      // leave the UI stuck in "Analyzing…" forever without ever resolving.
+      const invokePromise = supabase.functions.invoke('parse-resume', {
         body: { resumeText: fullText }
       });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Client timeout after 90s')), 90000),
+      );
+      const { data, error } = (await Promise.race([invokePromise, timeoutPromise])) as any;
 
       if (error) throw new Error("Connection failed: " + error.message);
-      if (data.error) throw new Error(data.error);
+      if (data?.error) throw new Error(data.error);
 
       const safeWorkExperience = (data.workExperience || []).map((w: any) => ({
         ...w,
@@ -167,6 +173,13 @@ export function LinkedInPdfUpload() {
     }
     setMergeModalOpen(false);
     setPendingData(null);
+    // Persist and re-hydrate from the DB so the Portfolio Preview, Strength
+    // card, and other tabs reflect the new data on EVERY import (not just
+    // the first). updateProfile above sets local state; refetch confirms it.
+    try {
+      await saveProfile();
+      await refetchProfile();
+    } catch { /* non-fatal */ }
   };
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
