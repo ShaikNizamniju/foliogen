@@ -223,24 +223,16 @@ export default function Auth() {
 
             <div className="fg-stats">
               <div className="fg-stat">
-                <div className="fg-stat-n">{c1.toLocaleString()}<em>+</em></div>
-                <div className="fg-stat-l">Portfolios Built</div>
+                <div className="fg-stat-n">20<em>+</em></div>
+                <div className="fg-stat-l">Templates</div>
               </div>
               <div className="fg-stat">
-                <div className="fg-stat-n">{c2}<em>×</em></div>
-                <div className="fg-stat-l">Recruiter Views</div>
+                <div className="fg-stat-n">AI</div>
+                <div className="fg-stat-l">Powered</div>
               </div>
               <div className="fg-stat">
-                <div className="fg-stat-n">{c3}<em>%</em></div>
-                <div className="fg-stat-l">Interview Boost</div>
-              </div>
-            </div>
-
-            <div className="fg-quote-block">
-              <div className="fg-quote-mark">&ldquo;</div>
-              <div>
-                <p className="fg-quote-text">Landed 4 interviews in 2 weeks after switching to my Foliogen portfolio. The AI descriptions are next-level.</p>
-                <div className="fg-quote-attr">Shaik N. · AI Product Manager · Foliogen</div>
+                <div className="fg-stat-n">Free</div>
+                <div className="fg-stat-l">Forever</div>
               </div>
             </div>
           </div>
