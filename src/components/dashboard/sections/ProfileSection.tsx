@@ -54,6 +54,18 @@ export function ProfileSection() {
     FONT_OPTIONS.forEach((f) => loadGoogleFont(f.googleFont));
   }, []);
 
+  // Allow child components (e.g. ResumeUpload failure fallback) to jump the user
+  // to the manual-entry tab.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (typeof detail === 'string') setActiveTab(detail);
+    };
+    window.addEventListener('profile:switchTab', handler);
+    return () => window.removeEventListener('profile:switchTab', handler);
+  }, []);
+
+
   const handleFontChange = (fontId: string) => {
     updateProfile({ selectedFont: fontId as FontChoice });
   };
