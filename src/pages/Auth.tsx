@@ -352,10 +352,9 @@ export default function Auth() {
             </div>
 
             <div className="fg-pill-row">
-              <div className="fg-pill">500+ Pros</div>
               <div className="fg-pill">Free Forever</div>
               <div className="fg-pill">No Subscriptions</div>
-              <div className="fg-pill">Just Results</div>
+              <div className="fg-pill">AI-Powered</div>
             </div>
           </div>
         </div>
