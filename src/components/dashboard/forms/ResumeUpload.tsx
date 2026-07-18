@@ -144,6 +144,11 @@ export function ResumeUpload() {
       if (saveError) {
         toast.error('Saved locally, but syncing failed. Try "Save Changes" once more.');
       } else {
+        // Force a fresh read from the DB so the Portfolio Preview, Strength
+        // card, and form fields reflect the newly-saved data on EVERY upload
+        // (not just the first one). Without this, a re-upload leaves the UI
+        // showing prior-upload data until a manual page refresh.
+        try { await refetchProfile(); } catch { /* non-fatal */ }
         toast.success('Resume parsed. Review and save your updated profile.');
       }
       setFailed(false);
