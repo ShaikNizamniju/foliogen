@@ -31,7 +31,7 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
   const email = profile?.email || '';
   const bio = profile?.bio || '';
   const location = profile?.location || '';
-  const linkedin = profile?.linkedin || '';
+  const linkedin = profile?.linkedinUrl || '';
   const website = profile?.website || '';
   const projects = profile?.projects || [];
   const skills = profile?.skills || [];
