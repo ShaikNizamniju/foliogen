@@ -40,6 +40,7 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
   const name = profile?.fullName || 'Your Name';
   const role = profile?.headline || '';
   const bio = profile?.bio || '';
+  const location = profile?.location || '';
   const email = profile?.email || '';
   const year = new Date().getFullYear();
   const skills = profile?.skills || [];
