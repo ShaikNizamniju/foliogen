@@ -129,7 +129,15 @@ ${resumeText.substring(0, 15000)}`
         ]
       })
 
-    });
+      });
+    } catch (fetchErr: any) {
+      clearTimeout(timeoutId);
+      if (fetchErr?.name === 'AbortError') {
+        return errorResponse("AI parsing timed out. Please try again.", 504);
+      }
+      return errorResponse("Could not reach AI service. Please try again.", 502);
+    }
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
