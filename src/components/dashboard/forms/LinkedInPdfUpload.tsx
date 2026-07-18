@@ -173,6 +173,13 @@ export function LinkedInPdfUpload() {
     }
     setMergeModalOpen(false);
     setPendingData(null);
+    // Persist and re-hydrate from the DB so the Portfolio Preview, Strength
+    // card, and other tabs reflect the new data on EVERY import (not just
+    // the first). updateProfile above sets local state; refetch confirms it.
+    try {
+      await saveProfile();
+      await refetchProfile();
+    } catch { /* non-fatal */ }
   };
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
