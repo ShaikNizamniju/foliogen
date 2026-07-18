@@ -12,7 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { Upload, Loader2, User, Trash2 } from 'lucide-react';
 import { ImageCropDialog } from './ImageCropDialog';
 import { AiRewriteButton } from './AiRewriteButton';
-import profilePhoto from '@/assets/profile-photo.jpeg';
+
 
 export function BasicInfoForm() {
   const { profile, updateProfile } = useProfile();
@@ -152,7 +152,7 @@ export function BasicInfoForm() {
           <Label htmlFor="fullName">Full Name</Label>
           <Input
             id="fullName"
-            placeholder="Shaik Nizamuddin"
+            placeholder="Your full name"
             value={profile.fullName}
             onChange={(e) => updateProfile({ fullName: e.target.value })}
           />
@@ -173,19 +173,19 @@ export function BasicInfoForm() {
         <Label>Profile Photo</Label>
         <div className="flex items-center gap-4">
           <Avatar className="h-20 w-20 border-2 border-border overflow-hidden">
-            <AvatarImage 
-              src={profile.photoUrl || profilePhoto} 
-              alt={profile.fullName || 'Profile'} 
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                const email = user?.email || 'shaik@foliogen.in';
-                target.src = `https://www.gravatar.com/avatar/${btoa(email).toLowerCase()}?d=mp&s=150`;
-              }}
-            />
-            <AvatarFallback className="bg-muted">
-              <User className="h-8 w-8 text-muted-foreground" />
+            {profile.photoUrl && (
+              <AvatarImage src={profile.photoUrl} alt={profile.fullName || 'Profile'} />
+            )}
+            <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
+              {(profile.fullName || user?.email || '')
+                .split(' ')
+                .map((w) => w[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2) || <User className="h-8 w-8 text-muted-foreground" />}
             </AvatarFallback>
           </Avatar>
+
 
           <div className="flex flex-col gap-2">
             <input
@@ -279,7 +279,7 @@ export function BasicInfoForm() {
           <Input
             id="email"
             type="email"
-            placeholder="admin@foliogen.in"
+            placeholder="you@example.com"
             value={profile.email}
             onChange={(e) => updateProfile({ email: e.target.value })}
           />
@@ -291,7 +291,7 @@ export function BasicInfoForm() {
           <Label htmlFor="website">Website</Label>
           <Input
             id="website"
-            placeholder="https://foliogen.in/u/shaik"
+            placeholder="https://your-website.com"
             value={profile.website}
             onChange={(e) => updateProfile({ website: e.target.value })}
           />
@@ -320,7 +320,7 @@ export function BasicInfoForm() {
             <Label htmlFor="linkedin">LinkedIn</Label>
             <Input
               id="linkedin"
-              placeholder="linkedin.com/in/shaik-nizamuddin"
+              placeholder="linkedin.com/in/your-handle"
               value={profile.linkedinUrl}
               onChange={(e) => updateProfile({ linkedinUrl: e.target.value })}
             />
@@ -330,7 +330,7 @@ export function BasicInfoForm() {
             <Label htmlFor="github">GitHub</Label>
             <Input
               id="github"
-              placeholder="github.com/shaik-nizamuddin"
+              placeholder="github.com/your-handle"
               value={profile.githubUrl}
               onChange={(e) => updateProfile({ githubUrl: e.target.value })}
             />
@@ -340,7 +340,7 @@ export function BasicInfoForm() {
             <Label htmlFor="twitter">Twitter</Label>
             <Input
               id="twitter"
-              placeholder="x.com/nizamniju"
+              placeholder="x.com/your-handle"
               value={profile.twitterUrl}
               onChange={(e) => updateProfile({ twitterUrl: e.target.value })}
             />

@@ -31,7 +31,7 @@ const tabs = [
   { id: 'projects', label: 'Projects', icon: FolderKanban },
   { id: 'assets', label: 'Asset Manager', icon: Images },
   { id: 'skills', label: 'Skills', icon: Sparkles },
-  { id: 'font', label: 'Portfolio Font', icon: Type },
+  
   { id: 'resume', label: 'Resume Upload', icon: Upload },
   { id: 'linkedin', label: 'LinkedIn Auto-Sync', icon: Linkedin },
 ];
@@ -116,112 +116,9 @@ export function ProfileSection() {
         );
       case 'skills':
         return <SkillsForm />;
-      case 'font': {
-        const sizeMap: Record<string, string> = { sm: '0.875rem', base: '1rem', lg: '1.125rem', xl: '1.25rem', '2xl': '1.5rem' };
-        const activeFontId = profile.selectedFont || 'default';
-        return (
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="block h-[2px] w-6 bg-[#E8390E]" aria-hidden />
-                <h3 className="text-[20px] font-bold text-white" style={{ fontFamily: 'var(--font-serif, Georgia, serif)' }}>
-                  Portfolio Font
-                </h3>
-              </div>
-              <p className="text-[13px] text-white/45">
-                Pick a typeface for your entire portfolio. Live preview updates instantly.
-              </p>
-            </div>
+      case 'font':
+        return null;
 
-            {/* Font Cards Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {FONT_OPTIONS.map((font) => {
-                const isActive = activeFontId === font.id;
-                return (
-                  <button
-                    key={font.id}
-                    type="button"
-                    onClick={() => handleFontChange(font.id)}
-                    className={cn(
-                      'group text-left rounded-[10px] bg-[#1A1A1A] px-4 py-4 transition-all duration-200',
-                      isActive
-                        ? 'border-2 border-[#E8390E] shadow-[0_0_0_3px_rgba(232,57,14,0.12)]'
-                        : 'border border-white/[0.08] hover:border-white/20'
-                    )}
-                  >
-                    <div
-                      className="text-[18px] text-white leading-none mb-2 truncate"
-                      style={{ fontFamily: font.preview }}
-                    >
-                      {font.label}
-                    </div>
-                    <div className="text-[10px] uppercase tracking-[0.12em] text-white/35">
-                      {font.category || 'Classic'}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Formatting toolbar */}
-            <div className="flex flex-wrap gap-3 items-center p-3 rounded-[10px] border border-white/[0.08] bg-[#1A1A1A] w-full">
-              <div className="w-28">
-                <Select value={profile.fontConfig?.size || 'base'} onValueChange={(v) => handleFontConfigChange({ size: v })}>
-                  <SelectTrigger className="h-9 bg-transparent border-white/10 text-white text-xs">
-                    <SelectValue placeholder="Size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sm">Small</SelectItem>
-                    <SelectItem value="base">Normal</SelectItem>
-                    <SelectItem value="lg">Large</SelectItem>
-                    <SelectItem value="xl">X-Large</SelectItem>
-                    <SelectItem value="2xl">2X-Large</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="w-px h-7 bg-white/10 hidden sm:block" />
-              <div className="flex items-center gap-1">
-                <Button variant={profile.fontConfig?.isBold ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
-                  onClick={() => handleFontConfigChange({ isBold: !profile.fontConfig?.isBold })}><Bold className="h-4 w-4" /></Button>
-                <Button variant={profile.fontConfig?.isItalic ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
-                  onClick={() => handleFontConfigChange({ isItalic: !profile.fontConfig?.isItalic })}><Italic className="h-4 w-4" /></Button>
-                <Button variant={profile.fontConfig?.isUnderline ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
-                  onClick={() => handleFontConfigChange({ isUnderline: !profile.fontConfig?.isUnderline })}><Underline className="h-4 w-4" /></Button>
-              </div>
-              <div className="w-px h-7 bg-white/10 hidden sm:block" />
-              <div className="flex items-center gap-1">
-                <Button variant={profile.fontConfig?.alignment === 'left' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
-                  onClick={() => handleFontConfigChange({ alignment: 'left' })}><AlignLeft className="h-4 w-4" /></Button>
-                <Button variant={profile.fontConfig?.alignment === 'center' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
-                  onClick={() => handleFontConfigChange({ alignment: 'center' })}><AlignCenter className="h-4 w-4" /></Button>
-                <Button variant={profile.fontConfig?.alignment === 'right' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
-                  onClick={() => handleFontConfigChange({ alignment: 'right' })}><AlignRight className="h-4 w-4" /></Button>
-                <Button variant={profile.fontConfig?.alignment === 'justify' ? 'secondary' : 'ghost'} size="icon" className="h-9 w-9"
-                  onClick={() => handleFontConfigChange({ alignment: 'justify' })}><AlignJustify className="h-4 w-4" /></Button>
-              </div>
-            </div>
-
-            {/* Live Preview */}
-            <div className="mt-2 p-8 rounded-[10px] border border-white/[0.08] bg-[#111] min-h-[200px]">
-              <div
-                className="w-full max-w-2xl text-white"
-                style={{
-                  fontFamily: FONT_OPTIONS.find(f => f.id === activeFontId)?.preview || 'Inter',
-                  fontSize: sizeMap[profile.fontConfig?.size || 'base'],
-                  fontWeight: profile.fontConfig?.isBold ? 'bold' : 'normal',
-                  fontStyle: profile.fontConfig?.isItalic ? 'italic' : 'normal',
-                  textDecoration: profile.fontConfig?.isUnderline ? 'underline' : 'none',
-                  textAlign: profile.fontConfig?.alignment || 'left',
-                }}
-              >
-                The quick brown fox jumps over the lazy dog.
-                <br /><br />
-                Your exact formatting will apply across your live portfolio sections. This preview updates in real-time.
-              </div>
-            </div>
-          </div>
-        );
-      }
       case 'resume':
         return <ResumeUpload />;
       case 'linkedin':

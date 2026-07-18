@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FileText, Palette, TrendingUp, Clock, Eye, Globe, Circle, Upload, ChevronDown, ExternalLink, ArrowUpRight, Briefcase, Zap, CheckCircle2, Lightbulb, FolderOpen, Sparkles, ShieldCheck, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { SmartResumeParser } from '@/components/dashboard/SmartResumeParser';
+import { ResumeUpload } from '@/components/dashboard/forms/ResumeUpload';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -281,7 +281,7 @@ export function OverviewSection() {
               <h2 className="text-sm font-semibold text-foreground mb-3">Portfolio Strength</h2>
 
               {/* Score breakdown */}
-              <div className="grid grid-cols-5 gap-3 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3 mb-4">
                 {[
                   { label: 'Profile', value: strength.breakdown.profileBasics, max: 20 },
                   { label: 'Experience', value: strength.breakdown.experience, max: 20 },
@@ -541,7 +541,7 @@ export function OverviewSection() {
                     className="border-t border-border/50"
                   >
                     <div className="p-6">
-                      <SmartResumeParser onTemplateChange={() => { }} />
+                      <ResumeUpload />
                     </div>
                   </motion.div>
                 </CollapsibleContent>
