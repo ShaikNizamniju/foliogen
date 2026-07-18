@@ -295,5 +295,6 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
         )}
       </motion.footer>
     </div>
+    </MotionConfig>
   );
 }
