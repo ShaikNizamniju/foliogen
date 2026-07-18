@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { corsHeaders } from "../_shared/security.ts";
+import { corsHeaders, checkRateLimit, rateLimitedResponse, getClientIP } from "../_shared/security.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 /**
@@ -7,10 +7,14 @@ import { createClient } from "npm:@supabase/supabase-js@2";
  * ─────────────────────────────────────────────────────────────────────
  * Real-Time Webhook Notification Bridge.
  *
- * Trigger: Called by authenticated users or database webhook with signature.
- * Payload: Dispatches a formatted Noir notification to WEBHOOK_URL.
+ * SECURITY MODEL:
+ *   This endpoint is invoked ONLY by the database (via pg_net / webhook trigger)
+ *   using the service-role key. Requests from end users — even authenticated
+ *   ones — are rejected. The payload's `record.id` is additionally verified
+ *   against the real `visit_logs` row to prevent forged notifications.
  *
- * Env: WEBHOOK_URL (set via `supabase secrets set WEBHOOK_URL=...`)
+ * Env:
+ *   WEBHOOK_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
 
 serve(async (req) => {
@@ -19,26 +23,19 @@ serve(async (req) => {
   }
 
   try {
-    // ── Authenticate the caller ──────────────────────────────────────
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // ── Defense-in-depth: per-IP rate limit ─────────────────────────
+    const ip = getClientIP(req);
+    const rl = checkRateLimit(`notify-lead-ping:${ip}`, 30, 60_000);
+    if (!rl.allowed) return rateLimitedResponse(rl.retryAfterSeconds);
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
+    // ── Require the service-role key (only the DB trigger has it) ──
+    const authHeader = req.headers.get("Authorization") || "";
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const bearer = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    if (!serviceRoleKey || bearer !== serviceRoleKey) {
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -51,9 +48,9 @@ serve(async (req) => {
     }
 
     const payload = await req.json();
-
-    // ── Guard: Only fire for actual pings ──────────────────────────────
     const record = payload.record || payload;
+
+    // ── Guard: Only fire for actual pings ──────────────────────────
     if (!record || record.is_ping !== true) {
       return new Response(
         JSON.stringify({ skipped: true, reason: "Not a ping event" }),
@@ -61,17 +58,39 @@ serve(async (req) => {
       );
     }
 
-    // ── Extract & sanitize fields ─────────────────────────────────────
-    const companyName = String(record.company || "Confidential/Stealth Entity").trim().slice(0, 200);
-    const contactMethod = String(record.contact_method || "Not Provided").trim().slice(0, 200);
-    const industryRaw = String(record.industry_context || "General").trim().slice(0, 100);
+    // ── Verify the record actually exists in visit_logs ────────────
+    if (!record.id) {
+      return new Response(
+        JSON.stringify({ error: "Missing record id" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const admin = createClient(supabaseUrl, serviceRoleKey);
+    const { data: real, error: lookupError } = await admin
+      .from("visit_logs")
+      .select("id, company_name, role_target, created_at, is_ping, contact_method, industry_context, device_type")
+      .eq("id", record.id)
+      .maybeSingle();
+
+    if (lookupError || !real || real.is_ping !== true) {
+      return new Response(
+        JSON.stringify({ error: "Record not found or not a ping" }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ── Use verified DB values, never the request body ─────────────
+    const companyName = String((real as any).company_name || (real as any).company || "Confidential/Stealth Entity").trim().slice(0, 200);
+    const contactMethod = String((real as any).contact_method || "Not Provided").trim().slice(0, 200);
+    const industryRaw = String((real as any).industry_context || "General").trim().slice(0, 100);
     const industryContext =
       industryRaw === "none" ? "General Fit" :
       industryRaw.charAt(0).toUpperCase() + industryRaw.slice(1);
-    const timestamp = record.created_at || new Date().toISOString();
-    const deviceType = String(record.device_type || "Unknown").slice(0, 50);
+    const timestamp = (real as any).created_at || new Date().toISOString();
+    const deviceType = String((real as any).device_type || "Unknown").slice(0, 50);
 
-    // ── Build Noir notification body ──────────────────────────────────
     const webhookPayload = {
       content: null,
       embeds: [
