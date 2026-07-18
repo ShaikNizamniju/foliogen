@@ -57,9 +57,9 @@ export function Hero() {
             {/* Social Proof */}
             <motion.div variants={fadeUp} className="flex items-center gap-4">
               <div className="flex -space-x-3">
-                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=1" alt="Avatar" /></div>
-                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-300 overflow-hidden"><img src="https://i.pravatar.cc/100?img=2" alt="Avatar" /></div>
-                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-400 overflow-hidden"><img src="https://i.pravatar.cc/100?img=3" alt="Avatar" /></div>
+                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-200 overflow-hidden"><img src="https://i.pravatar.cc/100?img=1" alt="Foliogen user avatar" loading="lazy" decoding="async" width="40" height="40" /></div>
+                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-300 overflow-hidden"><img src="https://i.pravatar.cc/100?img=2" alt="Foliogen user avatar" loading="lazy" decoding="async" width="40" height="40" /></div>
+                <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-400 overflow-hidden"><img src="https://i.pravatar.cc/100?img=3" alt="Foliogen user avatar" loading="lazy" decoding="async" width="40" height="40" /></div>
                 <div className="w-10 h-10 rounded-full border-2 border-canvas bg-gray-100 overflow-hidden flex items-center justify-center text-xs font-bold font-outfit text-ink">+</div>
               </div>
               <div className="flex flex-col">
@@ -90,7 +90,7 @@ export function Hero() {
                 <div className="w-3 h-3 rounded-full bg-green-400"></div>
               </div>
               <div className="p-0 select-none pointer-events-none">
-                <img src="/assets/logo-DY04JMdn.png" alt="Portfolio Preview" className="w-full h-auto object-cover opacity-80" />
+                <img src="/assets/logo-DY04JMdn.png" alt="Foliogen AI portfolio preview" fetchPriority="high" decoding="async" width="500" height="500" className="w-full h-auto object-cover opacity-80" />
                 <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white to-transparent"></div>
               </div>
             </div>

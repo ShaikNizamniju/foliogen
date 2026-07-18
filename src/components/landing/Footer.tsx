@@ -122,7 +122,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-8 sm:flex-row border-t border-border pt-8">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={logo} alt="Foliogen - AI Portfolio Builder" className="h-10 w-auto" />
+            <img src={logo} alt="Foliogen - AI Portfolio Builder" loading="lazy" decoding="async" width="40" height="40" className="h-10 w-auto" />
           </Link>
 
           {/* Navigation */}
