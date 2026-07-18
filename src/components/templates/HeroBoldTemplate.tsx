@@ -90,12 +90,12 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
 
             <motion.h1
               variants={fadeUp}
-              className="font-black leading-[0.9] tracking-tighter uppercase break-words [overflow-wrap:anywhere] text-5xl sm:text-6xl lg:text-7xl xl:text-8xl"
+              className="font-black leading-[0.9] tracking-tighter uppercase break-words text-5xl sm:text-6xl lg:text-6xl xl:text-7xl"
             >
               {words.map((word, i) => (
                 <span
                   key={i}
-                  className="break-words [overflow-wrap:anywhere]"
+                  className="break-words"
                   style={{ color: i === 0 ? '#FAFAFA' : '#E11D48' }}
                 >
                   {word}{i < words.length - 1 ? ' ' : ''}
