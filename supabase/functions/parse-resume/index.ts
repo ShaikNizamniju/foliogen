@@ -59,7 +59,15 @@ serve(async (req) => {
       return errorResponse("Resume parsing is temporarily unavailable. Please contact support.", 503);
     }
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Bounded timeout: OpenAI can take 40–90s on large resumes. Abort at 75s
+    // so we return a clean 504 instead of hanging until the platform kills us
+    // (which surfaces as an opaque "failed to fetch" on mobile).
+    const aborter = new AbortController();
+    const timeoutId = setTimeout(() => aborter.abort(), 75000);
+    let response: Response;
+    try {
+      response = await fetch("https://api.openai.com/v1/chat/completions", {
+      signal: aborter.signal,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
