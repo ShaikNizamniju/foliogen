@@ -67,6 +67,7 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
   const words = name.trim().split(/\s+/);
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen" style={{ backgroundColor: '#0A0A0A', color: '#FAFAFA', fontFamily: "'Inter', sans-serif" }}>
       <style>{scopedCss}</style>
 
