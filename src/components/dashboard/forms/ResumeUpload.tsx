@@ -14,13 +14,20 @@ async function invokeParseWithRetry(
   resumeText: string,
   onRetry: () => void,
 ) {
-  // One automatic retry with 2s backoff before surfacing failure.
+  // Hard client-side timeout per attempt (90s). Without this, a flaky mobile
+  // socket can leave supabase.functions.invoke hanging forever, so the UI
+  // stays in "Processing…" and never resolves — this is what caused the
+  // second-upload-never-updates bug. One automatic retry on failure.
   let lastErr: any = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
-      const { data, error } = await supabase.functions.invoke('parse-resume', {
+      const invokePromise = supabase.functions.invoke('parse-resume', {
         body: { resumeText },
       });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Client timeout after 90s')), 90000),
+      );
+      const { data, error } = (await Promise.race([invokePromise, timeoutPromise])) as any;
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       return data;
