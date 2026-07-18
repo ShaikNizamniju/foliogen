@@ -1,4 +1,23 @@
 User-agent: *
 Allow: /
 
+# Do not index authenticated/app surfaces
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /admin
+Disallow: /auth/callback
+Disallow: /reset-password
+Disallow: /success
+Disallow: /api/
+
+# Allow major AI crawlers explicitly
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 Sitemap: https://www.foliogen.in/sitemap.xml
