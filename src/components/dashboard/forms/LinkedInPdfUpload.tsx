@@ -27,7 +27,7 @@ export function LinkedInPdfUpload() {
   const [isParsing, setIsParsing] = useState(false);
   const [mergeModalOpen, setMergeModalOpen] = useState(false);
   const [pendingData, setPendingData] = useState<Partial<ProfileData> | null>(null);
-  const { profile, updateProfile, saveProfile } = useProfile();
+  const { profile, updateProfile, saveProfile, refetchProfile } = useProfile();
 
   const processFile = async (file: File) => {
     if (file.type !== 'application/pdf') {
