@@ -62,10 +62,10 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
   const twitterUrl = p.twitterUrl || demoProfile.twitterUrl;
 
   const projects = p.projects?.length
-    ? p.projects.map((proj: any, i: number) => ({
+    ? p.projects.map((proj: any) => ({
         title: proj.title,
-        category: proj.techStack?.[0] || 'Project',
-        year: '2024',
+        category: proj.techStack?.[0] || '',
+        year: proj.year || proj.endDate || '',
         image: proj.imageUrl || '',
         description: proj.description || '',
         link: proj.link || '',
@@ -80,6 +80,7 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
         company: w.company,
       }))
     : demoProfile.workExperience;
+
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#0A0A0A', color: '#FAFAFA', fontFamily: "'Inter', sans-serif" }}>
@@ -101,52 +102,59 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
         </div>
       </motion.nav>
 
-      {/* Hero — Grid split */}
-      <section className="px-6 md:px-14 py-16 md:py-28">
-        <motion.div variants={stagger} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
-          {/* Left — Big name */}
-          <motion.div variants={fadeUp} className="md:col-span-7 flex flex-col justify-end">
-            <h1 className="text-6xl md:text-8xl lg:text-[110px] font-bold leading-[0.88] tracking-tighter" style={{ fontFamily: heading }}>
+      {/* Hero — Name dominant, photo constrained */}
+      <section className="px-6 md:px-14 py-14 md:py-20 lg:min-h-[85vh] flex items-center">
+        <motion.div variants={stagger} initial="hidden" animate="visible" className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 w-full items-center">
+          {/* Left — Big name (dominant) */}
+          <motion.div variants={fadeUp} className="lg:col-span-8 order-1 flex flex-col justify-center">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.88] tracking-tighter" style={{ fontFamily: heading }}>
               {name.split(' ').map((w: string, i: number) => (
                 <span key={i} className="block">{w}</span>
               ))}
             </h1>
-            <p className="mt-6 text-lg md:text-xl font-light max-w-lg" style={{ color: '#888' }}>{headline}</p>
-          </motion.div>
-
-          {/* Right — Photo with grid overlay */}
-          <motion.div variants={fadeUp} className="md:col-span-5 relative">
-            <div className="relative overflow-hidden" style={{ border: '2px solid #222' }}>
-              {(!profile || !profile.hidePhoto) && (
-                 profile?.photoUrl ? (
-                   <img src={profile.photoUrl} alt={name} className="w-full aspect-[4/5] object-cover grayscale" />
-                 ) : (
-                   <div className="w-full aspect-[4/5] bg-[#111] flex items-center justify-center">
-                     <UserCircle className="w-24 h-24 text-[#333]" />
-                   </div>
-                 )
-              )}
-              {/* Grid overlay */}
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'linear-gradient(#FAFAFA08 1px, transparent 1px), linear-gradient(90deg, #FAFAFA08 1px, transparent 1px)',
-                backgroundSize: '40px 40px',
-              }} />
-            </div>
-            <div className="flex items-center gap-2 mt-4">
+            <p className="mt-6 text-xl md:text-2xl font-light max-w-2xl" style={{ color: '#BBB' }}>{headline}</p>
+            <div className="flex items-center gap-2 mt-5">
               <MapPin className="h-3 w-3" style={{ color: '#666' }} />
               <span className="text-xs tracking-widest uppercase" style={{ fontFamily: mono, color: '#666' }}>{location}</span>
+            </div>
+            {bio && (
+              <p className="mt-6 text-base md:text-lg font-light leading-relaxed max-w-2xl" style={{ color: '#888' }}>{bio}</p>
+            )}
+          </motion.div>
+
+          {/* Right — Photo constrained */}
+          <motion.div variants={fadeUp} className="lg:col-span-4 order-2 flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-sm">
+              <div className="relative overflow-hidden" style={{ border: '2px solid #222' }}>
+                {(!profile || !profile.hidePhoto) && (
+                   profile?.photoUrl ? (
+                     <img src={profile.photoUrl} alt={name} className="w-full max-h-[320px] lg:max-h-[420px] object-cover grayscale" />
+                   ) : (
+                     <div className="w-full aspect-[4/5] max-h-[320px] lg:max-h-[420px] bg-[#111] flex items-center justify-center">
+                       <UserCircle className="w-20 h-20 text-[#333]" />
+                     </div>
+                   )
+                )}
+                {/* Grid overlay */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  backgroundImage: 'linear-gradient(#FAFAFA08 1px, transparent 1px), linear-gradient(90deg, #FAFAFA08 1px, transparent 1px)',
+                  backgroundSize: '40px 40px',
+                }} />
+              </div>
             </div>
           </motion.div>
         </motion.div>
       </section>
 
+
       {/* About — Bold statement */}
       <section className="px-6 md:px-14 py-16 md:py-24" style={{ borderTop: '1px solid #1A1A1A' }}>
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
           <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ fontFamily: mono, color: '#555' }}>About</span>
-          <p className="text-2xl md:text-4xl font-light leading-relaxed max-w-4xl" style={{ fontFamily: heading }}>
+          <p className="text-2xl md:text-4xl lg:text-5xl font-light leading-[1.3] max-w-5xl" style={{ fontFamily: heading }}>
             {bio}
           </p>
+
         </motion.div>
       </section>
 
@@ -175,49 +183,44 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
             <span className="text-xs tracking-widest uppercase hidden md:block" style={{ fontFamily: mono, color: '#555' }}>{projects.length} Works</span>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-6">
             {projects.slice(0, 6).map((proj: any, i: number) => {
-              const isLarge = i === 0 || i === 3;
+              const isFullWidth = i === 0;
               const href = getProjectHref(proj);
+              const hasMeta = proj.category || proj.year;
               return (
-                <motion.div
+                <motion.article
                   key={i}
                   variants={fadeUp}
                   onClick={href ? () => window.open(href, '_blank', 'noopener,noreferrer') : undefined}
-                  className={`group ${href ? 'cursor-pointer' : ''} ${isLarge ? 'md:col-span-2' : ''}`}
+                  className={`group flex flex-col p-6 md:p-7 bg-[#0F0F0F] hover:bg-[#141414] transition-colors ${href ? 'cursor-pointer' : ''} ${isFullWidth ? 'lg:col-span-2' : ''}`}
+                  style={{ border: '1px solid #1F1F1F', minHeight: '200px' }}
                 >
-                  {proj.image ? (
-                    <div className="relative overflow-hidden" style={{ border: '1px solid #1A1A1A' }}>
-                      <motion.img
-                        src={proj.image}
-                        alt={proj.title}
-                        className={`w-full object-cover ${isLarge ? 'aspect-[21/9]' : 'aspect-[3/2]'}`}
-                        whileHover={{ scale: 1.04 }}
-                        transition={{ duration: 0.6 }}
-                      />
-                      <div className="absolute inset-0 bg-[#0A0A0A]/0 group-hover:bg-[#0A0A0A]/60 transition-colors duration-400 flex items-end p-6">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
-                          <p className="text-sm text-white/70 mb-1" style={{ fontFamily: mono }}>{proj.description}</p>
-                          <div className="flex items-center gap-2 text-white">
-                            <span className="text-sm font-medium">View Project</span>
-                            <ArrowUpRight className="h-4 w-4" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={`p-8 md:p-12 border border-[#1A1A1A] bg-[#111] hover:bg-[#151515] transition-colors ${isLarge ? 'md:aspect-[21/4]' : 'aspect-[3/1]'} flex flex-col justify-center`}>
-                       <p className="text-sm md:text-base text-[#888] max-w-2xl" style={{ fontFamily: mono }}>{proj.description}</p>
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="text-2xl md:text-3xl font-semibold tracking-tight leading-tight group-hover:text-[#64BFFF] transition-colors" style={{ fontFamily: heading }}>
+                      {proj.title}
+                    </h3>
+                    {href && (
+                      <ArrowUpRight className="h-5 w-5 shrink-0 mt-1 text-[#666] group-hover:text-white transition-colors" />
+                    )}
+                  </div>
+                  {proj.description && (
+                    <p className="mt-3 text-sm md:text-base leading-relaxed line-clamp-3 flex-1" style={{ color: '#999' }}>
+                      {proj.description}
+                    </p>
+                  )}
+                  {hasMeta && (
+                    <div className="mt-5 pt-4 flex items-center gap-3 text-[10px] tracking-[0.25em] uppercase" style={{ fontFamily: mono, color: '#555', borderTop: '1px solid #1A1A1A' }}>
+                      {proj.category && <span>{proj.category}</span>}
+                      {proj.category && proj.year && <span>·</span>}
+                      {proj.year && <span>{proj.year}</span>}
                     </div>
                   )}
-                  <div className="flex items-center justify-between mt-4">
-                    <h3 className="text-lg md:text-xl font-semibold tracking-tight group-hover:text-[#64BFFF] transition-colors" style={{ fontFamily: heading }}>{proj.title}</h3>
-                    <span className="text-[10px] tracking-[0.25em] uppercase" style={{ fontFamily: mono, color: '#555' }}>{proj.category} · {proj.year}</span>
-                  </div>
-                </motion.div>
+                </motion.article>
               );
             })}
           </div>
+
         </motion.div>
       </section>
 
@@ -227,13 +230,14 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
           <motion.span variants={fadeUp} className="text-xs tracking-[0.3em] uppercase block mb-10" style={{ fontFamily: mono, color: '#555' }}>Experience</motion.span>
           <div className="space-y-0">
             {experience.map((e: any, i: number) => (
-              <motion.div key={i} variants={fadeUp} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-12 py-6" style={{ borderBottom: '1px solid #1A1A1A' }}>
-                <span className="text-xs tracking-widest w-48 shrink-0" style={{ fontFamily: mono, color: '#555' }}>{e.year}</span>
+              <motion.div key={i} variants={fadeUp} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-12 py-7" style={{ borderBottom: '1px solid #1A1A1A' }}>
+                <span className="text-xs md:text-sm tracking-widest w-48 shrink-0" style={{ fontFamily: mono, color: '#666' }}>{e.year}</span>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold" style={{ fontFamily: heading }}>{e.role}</h3>
-                  <span className="text-sm" style={{ color: '#888' }}>{e.company}</span>
+                  <h3 className="text-xl md:text-2xl font-semibold" style={{ fontFamily: heading }}>{e.role}</h3>
+                  <span className="text-base md:text-lg" style={{ color: '#999' }}>{e.company}</span>
                 </div>
               </motion.div>
+
             ))}
           </div>
         </motion.div>
@@ -246,10 +250,11 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
           <h2 className="text-5xl md:text-8xl font-bold tracking-tighter mb-8" style={{ fontFamily: heading }}>
             Let's build<br />something.
           </h2>
-          <a href={`mailto:${email}`} className="inline-flex items-center gap-3 text-lg hover:text-[#64BFFF] transition-colors" style={{ fontFamily: mono }}>
-            <Mail className="h-5 w-5" />
+          <a href={`mailto:${email}`} className="inline-flex items-center gap-3 text-xl md:text-2xl hover:text-[#64BFFF] transition-colors break-all" style={{ fontFamily: mono }}>
+            <Mail className="h-6 w-6 shrink-0" />
             {email}
           </a>
+
 
           <div className="flex gap-6 mt-10">
             {githubUrl && githubUrl !== '#' && (
