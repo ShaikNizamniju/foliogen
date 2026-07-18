@@ -140,6 +140,7 @@ interface ProfileContextType {
   profile: ProfileData;
   updateProfile: (updates: Partial<ProfileData>) => void;
   saveProfile: (overrides?: Partial<ProfileData>) => Promise<{ error: Error | null }>;
+  refetchProfile: () => Promise<void>;
   loading: boolean;
   saving: boolean;
 }
