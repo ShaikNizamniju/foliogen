@@ -165,16 +165,16 @@ export function LandingEditorial() {
 
           <div className="fl-stats">
             <div className="fl-stat">
-              <div className="fl-stat-n">{c1.toLocaleString()}<em>+</em></div>
-              <div className="fl-stat-l">Portfolios Built</div>
+              <div className="fl-stat-n">20<em>+</em></div>
+              <div className="fl-stat-l">Templates</div>
             </div>
             <div className="fl-stat">
-              <div className="fl-stat-n">{c2}<em>×</em></div>
-              <div className="fl-stat-l">Recruiter Views</div>
+              <div className="fl-stat-n">AI</div>
+              <div className="fl-stat-l">Powered</div>
             </div>
             <div className="fl-stat">
-              <div className="fl-stat-n">{c3}<em>%</em></div>
-              <div className="fl-stat-l">Interview Boost</div>
+              <div className="fl-stat-n">Free</div>
+              <div className="fl-stat-l">Forever</div>
             </div>
           </div>
         </div>
