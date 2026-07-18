@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
-import { UserCircle } from 'lucide-react';
+import { UserCircle, MapPin, Mail, Linkedin } from 'lucide-react';
 import { getProjectHref } from '@/lib/urlUtils';
 
 interface HeroBoldTemplateProps {
@@ -29,6 +29,28 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const } },
 };
 
+// Scoped CSS: skill-pill stagger + hover lift, respects prefers-reduced-motion.
+const scopedCss = `
+@keyframes hbFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hb-skill-pill {
+  opacity: 0;
+  animation: hbFadeUp 0.5s ease-out forwards;
+  transition: transform 200ms ease, border-color 200ms ease, color 200ms ease, background-color 200ms ease;
+}
+.hb-skill-pill:hover {
+  transform: translateY(-2px);
+  border-color: #F43F5E;
+  background-color: rgba(225,29,72,0.08);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hb-skill-pill { opacity: 1 !important; animation: none !important; transition: none !important; }
+  .hb-skill-pill:hover { transform: none !important; }
+}
+`;
+
 export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplateProps) {
   const name = profile?.fullName || 'ALEX RIVERA';
   const headline = profile?.headline || 'Thought Leader · Keynote Speaker · Author';
@@ -40,73 +62,130 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
   const experience = profile?.workExperience?.length ? profile.workExperience : demoExperience;
   const email = profile?.email || 'hello@alexrivera.com';
   const linkedin = profile?.linkedinUrl || '';
+  const location = profile?.location || '';
+  const showPhoto = !profile || !profile.hidePhoto;
+  const words = name.trim().split(/\s+/);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#0A0A0A', color: '#FAFAFA', fontFamily: "'Inter', sans-serif" }}>
-      {/* Hero — full-bleed, massive type */}
+      <style>{scopedCss}</style>
+
+      {/* Hero — balanced 2-column, vertically centered */}
       <motion.section
         variants={stagger}
         initial="hidden"
         animate="visible"
-        className="relative min-h-[85vh] flex flex-col justify-end px-8 md:px-20 pb-16 md:pb-24"
+        className="relative min-h-[90vh] flex items-center px-8 md:px-20 py-20"
       >
         {/* Accent line */}
         <motion.div variants={fadeUp} className="absolute top-0 left-0 w-full h-1" style={{ background: 'linear-gradient(90deg, #E11D48, #F97316, #E11D48)' }} />
 
-        <motion.span variants={fadeUp} className="text-xs tracking-[0.4em] uppercase mb-6 block" style={{ color: '#71717A' }}>
-          Portfolio
-        </motion.span>
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          {/* Left: eyebrow, name, headline, meta, CTA */}
+          <div className="lg:col-span-7 order-2 lg:order-1">
+            <motion.span variants={fadeUp} className="text-xs tracking-[0.4em] uppercase mb-6 block" style={{ color: '#71717A' }}>
+              Portfolio
+            </motion.span>
 
-        <motion.h1
-          variants={fadeUp}
-          className="text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] font-black leading-[0.85] tracking-tighter uppercase break-words [overflow-wrap:anywhere] max-w-full"
-        >
-          {name.split(' ').map((word, i) => (
-            <span key={i} className="block break-words [overflow-wrap:anywhere]" style={{ color: i === 0 ? '#FAFAFA' : '#E11D48' }}>
-              {word}
-            </span>
-          ))}
-        </motion.h1>
+            <motion.h1
+              variants={fadeUp}
+              className="font-black leading-[0.9] tracking-tighter uppercase break-words [overflow-wrap:anywhere] text-5xl sm:text-6xl lg:text-7xl xl:text-8xl"
+            >
+              {words.map((word, i) => (
+                <span
+                  key={i}
+                  className="break-words [overflow-wrap:anywhere]"
+                  style={{ color: i === 0 ? '#FAFAFA' : '#E11D48' }}
+                >
+                  {word}{i < words.length - 1 ? ' ' : ''}
+                </span>
+              ))}
+            </motion.h1>
 
-        <motion.p variants={fadeUp} className="mt-8 text-lg md:text-xl max-w-xl font-light leading-relaxed" style={{ color: '#A1A1AA' }}>
-          {headline}
-        </motion.p>
-      </motion.section>
+            <motion.p variants={fadeUp} className="mt-6 text-lg md:text-xl max-w-xl font-light leading-relaxed" style={{ color: '#A1A1AA' }}>
+              {headline}
+            </motion.p>
 
-      {/* Bio strip */}
-      <section className="border-t border-b px-8 md:px-20 py-16 md:py-24" style={{ borderColor: '#27272A' }}>
-        <div className="flex flex-col md:flex-row gap-12 items-center md:items-start max-w-5xl">
-            {(!profile || !profile.hidePhoto) && (
-              <div className="shrink-0">
-                {profile?.photoUrl ? (
-                  <div className="relative group">
-                    <img
-                      src={profile.photoUrl}
-                      alt={name}
-                      className="w-32 h-32 md:w-48 md:h-48 rounded-2xl object-cover grayscale group-hover:grayscale-0 transition-all duration-500 opacity-90 border-2"
-                      style={{ borderColor: '#E11D48' }}
-                    />
-                    <div className="absolute inset-0 rounded-2xl shadow-[inset_0_0_40px_rgba(0,0,0,0.5)] pointer-events-none" />
-                  </div>
-                ) : (
-                  <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl bg-[#111113] border-2 flex items-center justify-center transition-colors shadow-2xl" style={{ borderColor: '#27272A' }}>
-                    <UserCircle className="w-16 h-16 md:w-24 md:h-24 text-[#333]" />
-                  </div>
-                )}
+            <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-4">
+              {(onContactClick || email) && (
+                <button
+                  onClick={onContactClick ? onContactClick : () => window.location.href = `mailto:${email}`}
+                  className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold tracking-wider uppercase rounded-full min-h-[44px]"
+                  style={{ backgroundColor: '#E11D48', color: '#FAFAFA' }}
+                >
+                  <Mail className="h-4 w-4" /> Get in Touch
+                </button>
+              )}
+              {location && (
+                <span className="inline-flex items-center gap-2 text-sm" style={{ color: '#A1A1AA' }}>
+                  <MapPin className="h-4 w-4" /> {location}
+                </span>
+              )}
+              {linkedin && (
+                <a href={linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm hover:text-white transition-colors" style={{ color: '#A1A1AA' }}>
+                  <Linkedin className="h-4 w-4" /> LinkedIn
+                </a>
+              )}
+            </motion.div>
+          </div>
+
+          {/* Right: photo or meta column */}
+          <motion.div variants={fadeUp} className="lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end">
+            {showPhoto && profile?.photoUrl ? (
+              <div className="relative w-full max-w-sm">
+                <img
+                  src={profile.photoUrl}
+                  alt={name}
+                  className="w-full aspect-[4/5] max-h-[300px] lg:max-h-none object-cover rounded-2xl border-2"
+                  style={{ borderColor: '#E11D48', boxShadow: '0 0 60px -10px rgba(225,29,72,0.35)' }}
+                />
+              </div>
+            ) : showPhoto ? (
+              <div className="w-full max-w-sm aspect-[4/5] max-h-[300px] lg:max-h-none rounded-2xl bg-[#111113] border-2 flex items-center justify-center" style={{ borderColor: '#27272A' }}>
+                <UserCircle className="w-24 h-24 text-[#333]" />
+              </div>
+            ) : (
+              <div className="w-full max-w-sm flex flex-col gap-4 text-sm lg:text-right" style={{ color: '#A1A1AA' }}>
+                {location && <div className="flex lg:justify-end items-center gap-2"><MapPin className="h-4 w-4" /> {location}</div>}
+                {email && <a href={`mailto:${email}`} className="flex lg:justify-end items-center gap-2 hover:text-white transition-colors"><Mail className="h-4 w-4" /> {email}</a>}
+                {linkedin && <a href={linkedin} target="_blank" rel="noopener noreferrer" className="flex lg:justify-end items-center gap-2 hover:text-white transition-colors"><Linkedin className="h-4 w-4" /> LinkedIn</a>}
               </div>
             )}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-              className="max-w-3xl"
-            >
-              <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ color: '#71717A' }}>About</span>
-              <p className="text-2xl md:text-3xl font-light leading-relaxed" style={{ color: '#D4D4D8' }}>
-                {bio}
-              </p>
-            </motion.div>
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* About — full-width row */}
+      <section className="border-t border-b px-8 md:px-20 py-16 md:py-24" style={{ borderColor: '#27272A' }}>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 md:gap-14 items-start">
+          {showPhoto && (
+            <div className="shrink-0 mx-auto md:mx-0">
+              {profile?.photoUrl ? (
+                <img
+                  src={profile.photoUrl}
+                  alt={name}
+                  className="w-40 h-40 md:w-64 md:h-64 max-w-xs aspect-square rounded-2xl object-cover grayscale hover:grayscale-0 transition-all duration-500 border-2"
+                  style={{ borderColor: '#E11D48' }}
+                />
+              ) : (
+                <div className="w-40 h-40 md:w-64 md:h-64 aspect-square rounded-2xl bg-[#111113] border-2 flex items-center justify-center" style={{ borderColor: '#27272A' }}>
+                  <UserCircle className="w-20 h-20 text-[#333]" />
+                </div>
+              )}
+            </div>
+          )}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="flex-1 min-w-0"
+          >
+            <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ color: '#71717A' }}>About</span>
+            <p className="text-xl md:text-2xl font-light leading-relaxed break-words" style={{ color: '#D4D4D8' }}>
+              {bio}
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -117,6 +196,7 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
+          className="max-w-6xl mx-auto"
         >
           <motion.span variants={fadeUp} className="text-xs tracking-[0.3em] uppercase block mb-10" style={{ color: '#71717A' }}>Experience</motion.span>
           <div className="space-y-8">
@@ -144,6 +224,7 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
+          className="max-w-6xl mx-auto"
         >
           <motion.span variants={fadeUp} className="text-xs tracking-[0.3em] uppercase block mb-10" style={{ color: '#71717A' }}>Selected Work</motion.span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -171,7 +252,7 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
                     {p.description}
                   </p>
                   <div className="mt-auto flex flex-wrap gap-2">
-                    {p.techStack?.map((t) => (
+                    {p.techStack?.map((t: string) => (
                       <span key={t} className="text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-full border" style={{ borderColor: '#27272A', color: '#A1A1AA' }}>
                         {t}
                       </span>
@@ -191,10 +272,14 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="flex flex-wrap gap-3"
+          className="max-w-6xl mx-auto flex flex-wrap gap-3"
         >
-          {skills.map((s) => (
-            <span key={s} className="text-xs tracking-widest uppercase px-4 py-2 rounded-full border font-medium" style={{ borderColor: '#E11D48', color: '#E11D48' }}>
+          {skills.map((s, i) => (
+            <span
+              key={s}
+              className="hb-skill-pill text-xs tracking-widest uppercase px-4 py-2 rounded-full border font-medium"
+              style={{ borderColor: '#E11D48', color: '#E11D48', animationDelay: `${Math.min(i * 40, 600)}ms` }}
+            >
               {s}
             </span>
           ))}
