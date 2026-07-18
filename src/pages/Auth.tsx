@@ -31,10 +31,8 @@ export default function Auth() {
   const navigate = useNavigate();
   const { triggerWelcomeEmail } = useWelcomeEmail();
 
-  // Animated counters
-  const [c1, setC1] = useState(0);
-  const [c2, setC2] = useState(0);
-  const [c3, setC3] = useState(0);
+  // Cursor refs
+
 
   // Cursor refs
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -59,23 +57,6 @@ export default function Auth() {
     track('signup_screen_reached');
   }, [authLoading, user]);
 
-  // Counter animation
-  useEffect(() => {
-    const targets = [12400, 3.2, 89];
-    const duration = 1600;
-    const start = performance.now();
-    let raf = 0;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setC1(Math.floor(targets[0] * ease));
-      setC2(Number((targets[1] * ease).toFixed(1)));
-      setC3(Math.floor(targets[2] * ease));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
 
   // Custom cursor (desktop only)
   useEffect(() => {
@@ -223,24 +204,16 @@ export default function Auth() {
 
             <div className="fg-stats">
               <div className="fg-stat">
-                <div className="fg-stat-n">{c1.toLocaleString()}<em>+</em></div>
-                <div className="fg-stat-l">Portfolios Built</div>
+                <div className="fg-stat-n">20<em>+</em></div>
+                <div className="fg-stat-l">Templates</div>
               </div>
               <div className="fg-stat">
-                <div className="fg-stat-n">{c2}<em>×</em></div>
-                <div className="fg-stat-l">Recruiter Views</div>
+                <div className="fg-stat-n">AI</div>
+                <div className="fg-stat-l">Powered</div>
               </div>
               <div className="fg-stat">
-                <div className="fg-stat-n">{c3}<em>%</em></div>
-                <div className="fg-stat-l">Interview Boost</div>
-              </div>
-            </div>
-
-            <div className="fg-quote-block">
-              <div className="fg-quote-mark">&ldquo;</div>
-              <div>
-                <p className="fg-quote-text">Landed 4 interviews in 2 weeks after switching to my Foliogen portfolio. The AI descriptions are next-level.</p>
-                <div className="fg-quote-attr">Shaik N. · AI Product Manager · Foliogen</div>
+                <div className="fg-stat-n">Free</div>
+                <div className="fg-stat-l">Forever</div>
               </div>
             </div>
           </div>
@@ -261,7 +234,7 @@ export default function Auth() {
               {isLogin ? <>Welcome<br /><em>Back.</em></> : <>Create<br /><em>Account.</em></>}
             </div>
             <div className="fg-r-sub">
-              {isLogin ? 'Sign in to continue building your portfolio.' : 'Join 12,400+ professionals telling their story.'}
+              {isLogin ? 'Sign in to continue building your portfolio.' : 'Create your free account and start telling your story.'}
             </div>
 
             <button className="fg-btn-g" type="button" onClick={handleGoogleLogin} disabled={googleLoading || loading} onMouseEnter={() => import('./Dashboard')}>
@@ -360,10 +333,9 @@ export default function Auth() {
             </div>
 
             <div className="fg-pill-row">
-              <div className="fg-pill">500+ Pros</div>
               <div className="fg-pill">Free Forever</div>
               <div className="fg-pill">No Subscriptions</div>
-              <div className="fg-pill">Just Results</div>
+              <div className="fg-pill">AI-Powered</div>
             </div>
           </div>
         </div>
