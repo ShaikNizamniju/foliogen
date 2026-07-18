@@ -541,7 +541,7 @@ export function OverviewSection() {
                     className="border-t border-border/50"
                   >
                     <div className="p-6">
-                      <SmartResumeParser onTemplateChange={() => { }} />
+                      <ResumeUpload />
                     </div>
                   </motion.div>
                 </CollapsibleContent>
