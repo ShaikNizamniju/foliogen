@@ -69,17 +69,17 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
       </div>
 
       {/* Mobile-First Container - Centered column */}
-      <div className="relative z-10 max-w-md mx-auto px-6 py-12 pb-32">
+      <div className="relative z-10 max-w-md lg:max-w-6xl mx-auto px-6 lg:px-10 py-12 pb-32 lg:pb-16">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-6"
+          className="space-y-6 lg:grid lg:grid-cols-12 lg:gap-8 lg:space-y-0"
         >
           {/* Profile Card */}
           <motion.div 
             variants={itemVariants}
-            className="text-center"
+            className="text-center lg:col-span-4 lg:text-left lg:sticky lg:top-8 lg:self-start lg:space-y-6"
           >
             {/* Avatar */}
             <motion.div 
@@ -121,9 +121,9 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
           {profile.bio && (
             <motion.div 
               variants={itemVariants}
-              className="backdrop-blur-xl bg-white/60 border border-white/80 rounded-3xl p-6 shadow-lg"
+              className="backdrop-blur-xl bg-white/60 border border-white/80 rounded-3xl p-6 shadow-lg lg:col-span-8 lg:col-start-5"
             >
-              <p className="text-center text-gray-700 leading-relaxed">
+              <p className="text-center lg:text-left text-gray-700 leading-relaxed">
                 {profile.bio}
               </p>
             </motion.div>
@@ -131,7 +131,7 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
 
           {/* Key Highlights Pills */}
           {profile.keyHighlights && profile.keyHighlights.length > 0 && (
-            <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-2">
+            <motion.div variants={itemVariants} className="flex flex-wrap justify-center lg:justify-start gap-2 lg:col-span-8 lg:col-start-5">
               {profile.keyHighlights.map((highlight, index) => (
                 <motion.span
                   key={index}
@@ -146,7 +146,7 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
           )}
 
           {/* Social Links - Glassmorphism Cards */}
-          <motion.div variants={itemVariants} className="space-y-3">
+          <motion.div variants={itemVariants} className="space-y-3 lg:col-span-8 lg:col-start-5 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
             {profile.linkedinUrl && (
               <motion.a
                 href={profile.linkedinUrl}
@@ -246,10 +246,10 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
             )}
           </motion.div>
 
-          {/* Projects - Vertical Stack */}
+          {/* Projects - Vertical Stack on mobile, 2-col grid on desktop */}
           {profile.projects.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-4 pt-4">
-              <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+            <motion.div variants={itemVariants} className="space-y-4 pt-4 lg:col-span-8 lg:col-start-5 lg:pt-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              <h2 className="text-center lg:text-left text-sm font-semibold uppercase tracking-wider text-gray-500 lg:col-span-2">
                 Featured Work
               </h2>
             {profile.projects.map((project, index) => {
@@ -310,11 +310,11 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
 
           {/* Skills Pills */}
           {profile.skills.length > 0 && (
-            <motion.div variants={itemVariants} className="pt-4">
-              <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">
+            <motion.div variants={itemVariants} className="pt-4 lg:col-span-8 lg:col-start-5 lg:pt-0">
+              <h2 className="text-center lg:text-left text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">
                 Skills
               </h2>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2">
                 {profile.skills.map((skill, index) => (
                   <span 
                     key={index}
@@ -329,9 +329,9 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
         </motion.div>
       </div>
 
-      {/* Sticky Follow Button */}
+      {/* Sticky Follow Button — mobile only */}
       <motion.div 
-        className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/90 via-white/80 to-transparent backdrop-blur-sm z-50"
+        className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/90 via-white/80 to-transparent backdrop-blur-sm z-50"
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1, duration: 0.5 }}

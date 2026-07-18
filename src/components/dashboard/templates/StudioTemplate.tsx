@@ -97,7 +97,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
       transition={{ delay: index * 0.1, duration: 0.8, ease: [0.25, 0.4, 0.25, 1] }}
     >
       <motion.div
-        className={`relative overflow-hidden ${index % 3 === 0 ? 'aspect-[4/5]' : index % 3 === 1 ? 'aspect-[3/4]' : 'aspect-[16/10]'}`}
+        className={`relative overflow-hidden aspect-[4/3] ${index % 3 === 0 ? 'lg:aspect-[4/5]' : index % 3 === 1 ? 'lg:aspect-[3/4]' : 'lg:aspect-[16/10]'}`}
         whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.4 }}
       >
@@ -109,39 +109,53 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
           transition={{ duration: 0.6 }}
         />
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Gradient overlay (desktop hover) */}
+        <div className="hidden lg:block absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        {/* Content overlay */}
-        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+        {/* Content overlay (desktop hover) */}
+        <div className="hidden lg:flex absolute inset-0 flex-col justify-end p-6 md:p-8">
           <motion.div
             className="translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500"
           >
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-xl md:text-2xl font-light text-white">{project.title}</h3>
+            <div className="flex items-center gap-2 mb-2 min-w-0">
+              <h3 className="text-xl md:text-2xl font-light text-white break-words min-w-0">{project.title}</h3>
               {isDocsOnly ? (
-                <FileText className="h-5 w-5 text-white/80" />
+                <FileText className="h-5 w-5 text-white/80 shrink-0" />
               ) : (
-                <ArrowUpRight className="h-5 w-5 text-white/80" />
+                <ArrowUpRight className="h-5 w-5 text-white/80 shrink-0" />
               )}
             </div>
             <p className="text-sm text-white/70 line-clamp-2 max-w-md">{project.description}</p>
-            {/* Show case study link only when both exist */}
-            {project.link && project.docsUrl && (
-              <a 
-                href={ensureProtocol(project.docsUrl)} 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-3 text-xs tracking-wide text-white/50 hover:text-white transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <FileText className="h-3.5 w-3.5" />
-                {getDocsButtonLabel(project.docsUrl)}
-              </a>
-            )}
           </motion.div>
         </div>
       </motion.div>
+
+      {/* Always-visible caption (all viewports) — prevents title clipping */}
+      <div className="px-1 pt-4 pb-2">
+        <div className="flex items-start gap-2 min-w-0">
+          <h3 className="text-lg md:text-xl font-light text-white break-words min-w-0 flex-1">{project.title}</h3>
+          {isDocsOnly ? (
+            <FileText className="h-4 w-4 text-white/60 shrink-0 mt-1.5" />
+          ) : mainLink ? (
+            <ArrowUpRight className="h-4 w-4 text-white/60 shrink-0 mt-1.5" />
+          ) : null}
+        </div>
+        {project.description && (
+          <p className="mt-1 text-sm text-white/50 line-clamp-2">{project.description}</p>
+        )}
+        {project.link && project.docsUrl && (
+          <a
+            href={ensureProtocol(project.docsUrl)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 mt-2 text-xs tracking-wide text-white/50 hover:text-white transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            {getDocsButtonLabel(project.docsUrl)}
+          </a>
+        )}
+      </div>
     </motion.a>
   );
 }
@@ -230,6 +244,28 @@ export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps)
           <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-16 min-h-screen">
             {/* Left: Text Content */}
             <div className="flex flex-col justify-center py-12 lg:py-24 lg:sticky lg:top-0 lg:h-screen">
+              {/* Mobile / tablet profile photo (hidden on lg+ where the right column shows it) */}
+              <motion.div
+                className="lg:hidden mb-8"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.7 }}
+              >
+                {profile.photoUrl ? (
+                  <img
+                    src={profile.photoUrl}
+                    alt={profile.fullName || 'Profile'}
+                    className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl object-cover"
+                  />
+                ) : (
+                  <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl bg-gradient-to-br from-white/10 to-white/[0.03] flex items-center justify-center">
+                    <span className="text-5xl font-extralight text-white/30">
+                      {profile.fullName?.charAt(0) || 'S'}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+
               {/* Headline tag */}
               <motion.p
                 className="text-white/40 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 md:mb-6"
@@ -409,20 +445,37 @@ export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps)
         </section>
       )}
 
-      {/* Skills - Animated Marquee */}
+      {/* Skills - Animated Marquee on desktop, static readable list on mobile */}
       {profile.skills.length > 0 && (
-        <section className="py-12 md:py-16 overflow-hidden border-y border-white/5">
-          <motion.div
-            className="flex gap-8 md:gap-16 whitespace-nowrap"
-            animate={{ x: [0, '-50%'] }}
-            transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-          >
-            {[...profile.skills, ...profile.skills].map((skill, index) => (
-              <span key={index} className="text-3xl md:text-5xl lg:text-6xl font-extralight text-white/[0.08]">
-                {skill}
-              </span>
-            ))}
-          </motion.div>
+        <section className="py-10 md:py-16 border-y border-white/5">
+          {/* Mobile: static wrapped, readable list */}
+          <div className="lg:hidden px-4 md:px-8">
+            <h2 className="text-xs tracking-[0.3em] uppercase text-white/40 mb-4">Skills</h2>
+            <div className="flex flex-wrap gap-2">
+              {profile.skills.map((skill, index) => (
+                <span
+                  key={index}
+                  className="text-sm text-white/80 border border-white/15 rounded-full px-3 py-1.5"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+          {/* Desktop: original marquee */}
+          <div className="hidden lg:block overflow-hidden">
+            <motion.div
+              className="flex gap-16 whitespace-nowrap"
+              animate={{ x: [0, '-50%'] }}
+              transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+            >
+              {[...profile.skills, ...profile.skills].map((skill, index) => (
+                <span key={index} className="text-5xl lg:text-6xl font-extralight text-white/[0.08]">
+                  {skill}
+                </span>
+              ))}
+            </motion.div>
+          </div>
         </section>
       )}
 

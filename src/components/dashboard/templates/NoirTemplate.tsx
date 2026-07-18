@@ -9,15 +9,7 @@ interface NoirTemplateProps {
   onContactClick?: () => void;
 }
 
-// Custom getProjectImageUrl for Noir - append "black and white"
-function getNoirProjectImageUrl(project: { imageUrl?: string; visualPrompt?: string; title?: string }): string {
-  if (project.imageUrl) return project.imageUrl;
-  
-  const prompt = project.visualPrompt || project.title || 'abstract art';
-  const noirPrompt = `${prompt} black and white high contrast cinematic noir`;
-  
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(noirPrompt)}?width=800&height=600&nologo=true`;
-}
+// Noir uses the shared branded placeholder — no stock photos.
 
 const fadeIn = {
   initial: { opacity: 0 },
@@ -130,7 +122,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
 
             {/* Scroll indicator */}
             <motion.div 
-              className="mt-24"
+              className="mt-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2, duration: 1 }}
@@ -143,7 +135,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
         {/* Bio */}
         {profile.bio && (
           <motion.section 
-            className="max-w-3xl mx-auto px-8 py-32"
+            className="max-w-3xl mx-auto px-8 py-10"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -157,10 +149,10 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
 
         {/* Key Highlights */}
         {profile.keyHighlights && profile.keyHighlights.length > 0 && (
-          <section className="border-t border-white/10 py-24">
+          <section className="border-t border-white/10 py-12">
             <div className="max-w-6xl mx-auto px-8">
               <motion.h2 
-                className="text-xs tracking-[0.5em] uppercase text-white/30 text-center mb-16"
+                className="text-xs tracking-[0.5em] uppercase text-white/30 text-center mb-8"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -190,10 +182,10 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
 
         {/* Projects - Cinematic Gallery */}
         {profile.projects.length > 0 && (
-          <section className="py-24">
+          <section className="py-12">
             <div className="max-w-6xl mx-auto px-8">
               <motion.h2 
-                className="text-xs tracking-[0.5em] uppercase text-white/30 text-center mb-16"
+                className="text-xs tracking-[0.5em] uppercase text-white/30 text-center mb-8"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -201,7 +193,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
                 Selected Works
               </motion.h2>
               
-              <div className="space-y-24">
+              <div className="space-y-12">
                 {profile.projects.map((project, index) => {
                   // Smart button promotion: determine the main link
                   const mainLink = getProjectHref(project);
@@ -223,7 +215,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
                       <div className="relative overflow-hidden">
                         <div className="aspect-[21/9] overflow-hidden">
                           <img 
-                            src={getNoirProjectImageUrl(project)} 
+                            src={getProjectImageUrl(project, 'creative')} 
                             alt={project.title}
                             className="w-full h-full object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-1000"
                           />
@@ -278,10 +270,10 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
 
         {/* Experience */}
         {profile.workExperience.length > 0 && (
-          <section className="border-t border-white/10 py-24">
+          <section className="border-t border-white/10 py-12">
             <div className="max-w-4xl mx-auto px-8">
               <motion.h2 
-                className="text-xs tracking-[0.5em] uppercase text-white/30 text-center mb-16"
+                className="text-xs tracking-[0.5em] uppercase text-white/30 text-center mb-8"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -289,7 +281,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
                 Career
               </motion.h2>
               
-              <div className="space-y-16">
+              <div className="space-y-8">
                 {profile.workExperience.map((exp, index) => (
                   <motion.div 
                     key={exp.id}
@@ -316,7 +308,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
 
         {/* Skills */}
         {profile.skills.length > 0 && (
-          <section className="border-t border-white/10 py-16">
+          <section className="border-t border-white/10 py-10">
             <div className="max-w-6xl mx-auto px-8">
               <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
                 {profile.skills.map((skill, index) => (
@@ -337,7 +329,7 @@ export function NoirTemplate({ profile, onContactClick }: NoirTemplateProps) {
         )}
 
         {/* Footer */}
-        <footer className="border-t border-white/10 py-16">
+        <footer className="border-t border-white/10 py-10">
           <div className="max-w-6xl mx-auto px-8 text-center">
             <motion.div
               initial={{ opacity: 0 }}
