@@ -1,6 +1,6 @@
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/components/theme-provider';
+
 import {
   LayoutDashboard,
   User,
@@ -57,7 +57,7 @@ export function DashboardSidebar() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
+  const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
   const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
   const collapsed = isMobile ? isMobileCollapsed : state === 'collapsed';
 
