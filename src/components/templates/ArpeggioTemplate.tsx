@@ -250,10 +250,11 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
           <h2 className="text-5xl md:text-8xl font-bold tracking-tighter mb-8" style={{ fontFamily: heading }}>
             Let's build<br />something.
           </h2>
-          <a href={`mailto:${email}`} className="inline-flex items-center gap-3 text-lg hover:text-[#64BFFF] transition-colors" style={{ fontFamily: mono }}>
-            <Mail className="h-5 w-5" />
+          <a href={`mailto:${email}`} className="inline-flex items-center gap-3 text-xl md:text-2xl hover:text-[#64BFFF] transition-colors break-all" style={{ fontFamily: mono }}>
+            <Mail className="h-6 w-6 shrink-0" />
             {email}
           </a>
+
 
           <div className="flex gap-6 mt-10">
             {githubUrl && githubUrl !== '#' && (
