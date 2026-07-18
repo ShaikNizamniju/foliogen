@@ -310,11 +310,11 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
 
           {/* Skills Pills */}
           {profile.skills.length > 0 && (
-            <motion.div variants={itemVariants} className="pt-4">
-              <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">
+            <motion.div variants={itemVariants} className="pt-4 lg:col-span-8 lg:col-start-5 lg:pt-0">
+              <h2 className="text-center lg:text-left text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">
                 Skills
               </h2>
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap justify-center lg:justify-start gap-2">
                 {profile.skills.map((skill, index) => (
                   <span 
                     key={index}
@@ -329,9 +329,9 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
         </motion.div>
       </div>
 
-      {/* Sticky Follow Button */}
+      {/* Sticky Follow Button — mobile only */}
       <motion.div 
-        className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/90 via-white/80 to-transparent backdrop-blur-sm z-50"
+        className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/90 via-white/80 to-transparent backdrop-blur-sm z-50"
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1, duration: 0.5 }}
