@@ -57,23 +57,6 @@ export default function Auth() {
     track('signup_screen_reached');
   }, [authLoading, user]);
 
-  // Counter animation
-  useEffect(() => {
-    const targets = [12400, 3.2, 89];
-    const duration = 1600;
-    const start = performance.now();
-    let raf = 0;
-    const tick = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setC1(Math.floor(targets[0] * ease));
-      setC2(Number((targets[1] * ease).toFixed(1)));
-      setC3(Math.floor(targets[2] * ease));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
 
   // Custom cursor (desktop only)
   useEffect(() => {
