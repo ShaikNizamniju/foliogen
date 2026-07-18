@@ -258,22 +258,22 @@ export function SwissTemplate({ profile, onContactClick }: SwissTemplateProps) {
                       </div>
                       
                       {/* Overlay */}
-                      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/90 transition-colors duration-300 flex items-end p-6 opacity-0 group-hover:opacity-100">
-                        <div>
-                          <h3 className="text-2xl font-black uppercase mb-2">{project.title}</h3>
-                          <p className="text-sm text-black/70">{project.description}</p>
+                      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/90 transition-colors duration-300 flex items-end p-4 sm:p-6 opacity-0 group-hover:opacity-100">
+                        <div className="min-w-0 pr-10">
+                          <h3 className="text-lg sm:text-xl md:text-2xl font-black uppercase mb-2 break-words">{project.title}</h3>
+                          <p className="text-sm text-black/70 break-words">{project.description}</p>
                         </div>
                         {isDocsOnly ? (
-                          <FileText className="absolute top-6 right-6 h-6 w-6" />
+                          <FileText className="absolute top-4 right-4 sm:top-6 sm:right-6 h-6 w-6" />
                         ) : (
-                          <ArrowUpRight className="absolute top-6 right-6 h-6 w-6" />
+                          <ArrowUpRight className="absolute top-4 right-4 sm:top-6 sm:right-6 h-6 w-6" />
                         )}
                       </div>
                     </div>
                     
-                    <div className="mt-4 flex items-center justify-between">
-                      <h3 className="text-lg font-bold uppercase">{project.title}</h3>
-                      <div className="flex items-center gap-4">
+                    <div className="mt-4 flex items-start justify-between gap-3">
+                      <h3 className="text-base sm:text-lg font-bold uppercase break-words min-w-0 flex-1">{project.title}</h3>
+                      <div className="flex items-center gap-4 shrink-0">
                         {/* Show docs link only when both exist */}
                         {project.link && project.docsUrl && (
                           <a 
