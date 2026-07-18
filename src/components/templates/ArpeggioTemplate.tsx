@@ -62,10 +62,10 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
   const twitterUrl = p.twitterUrl || demoProfile.twitterUrl;
 
   const projects = p.projects?.length
-    ? p.projects.map((proj: any, i: number) => ({
+    ? p.projects.map((proj: any) => ({
         title: proj.title,
-        category: proj.techStack?.[0] || 'Project',
-        year: '2024',
+        category: proj.techStack?.[0] || '',
+        year: proj.year || proj.endDate || '',
         image: proj.imageUrl || '',
         description: proj.description || '',
         link: proj.link || '',
@@ -80,6 +80,7 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
         company: w.company,
       }))
     : demoProfile.workExperience;
+
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#0A0A0A', color: '#FAFAFA', fontFamily: "'Inter', sans-serif" }}>
