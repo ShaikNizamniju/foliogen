@@ -84,37 +84,35 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
       </motion.nav>
 
       {/* Hero — Bento */}
-      <section className="px-6 md:px-14 py-10 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 md:auto-rows-fr">
+      <section className="px-6 md:px-14 py-6 md:py-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-5">
           {/* 1 — Name / bio / location */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="order-1 md:order-1 flex flex-col justify-between gap-6 p-8 md:p-10 rounded-2xl min-h-[320px]"
+            className="order-1 md:order-1 md:col-span-8 flex flex-col justify-between gap-3 p-6 rounded-2xl md:h-[260px]"
             style={{ backgroundColor: '#FFFFFF' }}
           >
             <div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-tighter break-words" style={{ fontFamily: heading }}>
-                {first}{last && <><br />{last}</>}
-              </h1>
-              {(role || location) && (
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  {role && (
-                    <span className="text-xs tracking-widest uppercase px-3 py-1.5 rounded-full border max-w-full break-words" style={{ fontFamily: mono, borderColor: '#CDFF64', backgroundColor: '#CDFF64' }}>
-                      {role}
-                    </span>
-                  )}
-                  {location && (
-                    <span className="inline-flex items-center gap-1 text-xs tracking-widest uppercase px-3 py-1.5 rounded-full border max-w-full break-words" style={{ fontFamily: mono, borderColor: '#111111', color: '#111111' }}>
-                      <MapPin className="h-3 w-3" />{location}
-                    </span>
-                  )}
-                </div>
-              )}
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-4xl md:text-4xl lg:text-5xl font-bold leading-[0.95] tracking-tighter break-words" style={{ fontFamily: heading }}>
+                  {first}{last && <> {last}</>}
+                </h1>
+                {role && (
+                  <span className="text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-full border max-w-full break-words" style={{ fontFamily: mono, borderColor: '#CDFF64', backgroundColor: '#CDFF64' }}>
+                    {role}
+                  </span>
+                )}
+                {location && (
+                  <span className="inline-flex items-center gap-1 text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-full border max-w-full break-words" style={{ fontFamily: mono, borderColor: '#111111', color: '#111111' }}>
+                    <MapPin className="h-3 w-3" />{location}
+                  </span>
+                )}
+              </div>
             </div>
             {bio && (
-              <p className="text-sm md:text-base leading-relaxed line-clamp-4" style={{ color: '#444' }}>
+              <p className="text-sm leading-relaxed line-clamp-2" style={{ color: '#444' }}>
                 {bio}
               </p>
             )}
@@ -126,104 +124,100 @@ export function FrqncyTemplate({ profile }: FrqncyTemplateProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="order-2 md:order-2 rounded-2xl overflow-hidden relative min-h-[320px]"
+              className="order-2 md:order-2 md:col-span-4 rounded-2xl overflow-hidden relative h-[220px] max-h-[280px] md:h-[260px]"
             >
               {profile?.photoUrl ? (
-                <img src={profile.photoUrl} alt={name} className="w-full h-full object-cover min-h-[320px]" />
+                <img src={profile.photoUrl} alt={name} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full min-h-[320px] bg-[#E5E5E5] flex items-center justify-center">
-                  <UserCircle className="w-24 h-24 text-[#CCCCCC]" />
+                <div className="w-full h-full bg-[#E5E5E5] flex items-center justify-center">
+                  <UserCircle className="w-20 h-20 text-[#CCCCCC]" />
                 </div>
               )}
             </motion.div>
           )}
 
-          {/* 3 — CTA (mobile before skills; desktop bottom-right) */}
+          {/* 3 — CTA */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className={`order-3 md:order-4 rounded-2xl p-8 md:p-10 flex flex-col justify-between gap-6 min-h-[320px] ${skills.length === 0 ? 'md:col-span-2' : ''}`}
+            className={`order-3 md:order-4 md:col-span-5 rounded-2xl p-5 flex flex-col gap-3 md:h-[180px] ${skills.length === 0 ? 'md:col-span-12' : ''}`}
             style={{ backgroundColor: '#111111' }}
           >
-            <div>
-              <span className="text-sm tracking-wider mb-3 block" style={{ fontFamily: mono, color: '#CDFF64' }}>Open to opportunities</span>
-              <p className="text-white text-lg md:text-xl leading-snug" style={{ fontFamily: heading }}>Let's build something great together.</p>
-              {email && (
-                <a
-                  href={`mailto:${email}`}
-                  className="mt-4 inline-flex items-center gap-2 text-sm break-all hover:text-[#CDFF64] transition-colors"
-                  style={{ fontFamily: mono, color: '#CCC' }}
-                >
-                  <Mail className="h-4 w-4 shrink-0" />{email}
-                </a>
-              )}
-            </div>
-            <div className="flex flex-col gap-4">
+            <span className="text-xs tracking-wider" style={{ fontFamily: mono, color: '#CDFF64' }}>Open to opportunities</span>
+            <div className="flex flex-wrap items-center gap-3">
               <motion.a
                 href={contactHref}
                 onClick={(e) => { if (!email) { e.preventDefault(); scrollToContact(); } }}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-7 py-3 rounded-full text-sm font-semibold tracking-wider inline-block w-fit min-h-[44px]"
+                className="px-5 py-2.5 rounded-full text-sm font-semibold tracking-wider inline-block w-fit min-h-[44px]"
                 style={{ backgroundColor: '#CDFF64', color: '#111111', fontFamily: heading }}
               >
                 Let's Talk →
               </motion.a>
-              {(profile?.linkedinUrl || profile?.githubUrl || profile?.twitterUrl || profile?.website) && (
-                <div className="flex flex-wrap items-center gap-3">
-                  {profile?.linkedinUrl && (
-                    <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
-                      <Linkedin className="h-4 w-4" />
-                    </a>
-                  )}
-                  {profile?.githubUrl && (
-                    <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
-                      <Github className="h-4 w-4" />
-                    </a>
-                  )}
-                  {profile?.twitterUrl && (
-                    <a href={profile.twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
-                      <Twitter className="h-4 w-4" />
-                    </a>
-                  )}
-                  {profile?.website && (
-                    <a href={profile.website} target="_blank" rel="noopener noreferrer" aria-label="Website" className="w-10 h-10 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
-                      <Globe className="h-4 w-4" />
-                    </a>
-                  )}
-                </div>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {email && (
+                  <a href={`mailto:${email}`} aria-label="Email" className="w-9 h-9 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                    <Mail className="h-4 w-4" />
+                  </a>
+                )}
+                {profile?.linkedinUrl && (
+                  <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-9 h-9 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                    <Linkedin className="h-4 w-4" />
+                  </a>
+                )}
+                {profile?.githubUrl && (
+                  <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-9 h-9 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                    <Github className="h-4 w-4" />
+                  </a>
+                )}
+                {profile?.twitterUrl && (
+                  <a href={profile.twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="w-9 h-9 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                    <Twitter className="h-4 w-4" />
+                  </a>
+                )}
+                {profile?.website && (
+                  <a href={profile.website} target="_blank" rel="noopener noreferrer" aria-label="Website" className="w-9 h-9 rounded-full border border-white/25 flex items-center justify-center text-white hover:border-[#CDFF64] hover:text-[#CDFF64] transition-colors">
+                    <Globe className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
             </div>
+            {email && (
+              <a href={`mailto:${email}`} className="text-xs break-all hover:text-[#CDFF64] transition-colors truncate" style={{ fontFamily: mono, color: '#CCC' }}>
+                {email}
+              </a>
+            )}
           </motion.div>
 
-          {/* 4 — Skills pills (static, wrapped) */}
+          {/* 4 — Skills pills */}
           {skills.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="order-4 md:order-3 rounded-2xl p-8 md:p-10 flex flex-col gap-4 min-h-[320px]"
+              className="order-4 md:order-3 md:col-span-7 rounded-2xl p-5 flex flex-col gap-3 md:h-[180px] overflow-hidden"
               style={{ backgroundColor: '#FFFFFF' }}
             >
               <span className="text-xs tracking-widest uppercase" style={{ fontFamily: mono, color: '#888' }}>Skills</span>
-              <div className="flex flex-wrap gap-2 md:gap-3">
-                {skills.slice(0, 10).map((s, i) => (
+              <div className="flex flex-wrap gap-2">
+                {skills.slice(0, 8).map((s, i) => (
                   <span
                     key={s + i}
-                    className="text-xs md:text-sm tracking-wider px-3 py-1.5 rounded-full border inline-block max-w-full break-words"
+                    className="text-xs tracking-wider px-3 py-1.5 rounded-full border inline-block max-w-full break-words"
                     style={{ fontFamily: mono, borderColor: '#CDFF64', color: '#111111', backgroundColor: '#F7FFE0' }}
                   >
                     {s}
                   </span>
                 ))}
-                {skills.length > 10 && (
+                {skills.length > 8 && (
                   <a
                     href="#skills"
-                    className="text-xs md:text-sm tracking-wider px-3 py-1.5 rounded-full inline-block font-semibold hover:opacity-80 transition-opacity"
+                    className="text-xs tracking-wider px-3 py-1.5 rounded-full inline-block font-semibold hover:opacity-80 transition-opacity"
                     style={{ fontFamily: mono, backgroundColor: '#111111', color: '#CDFF64' }}
                   >
-                    +{skills.length - 10} more
+                    +{skills.length - 8} more
                   </a>
                 )}
               </div>
