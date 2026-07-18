@@ -151,9 +151,10 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
       <section className="px-6 md:px-14 py-16 md:py-24" style={{ borderTop: '1px solid #1A1A1A' }}>
         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
           <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ fontFamily: mono, color: '#555' }}>About</span>
-          <p className="text-2xl md:text-4xl font-light leading-relaxed max-w-4xl" style={{ fontFamily: heading }}>
+          <p className="text-2xl md:text-4xl lg:text-5xl font-light leading-[1.3] max-w-5xl" style={{ fontFamily: heading }}>
             {bio}
           </p>
+
         </motion.div>
       </section>
 
