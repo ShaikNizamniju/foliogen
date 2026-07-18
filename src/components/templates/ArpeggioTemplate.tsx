@@ -230,13 +230,14 @@ export function ArpeggioTemplate({ profile }: ArpeggioTemplateProps) {
           <motion.span variants={fadeUp} className="text-xs tracking-[0.3em] uppercase block mb-10" style={{ fontFamily: mono, color: '#555' }}>Experience</motion.span>
           <div className="space-y-0">
             {experience.map((e: any, i: number) => (
-              <motion.div key={i} variants={fadeUp} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-12 py-6" style={{ borderBottom: '1px solid #1A1A1A' }}>
-                <span className="text-xs tracking-widest w-48 shrink-0" style={{ fontFamily: mono, color: '#555' }}>{e.year}</span>
+              <motion.div key={i} variants={fadeUp} className="flex flex-col md:flex-row md:items-center gap-2 md:gap-12 py-7" style={{ borderBottom: '1px solid #1A1A1A' }}>
+                <span className="text-xs md:text-sm tracking-widest w-48 shrink-0" style={{ fontFamily: mono, color: '#666' }}>{e.year}</span>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold" style={{ fontFamily: heading }}>{e.role}</h3>
-                  <span className="text-sm" style={{ color: '#888' }}>{e.company}</span>
+                  <h3 className="text-xl md:text-2xl font-semibold" style={{ fontFamily: heading }}>{e.role}</h3>
+                  <span className="text-base md:text-lg" style={{ color: '#999' }}>{e.company}</span>
                 </div>
               </motion.div>
+
             ))}
           </div>
         </motion.div>
