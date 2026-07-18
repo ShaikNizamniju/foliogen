@@ -12,21 +12,8 @@ import {
   Target,
   MessageSquareText,
   ChevronLeft,
-  ChevronRight,
   ArrowLeftRight,
-  Vault,
-  Sparkles,
-  Briefcase,
-  Target,
-  MessageSquareText,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeftRight,
-  Vault,
   CreditCard,
-  ShieldAlert,
-  CreditCard,
-  ShieldAlert,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
 
@@ -65,7 +52,6 @@ export function DashboardSidebar() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
   const { state, setOpen, isMobile, isMobileCollapsed, setIsMobileCollapsed } = useSidebar();
   const collapsed = isMobile ? isMobileCollapsed : state === 'collapsed';
 
