@@ -69,17 +69,17 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
       </div>
 
       {/* Mobile-First Container - Centered column */}
-      <div className="relative z-10 max-w-md mx-auto px-6 py-12 pb-32">
+      <div className="relative z-10 max-w-md lg:max-w-6xl mx-auto px-6 lg:px-10 py-12 pb-32 lg:pb-16">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-6"
+          className="space-y-6 lg:grid lg:grid-cols-12 lg:gap-8 lg:space-y-0"
         >
           {/* Profile Card */}
           <motion.div 
             variants={itemVariants}
-            className="text-center"
+            className="text-center lg:col-span-4 lg:text-left lg:sticky lg:top-8 lg:self-start lg:space-y-6"
           >
             {/* Avatar */}
             <motion.div 
