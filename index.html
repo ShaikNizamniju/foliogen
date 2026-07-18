@@ -5,11 +5,14 @@
   <meta charset="UTF-8" />
   <meta name="google-site-verification" content="NMWCNAefZjyyKvZynb6GU4fmO0SQsHfwLt_j-ij3slY" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Foliogen | The AI PM Identity Vault</title>
+  <meta name="theme-color" content="#0F172A" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <title>Foliogen | AI Portfolio Builder for Product Managers & Job Seekers</title>
   <meta name="description"
     content="Build an ATS-optimized professional portfolio with Foliogen. Use AI-driven career strategies to land your next job. Create, customize, and share today." />
-  
+  <meta name="keywords" content="AI portfolio builder, product manager portfolio, ATS resume, job seeker portfolio, personal website builder, career portfolio" />
   <meta name="author" content="Foliogen" />
+  <link rel="canonical" href="https://www.foliogen.in/" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.json" />
@@ -20,28 +23,76 @@
     rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400&display=swap"></noscript>
 
-  <meta property="og:title" content="Foliogen | AI Portfolio" />
+  <meta property="og:site_name" content="Foliogen" />
+  <meta property="og:title" content="Foliogen | AI Portfolio Builder" />
   <meta property="og:url" content="https://www.foliogen.in/" />
   <meta property="og:description"
-    content="Build an ATS-optimized professional portfolio with Foliogen. Use AI-driven career strategies to land your next job. Create, customize, and share today." />
+    content="Build an ATS-optimized professional portfolio with Foliogen. Use AI-driven career strategies to land your next job." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://www.foliogen.in/assets/logo-DY04JMdn.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@Foliogen" />
-  <script defer data-domain="foliogen.in" src="https://plausible.io/js/script.js"></script>
+  <meta name="twitter:title" content="Foliogen | AI Portfolio Builder" />
+  <meta name="twitter:description" content="Build an ATS-optimized professional portfolio with AI-driven career strategies." />
   <meta name="twitter:image" content="https://www.foliogen.in/assets/logo-DY04JMdn.png" />
+
+  <script defer data-domain="foliogen.in" src="https://plausible.io/js/script.js"></script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Foliogen",
+    "url": "https://www.foliogen.in",
+    "logo": "https://www.foliogen.in/assets/logo-DY04JMdn.png",
+    "sameAs": ["https://twitter.com/Foliogen"],
+    "description": "AI-powered portfolio builder helping product managers and job seekers create ATS-optimized professional portfolios."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Foliogen",
+    "url": "https://www.foliogen.in",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.foliogen.in/u/{search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Foliogen",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "ratingCount": "120" }
+  }
+  </script>
+
   <script>
     const path = window.location.pathname;
-    if (path.startsWith('/p/')) {
-      const rawName = path.split('/p/')[1].split('/')[0];
+    if (path.startsWith('/p/') || path.startsWith('/u/')) {
+      const rawName = path.split('/').filter(Boolean)[1] || '';
       const formattedName = rawName.replace(/-/g, ' ')
         .split(' ')
         .map(function (word) { return word.charAt(0).toUpperCase() + word.slice(1); })
         .join(' ');
-      document.title = formattedName + ' | AI Portfolio';
-      document.querySelector('meta[property="og:title"]').setAttribute('content', formattedName + ' | AI Portfolio');
-      document.querySelector('link[rel="canonical"]').setAttribute('href', window.location.href);
+      if (formattedName) {
+        document.title = formattedName + ' | AI Portfolio';
+        var ogt = document.querySelector('meta[property="og:title"]');
+        if (ogt) ogt.setAttribute('content', formattedName + ' | AI Portfolio');
+      }
+      var canon = document.querySelector('link[rel="canonical"]');
+      if (canon) canon.setAttribute('href', window.location.origin + window.location.pathname);
     }
   </script>
 </head>

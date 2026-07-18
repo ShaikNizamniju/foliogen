@@ -7,6 +7,8 @@ interface SEOProps {
   image?: string;
   type?: 'website' | 'article' | 'profile';
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+  keywords?: string;
 }
 
 const SITE_URL = 'https://www.foliogen.in';
@@ -19,6 +21,8 @@ export const SEO = ({
   image = DEFAULT_IMAGE,
   type = 'website',
   jsonLd,
+  noindex = false,
+  keywords,
 }: SEOProps) => {
   const url = `${SITE_URL}${path === '/' ? '' : path}`;
   const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
@@ -27,7 +31,13 @@ export const SEO = ({
     <Helmet>
       <title>{title}</title>
       <meta name="description" content={description} />
+      {keywords && <meta name="keywords" content={keywords} />}
+      <meta
+        name="robots"
+        content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1'}
+      />
       <link rel="canonical" href={url} />
+      <meta property="og:site_name" content="Foliogen" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
