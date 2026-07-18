@@ -244,6 +244,28 @@ export function StudioTemplate({ profile, onContactClick }: StudioTemplateProps)
           <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-16 min-h-screen">
             {/* Left: Text Content */}
             <div className="flex flex-col justify-center py-12 lg:py-24 lg:sticky lg:top-0 lg:h-screen">
+              {/* Mobile / tablet profile photo (hidden on lg+ where the right column shows it) */}
+              <motion.div
+                className="lg:hidden mb-8"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.7 }}
+              >
+                {profile.photoUrl ? (
+                  <img
+                    src={profile.photoUrl}
+                    alt={profile.fullName || 'Profile'}
+                    className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl object-cover"
+                  />
+                ) : (
+                  <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl bg-gradient-to-br from-white/10 to-white/[0.03] flex items-center justify-center">
+                    <span className="text-5xl font-extralight text-white/30">
+                      {profile.fullName?.charAt(0) || 'S'}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+
               {/* Headline tag */}
               <motion.p
                 className="text-white/40 text-xs md:text-sm tracking-[0.3em] uppercase mb-4 md:mb-6"
