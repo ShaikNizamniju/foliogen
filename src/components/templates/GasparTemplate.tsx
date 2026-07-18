@@ -238,19 +238,19 @@ export function GasparTemplate({ profile }: GasparTemplateProps) {
 
       {/* Skills */}
       {skills.length > 0 && (
-        <section className="px-6 md:px-16 py-16 md:py-20 border-t" style={{ borderColor: '#D4C9B8' }}>
+        <section className="px-6 md:px-16 py-16 md:py-20 border-t overflow-hidden" style={{ borderColor: '#D4C9B8' }}>
           <span className="text-xs tracking-[0.3em] uppercase block mb-8" style={{ color: '#8B7355' }}>Capabilities</span>
-          <div className="flex flex-wrap gap-x-6 gap-y-4 md:gap-x-10">
+          <ul className="flex flex-wrap gap-2 md:gap-3 max-w-full">
             {skills.map((s, i) => (
-              <span
+              <li
                 key={i}
-                className="text-xl md:text-3xl font-light tracking-[0.1em]"
-                style={{ fontFamily: "'Playfair Display', serif", color: '#1A1A1A' }}
+                className="text-xs md:text-sm uppercase tracking-[0.2em] font-medium px-3 py-1.5 md:px-4 md:py-2 border rounded-sm break-words"
+                style={{ borderColor: '#D4C9B8', color: '#1A1A1A' }}
               >
                 {s}
-              </span>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       )}
 
