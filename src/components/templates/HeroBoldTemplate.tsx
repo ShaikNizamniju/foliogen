@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, MotionConfig } from 'framer-motion';
 import { ProfileData } from '@/contexts/ProfileContext';
 import { UserCircle, MapPin, Mail, Linkedin } from 'lucide-react';
 import { getProjectHref } from '@/lib/urlUtils';
@@ -67,6 +67,7 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
   const words = name.trim().split(/\s+/);
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen" style={{ backgroundColor: '#0A0A0A', color: '#FAFAFA', fontFamily: "'Inter', sans-serif" }}>
       <style>{scopedCss}</style>
 
@@ -89,12 +90,12 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
 
             <motion.h1
               variants={fadeUp}
-              className="font-black leading-[0.9] tracking-tighter uppercase break-words [overflow-wrap:anywhere] text-5xl sm:text-6xl lg:text-7xl xl:text-8xl"
+              className="font-black leading-[0.9] tracking-tighter uppercase break-words text-5xl sm:text-6xl lg:text-6xl xl:text-7xl"
             >
               {words.map((word, i) => (
                 <span
                   key={i}
-                  className="break-words [overflow-wrap:anywhere]"
+                  className="break-words"
                   style={{ color: i === 0 ? '#FAFAFA' : '#E11D48' }}
                 >
                   {word}{i < words.length - 1 ? ' ' : ''}
@@ -294,5 +295,6 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
         )}
       </motion.footer>
     </div>
+    </MotionConfig>
   );
 }
