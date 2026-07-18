@@ -155,38 +155,20 @@ export function HeroBoldTemplate({ profile, onContactClick }: HeroBoldTemplatePr
         </div>
       </motion.section>
 
-      {/* About — full-width row */}
-      <section className="border-t border-b px-8 md:px-20 py-16 md:py-24" style={{ borderColor: '#27272A' }}>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-10 md:gap-14 items-start">
-          {showPhoto && (
-            <div className="shrink-0 mx-auto md:mx-0">
-              {profile?.photoUrl ? (
-                <img
-                  src={profile.photoUrl}
-                  alt={name}
-                  className="w-40 h-40 md:w-64 md:h-64 max-w-xs aspect-square rounded-2xl object-cover grayscale hover:grayscale-0 transition-all duration-500 border-2"
-                  style={{ borderColor: '#E11D48' }}
-                />
-              ) : (
-                <div className="w-40 h-40 md:w-64 md:h-64 aspect-square rounded-2xl bg-[#111113] border-2 flex items-center justify-center" style={{ borderColor: '#27272A' }}>
-                  <UserCircle className="w-20 h-20 text-[#333]" />
-                </div>
-              )}
-            </div>
-          )}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="flex-1 min-w-0"
-          >
-            <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ color: '#71717A' }}>About</span>
-            <p className="text-xl md:text-2xl font-light leading-relaxed break-words" style={{ color: '#D4D4D8' }}>
-              {bio}
-            </p>
-          </motion.div>
-        </div>
+      {/* About — centered text-only block */}
+      <section className="border-t border-b px-6 md:px-20 py-16 md:py-24" style={{ borderColor: '#27272A' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="max-w-3xl mx-auto text-center"
+        >
+          <span className="text-xs tracking-[0.3em] uppercase block mb-6" style={{ color: '#71717A' }}>About</span>
+          <p className="text-xl md:text-2xl lg:text-3xl font-light leading-relaxed break-words" style={{ color: '#D4D4D8' }}>
+            {bio}
+          </p>
+        </motion.div>
       </section>
 
       {/* Experience */}
