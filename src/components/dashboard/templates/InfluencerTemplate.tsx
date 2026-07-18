@@ -246,10 +246,10 @@ export function InfluencerTemplate({ profile, onContactClick }: InfluencerTempla
             )}
           </motion.div>
 
-          {/* Projects - Vertical Stack */}
+          {/* Projects - Vertical Stack on mobile, 2-col grid on desktop */}
           {profile.projects.length > 0 && (
-            <motion.div variants={itemVariants} className="space-y-4 pt-4">
-              <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+            <motion.div variants={itemVariants} className="space-y-4 pt-4 lg:col-span-8 lg:col-start-5 lg:pt-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
+              <h2 className="text-center lg:text-left text-sm font-semibold uppercase tracking-wider text-gray-500 lg:col-span-2">
                 Featured Work
               </h2>
             {profile.projects.map((project, index) => {
