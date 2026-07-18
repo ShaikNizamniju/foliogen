@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Rocket, FileDown, Share2, Eye, Copy, Check } from 'lucide-react';
 import { PublishDialog } from './PublishDialog';
 import { ShareModal } from './ShareModal';
-import { ModeToggle } from '@/components/ModeToggle';
+
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { toast } from '@/hooks/use-toast';
 import { useProfile } from '@/contexts/ProfileContext';
@@ -88,7 +88,7 @@ export function DashboardHeader() {
         </div>
         <div className="flex items-center gap-2">
           <PersonaSwitcher />
-          <ModeToggle />
+          
           <Button onClick={handleCopyLink} variant="ghost" size="sm" className="hidden sm:flex text-muted-foreground hover:text-foreground gap-1.5">
             {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
             {copied ? 'Copied!' : 'Copy Link'}

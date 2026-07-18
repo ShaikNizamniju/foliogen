@@ -21,7 +21,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
-import profilePhoto from '@/assets/profile-photo.jpeg';
+
 import {
   Sidebar,
   SidebarContent,
@@ -205,14 +205,6 @@ export function DashboardSidebar() {
                   <LogOut className="h-4 w-4 mr-2 shrink-0" />
                   Sign Out
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="h-9 w-9 shrink-0 min-w-[48px] min-h-[48px] text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl focus-visible:ring-2 focus-visible:ring-[#00E5FF]"
-                >
-                  {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                </Button>
               </div>
             </div>
         ) : (
@@ -227,18 +219,10 @@ export function DashboardSidebar() {
             >
               <LogOut className="h-5 w-5" />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="h-10 w-10 min-w-[48px] min-h-[48px] mx-auto text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-xl shrink-0 focus-visible:ring-2 focus-visible:ring-[#00E5FF]"
-              title="Toggle Theme"
-            >
-              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-            <div className="h-10 w-10 overflow-hidden rounded-full border-2 border-[#00E5FF]/20 mt-1">
-              <img src={profilePhoto} alt="Shaik Nizamuddin" className="h-full w-full object-cover" />
+            <div className="h-10 w-10 flex items-center justify-center rounded-full border-2 border-[#00E5FF]/20 mt-1 bg-primary/10 text-primary text-sm font-semibold">
+              <User className="h-4 w-4" />
             </div>
+
           </div>
         )}
       </SidebarFooter>
